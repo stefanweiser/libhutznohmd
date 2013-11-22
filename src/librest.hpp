@@ -15,23 +15,27 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONSTANTS_HPP
-#define CONSTANTS_HPP
+#ifndef LIBREST_HPP
+#define LIBREST_HPP
+
+#include <functional>
+#include <memory>
+#include <vector>
 
 namespace rest
 {
 
 enum class Method
 {
-    Head,
-    Get,
-    Put,
-    Post,
-    Delete,
-    Trace,
-    Options,
-    Connect,
-    Patch
+    HEAD,
+    GET,
+    PUT,
+    POST,
+    DELETE,
+    TRACE,
+    OPTIONS,
+    CONNECT,
+    PATCH
 };
 
 enum class StatusCode
@@ -83,6 +87,27 @@ enum class StatusCode
     ATimeoutOccurred = 524
 };
 
+typedef std::function<StatusCode(const Method &,
+                                 const std::istream &)>
+    RequestFn;
+
+class ListenerInterface
+{
+public:
+    virtual ~ListenerInterface() {}
+};
+
+class HttpServerInterface
+{
+public:
+    virtual ~HttpServerInterface() {}
+
+    virtual std::shared_ptr<ListenerInterface> registerListener(
+        const std::vector<Method> & method,
+        const std::string & path,
+        const RequestFn & handler) = 0;
+};
+
 } // namespace rest
 
-#endif // CONSTANTS_HPP
+#endif // LIBREST_HPP

@@ -18,4 +18,3 @@ target_link_libraries(rest microhttpd)
 
 install(TARGETS rest DESTINATION lib)
 install(FILES ${HEADERS} DESTINATION include)
-
