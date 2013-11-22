@@ -1,0 +1,5 @@
+For building the library just type:
+
+./make
+
+This builds the whole project and installs it to the install subdirectory.
