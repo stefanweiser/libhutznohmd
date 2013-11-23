@@ -1,11 +1,25 @@
 #!/bin/sh
 
-rm -rf "$(dirname $0)/build" "$(dirname $0)/install"
-mkdir -p "$(dirname $0)/build"
-cd "$(dirname $0)/build"
-cmake .. -DCMAKE_INSTALL_PREFIX=../install
+clear()
+{
+    rm -rf "$SCRIPTPATH/build" "$SCRIPTPATH/install"
+}
+
+SCRIPTPATH="$PWD/$(dirname $0)"
+echo "$SCRIPTPATH"
+
+clear
+mkdir -p "$SCRIPTPATH/build"
+cd "$SCRIPTPATH/build"
+cmake "$SCRIPTPATH" -DCMAKE_INSTALL_PREFIX="$SCRIPTPATH/install"
 make clean
 NUMCORES="$(grep processor /proc/cpuinfo | wc -l)"
 make -j"$NUMCORES"
 make install
 make package
+
+LD_LIBRARY_PATH=../src ./unittest/unittest_rest
+if [ "$?" -ne "0" ]; then
+	echo "Build failed. Deleting output."
+	clear
+fi
