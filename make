@@ -5,6 +5,7 @@ mkdir -p "$(dirname $0)/build"
 cd "$(dirname $0)/build"
 cmake .. -DCMAKE_INSTALL_PREFIX=../install
 make clean
-make
+NUMCORES="$(grep processor /proc/cpuinfo | wc -l)"
+make -j"$NUMCORES"
 make install
 make package
