@@ -17,5 +17,3 @@ target_link_libraries(unittest_rest rest)
 
 include_directories("${PROJECT_SOURCE_DIR}/../src")
 include_directories("${PROJECT_SOURCE_DIR}")
-
-install(TARGETS unittest_rest DESTINATION bin)
