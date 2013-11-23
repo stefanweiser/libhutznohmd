@@ -7,4 +7,4 @@ cmake .. -DCMAKE_INSTALL_PREFIX=../install
 make clean
 make
 make install
-
+make package

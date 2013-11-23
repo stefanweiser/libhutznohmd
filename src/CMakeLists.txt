@@ -12,9 +12,9 @@ file(GLOB_RECURSE HEADERS *.hpp)
 
 add_library(rest SHARED ${SOURCES} ${HEADERS})
 
-include_directories("${PROJECT_BINARY_DIR}")
+include_directories("${PROJECT_SOURCE_DIR}")
 
 target_link_libraries(rest microhttpd)
 
 install(TARGETS rest DESTINATION lib)
-install(FILES ${HEADERS} DESTINATION include)
+install(FILES librest.hpp DESTINATION include)
