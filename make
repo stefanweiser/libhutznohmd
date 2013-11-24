@@ -5,16 +5,13 @@ clear()
     rm -rf "$SCRIPTPATH/build" "$SCRIPTPATH/install"
 }
 
-SCRIPTPATH="$PWD/$(dirname $0)"
-echo "$SCRIPTPATH"
-
+SCRIPTPATH="$(readlink -f $(dirname $0))"
 clear
 mkdir -p "$SCRIPTPATH/build"
 cd "$SCRIPTPATH/build"
 cmake "$SCRIPTPATH" -DCMAKE_INSTALL_PREFIX="$SCRIPTPATH/install"
 make clean
-NUMCORES="$(grep processor /proc/cpuinfo | wc -l)"
-make -j"$NUMCORES"
+make -j"$(grep processor /proc/cpuinfo | wc -l)"
 make install
 make package
 
