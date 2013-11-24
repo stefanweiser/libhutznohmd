@@ -24,6 +24,9 @@
 
 TEST(HttpServer, Construction)
 {
-    rest::HttpServer httpServer("127.0.0.1", 10000);
+    rest::HttpServer httpServer("127.0.0.1",
+                                10000,
+                                rest::AcceptFn(),
+                                rest::AccessFn());
     EXPECT_NE(httpServer.m_pDaemon, nullptr);
 }

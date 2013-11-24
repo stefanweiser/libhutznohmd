@@ -18,16 +18,30 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#include <functional>
+
 #include <arpa/inet.h>
 #include <microhttpd.h>
+
+#include <librest.hpp>
 
 namespace rest
 {
 
+typedef std::function<bool(const sockaddr *, const socklen_t)> AcceptFn;
+typedef std::function<StatusCode(const char * const url,
+                                 const char * const method,
+                                 const char * const version,
+                                 const std::string& uploadData,
+                                 std::string& downloadData)> AccessFn;
+
 class HttpServer
 {
 public:
-    explicit HttpServer(const std::string & address, const uint16_t & port);
+    explicit HttpServer(const std::string & address,
+                        const uint16_t & port,
+                        const AcceptFn& acceptFn,
+                        const AccessFn& accessFn);
     ~HttpServer();
 
     int accept(const sockaddr * addr, socklen_t addrlen);
@@ -55,6 +69,8 @@ public:
 
 private:
     MHD_Daemon * m_pDaemon;
+    AcceptFn m_acceptFn;
+    AccessFn m_accessFn;
 };
 
 } // namespace rest
