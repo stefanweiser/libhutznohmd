@@ -27,6 +27,7 @@ namespace rest
 namespace
 {
 
+//! Converts librest status codes into libmicrohttpd status codes.
 unsigned int convertStatusCode(const StatusCode& statusCode)
 {
     switch ( statusCode )
@@ -91,16 +92,19 @@ unsigned int convertStatusCode(const StatusCode& statusCode)
     case StatusCode::InsufficientStorage: return MHD_HTTP_INSUFFICIENT_STORAGE;
     case StatusCode::BandwidthLimitExceeded: return MHD_HTTP_BANDWIDTH_LIMIT_EXCEEDED;
     case StatusCode::NotExtended: return MHD_HTTP_NOT_EXTENDED;
+
     default: return 0;
     }
 }
 
+//! Callback used by libmicrohttpd, when someone wants to connect to us.
 int acceptCallback(void * pObject, const sockaddr * addr, socklen_t addrlen)
 {
     assert(pObject != nullptr);
     return static_cast<HttpServer *>(pObject)->accept(addr, addrlen);
 }
 
+//! Callback used by libmicrohttpd, when someone transmits a request to us.
 int accessCallback(void * pObject,
                    MHD_Connection * pConnection,
                    const char * url,
@@ -120,6 +124,7 @@ int accessCallback(void * pObject,
                                                       ptr);
 }
 
+//! Callback used by libmicrohttpd, when the response of a request was sent.
 void completedCallback(void * pObject,
                        MHD_Connection * pConnection,
                        void ** ppData,
@@ -220,11 +225,15 @@ int HttpServer::access(MHD_Connection * pConnection,
                        const std::string & uploadData)
 {
     std::string data;
-    StatusCode statusCode = m_accessFn(url,
-                                       method,
-                                       version,
-                                       uploadData,
-                                       data);
+    StatusCode statusCode = StatusCode::InternalServerError;
+    if ( m_accessFn )
+    {
+        statusCode = m_accessFn(url,
+                                method,
+                                version,
+                                uploadData,
+                                data);
+    }
     MHD_Response * pResponse;
     pResponse = MHD_create_response_from_data(data.size(),
                                               const_cast<char *>(data.c_str()),
