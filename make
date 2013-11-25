@@ -2,7 +2,7 @@
 
 clear()
 {
-    rm -rf "$SCRIPTPATH/build" "$SCRIPTPATH/install"
+    rm -rf "$SCRIPTPATH/build" "$SCRIPTPATH/install" "$SCRIPTPATH/doc/html"
 }
 
 SCRIPTPATH="$(readlink -f $(dirname $0))"
@@ -20,3 +20,6 @@ if [ "$?" -ne "0" ]; then
 	echo "Build failed. Deleting output."
 	clear
 fi
+
+cd "$SCRIPTPATH/doc"
+doxygen
