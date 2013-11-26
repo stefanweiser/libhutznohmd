@@ -30,3 +30,45 @@ TEST(HttpServer, Construction)
                                 rest::AccessFn());
     EXPECT_NE(httpServer.m_pDaemon, nullptr);
 }
+
+TEST(HttpServer, AcceptNoCallback)
+{
+    rest::HttpServer httpServer("127.0.0.1",
+                                10000,
+                                rest::AcceptFn(),
+                                rest::AccessFn());
+    EXPECT_EQ(httpServer.accept(nullptr, 0), true);
+}
+
+TEST(HttpServer, AcceptCallback)
+{
+    bool result = true;
+    auto acceptFn = [&result](const sockaddr *, const socklen_t) -> bool
+    {
+        return result;
+    };
+    rest::HttpServer httpServer("127.0.0.1",
+                                10000,
+                                acceptFn,
+                                rest::AccessFn());
+    EXPECT_EQ(httpServer.accept(nullptr, 0), true);
+    result = false;
+    EXPECT_EQ(httpServer.accept(nullptr, 0), false);
+}
+
+TEST(HttpServer, Completed)
+{
+    rest::HttpServer httpServer("127.0.0.1",
+                                10000,
+                                rest::AcceptFn(),
+                                rest::AccessFn());
+    std::string * tmp = new std::string();
+    httpServer.completed(nullptr,
+                         reinterpret_cast<void **>(&tmp),
+                         MHD_REQUEST_TERMINATED_COMPLETED_OK);
+    EXPECT_EQ(tmp, nullptr);
+    if ( tmp != nullptr )
+    {
+        delete tmp;
+    }
+}
