@@ -19,7 +19,11 @@ LD_LIBRARY_PATH=../src ./unittest/unittest_rest
 if [ "$?" -ne "0" ]; then
 	echo "Build failed. Deleting output."
 	clear
+	exit 1
 fi
 
 cd "$SCRIPTPATH/doc"
 doxygen
+
+cd "$SCRIPTPATH"
+cppcheck --language=c++ --platform=unix64 --enable=all --std=c++11 --force -I src/ src/

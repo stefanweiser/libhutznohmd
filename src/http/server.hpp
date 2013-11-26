@@ -51,8 +51,9 @@ public:
                         const uint16_t & port,       //!< Port to bind to.
                         const AcceptFn& acceptFn,    //!< Called if anyone wants
                                                      //!< to connect.
-                        const AccessFn& accessFn);   //!< Called if anyone
+                        const AccessFn& accessFn     //!< Called if anyone
                                                      //!< requests something.
+                        );
 
     //! Destroys the http server.
     ~HttpServer();
