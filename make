@@ -5,8 +5,19 @@ clear()
     rm -rf "$SCRIPTPATH/build" "$SCRIPTPATH/install" "$SCRIPTPATH/doc/html"
 }
 
+uncrustifyFiles()
+{
+    for FILE in $(find ./src ./unittest -name *.cpp -o -name *.hpp); do
+        uncrustify --replace --no-backup -c ./res/uncrustify.cfg -l CPP $FILE
+    done
+}
+
 SCRIPTPATH="$(readlink -f $(dirname $0))"
 clear
+
+cd "$SCRIPTPATH"
+uncrustifyFiles
+
 mkdir -p "$SCRIPTPATH/build"
 cd "$SCRIPTPATH/build"
 cmake "$SCRIPTPATH" -DCMAKE_INSTALL_PREFIX="$SCRIPTPATH/install"
