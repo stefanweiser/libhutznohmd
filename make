@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 clear()
 {
@@ -8,7 +8,7 @@ clear()
 uncrustifyFiles()
 {
     for FILE in $(find ./src ./unittest -name *.cpp -o -name *.hpp); do
-        uncrustify --replace --no-backup -c ./res/uncrustify.cfg -l CPP $FILE
+        uncrustify --replace --no-backup -c ./uncrustify.cfg -l CPP $FILE
     done
 }
 
@@ -22,9 +22,11 @@ mkdir -p "$SCRIPTPATH/build"
 cd "$SCRIPTPATH/build"
 cmake "$SCRIPTPATH" -DCMAKE_INSTALL_PREFIX="$SCRIPTPATH/install"
 make clean
+make check
 make -j"$(grep processor /proc/cpuinfo | wc -l)"
 make install
 make package
+make doc
 
 LD_LIBRARY_PATH=../src ./unittest/unittest_rest
 if [ "$?" -ne "0" ]; then
@@ -32,9 +34,3 @@ if [ "$?" -ne "0" ]; then
 	clear
 	exit 1
 fi
-
-cd "$SCRIPTPATH/doc"
-doxygen
-
-cd "$SCRIPTPATH"
-cppcheck --language=c++ --platform=unix64 --enable=all --std=c++11 --force -I src/ src/

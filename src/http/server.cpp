@@ -32,68 +32,176 @@ unsigned int convertStatusCode(const StatusCode& statusCode)
 {
     switch ( statusCode )
     {
-    case StatusCode::Continue: return MHD_HTTP_CONTINUE;
-    case StatusCode::SwitchingProtocols: return MHD_HTTP_SWITCHING_PROTOCOLS;
-    case StatusCode::Processing: return MHD_HTTP_PROCESSING;
+    case StatusCode::Continue:
+        return MHD_HTTP_CONTINUE;
 
-    case StatusCode::Ok: return MHD_HTTP_OK;
-    case StatusCode::Created: return MHD_HTTP_CREATED;
-    case StatusCode::Accepted: return MHD_HTTP_ACCEPTED;
-    case StatusCode::NonAuthorativeInformation: return MHD_HTTP_NON_AUTHORITATIVE_INFORMATION;
-    case StatusCode::NoContent: return MHD_HTTP_NO_CONTENT;
-    case StatusCode::ResetContent: return MHD_HTTP_RESET_CONTENT;
-    case StatusCode::PartialContent: return MHD_HTTP_PARTIAL_CONTENT;
-    case StatusCode::MultiStatus: return MHD_HTTP_MULTI_STATUS;
+    case StatusCode::SwitchingProtocols:
+        return MHD_HTTP_SWITCHING_PROTOCOLS;
 
-    case StatusCode::MultipleChoices: return MHD_HTTP_MULTIPLE_CHOICES;
-    case StatusCode::MovedPermanently: return MHD_HTTP_MOVED_PERMANENTLY;
-    case StatusCode::Found: return MHD_HTTP_FOUND;
-    case StatusCode::SeeOther: return MHD_HTTP_SEE_OTHER;
-    case StatusCode::NotModified: return MHD_HTTP_NOT_MODIFIED;
-    case StatusCode::UseProxy: return MHD_HTTP_USE_PROXY;
-    case StatusCode::SwitchProxy: return MHD_HTTP_SWITCH_PROXY;
-    case StatusCode::TemporaryRedirect: return MHD_HTTP_TEMPORARY_REDIRECT;
+    case StatusCode::Processing:
+        return MHD_HTTP_PROCESSING;
 
-    case StatusCode::BadRequest: return MHD_HTTP_BAD_REQUEST;
-    case StatusCode::Unauthorized: return MHD_HTTP_UNAUTHORIZED;
-    case StatusCode::PaymentRequired: return MHD_HTTP_PAYMENT_REQUIRED;
-    case StatusCode::Forbidden: return MHD_HTTP_FORBIDDEN;
-    case StatusCode::NotFound: return MHD_HTTP_NOT_FOUND;
-    case StatusCode::MethodNotAllowed: return MHD_HTTP_METHOD_NOT_ALLOWED;
-    case StatusCode::MethodNotAcceptable: return MHD_HTTP_METHOD_NOT_ACCEPTABLE;
-    case StatusCode::ProxyAuthentificationRequired: return MHD_HTTP_PROXY_AUTHENTICATION_REQUIRED;
-    case StatusCode::RequestTimeout: return MHD_HTTP_REQUEST_TIMEOUT;
-    case StatusCode::Conflict: return MHD_HTTP_CONFLICT;
-    case StatusCode::Gone: return MHD_HTTP_GONE;
-    case StatusCode::LengthRequired: return MHD_HTTP_LENGTH_REQUIRED;
-    case StatusCode::PreconditionFailed: return MHD_HTTP_PRECONDITION_FAILED;
-    case StatusCode::RequestEntityTooLarge: return MHD_HTTP_REQUEST_ENTITY_TOO_LARGE;
-    case StatusCode::RequestUriTooLong: return MHD_HTTP_REQUEST_URI_TOO_LONG;
-    case StatusCode::UnsupportedMediaType: return MHD_HTTP_UNSUPPORTED_MEDIA_TYPE;
-    case StatusCode::RequestedRangeNotSatisfiable: return MHD_HTTP_REQUESTED_RANGE_NOT_SATISFIABLE;
-    case StatusCode::ExpectationFailed: return MHD_HTTP_EXPECTATION_FAILED;
-    case StatusCode::UnprocessableEntity: return MHD_HTTP_UNPROCESSABLE_ENTITY;
-    case StatusCode::Locked: return MHD_HTTP_LOCKED;
-    case StatusCode::FailedDependency: return MHD_HTTP_FAILED_DEPENDENCY;
-    case StatusCode::UnorderedCollection: return MHD_HTTP_UNORDERED_COLLECTION;
-    case StatusCode::UpgradeRequired: return MHD_HTTP_UPGRADE_REQUIRED;
-    case StatusCode::NoResponse: return MHD_HTTP_NO_RESPONSE;
-    case StatusCode::RetryWith: return MHD_HTTP_RETRY_WITH;
-    case StatusCode::BlockedByWindowsParentalControls: return MHD_HTTP_BLOCKED_BY_WINDOWS_PARENTAL_CONTROLS;
-    case StatusCode::UnavailableForLegalReasons: return MHD_HTTP_UNAVAILABLE_FOR_LEGAL_REASONS;
+    case StatusCode::Ok:
+        return MHD_HTTP_OK;
 
-    case StatusCode::InternalServerError: return MHD_HTTP_INTERNAL_SERVER_ERROR;
-    case StatusCode::NotImplemented: return MHD_HTTP_NOT_IMPLEMENTED;
-    case StatusCode::BadGateway: return MHD_HTTP_BAD_GATEWAY;
-    case StatusCode::ServiceUnavailable: return MHD_HTTP_SERVICE_UNAVAILABLE;
-    case StatusCode::GatewayTimeout: return MHD_HTTP_GATEWAY_TIMEOUT;
-    case StatusCode::HttpVersionNotSupported: return MHD_HTTP_HTTP_VERSION_NOT_SUPPORTED;
-    case StatusCode::HttpVariantAlsoNegotiates: return MHD_HTTP_VARIANT_ALSO_NEGOTIATES;
-    case StatusCode::InsufficientStorage: return MHD_HTTP_INSUFFICIENT_STORAGE;
-    case StatusCode::BandwidthLimitExceeded: return MHD_HTTP_BANDWIDTH_LIMIT_EXCEEDED;
-    case StatusCode::NotExtended: return MHD_HTTP_NOT_EXTENDED;
+    case StatusCode::Created:
+        return MHD_HTTP_CREATED;
 
-    default: return 0;
+    case StatusCode::Accepted:
+        return MHD_HTTP_ACCEPTED;
+
+    case StatusCode::NonAuthorativeInformation:
+        return MHD_HTTP_NON_AUTHORITATIVE_INFORMATION;
+
+    case StatusCode::NoContent:
+        return MHD_HTTP_NO_CONTENT;
+
+    case StatusCode::ResetContent:
+        return MHD_HTTP_RESET_CONTENT;
+
+    case StatusCode::PartialContent:
+        return MHD_HTTP_PARTIAL_CONTENT;
+
+    case StatusCode::MultiStatus:
+        return MHD_HTTP_MULTI_STATUS;
+
+    case StatusCode::MultipleChoices:
+        return MHD_HTTP_MULTIPLE_CHOICES;
+
+    case StatusCode::MovedPermanently:
+        return MHD_HTTP_MOVED_PERMANENTLY;
+
+    case StatusCode::Found:
+        return MHD_HTTP_FOUND;
+
+    case StatusCode::SeeOther:
+        return MHD_HTTP_SEE_OTHER;
+
+    case StatusCode::NotModified:
+        return MHD_HTTP_NOT_MODIFIED;
+
+    case StatusCode::UseProxy:
+        return MHD_HTTP_USE_PROXY;
+
+    case StatusCode::SwitchProxy:
+        return MHD_HTTP_SWITCH_PROXY;
+
+    case StatusCode::TemporaryRedirect:
+        return MHD_HTTP_TEMPORARY_REDIRECT;
+
+    case StatusCode::BadRequest:
+        return MHD_HTTP_BAD_REQUEST;
+
+    case StatusCode::Unauthorized:
+        return MHD_HTTP_UNAUTHORIZED;
+
+    case StatusCode::PaymentRequired:
+        return MHD_HTTP_PAYMENT_REQUIRED;
+
+    case StatusCode::Forbidden:
+        return MHD_HTTP_FORBIDDEN;
+
+    case StatusCode::NotFound:
+        return MHD_HTTP_NOT_FOUND;
+
+    case StatusCode::MethodNotAllowed:
+        return MHD_HTTP_METHOD_NOT_ALLOWED;
+
+    case StatusCode::MethodNotAcceptable:
+        return MHD_HTTP_METHOD_NOT_ACCEPTABLE;
+
+    case StatusCode::ProxyAuthentificationRequired:
+        return MHD_HTTP_PROXY_AUTHENTICATION_REQUIRED;
+
+    case StatusCode::RequestTimeout:
+        return MHD_HTTP_REQUEST_TIMEOUT;
+
+    case StatusCode::Conflict:
+        return MHD_HTTP_CONFLICT;
+
+    case StatusCode::Gone:
+        return MHD_HTTP_GONE;
+
+    case StatusCode::LengthRequired:
+        return MHD_HTTP_LENGTH_REQUIRED;
+
+    case StatusCode::PreconditionFailed:
+        return MHD_HTTP_PRECONDITION_FAILED;
+
+    case StatusCode::RequestEntityTooLarge:
+        return MHD_HTTP_REQUEST_ENTITY_TOO_LARGE;
+
+    case StatusCode::RequestUriTooLong:
+        return MHD_HTTP_REQUEST_URI_TOO_LONG;
+
+    case StatusCode::UnsupportedMediaType:
+        return MHD_HTTP_UNSUPPORTED_MEDIA_TYPE;
+
+    case StatusCode::RequestedRangeNotSatisfiable:
+        return MHD_HTTP_REQUESTED_RANGE_NOT_SATISFIABLE;
+
+    case StatusCode::ExpectationFailed:
+        return MHD_HTTP_EXPECTATION_FAILED;
+
+    case StatusCode::UnprocessableEntity:
+        return MHD_HTTP_UNPROCESSABLE_ENTITY;
+
+    case StatusCode::Locked:
+        return MHD_HTTP_LOCKED;
+
+    case StatusCode::FailedDependency:
+        return MHD_HTTP_FAILED_DEPENDENCY;
+
+    case StatusCode::UnorderedCollection:
+        return MHD_HTTP_UNORDERED_COLLECTION;
+
+    case StatusCode::UpgradeRequired:
+        return MHD_HTTP_UPGRADE_REQUIRED;
+
+    case StatusCode::NoResponse:
+        return MHD_HTTP_NO_RESPONSE;
+
+    case StatusCode::RetryWith:
+        return MHD_HTTP_RETRY_WITH;
+
+    case StatusCode::BlockedByWindowsParentalControls:
+        return MHD_HTTP_BLOCKED_BY_WINDOWS_PARENTAL_CONTROLS;
+
+    case StatusCode::UnavailableForLegalReasons:
+        return MHD_HTTP_UNAVAILABLE_FOR_LEGAL_REASONS;
+
+    case StatusCode::InternalServerError:
+        return MHD_HTTP_INTERNAL_SERVER_ERROR;
+
+    case StatusCode::NotImplemented:
+        return MHD_HTTP_NOT_IMPLEMENTED;
+
+    case StatusCode::BadGateway:
+        return MHD_HTTP_BAD_GATEWAY;
+
+    case StatusCode::ServiceUnavailable:
+        return MHD_HTTP_SERVICE_UNAVAILABLE;
+
+    case StatusCode::GatewayTimeout:
+        return MHD_HTTP_GATEWAY_TIMEOUT;
+
+    case StatusCode::HttpVersionNotSupported:
+        return MHD_HTTP_HTTP_VERSION_NOT_SUPPORTED;
+
+    case StatusCode::HttpVariantAlsoNegotiates:
+        return MHD_HTTP_VARIANT_ALSO_NEGOTIATES;
+
+    case StatusCode::InsufficientStorage:
+        return MHD_HTTP_INSUFFICIENT_STORAGE;
+
+    case StatusCode::BandwidthLimitExceeded:
+        return MHD_HTTP_BANDWIDTH_LIMIT_EXCEEDED;
+
+    case StatusCode::NotExtended:
+        return MHD_HTTP_NOT_EXTENDED;
+
+    default:
+        return 0;
     }
 }
 
@@ -105,14 +213,14 @@ int acceptCallback(void * pObject, const sockaddr * addr, socklen_t addrlen)
 }
 
 //! Callback used by libmicrohttpd, when someone transmits a request to us.
-int accessCallback(void * pObject,
+int accessCallback(void           * pObject,
                    MHD_Connection * pConnection,
-                   const char * url,
-                   const char * method,
-                   const char * version,
-                   const char * uploadData,
-                   size_t * uploadDataSize,
-                   void ** ptr)
+                   const char     * url,
+                   const char     * method,
+                   const char     * version,
+                   const char     * uploadData,
+                   size_t         * uploadDataSize,
+                   void          ** ptr)
 {
     assert(pObject != nullptr);
     return static_cast<HttpServer *>(pObject)->access(pConnection,
@@ -125,9 +233,9 @@ int accessCallback(void * pObject,
 }
 
 //! Callback used by libmicrohttpd, when the response of a request was sent.
-void completedCallback(void * pObject,
-                       MHD_Connection * pConnection,
-                       void ** ppData,
+void completedCallback(void                     * pObject,
+                       MHD_Connection           * pConnection,
+                       void                    ** ppData,
                        MHD_RequestTerminationCode reason)
 {
     assert(pObject != nullptr);
@@ -138,16 +246,17 @@ void completedCallback(void * pObject,
 
 } // namespace
 
-HttpServer::HttpServer(const std::string & address,
-                       const uint16_t & port,
-                       const AcceptFn& acceptFn,
-                       const AccessFn& accessFn)
+HttpServer::HttpServer(const std::string& address,
+                       const uint16_t   & port,
+                       const AcceptFn   & acceptFn,
+                       const AccessFn   & accessFn)
     : m_pDaemon(nullptr)
-    , m_acceptFn(acceptFn)
-    , m_accessFn(accessFn)
+      , m_acceptFn(acceptFn)
+      , m_accessFn(accessFn)
 {
     sockaddr_in addr;
-    addr.sin_port = htons(port);
+
+    addr.sin_port   = htons(port);
     addr.sin_family = AF_INET;
     inet_pton(AF_INET, address.c_str(), &addr.sin_addr);
 
@@ -173,7 +282,7 @@ HttpServer::~HttpServer()
 int HttpServer::accept(const sockaddr * addr, socklen_t addrlen)
 {
     if ( !m_acceptFn ||
-         (true == m_acceptFn(addr, addrlen)) )
+         (true == m_acceptFn(addr, addrlen)))
     {
         return MHD_YES;
     }
@@ -181,12 +290,12 @@ int HttpServer::accept(const sockaddr * addr, socklen_t addrlen)
 }
 
 int HttpServer::access(MHD_Connection * pConnection,
-                       const char * url,
-                       const char * method,
-                       const char * version,
-                       const char * uploadData,
-                       size_t * uploadDataSize,
-                       void ** ptr)
+                       const char     * url,
+                       const char     * method,
+                       const char     * version,
+                       const char     * uploadData,
+                       size_t         * uploadDataSize,
+                       void          ** ptr)
 {
     // This method is called several times:
     // 1. Headers are processed.
@@ -194,9 +303,10 @@ int HttpServer::access(MHD_Connection * pConnection,
     // 3. Creating a response.
 
     // Ignore head.
-    if ( std::string(method) == MHD_HTTP_METHOD_HEAD ) { return MHD_YES; }
+    if ( std::string(method) == MHD_HTTP_METHOD_HEAD ) return MHD_YES;
 
     assert(ptr != nullptr);
+
     if ( *ptr == nullptr )
     {
         *ptr = new std::string();
@@ -218,14 +328,15 @@ int HttpServer::access(MHD_Connection * pConnection,
     }
 }
 
-int HttpServer::access(MHD_Connection * pConnection,
+int HttpServer::access(MHD_Connection   * pConnection,
                        const char * const url,
                        const char * const method,
                        const char * const version,
-                       const std::string & uploadData)
+                       const std::string& uploadData)
 {
     std::string data;
-    StatusCode statusCode = StatusCode::InternalServerError;
+    StatusCode  statusCode = StatusCode::InternalServerError;
+
     if ( m_accessFn )
     {
         statusCode = m_accessFn(url,
@@ -254,7 +365,8 @@ void HttpServer::completed(MHD_Connection * /*pConnection*/,
     // Cleanup internal string buffer.
     if ( ppData != nullptr )
     {
-        std::string* p = (std::string *) *ppData;
+        std::string * p = (std::string *)*ppData;
+
         if ( p != nullptr )
         {
             delete p;
@@ -263,15 +375,15 @@ void HttpServer::completed(MHD_Connection * /*pConnection*/,
     }
 }
 
-HttpServer::HttpServer(const HttpServer & rhs)
+HttpServer::HttpServer(const HttpServer& rhs)
     : m_pDaemon(rhs.m_pDaemon)
-    , m_acceptFn(rhs.m_acceptFn)
-    , m_accessFn(rhs.m_accessFn)
+      , m_acceptFn(rhs.m_acceptFn)
+      , m_accessFn(rhs.m_accessFn)
 {}
 
-HttpServer & HttpServer::operator=(const HttpServer & rhs)
+HttpServer& HttpServer::operator=(const HttpServer& rhs)
 {
-    m_pDaemon = rhs.m_pDaemon;
+    m_pDaemon  = rhs.m_pDaemon;
     m_acceptFn = rhs.m_acceptFn;
     m_accessFn = rhs.m_accessFn;
     return *this;
