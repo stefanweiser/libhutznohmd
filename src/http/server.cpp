@@ -359,7 +359,7 @@ int HttpServer::access(MHD_Connection   * pConnection,
 }
 
 void HttpServer::completed(MHD_Connection * /*pConnection*/,
-                           void ** ppData,
+                           void        ** ppData,
                            MHD_RequestTerminationCode /*reason*/)
 {
     // Cleanup internal string buffer.

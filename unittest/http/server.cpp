@@ -45,10 +45,10 @@ TEST(HttpServer, AcceptNoCallback)
 TEST(HttpServer, AcceptCallback)
 {
     bool result   = true;
-    auto acceptFn = [&result](const sockaddr *, const socklen_t)->bool
-    {
-        return result;
-    };
+    auto acceptFn = [&result](const sockaddr *, const socklen_t) -> bool
+                    {
+                        return result;
+                    };
     rest::HttpServer httpServer("127.0.0.1",
                                 10000,
                                 acceptFn,

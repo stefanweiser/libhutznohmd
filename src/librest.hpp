@@ -100,7 +100,7 @@ enum class StatusCode
 
 typedef std::function<StatusCode(const Method&,
                                  const std::istream&)>
-RequestFn;
+    RequestFn;
 
 class ListenerInterface
 {
