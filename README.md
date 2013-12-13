@@ -7,6 +7,14 @@ This library implements a ReST framework, that aims to be
 - robust
 - tested
 
+The library needs libmicrohttpd. 
+
+Prerequisites
+=============
+
+Debian based linux:
+$ sudo apt-get install libmicrohttpd10 libmicrohttpd-dev
+
 Building
 ========
 
