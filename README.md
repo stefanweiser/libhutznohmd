@@ -1,5 +1,5 @@
 Introduction
-============
+------------
 
 This library implements a ReST framework, that aims to be
 - simple to use
@@ -10,12 +10,13 @@ This library implements a ReST framework, that aims to be
 The library needs libmicrohttpd. 
 
 Prerequisites
-=============
+-------------
 
 Debian based linux:
-$ sudo apt-get install libmicrohttpd10 libmicrohttpd-dev
+
+    $ sudo apt-get install libmicrohttpd10 libmicrohttpd-dev
 
 Building
-========
+--------
 
-$ ./make
+    $ ./make
