@@ -1,4 +1,13 @@
-librest
-=======
+Introduction
+============
 
-A tiny C++ based ReST framework, simple to use.
+This library implements a ReST framework, that aims to be
+- simple to use
+- reliable
+- robust
+- tested
+
+Building
+========
+
+$ ./make
