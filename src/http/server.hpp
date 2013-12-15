@@ -28,6 +28,15 @@
 namespace rest
 {
 
+//! Converts libmicrohttpd methods to librest methods.
+http::Method convertMethod(const char * const method);
+
+//! Converts libmicrohttpd versions to librest versions.
+http::Version convertVersion(const char * const version);
+
+//! Converts librest status codes into libmicrohttpd status codes.
+unsigned int convertStatusCode(const http::StatusCode& statusCode);
+
 //! Opens a port to listen on. Implements HTTP to answer requests. Communicates
 //! via callbacks with its user.
 class HttpServer : public http::IServer
@@ -38,7 +47,7 @@ public:
     explicit HttpServer(const std::string   & address,  //!< Address to bind to.
                         const uint16_t      & port,     //!< Port to bind to.
                         const http::AcceptFn& acceptFn, //!< Called if anyone
-                                                        // wants
+                                                        //!< wants
                                                         //!< to connect.
                         const http::AccessFn& accessFn  //!< Called if anyone
                                                         //!< requests something.

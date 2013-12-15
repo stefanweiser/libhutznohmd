@@ -28,16 +28,45 @@ namespace rest
 namespace http
 {
 
+//! Every request of HTTP has a specific method.
 enum class Method
 {
+    //! The request is of unknown method.
     UNKNOWN,
+
+    //! The HEAD method is identical to GET except that the server must not
+    //! return a message-body in the response. The request must not have side
+    //! effects. Though it is idempotent.
     HEAD,
+
+    //! The GET method is used to retrieve informations assigned to the given
+    //! URI. The request must not have side effects. Though it is idempotent.
     GET,
+
+    //! The PUT method requests to store data to the entity represented by the
+    //! URI. This method has to be idempotent.
     PUT,
+
+    //! The POST method is used to request that the origin server accept the
+    //! entity enclosed in the request as a new subordinate of the resource
+    //! identified by the Request-URI in the Request-Line.
     POST,
+
+    //! The DELETE method requests that the origin server delete the resource
+    //! identified by the Request-URI.
     DELETE,
+
+    //! The TRACE method is used to invoke a remote, application-layer loop-back
+    //! of the request message.
     TRACE,
+
+    //! The OPTIONS method represents a request for information about the
+    //! communication options available on the request/response chain identified
+    //! by the URI.
     OPTIONS,
+
+    //! This specification reserves the method name CONNECT for use with a proxy
+    //! that can dynamically switch to being a tunnel.
     CONNECT
 };
 

@@ -27,7 +27,47 @@ namespace rest
 namespace
 {
 
-//! Converts libmicrohttpd methods to librest methods.
+//! Callback used by libmicrohttpd, when someone wants to connect to us.
+int acceptCallback(void * pObject, const sockaddr * addr, socklen_t addrlen)
+{
+    assert(pObject != nullptr);
+    return static_cast<HttpServer *>(pObject)->accept(addr, addrlen);
+}
+
+//! Callback used by libmicrohttpd, when someone transmits a request to us.
+int accessCallback(void           * pObject,
+                   MHD_Connection * pConnection,
+                   const char     * url,
+                   const char     * method,
+                   const char     * version,
+                   const char     * uploadData,
+                   size_t         * uploadDataSize,
+                   void          ** ptr)
+{
+    assert(pObject != nullptr);
+    return static_cast<HttpServer *>(pObject)->access(pConnection,
+                                                      url,
+                                                      method,
+                                                      version,
+                                                      uploadData,
+                                                      uploadDataSize,
+                                                      ptr);
+}
+
+//! Callback used by libmicrohttpd, when the response of a request was sent.
+void completedCallback(void                     * pObject,
+                       MHD_Connection           * pConnection,
+                       void                    ** ppData,
+                       MHD_RequestTerminationCode reason)
+{
+    assert(pObject != nullptr);
+    return static_cast<HttpServer *>(pObject)->completed(pConnection,
+                                                         ppData,
+                                                         reason);
+}
+
+} // namespace
+
 http::Method convertMethod(const char * const method)
 {
     if ( std::string(method) == std::string(MHD_HTTP_METHOD_HEAD))
@@ -68,7 +108,6 @@ http::Method convertMethod(const char * const method)
     }
 }
 
-//! Converts libmicrohttpd versions to librest versions.
 http::Version convertVersion(const char * const version)
 {
     if ( std::string(version) == std::string(MHD_HTTP_VERSION_1_0))
@@ -85,7 +124,6 @@ http::Version convertVersion(const char * const version)
     }
 }
 
-//! Converts librest status codes into libmicrohttpd status codes.
 unsigned int convertStatusCode(const http::StatusCode& statusCode)
 {
     switch ( statusCode )
@@ -262,47 +300,6 @@ unsigned int convertStatusCode(const http::StatusCode& statusCode)
         return -1;
     }
 }
-
-//! Callback used by libmicrohttpd, when someone wants to connect to us.
-int acceptCallback(void * pObject, const sockaddr * addr, socklen_t addrlen)
-{
-    assert(pObject != nullptr);
-    return static_cast<HttpServer *>(pObject)->accept(addr, addrlen);
-}
-
-//! Callback used by libmicrohttpd, when someone transmits a request to us.
-int accessCallback(void           * pObject,
-                   MHD_Connection * pConnection,
-                   const char     * url,
-                   const char     * method,
-                   const char     * version,
-                   const char     * uploadData,
-                   size_t         * uploadDataSize,
-                   void          ** ptr)
-{
-    assert(pObject != nullptr);
-    return static_cast<HttpServer *>(pObject)->access(pConnection,
-                                                      url,
-                                                      method,
-                                                      version,
-                                                      uploadData,
-                                                      uploadDataSize,
-                                                      ptr);
-}
-
-//! Callback used by libmicrohttpd, when the response of a request was sent.
-void completedCallback(void                     * pObject,
-                       MHD_Connection           * pConnection,
-                       void                    ** ppData,
-                       MHD_RequestTerminationCode reason)
-{
-    assert(pObject != nullptr);
-    return static_cast<HttpServer *>(pObject)->completed(pConnection,
-                                                         ppData,
-                                                         reason);
-}
-
-} // namespace
 
 HttpServer::HttpServer(const std::string   & address,
                        const uint16_t      & port,
