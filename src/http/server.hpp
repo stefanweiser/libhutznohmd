@@ -90,7 +90,7 @@ private:
     //! Assignment copy.
     HttpServer& operator=(const HttpServer& rhs);
 
-    MHD_Daemon * m_pDaemon;    //!< Internal daemon handle.
+    MHD_Daemon   * m_pDaemon;  //!< Internal daemon handle.
     http::AcceptFn m_acceptFn; //!< Callback for accepting connections.
     http::AccessFn m_accessFn; //!< Callback to answer requests.
 };

@@ -1,0 +1,10 @@
+#!/bin/sh -e
+
+# Jump to script path.
+SCRIPTPATH="$(readlink -f $(dirname $0))"
+
+# Create script path.
+mkdir -p "$SCRIPTPATH/build" && cd "$SCRIPTPATH/build"
+
+# Update makefiles with cmake.
+cmake "$SCRIPTPATH" -DCMAKE_INSTALL_PREFIX="$SCRIPTPATH/install"
