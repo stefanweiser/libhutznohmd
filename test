@@ -1,0 +1,6 @@
+#!/bin/sh
+
+SCRIPTPATH="$(readlink -f $(dirname $0))"
+cd "$SCRIPTPATH/build"
+make -j"$(grep processor /proc/cpuinfo | wc -l)"
+LD_LIBRARY_PATH=../src ./unittest/unittest_rest
