@@ -25,6 +25,9 @@
 namespace rest
 {
 
+namespace http
+{
+
 enum class Method
 {
     UNKNOWN,
@@ -118,23 +121,27 @@ typedef std::function<StatusCode(const std::string& url,
                                  const std::string& uploadData,
                                  std::string& downloadData)>AccessFn;
 
-class IHttpServer
+class IServer
 {
 public:
-    virtual ~IHttpServer() {}
+
+    virtual ~IServer() {}
+
 };
 
-//! Creates an http server, that interacts via callback.
-IHttpServer createHttpServer(const std::string& address,  //!< Address to bind to.
-                             const uint16_t   & port,     //!< Port to bind to.
-                             const AcceptFn   & acceptFn, //!< Called if anyone wants
-                                                          //!< to connect.
-                             const AccessFn   & accessFn  //!< Called if anyone
-                                                          //!< requests something.
-                             );
+//! Creates a http server, that interacts via callback.
+IServer createServer(const std::string& address,  //!< Address to bind to.
+                     const uint16_t   & port,     //!< Port to bind to.
+                     const AcceptFn   & acceptFn, //!< Called if anyone wants
+                                                  //!< to connect.
+                     const AccessFn   & accessFn  //!< Called if anyone requests
+                                                  //!< something.
+                     );
 
-typedef std::function<StatusCode(const Method&,
-                                 const std::istream&)>
+} // namespace http
+
+typedef std::function<http::StatusCode(const http::Method&,
+                                       const std::istream&)>
     RequestFn;
 
 class ListenerInterface
@@ -152,9 +159,9 @@ public:
     virtual ~HttpServerInterface() {}
 
     virtual std::shared_ptr<ListenerInterface>registerListener(
-        const std::vector<Method>& method,
-        const std::string        & path,
-        const RequestFn          & handler) = 0;
+        const std::vector<http::Method>& method,
+        const std::string              & path,
+        const RequestFn                & handler) = 0;
 };
 
 } // namespace rest

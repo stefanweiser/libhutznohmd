@@ -28,234 +28,234 @@ namespace
 {
 
 //! Converts libmicrohttpd methods to librest methods.
-Method convertMethod(const char* const method)
+http::Method convertMethod(const char * const method)
 {
-    if ( std::string(method) == std::string(MHD_HTTP_METHOD_HEAD) )
+    if ( std::string(method) == std::string(MHD_HTTP_METHOD_HEAD))
     {
-        return Method::HEAD;
+        return http::Method::HEAD;
     }
-    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_GET) )
+    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_GET))
     {
-        return Method::GET;
+        return http::Method::GET;
     }
-    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_PUT) )
+    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_PUT))
     {
-        return Method::PUT;
+        return http::Method::PUT;
     }
-    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_POST) )
+    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_POST))
     {
-        return Method::POST;
+        return http::Method::POST;
     }
-    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_DELETE) )
+    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_DELETE))
     {
-        return Method::DELETE;
+        return http::Method::DELETE;
     }
-    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_TRACE) )
+    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_TRACE))
     {
-        return Method::TRACE;
+        return http::Method::TRACE;
     }
-    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_OPTIONS) )
+    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_OPTIONS))
     {
-        return Method::OPTIONS;
+        return http::Method::OPTIONS;
     }
-    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_CONNECT) )
+    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_CONNECT))
     {
-        return Method::CONNECT;
+        return http::Method::CONNECT;
     }
     else
     {
-        return Method::UNKNOWN;
+        return http::Method::UNKNOWN;
     }
 }
 
 //! Converts libmicrohttpd versions to librest versions.
-Version convertVersion(const char* const version)
+http::Version convertVersion(const char * const version)
 {
-    if ( std::string(version) == std::string(MHD_HTTP_VERSION_1_0) )
+    if ( std::string(version) == std::string(MHD_HTTP_VERSION_1_0))
     {
-        return Version::HTTP_1_0;
+        return http::Version::HTTP_1_0;
     }
-    else if ( std::string(version) == std::string(MHD_HTTP_VERSION_1_1) )
+    else if ( std::string(version) == std::string(MHD_HTTP_VERSION_1_1))
     {
-        return Version::HTTP_1_1;
+        return http::Version::HTTP_1_1;
     }
     else
     {
-        return Version::HTTP_UNKNOWN;
+        return http::Version::HTTP_UNKNOWN;
     }
 }
 
 //! Converts librest status codes into libmicrohttpd status codes.
-unsigned int convertStatusCode(const StatusCode& statusCode)
+unsigned int convertStatusCode(const http::StatusCode& statusCode)
 {
     switch ( statusCode )
     {
-    case StatusCode::Continue:
+    case http::StatusCode::Continue:
         return MHD_HTTP_CONTINUE;
 
-    case StatusCode::SwitchingProtocols:
+    case http::StatusCode::SwitchingProtocols:
         return MHD_HTTP_SWITCHING_PROTOCOLS;
 
-    case StatusCode::Processing:
+    case http::StatusCode::Processing:
         return MHD_HTTP_PROCESSING;
 
-    case StatusCode::Ok:
+    case http::StatusCode::Ok:
         return MHD_HTTP_OK;
 
-    case StatusCode::Created:
+    case http::StatusCode::Created:
         return MHD_HTTP_CREATED;
 
-    case StatusCode::Accepted:
+    case http::StatusCode::Accepted:
         return MHD_HTTP_ACCEPTED;
 
-    case StatusCode::NonAuthorativeInformation:
+    case http::StatusCode::NonAuthorativeInformation:
         return MHD_HTTP_NON_AUTHORITATIVE_INFORMATION;
 
-    case StatusCode::NoContent:
+    case http::StatusCode::NoContent:
         return MHD_HTTP_NO_CONTENT;
 
-    case StatusCode::ResetContent:
+    case http::StatusCode::ResetContent:
         return MHD_HTTP_RESET_CONTENT;
 
-    case StatusCode::PartialContent:
+    case http::StatusCode::PartialContent:
         return MHD_HTTP_PARTIAL_CONTENT;
 
-    case StatusCode::MultiStatus:
+    case http::StatusCode::MultiStatus:
         return MHD_HTTP_MULTI_STATUS;
 
-    case StatusCode::MultipleChoices:
+    case http::StatusCode::MultipleChoices:
         return MHD_HTTP_MULTIPLE_CHOICES;
 
-    case StatusCode::MovedPermanently:
+    case http::StatusCode::MovedPermanently:
         return MHD_HTTP_MOVED_PERMANENTLY;
 
-    case StatusCode::Found:
+    case http::StatusCode::Found:
         return MHD_HTTP_FOUND;
 
-    case StatusCode::SeeOther:
+    case http::StatusCode::SeeOther:
         return MHD_HTTP_SEE_OTHER;
 
-    case StatusCode::NotModified:
+    case http::StatusCode::NotModified:
         return MHD_HTTP_NOT_MODIFIED;
 
-    case StatusCode::UseProxy:
+    case http::StatusCode::UseProxy:
         return MHD_HTTP_USE_PROXY;
 
-    case StatusCode::SwitchProxy:
+    case http::StatusCode::SwitchProxy:
         return MHD_HTTP_SWITCH_PROXY;
 
-    case StatusCode::TemporaryRedirect:
+    case http::StatusCode::TemporaryRedirect:
         return MHD_HTTP_TEMPORARY_REDIRECT;
 
-    case StatusCode::BadRequest:
+    case http::StatusCode::BadRequest:
         return MHD_HTTP_BAD_REQUEST;
 
-    case StatusCode::Unauthorized:
+    case http::StatusCode::Unauthorized:
         return MHD_HTTP_UNAUTHORIZED;
 
-    case StatusCode::PaymentRequired:
+    case http::StatusCode::PaymentRequired:
         return MHD_HTTP_PAYMENT_REQUIRED;
 
-    case StatusCode::Forbidden:
+    case http::StatusCode::Forbidden:
         return MHD_HTTP_FORBIDDEN;
 
-    case StatusCode::NotFound:
+    case http::StatusCode::NotFound:
         return MHD_HTTP_NOT_FOUND;
 
-    case StatusCode::MethodNotAllowed:
+    case http::StatusCode::MethodNotAllowed:
         return MHD_HTTP_METHOD_NOT_ALLOWED;
 
-    case StatusCode::MethodNotAcceptable:
+    case http::StatusCode::MethodNotAcceptable:
         return MHD_HTTP_METHOD_NOT_ACCEPTABLE;
 
-    case StatusCode::ProxyAuthentificationRequired:
+    case http::StatusCode::ProxyAuthentificationRequired:
         return MHD_HTTP_PROXY_AUTHENTICATION_REQUIRED;
 
-    case StatusCode::RequestTimeout:
+    case http::StatusCode::RequestTimeout:
         return MHD_HTTP_REQUEST_TIMEOUT;
 
-    case StatusCode::Conflict:
+    case http::StatusCode::Conflict:
         return MHD_HTTP_CONFLICT;
 
-    case StatusCode::Gone:
+    case http::StatusCode::Gone:
         return MHD_HTTP_GONE;
 
-    case StatusCode::LengthRequired:
+    case http::StatusCode::LengthRequired:
         return MHD_HTTP_LENGTH_REQUIRED;
 
-    case StatusCode::PreconditionFailed:
+    case http::StatusCode::PreconditionFailed:
         return MHD_HTTP_PRECONDITION_FAILED;
 
-    case StatusCode::RequestEntityTooLarge:
+    case http::StatusCode::RequestEntityTooLarge:
         return MHD_HTTP_REQUEST_ENTITY_TOO_LARGE;
 
-    case StatusCode::RequestUriTooLong:
+    case http::StatusCode::RequestUriTooLong:
         return MHD_HTTP_REQUEST_URI_TOO_LONG;
 
-    case StatusCode::UnsupportedMediaType:
+    case http::StatusCode::UnsupportedMediaType:
         return MHD_HTTP_UNSUPPORTED_MEDIA_TYPE;
 
-    case StatusCode::RequestedRangeNotSatisfiable:
+    case http::StatusCode::RequestedRangeNotSatisfiable:
         return MHD_HTTP_REQUESTED_RANGE_NOT_SATISFIABLE;
 
-    case StatusCode::ExpectationFailed:
+    case http::StatusCode::ExpectationFailed:
         return MHD_HTTP_EXPECTATION_FAILED;
 
-    case StatusCode::UnprocessableEntity:
+    case http::StatusCode::UnprocessableEntity:
         return MHD_HTTP_UNPROCESSABLE_ENTITY;
 
-    case StatusCode::Locked:
+    case http::StatusCode::Locked:
         return MHD_HTTP_LOCKED;
 
-    case StatusCode::FailedDependency:
+    case http::StatusCode::FailedDependency:
         return MHD_HTTP_FAILED_DEPENDENCY;
 
-    case StatusCode::UnorderedCollection:
+    case http::StatusCode::UnorderedCollection:
         return MHD_HTTP_UNORDERED_COLLECTION;
 
-    case StatusCode::UpgradeRequired:
+    case http::StatusCode::UpgradeRequired:
         return MHD_HTTP_UPGRADE_REQUIRED;
 
-    case StatusCode::NoResponse:
+    case http::StatusCode::NoResponse:
         return MHD_HTTP_NO_RESPONSE;
 
-    case StatusCode::RetryWith:
+    case http::StatusCode::RetryWith:
         return MHD_HTTP_RETRY_WITH;
 
-    case StatusCode::BlockedByWindowsParentalControls:
+    case http::StatusCode::BlockedByWindowsParentalControls:
         return MHD_HTTP_BLOCKED_BY_WINDOWS_PARENTAL_CONTROLS;
 
-    case StatusCode::UnavailableForLegalReasons:
+    case http::StatusCode::UnavailableForLegalReasons:
         return MHD_HTTP_UNAVAILABLE_FOR_LEGAL_REASONS;
 
-    case StatusCode::InternalServerError:
+    case http::StatusCode::InternalServerError:
         return MHD_HTTP_INTERNAL_SERVER_ERROR;
 
-    case StatusCode::NotImplemented:
+    case http::StatusCode::NotImplemented:
         return MHD_HTTP_NOT_IMPLEMENTED;
 
-    case StatusCode::BadGateway:
+    case http::StatusCode::BadGateway:
         return MHD_HTTP_BAD_GATEWAY;
 
-    case StatusCode::ServiceUnavailable:
+    case http::StatusCode::ServiceUnavailable:
         return MHD_HTTP_SERVICE_UNAVAILABLE;
 
-    case StatusCode::GatewayTimeout:
+    case http::StatusCode::GatewayTimeout:
         return MHD_HTTP_GATEWAY_TIMEOUT;
 
-    case StatusCode::HttpVersionNotSupported:
+    case http::StatusCode::HttpVersionNotSupported:
         return MHD_HTTP_HTTP_VERSION_NOT_SUPPORTED;
 
-    case StatusCode::HttpVariantAlsoNegotiates:
+    case http::StatusCode::HttpVariantAlsoNegotiates:
         return MHD_HTTP_VARIANT_ALSO_NEGOTIATES;
 
-    case StatusCode::InsufficientStorage:
+    case http::StatusCode::InsufficientStorage:
         return MHD_HTTP_INSUFFICIENT_STORAGE;
 
-    case StatusCode::BandwidthLimitExceeded:
+    case http::StatusCode::BandwidthLimitExceeded:
         return MHD_HTTP_BANDWIDTH_LIMIT_EXCEEDED;
 
-    case StatusCode::NotExtended:
+    case http::StatusCode::NotExtended:
         return MHD_HTTP_NOT_EXTENDED;
 
     default:
@@ -304,10 +304,10 @@ void completedCallback(void                     * pObject,
 
 } // namespace
 
-HttpServer::HttpServer(const std::string& address,
-                       const uint16_t   & port,
-                       const AcceptFn   & acceptFn,
-                       const AccessFn   & accessFn)
+HttpServer::HttpServer(const std::string   & address,
+                       const uint16_t      & port,
+                       const http::AcceptFn& acceptFn,
+                       const http::AccessFn& accessFn)
     : m_pDaemon(nullptr)
       , m_acceptFn(acceptFn)
       , m_accessFn(accessFn)
@@ -393,7 +393,7 @@ int HttpServer::access(MHD_Connection   * pConnection,
                        const std::string& uploadData)
 {
     std::string data;
-    StatusCode  statusCode = StatusCode::InternalServerError;
+    http::StatusCode statusCode = http::StatusCode::InternalServerError;
 
     if ( m_accessFn )
     {

@@ -30,17 +30,18 @@ namespace rest
 
 //! Opens a port to listen on. Implements HTTP to answer requests. Communicates
 //! via callbacks with its user.
-class HttpServer: public IHttpServer
+class HttpServer : public http::IServer
 {
 public:
 
     //! Creates and binds to a port.
-    explicit HttpServer(const std::string& address,  //!< Address to bind to.
-                        const uint16_t   & port,     //!< Port to bind to.
-                        const AcceptFn   & acceptFn, //!< Called if anyone wants
-                                                     //!< to connect.
-                        const AccessFn   & accessFn  //!< Called if anyone
-                                                     //!< requests something.
+    explicit HttpServer(const std::string   & address,  //!< Address to bind to.
+                        const uint16_t      & port,     //!< Port to bind to.
+                        const http::AcceptFn& acceptFn, //!< Called if anyone
+                                                        // wants
+                                                        //!< to connect.
+                        const http::AccessFn& accessFn  //!< Called if anyone
+                                                        //!< requests something.
                         );
 
     //! Destroys the http server.
@@ -80,9 +81,9 @@ private:
     //! Assignment copy.
     HttpServer& operator=(const HttpServer& rhs);
 
-    MHD_Daemon * m_pDaemon;  //!< Internal daemon handle.
-    AcceptFn     m_acceptFn; //!< Callback for accepting connections.
-    AccessFn     m_accessFn; //!< Callback to answer requests.
+    MHD_Daemon * m_pDaemon;    //!< Internal daemon handle.
+    http::AcceptFn m_acceptFn; //!< Callback for accepting connections.
+    http::AccessFn m_accessFn; //!< Callback to answer requests.
 };
 
 } // namespace rest

@@ -26,8 +26,8 @@ TEST(HttpServer, Construction)
 {
     rest::HttpServer httpServer("127.0.0.1",
                                 10000,
-                                rest::AcceptFn(),
-                                rest::AccessFn());
+                                rest::http::AcceptFn(),
+                                rest::http::AccessFn());
 
     EXPECT_NE(httpServer.m_pDaemon, nullptr);
 }
@@ -36,8 +36,8 @@ TEST(HttpServer, AcceptNoCallback)
 {
     rest::HttpServer httpServer("127.0.0.1",
                                 10000,
-                                rest::AcceptFn(),
-                                rest::AccessFn());
+                                rest::http::AcceptFn(),
+                                rest::http::AccessFn());
 
     EXPECT_EQ(httpServer.accept(nullptr, 0), true);
 }
@@ -52,7 +52,7 @@ TEST(HttpServer, AcceptCallback)
     rest::HttpServer httpServer("127.0.0.1",
                                 10000,
                                 acceptFn,
-                                rest::AccessFn());
+                                rest::http::AccessFn());
 
     EXPECT_EQ(httpServer.accept(nullptr, 0), true);
     result = false;
@@ -63,8 +63,8 @@ TEST(HttpServer, Completed)
 {
     rest::HttpServer httpServer("127.0.0.1",
                                 10000,
-                                rest::AcceptFn(),
-                                rest::AccessFn());
+                                rest::http::AcceptFn(),
+                                rest::http::AccessFn());
     std::string * tmp = new std::string();
 
     httpServer.completed(nullptr,
