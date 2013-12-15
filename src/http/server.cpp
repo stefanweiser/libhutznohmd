@@ -27,6 +27,64 @@ namespace rest
 namespace
 {
 
+//! Converts libmicrohttpd methods to librest methods.
+Method convertMethod(const char* const method)
+{
+    if ( std::string(method) == std::string(MHD_HTTP_METHOD_HEAD) )
+    {
+        return Method::HEAD;
+    }
+    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_GET) )
+    {
+        return Method::GET;
+    }
+    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_PUT) )
+    {
+        return Method::PUT;
+    }
+    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_POST) )
+    {
+        return Method::POST;
+    }
+    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_DELETE) )
+    {
+        return Method::DELETE;
+    }
+    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_TRACE) )
+    {
+        return Method::TRACE;
+    }
+    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_OPTIONS) )
+    {
+        return Method::OPTIONS;
+    }
+    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_CONNECT) )
+    {
+        return Method::CONNECT;
+    }
+    else
+    {
+        return Method::UNKNOWN;
+    }
+}
+
+//! Converts libmicrohttpd versions to librest versions.
+Version convertVersion(const char* const version)
+{
+    if ( std::string(version) == std::string(MHD_HTTP_VERSION_1_0) )
+    {
+        return Version::HTTP_1_0;
+    }
+    else if ( std::string(version) == std::string(MHD_HTTP_VERSION_1_1) )
+    {
+        return Version::HTTP_1_1;
+    }
+    else
+    {
+        return Version::HTTP_UNKNOWN;
+    }
+}
+
 //! Converts librest status codes into libmicrohttpd status codes.
 unsigned int convertStatusCode(const StatusCode& statusCode)
 {
@@ -201,7 +259,7 @@ unsigned int convertStatusCode(const StatusCode& statusCode)
         return MHD_HTTP_NOT_EXTENDED;
 
     default:
-        return 0;
+        return -1;
     }
 }
 
@@ -340,8 +398,8 @@ int HttpServer::access(MHD_Connection   * pConnection,
     if ( m_accessFn )
     {
         statusCode = m_accessFn(url,
-                                method,
-                                version,
+                                convertMethod(method),
+                                convertVersion(version),
                                 uploadData,
                                 data);
     }

@@ -27,6 +27,7 @@ namespace rest
 
 enum class Method
 {
+    UNKNOWN,
     HEAD,
     GET,
     PUT,
@@ -34,8 +35,14 @@ enum class Method
     DELETE,
     TRACE,
     OPTIONS,
-    CONNECT,
-    PATCH
+    CONNECT
+};
+
+enum class Version
+{
+    HTTP_UNKNOWN,
+    HTTP_1_0,
+    HTTP_1_1
 };
 
 enum class StatusCode
@@ -97,6 +104,34 @@ enum class StatusCode
     BandwidthLimitExceeded           = 509,
     NotExtended                      = 510
 };
+
+//! Function type for a callback, that is called when a client connects.
+//! Returning true will accept the connection and false will resuse it.
+typedef std::function<bool (const sockaddr *, const socklen_t)>AcceptFn;
+
+//! Function type for a callback, that is called when a client sends a request.
+//! Return the status code to answer with. Set the downloadData if you want to
+//! send data with the response.
+typedef std::function<StatusCode(const std::string& url,
+                                 const Method method,
+                                 const Version version,
+                                 const std::string& uploadData,
+                                 std::string& downloadData)>AccessFn;
+
+class IHttpServer
+{
+public:
+    virtual ~IHttpServer() {}
+};
+
+//! Creates an http server, that interacts via callback.
+IHttpServer createHttpServer(const std::string& address,  //!< Address to bind to.
+                             const uint16_t   & port,     //!< Port to bind to.
+                             const AcceptFn   & acceptFn, //!< Called if anyone wants
+                                                          //!< to connect.
+                             const AccessFn   & accessFn  //!< Called if anyone
+                                                          //!< requests something.
+                             );
 
 typedef std::function<StatusCode(const Method&,
                                  const std::istream&)>

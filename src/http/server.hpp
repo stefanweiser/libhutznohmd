@@ -28,22 +28,9 @@
 namespace rest
 {
 
-//! Function type for a callback, that is called when a client connects.
-//! Returning true will accept the connection and false will resuse it.
-typedef std::function<bool (const sockaddr *, const socklen_t)>AcceptFn;
-
-//! Function type for a callback, that is called when a client sends a request.
-//! Return the status code to answer with. Set the downloadData if you want to
-//! send data with the response.
-typedef std::function<StatusCode(const char * const url,
-                                 const char * const method,
-                                 const char * const version,
-                                 const std::string& uploadData,
-                                 std::string& downloadData)>AccessFn;
-
 //! Opens a port to listen on. Implements HTTP to answer requests. Communicates
 //! via callbacks with its user.
-class HttpServer
+class HttpServer: public IHttpServer
 {
 public:
 
@@ -57,7 +44,7 @@ public:
                         );
 
     //! Destroys the http server.
-    ~HttpServer();
+    virtual ~HttpServer();
 
     //! Intermediate method to check if the server accepts a connection.
     int accept(const sockaddr * addr,
