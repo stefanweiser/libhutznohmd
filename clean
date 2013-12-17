@@ -1,7 +1,0 @@
-#!/bin/sh -e
-
-# Jump to script path.
-SCRIPTPATH="$(readlink -f $(dirname $0))"
-
-# Removes the output.
-rm -rf "$SCRIPTPATH/build" "$SCRIPTPATH/install"
