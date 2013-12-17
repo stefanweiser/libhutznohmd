@@ -12,12 +12,7 @@ Debian based linux:
 
     $ sudo apt-get install libmicrohttpd10 libmicrohttpd-dev
 
-Building
---------
+Build all
+---------
 
-    $ ./make
-
-Testing
--------
-
-    $ ./test
+    $ ./make all
