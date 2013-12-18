@@ -15,12 +15,11 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SERVER_HPP
-#define SERVER_HPP
+#ifndef __LIBREST_HTTP_SERVER_HPP__
+#define __LIBREST_HTTP_SERVER_HPP__
 
 #include <functional>
 
-#include <arpa/inet.h>
 #include <microhttpd.h>
 
 #include <librest.hpp>
@@ -97,4 +96,4 @@ private:
 
 } // namespace rest
 
-#endif // SERVER_HPP
+#endif // __LIBREST_HTTP_SERVER_HPP__
