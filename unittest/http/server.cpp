@@ -24,20 +24,28 @@
 
 TEST(Conversion, Method)
 {
-	EXPECT_EQ(rest::convertMethod("HEAD"), rest::http::Method::HEAD);
-	EXPECT_EQ(rest::convertMethod("GET"), rest::http::Method::GET);
-	EXPECT_EQ(rest::convertMethod("PUT"), rest::http::Method::PUT);
-	EXPECT_EQ(rest::convertMethod("POST"), rest::http::Method::POST);
-	EXPECT_EQ(rest::convertMethod("DELETE"), rest::http::Method::DELETE);
-	EXPECT_EQ(rest::convertMethod("TRACE"), rest::http::Method::TRACE);
-	EXPECT_EQ(rest::convertMethod("OPTIONS"), rest::http::Method::OPTIONS);
-	EXPECT_EQ(rest::convertMethod("CONNECT"), rest::http::Method::CONNECT);
-	EXPECT_EQ(rest::convertMethod("TEST"), rest::http::Method::UNKNOWN);
+    EXPECT_EQ(rest::convertMethod("HEAD"), rest::http::Method::HEAD);
+    EXPECT_EQ(rest::convertMethod("GET"), rest::http::Method::GET);
+    EXPECT_EQ(rest::convertMethod("PUT"), rest::http::Method::PUT);
+    EXPECT_EQ(rest::convertMethod("POST"), rest::http::Method::POST);
+    EXPECT_EQ(rest::convertMethod("DELETE"), rest::http::Method::DELETE);
+    EXPECT_EQ(rest::convertMethod("TRACE"), rest::http::Method::TRACE);
+    EXPECT_EQ(rest::convertMethod("OPTIONS"), rest::http::Method::OPTIONS);
+    EXPECT_EQ(rest::convertMethod("CONNECT"), rest::http::Method::CONNECT);
+    EXPECT_EQ(rest::convertMethod("TEST"), rest::http::Method::UNKNOWN);
 }
 
 TEST(Conversion, Version)
 {
-	EXPECT_EQ(rest::convertVersion("HTTP/1.0"), rest::http::Version::HTTP_1_0);
-	EXPECT_EQ(rest::convertVersion("HTTP/1.1"), rest::http::Version::HTTP_1_1);
-	EXPECT_EQ(rest::convertVersion("HTTP/2.0"), rest::http::Version::HTTP_UNKNOWN);
+    EXPECT_EQ(rest::convertVersion("HTTP/1.0"), rest::http::Version::HTTP_1_0);
+    EXPECT_EQ(rest::convertVersion("HTTP/1.1"), rest::http::Version::HTTP_1_1);
+    EXPECT_EQ(rest::convertVersion("HTTP/2.0"), rest::http::Version::HTTP_UNKNOWN);
+}
+
+
+TEST(Conversion, StatusCode)
+{
+    EXPECT_EQ(rest::convertStatusCode(rest::http::StatusCode::Ok), 200);
+    EXPECT_EQ(rest::convertStatusCode(rest::http::StatusCode::NotFound), 404);
+    EXPECT_EQ(rest::convertStatusCode(rest::http::StatusCode::InternalServerError), 500);
 }

@@ -71,9 +71,63 @@ TEST(HttpServer, Completed)
                          reinterpret_cast<void **>(&tmp),
                          MHD_REQUEST_TERMINATED_COMPLETED_OK);
     EXPECT_EQ(tmp, nullptr);
+}
+
+TEST(HttpServer, Access)
+{
+    std::string accessedData;
+    rest::HttpServer httpServer("127.0.0.1",
+                                10000,
+                                rest::http::AcceptFn(),
+                                rest::http::AccessFn());
+
+    std::string* tmp = nullptr;
+    size_t size = 0;
+    int answer = httpServer.access(nullptr,
+                                   "/",
+                                   MHD_HTTP_METHOD_GET,
+                                   MHD_HTTP_VERSION_1_1,
+                                   nullptr,
+                                   &size,
+                                   reinterpret_cast<void **>(&tmp));
+    EXPECT_EQ(answer, MHD_YES);
+    EXPECT_NE(tmp, nullptr);
+
+    std::string data = "abcdef";
+    size = data.size();
+    answer = httpServer.access(nullptr,
+                               "/",
+                               MHD_HTTP_METHOD_GET,
+                               MHD_HTTP_VERSION_1_1,
+                               data.c_str(),
+                               &size,
+                               reinterpret_cast<void **>(&tmp));
+    EXPECT_EQ(answer, MHD_YES);
+    EXPECT_EQ(size, 0);
+    EXPECT_EQ(*tmp, data);
+
+    answer = httpServer.access(nullptr,
+                               "/",
+                               MHD_HTTP_METHOD_GET,
+                               MHD_HTTP_VERSION_1_1,
+                               nullptr,
+                               &size,
+                               reinterpret_cast<void **>(&tmp));
+    EXPECT_EQ(answer, MHD_NO);
 
     if ( tmp != nullptr )
     {
         delete tmp;
     }
+}
+
+TEST(HttpServer, CopyAndAssignment)
+{
+    rest::HttpServer httpServer("127.0.0.1",
+                                10000,
+                                rest::http::AcceptFn(),
+                                rest::http::AccessFn());
+
+    rest::HttpServer httpServer2(httpServer);
+    EXPECT_EQ(httpServer2.m_pDaemon, nullptr);
 }

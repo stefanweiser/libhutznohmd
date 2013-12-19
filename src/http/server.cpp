@@ -186,9 +186,6 @@ int HttpServer::access(MHD_Connection * pConnection,
     // 2. Data gets processed.
     // 3. Creating a response.
 
-    // Ignore head.
-    if ( std::string(method) == MHD_HTTP_METHOD_HEAD ) return MHD_YES;
-
     assert(ptr != nullptr);
 
     if ( *ptr == nullptr )
@@ -259,17 +256,15 @@ void HttpServer::completed(MHD_Connection * /*pConnection*/,
     }
 }
 
-HttpServer::HttpServer(const HttpServer& rhs)
-    : m_pDaemon(rhs.m_pDaemon)
-      , m_acceptFn(rhs.m_acceptFn)
-      , m_accessFn(rhs.m_accessFn)
+HttpServer::HttpServer(const HttpServer& /*rhs*/)
+    : m_pDaemon(nullptr)
+    , m_acceptFn()
+    , m_accessFn()
 {}
 
-HttpServer& HttpServer::operator=(const HttpServer& rhs)
+HttpServer& HttpServer::operator=(const HttpServer& /*rhs*/)
 {
-    m_pDaemon  = rhs.m_pDaemon;
-    m_acceptFn = rhs.m_acceptFn;
-    m_accessFn = rhs.m_accessFn;
+    m_pDaemon = nullptr;
     return *this;
 }
 
