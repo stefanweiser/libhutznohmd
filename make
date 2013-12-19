@@ -3,6 +3,9 @@
 script_path=$(dirname `readlink -f $0`)
 script_name=$(basename `readlink -f $0`)
 
+build_path="${script_path}/build"
+install_path="${script_path}/install"
+
 function usage()
 {
 	echo ""
@@ -21,8 +24,9 @@ function usage()
 	echo "   install     : Installs the targets."
 	echo "   package     : Builds packages."
 	echo "   all         : Builds all steps."
+	echo "   coverage    : Generates lcov output."
 	echo ""
-	echo "  Targets:"
+	echo "  Targets (only needed for bootstraping):"
 	echo "   debug"
 	echo "   release"
 	echo "   coverage"
@@ -40,23 +44,23 @@ function exec_clean()
 {
 	echo "Cleaning..."
 
-	rm -rf "$script_path/build" "$script_path/install"
+	rm -rf "${build_path}" "${install_path}"
 }
 
 function exec_bootstrap()
 {
 	echo "Bootstrapping..."
 
-	mkdir -p "$script_path/build"
-	cd "$script_path/build"
-	cmake "$script_path" -DCMAKE_INSTALL_PREFIX="$script_path/install" -DCMAKE_BUILD_TYPE="${opts_build_type}"
+	mkdir -p "${build_path}"
+	cd "${build_path}"
+	cmake "${script_path}" -DCMAKE_INSTALL_PREFIX="${install_path}" -DCMAKE_BUILD_TYPE="$1"
 }
 
 function exec_check()
 {
 	echo "Checking..."
 
-	cd "$script_path/build"
+	cd "${build_path}"
 	make check
 }
 
@@ -64,10 +68,10 @@ function exec_uncrustify()
 {
 	echo "Uncrustifying..."
 
-	cd "$script_path"
-	local files="$(find "$script_path/src" "$script_path/unittest" -name *.cpp -o -name *.hpp)"
+	cd "${script_path}"
+	local files="$(find "${script_path}/src" "${script_path}/unittest" -name *.cpp -o -name *.hpp)"
 	for file in $files; do
-		uncrustify --replace --no-backup -c "$script_path/uncrustify.cfg" -l CPP $file
+		uncrustify --replace --no-backup -c "${script_path}/uncrustify.cfg" -l CPP $file
 	done
 }
 
@@ -75,7 +79,7 @@ function exec_doc()
 {
 	echo "Documenting..."
 
-	cd "$script_path/build"
+	cd "${build_path}"
 	make doc
 }
 
@@ -83,7 +87,7 @@ function exec_build()
 {
 	echo "Building..."
 
-	cd "$script_path/build"
+	cd "${build_path}"
 	make -j"$(grep processor /proc/cpuinfo | wc -l)" all
 }
 
@@ -91,16 +95,16 @@ function exec_test()
 {
 	echo "Testing..."
 
-	cd "$script_path/build"
-	LD_LIBRARY_PATH="$script_path/build/src" "$script_path/build/unittest/unittest_rest"
-	LD_LIBRARY_PATH="$script_path/build/src" "$script_path/build/integrationtest/integrationtest_rest"
+	cd "${build_path}"
+	LD_LIBRARY_PATH="${build_path}/src" "${build_path}/unittest/unittest_rest"
+	LD_LIBRARY_PATH="${build_path}/src" "${build_path}/integrationtest/integrationtest_rest"
 }
 
 function exec_install()
 {
 	echo "Installing..."
 
-	cd "$script_path/build"
+	cd "${build_path}"
 	make install
 }
 
@@ -108,8 +112,27 @@ function exec_package()
 {
 	echo "Packaging..."
 
-	cd "$script_path/build"
+	cd "${build_path}"
 	make package
+}
+
+function exec_coverage()
+{
+	target_path="${build_path}/src/"
+	tracefile="${target_path}/coverage.info"
+	lcov_output_path="${build_path}/lcov"
+
+	echo "Generating lcov output..."
+	cd "${script_path}"
+	exec_clean
+	exec_bootstrap coverage
+	exec_build
+	lcov --zerocounters --gcov-tool gcov-4.8 --directory "${target_path}" --output-file "${tracefile}"
+	exec_test
+	lcov --capture --gcov-tool gcov-4.8 --directory "${target_path}" --output-file "${tracefile}"
+	lcov --gcov-tool gcov-4.8 --remove "${tracefile}" "/usr/include/*" --output-file "${tracefile}"
+	rm -rf "${lcov_output_path}"
+	genhtml "${tracefile}" --output-directory "${lcov_output_path}"
 }
 
 opts_words=()
@@ -122,6 +145,7 @@ opts_build=0
 opts_test=0
 opts_install=0
 opts_package=0
+opts_coverage=0
 opts_build_type="debug"
 
 args=$(getopt \
@@ -198,6 +222,9 @@ for word in ${opts_words[*]} ; do
 			opts_install=1
 			opts_package=1
 			;;
+		coverage)
+			opts_coverage=1
+			;;
 
 		debug)
 			opts_build_type="debug"
@@ -221,7 +248,7 @@ if [ ${opts_clean} -ne 0 ]; then
 fi
 
 if [ ${opts_bootstrap} -ne 0 ]; then
-	exec_bootstrap
+	exec_bootstrap ${opts_build_type}
 fi
 
 if [ ${opts_check} -ne 0 ]; then
@@ -252,5 +279,8 @@ if [ ${opts_package} -ne 0 ]; then
 	exec_package
 fi
 
-exit 0
+if [ ${opts_coverage} -ne 0 ]; then
+	exec_coverage
+fi
 
+exit 0
