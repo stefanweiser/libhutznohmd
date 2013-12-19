@@ -93,6 +93,7 @@ function exec_test()
 
 	cd "$script_path/build"
 	LD_LIBRARY_PATH="$script_path/build/src" "$script_path/build/unittest/unittest_rest"
+	LD_LIBRARY_PATH="$script_path/build/src" "$script_path/build/integrationtest/integrationtest_rest"
 }
 
 function exec_install()

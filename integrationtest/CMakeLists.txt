@@ -5,11 +5,11 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 file(GLOB_RECURSE SOURCES *.cpp *.hpp)
 file(GLOB_RECURSE GMOCK ${GMOCK_DIR}/*.cc ${GMOCK_DIR}/*.h)
 
-add_executable(unittest_rest ${SOURCES} ${GMOCK})
+add_executable(integrationtest_rest ${SOURCES} ${GMOCK})
 
 link_directories(${CMAKE_BINARY_DIR}/lib)
-target_link_libraries(unittest_rest rest)
+target_link_libraries(integrationtest_rest rest)
 
 include_directories("${PROJECT_DIR}/src")
-include_directories("${PROJECT_DIR}/unittest")
+include_directories("${PROJECT_DIR}/integrationtest")
 include_directories("${PROJECT_DIR}/gmock")

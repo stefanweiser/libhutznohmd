@@ -4,9 +4,11 @@ project(librest)
 set(CMAKE_CXX_COMPILER "g++-4.8")
 
 get_filename_component(PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR} REALPATH)
+get_filename_component(GMOCK_DIR ${PROJECT_DIR}/gmock REALPATH)
 
 add_subdirectory(src)
 add_subdirectory(unittest)
+add_subdirectory(integrationtest)
 
 set(CPACK_GENERATOR "DEB;RPM")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Stefan Weiser <stefan.weiser@bluewin.ch>")
