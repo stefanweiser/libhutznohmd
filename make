@@ -15,7 +15,7 @@ min_version_gcov="4.8.0"
 min_version_cppcheck="1.60"
 min_version_uncrustify="0.60"
 min_version_doxygen="1.7.6.0"
-min_version_lcov="1.10"
+min_version_lcov="1.9"
 min_version_rpmbuild="4.9.0.0"
 
 script_path=$(dirname `readlink -f $0`)
