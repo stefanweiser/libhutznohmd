@@ -1,10 +1,94 @@
 #!/bin/bash -ue
 
+binary_cmake="$(which cmake)"
+binary_gpp="$(which g++)"
+binary_gcov="$(which gcov)"
+binary_cppcheck="$(which cppcheck)"
+binary_uncrustify="$(which uncrustify)"
+binary_doxygen="$(which doxygen)"
+binary_lcov="$(which lcov)"
+binary_rpmbuild="$(which rpmbuild)"
+
+min_version_cmake="2.8.0"
+min_version_gpp="4.8.0"
+min_version_gcov="4.8.0"
+min_version_cppcheck="1.60"
+min_version_uncrustify="0.60"
+min_version_doxygen="1.7.6.0"
+min_version_lcov="1.10"
+min_version_rpmbuild="4.9.0.0"
+
 script_path=$(dirname `readlink -f $0`)
 script_name=$(basename `readlink -f $0`)
 
 build_path="${script_path}/build"
 install_path="${script_path}/install"
+
+function check_version()
+{
+	local found=( $(echo "$2" | tr '.' ' ') )
+	local minimum=( $(echo "$3" | tr '.' ' ') )
+
+	for i in "${!minimum[@]}"; do
+		if [ ${found[$i]} -lt ${minimum[$i]} ]; then
+			echo "ERROR: Need at least version $3 of program $1, but only $2 was found."
+			return 1
+		elif [ ${found[$i]} -gt ${minimum[$i]} ]; then
+			echo "INFO: Fulfilling need for version $3 of program $1 with version $2."
+			return 0
+		fi
+	done
+	echo "INFO: Fulfilling need for version $3 of program $1 with version $2."
+	return 0
+}
+
+function check_cmake()
+{
+	local cmake_version=$(${binary_cmake} --version | tr ' ' '\n' | tail -n 1)
+	check_version "${binary_cmake}" "${cmake_version}" "${min_version_cmake}"
+}
+
+function check_compiler()
+{
+	local gpp_version=$(${binary_gpp} --version | head -n 1 | tr ' ' '\n' | tail -n 1)
+	check_version "${binary_gpp}" "${gpp_version}" "${min_version_gpp}"
+}
+
+function check_gcov()
+{
+	local gcov_version=$(${binary_gcov} --version | head -n 1 | tr ' ' '\n' | tail -n 1)
+	check_version "${binary_gcov}" "${gcov_version}" "${min_version_gcov}"
+}
+
+function check_cppcheck()
+{
+	local cppcheck_version=$(${binary_cppcheck} --version | tr ' ' '\n' | tail -n 1)
+	check_version "${binary_cppcheck}" "${cppcheck_version}" "${min_version_cppcheck}"
+}
+
+function check_uncrustify()
+{
+	local uncrustify_version=$(${binary_uncrustify} --version | tr ' ' '\n' | tail -n 1)
+	check_version "${binary_uncrustify}" "${uncrustify_version}" "${min_version_uncrustify}"
+}
+
+function check_doxygen()
+{
+	local doxygen_version=$(${binary_doxygen} --version)
+	check_version "${binary_doxygen}" "${doxygen_version}" "${min_version_doxygen}"
+}
+
+function check_lcov()
+{
+	local lcov_version=$(${binary_lcov} --version | tr ' ' '\n' | tail -n 1)
+	check_version "${binary_lcov}" "${lcov_version}" "${min_version_lcov}"
+}
+
+function check_rpmbuild()
+{
+	local rpmbuild_version=$(${binary_rpmbuild} --version | tr ' ' '\n' | tail -n 1)
+	check_version "${binary_rpmbuild}" "${rpmbuild_version}" "${min_version_rpmbuild}"
+}
 
 function usage()
 {
@@ -51,6 +135,8 @@ function exec_bootstrap()
 {
 	echo "Bootstrapping..."
 
+	check_cmake
+
 	mkdir -p "${build_path}"
 	cd "${build_path}"
 	cmake "${script_path}" -DCMAKE_INSTALL_PREFIX="${install_path}" -DCMAKE_BUILD_TYPE="$1"
@@ -60,6 +146,8 @@ function exec_check()
 {
 	echo "Checking..."
 
+	check_cppcheck
+
 	cd "${build_path}"
 	make check
 }
@@ -67,6 +155,8 @@ function exec_check()
 function exec_uncrustify()
 {
 	echo "Uncrustifying..."
+
+	check_uncrustify
 
 	cd "${script_path}"
 	local files="$(find "${script_path}/src" "${script_path}/unittest" -name *.cpp -o -name *.hpp)"
@@ -79,6 +169,8 @@ function exec_doc()
 {
 	echo "Documenting..."
 
+	check_doxygen
+
 	cd "${build_path}"
 	make doc
 }
@@ -86,6 +178,8 @@ function exec_doc()
 function exec_build()
 {
 	echo "Building..."
+
+	check_compiler
 
 	cd "${build_path}"
 	make -j"$(grep processor /proc/cpuinfo | wc -l)" all
@@ -118,9 +212,12 @@ function exec_package()
 
 function exec_coverage()
 {
-	target_path="${build_path}/src/"
-	tracefile="${target_path}/coverage.info"
-	lcov_output_path="${build_path}/lcov"
+	check_gcov
+	check_lcov
+
+	local target_path="${build_path}/src/"
+	local tracefile="${target_path}/coverage.info"
+	local lcov_output_path="${build_path}/lcov"
 
 	echo "Generating lcov output..."
 	cd "${script_path}"
@@ -237,7 +334,7 @@ for word in ${opts_words[*]} ; do
 			;;
 
 		*)
-			echo "error: invalid word: ${word}"
+			echo "ERROR: Found invalid argument. (${word})"
 			exit 1
 			;;
 	esac
