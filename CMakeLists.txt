@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 project(librest)
 
-set(CMAKE_CXX_COMPILER "g++-4.8")
-
 get_filename_component(PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR} REALPATH)
 get_filename_component(GMOCK_DIR ${PROJECT_DIR}/gmock REALPATH)
 

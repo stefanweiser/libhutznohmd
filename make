@@ -127,10 +127,10 @@ function exec_coverage()
 	exec_clean
 	exec_bootstrap coverage
 	exec_build
-	lcov --zerocounters --gcov-tool gcov-4.8 --directory "${target_path}" --output-file "${tracefile}"
+	lcov --zerocounters --directory "${target_path}" --output-file "${tracefile}"
 	exec_test
-	lcov --capture --gcov-tool gcov-4.8 --directory "${target_path}" --output-file "${tracefile}"
-	lcov --gcov-tool gcov-4.8 --remove "${tracefile}" "/usr/include/*" --output-file "${tracefile}"
+	lcov --capture --directory "${target_path}" --output-file "${tracefile}"
+	lcov --remove "${tracefile}" "/usr/include/*" --output-file "${tracefile}"
 	rm -rf "${lcov_output_path}"
 	genhtml "${tracefile}" --output-directory "${lcov_output_path}"
 }
