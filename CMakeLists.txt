@@ -8,10 +8,11 @@ add_subdirectory(src)
 add_subdirectory(unittest)
 add_subdirectory(integrationtest)
 
-set(CPACK_GENERATOR "DEB;RPM")
+set(CPACK_GENERATOR "DEB;RPM;TBZ2;TGZ")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Stefan Weiser <stefan.weiser@bluewin.ch>")
  
 include(CPack)
+
 
 
 add_custom_target(doc
