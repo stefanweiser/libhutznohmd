@@ -40,7 +40,7 @@ TEST(Socket, Accept)
 
     std::thread t([]
     {
-        rest::http::Socket socket2("127.0.0.1",
+        rest::http::Socket socket2("localhost",
                                    10000,
                                    rest::http::connect);
         EXPECT_NE(socket2.m_socket, -1);
