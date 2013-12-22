@@ -29,6 +29,8 @@ TEST(HttpServer, Construction)
                                 rest::http::AcceptFn(),
                                 rest::http::AccessFn());
 
+    usleep(1000);
+
     EXPECT_NE(httpServer.m_pDaemon, nullptr);
 }
 
@@ -120,6 +122,8 @@ TEST(HttpServer, Access)
                                &size,
                                reinterpret_cast<void **>(&tmp));
     EXPECT_EQ(answer, MHD_NO);
+
+    usleep(1000);
 
     if ( tmp != nullptr )
     {
