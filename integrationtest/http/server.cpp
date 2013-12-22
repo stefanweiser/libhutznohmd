@@ -39,6 +39,8 @@ TEST(HttpServer, AcceptNoCallback)
                                 rest::http::AcceptFn(),
                                 rest::http::AccessFn());
 
+    usleep(1000);
+
     EXPECT_EQ(httpServer.accept(nullptr, 0), true);
 }
 
@@ -54,6 +56,8 @@ TEST(HttpServer, AcceptCallback)
                                 acceptFn,
                                 rest::http::AccessFn());
 
+    usleep(1000);
+
     EXPECT_EQ(httpServer.accept(nullptr, 0), true);
     result = false;
     EXPECT_EQ(httpServer.accept(nullptr, 0), false);
@@ -66,6 +70,8 @@ TEST(HttpServer, Completed)
                                 rest::http::AcceptFn(),
                                 rest::http::AccessFn());
     std::string * tmp = new std::string();
+
+    usleep(1000);
 
     httpServer.completed(nullptr,
                          reinterpret_cast<void **>(&tmp),
@@ -127,6 +133,8 @@ TEST(HttpServer, CopyAndAssignment)
                                 10000,
                                 rest::http::AcceptFn(),
                                 rest::http::AccessFn());
+
+    usleep(1000);
 
     rest::HttpServer httpServer2(httpServer);
     EXPECT_EQ(httpServer2.m_pDaemon, nullptr);
