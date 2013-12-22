@@ -258,8 +258,8 @@ void HttpServer::completed(MHD_Connection * /*pConnection*/,
 
 HttpServer::HttpServer(const HttpServer& /*rhs*/)
     : m_pDaemon(nullptr)
-    , m_acceptFn()
-    , m_accessFn()
+      , m_acceptFn()
+      , m_accessFn()
 {}
 
 HttpServer& HttpServer::operator=(const HttpServer& /*rhs*/)
