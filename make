@@ -1,22 +1,24 @@
 #!/bin/bash -ue
 
-binary_cmake="$(which cmake)"
-binary_gpp="$(which g++)"
-binary_gcov="$(which gcov)"
-binary_cppcheck="$(which cppcheck)"
-binary_uncrustify="$(which uncrustify)"
-binary_doxygen="$(which doxygen)"
-binary_lcov="$(which lcov)"
-binary_rpmbuild="$(which rpmbuild)"
+binary_cmake="cmake"
+binary_gpp="g++"
+binary_gcov="gcov"
+binary_cppcheck="cppcheck"
+binary_uncrustify="uncrustify"
+binary_doxygen="doxygen"
+binary_dot="dot"
+binary_lcov="lcov"
+binary_rpmbuild="rpmbuild"
 
-min_version_cmake="2.8.0"
-min_version_gpp="4.8.0"
-min_version_gcov="4.8.0"
+min_version_cmake="2.8"
+min_version_gpp="4.8"
+min_version_gcov="4.8"
 min_version_cppcheck="1.60"
 min_version_uncrustify="0.60"
-min_version_doxygen="1.7.6.0"
+min_version_doxygen="1.7.6"
+min_version_dot="2.26"
 min_version_lcov="1.9"
-min_version_rpmbuild="4.9.0.0"
+min_version_rpmbuild="4.9"
 
 script_path=$(dirname `readlink -f $0`)
 script_name=$(basename `readlink -f $0`)
@@ -26,6 +28,7 @@ install_path="${script_path}/install"
 
 function check_version()
 {
+
 	local found=( $(echo "$2" | tr '.' ' ') )
 	local minimum=( $(echo "$3" | tr '.' ' ') )
 
@@ -42,50 +45,75 @@ function check_version()
 	return 0
 }
 
+function check_existing()
+{
+	if command -v "$1" > /dev/null; then
+		return 0
+	fi
+
+	echo "ERROR: Unable to find program $1."
+	return 1
+}
+
 function check_cmake()
 {
+	check_existing "${binary_cmake}"
 	local cmake_version=$(${binary_cmake} --version | tr ' ' '\n' | tail -n 1)
 	check_version "${binary_cmake}" "${cmake_version}" "${min_version_cmake}"
 }
 
 function check_compiler()
 {
+	check_existing "${binary_gpp}"
 	local gpp_version=$(${binary_gpp} --version | head -n 1 | tr ' ' '\n' | tail -n 1)
 	check_version "${binary_gpp}" "${gpp_version}" "${min_version_gpp}"
 }
 
 function check_gcov()
 {
+	check_existing "${binary_gcov}"
 	local gcov_version=$(${binary_gcov} --version | head -n 1 | tr ' ' '\n' | tail -n 1)
 	check_version "${binary_gcov}" "${gcov_version}" "${min_version_gcov}"
 }
 
 function check_cppcheck()
 {
+	check_existing "${binary_cppcheck}"
 	local cppcheck_version=$(${binary_cppcheck} --version | tr ' ' '\n' | tail -n 1)
 	check_version "${binary_cppcheck}" "${cppcheck_version}" "${min_version_cppcheck}"
 }
 
 function check_uncrustify()
 {
+	check_existing "${binary_uncrustify}"
 	local uncrustify_version=$(${binary_uncrustify} --version | tr ' ' '\n' | tail -n 1)
 	check_version "${binary_uncrustify}" "${uncrustify_version}" "${min_version_uncrustify}"
 }
 
 function check_doxygen()
 {
+	check_existing "${binary_doxygen}"
 	local doxygen_version=$(${binary_doxygen} --version)
 	check_version "${binary_doxygen}" "${doxygen_version}" "${min_version_doxygen}"
 }
 
+function check_dot()
+{
+	check_existing "${binary_dot}"
+	local dot_version=$(${binary_dot} -V 2>&1 | tr ' ' '\n' | tail -n2 | head -n1)
+	check_version "${binary_dot}" "${dot_version}" "${min_version_dot}"
+}
+
 function check_lcov()
 {
+	check_existing "${binary_lcov}"
 	local lcov_version=$(${binary_lcov} --version | tr ' ' '\n' | tail -n 1)
 	check_version "${binary_lcov}" "${lcov_version}" "${min_version_lcov}"
 }
 
 function check_rpmbuild()
 {
+	check_existing "${binary_rpmbuild}"
 	local rpmbuild_version=$(${binary_rpmbuild} --version | tr ' ' '\n' | tail -n 1)
 	check_version "${binary_rpmbuild}" "${rpmbuild_version}" "${min_version_rpmbuild}"
 }
@@ -170,6 +198,7 @@ function exec_doc()
 	echo "Documenting..."
 
 	check_doxygen
+	check_dot
 
 	cd "${build_path}"
 	make doc
