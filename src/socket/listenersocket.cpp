@@ -33,10 +33,18 @@ namespace rest
 namespace socket
 {
 
+std::shared_ptr<ListenerSocketInterface> listen(const std::string& host,
+                                                const uint16_t   & port)
+{
+    auto p = new ListenerSocket(host, port);
+    return std::shared_ptr<ListenerSocketInterface>(p);
+}
+
 ListenerSocket::ListenerSocket(const std::string& host, const uint16_t& port)
     : m_socket(-1)
 {
     m_socket = ::socket(PF_INET, SOCK_STREAM, 0);
+
     if ( m_socket == -1 )
     {
         throw std::bad_alloc();
@@ -44,10 +52,10 @@ ListenerSocket::ListenerSocket(const std::string& host, const uint16_t& port)
 
     sockaddr_in addr;
     addr.sin_addr.s_addr = ::inet_addr(host.c_str());
-    addr.sin_port = ::htons(port);
-    addr.sin_family = AF_INET;
+    addr.sin_port        = ::htons(port);
+    addr.sin_family      = AF_INET;
 
-    if ( ::bind(m_socket, (sockaddr *) &addr, sizeof(addr)) == -1 )
+    if ( ::bind(m_socket, (sockaddr *)&addr, sizeof(addr)) == -1 )
     {
         ::close(m_socket);
         throw std::bad_alloc();
@@ -65,11 +73,12 @@ ListenerSocket::~ListenerSocket()
     close(m_socket);
 }
 
-std::shared_ptr<ConnectionSocketInterface> ListenerSocket::accept() const
+std::shared_ptr<ConnectionSocketInterface>ListenerSocket::accept() const
 {
     sockaddr_in addr;
-    socklen_t len = sizeof(addr);
-    int client = ::accept(m_socket, (sockaddr *) &addr, &len);
+    socklen_t   len = sizeof(addr);
+    int client      = ::accept(m_socket, (sockaddr *)&addr, &len);
+
     if ( client == -1 )
     {
         return std::shared_ptr<ConnectionSocketInterface>();

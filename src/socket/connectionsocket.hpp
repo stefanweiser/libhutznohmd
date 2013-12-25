@@ -28,9 +28,10 @@ namespace rest
 namespace socket
 {
 
-class ConnectionSocket: public ConnectionSocketInterface
+class ConnectionSocket : public ConnectionSocketInterface
 {
 public:
+
     explicit ConnectionSocket(const std::string& host, const uint16_t& port);
     explicit ConnectionSocket(const int& socket);
     virtual ~ConnectionSocket();
@@ -38,6 +39,7 @@ public:
     virtual bool send(const std::vector<uint8_t>& data);
 
 private:
+
     int m_socket;
 };
 
