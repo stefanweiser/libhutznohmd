@@ -15,10 +15,12 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_HTTP_SOCKET_HPP__
-#define __LIBREST_HTTP_SOCKET_HPP__
+#ifndef __LIBREST_HTTP_CONNECTIONSOCKET_HPP__
+#define __LIBREST_HTTP_CONNECTIONSOCKET_HPP__
 
 #include <librest.hpp>
+
+#include <http/socketinterface.hpp>
 
 namespace rest
 {
@@ -26,35 +28,21 @@ namespace rest
 namespace http
 {
 
-class Socket
+class ConnectionSocket: public ConnectionSocketInterface
 {
 public:
-    struct Listen {};
-    struct Connect {};
-
-    explicit Socket(const std::string& host,
-                    const uint16_t& port,
-                    const Listen&);
-
-    explicit Socket(const std::string& host,
-                    const uint16_t& port,
-                    const Connect&);
-
-    explicit Socket(const int& socket);
-
-    ~Socket();
-
-    std::shared_ptr<Socket> accept();
+    explicit ConnectionSocket(const std::string& host, const uint16_t& port);
+    explicit ConnectionSocket(const int& socket);
+    virtual ~ConnectionSocket();
+    virtual bool receive(std::vector<uint8_t>& data);
+    virtual bool send(const std::vector<uint8_t>& data);
 
 private:
     int m_socket;
 };
 
-static const Socket::Listen listen;
-static const Socket::Connect connect;
-
 } // namespace http
 
 } // namespace rest
 
-#endif // __LIBREST_HTTP_SOCKET_HPP__
+#endif // __LIBREST_HTTP_CONNECTIONSOCKET_HPP__

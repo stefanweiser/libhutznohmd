@@ -23,7 +23,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-#include "socket.hpp"
+#include "connectionsocket.hpp"
 
 namespace rest
 {
@@ -31,38 +31,8 @@ namespace rest
 namespace http
 {
 
-Socket::Socket(const std::string& host,
-               const uint16_t& port,
-               const Socket::Listen&)
-    : m_socket(0)
-{
-    m_socket = ::socket(PF_INET, SOCK_STREAM, 0);
-    if ( m_socket == -1 )
-    {
-        throw std::bad_alloc();
-    }
-
-    sockaddr_in addr;
-    addr.sin_addr.s_addr = ::inet_addr(host.c_str());
-    addr.sin_port = ::htons(port);
-    addr.sin_family = AF_INET;
-
-    if ( ::bind(m_socket, (sockaddr *) &addr, sizeof(addr)) == -1 )
-    {
-        ::close(m_socket);
-        throw std::bad_alloc();
-    }
-
-    if ( ::listen(m_socket, 4) == -1 )
-    {
-        ::close(m_socket);
-        throw std::bad_alloc();
-    }
-}
-
-Socket::Socket(const std::string& host,
-               const uint16_t& port,
-               const Socket::Connect&)
+ConnectionSocket::ConnectionSocket(const std::string& host,
+                                   const uint16_t& port)
     : m_socket(0)
 {
     sockaddr_in addr;
@@ -92,26 +62,23 @@ Socket::Socket(const std::string& host,
     }
 }
 
-Socket::Socket(const int& socket)
+ConnectionSocket::ConnectionSocket(const int& socket)
     : m_socket(socket)
 {}
 
-Socket::~Socket()
+ConnectionSocket::~ConnectionSocket()
 {
     close(m_socket);
 }
 
-std::shared_ptr<Socket> Socket::accept()
+bool ConnectionSocket::receive(std::vector<uint8_t>& /*data*/)
 {
-    sockaddr_in addr;
-    socklen_t len = sizeof(addr);
-    int client = ::accept(m_socket, (sockaddr *) &addr, &len);
-    if ( client == -1 )
-    {
-        return std::shared_ptr<Socket>();
-    }
+    return false;
+}
 
-    return std::make_shared<Socket>(client);
+bool ConnectionSocket::send(const std::vector<uint8_t>& /*data*/)
+{
+    return false;
 }
 
 } // namespace http

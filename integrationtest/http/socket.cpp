@@ -22,33 +22,35 @@
 #define private public
 #define protected public
 
-#include <http/socket.hpp>
+#include <http/connectionsocket.hpp>
+#include <http/listenersocket.hpp>
 
 TEST(Socket, ConstructionNoThrow)
 {
-    EXPECT_NO_THROW(rest::http::Socket("127.0.0.1",
-                                       10000,
-                                       rest::http::listen));
+    EXPECT_NO_THROW(rest::http::ListenerSocket("127.0.0.1",
+                                               10000));
 }
 
 TEST(Socket, Accept)
 {
-    rest::http::Socket socket("127.0.0.1",
-                              10000,
-                              rest::http::listen);
+    rest::http::ListenerSocket socket("127.0.0.1",
+                                      10000);
     EXPECT_NE(socket.m_socket, -1);
 
     std::thread t([]
     {
-        rest::http::Socket socket2("localhost",
-                                   10000,
-                                   rest::http::connect);
+        rest::http::ConnectionSocket socket2("localhost",
+                                             10000);
         EXPECT_NE(socket2.m_socket, -1);
     });
 
-    std::shared_ptr<rest::http::Socket> connection = socket.accept();
-    EXPECT_NE(connection, std::shared_ptr<rest::http::Socket>());
-    EXPECT_NE(connection->m_socket, -1);
+    std::shared_ptr<rest::http::ConnectionSocketInterface> connection;
+    connection = socket.accept();
+    std::shared_ptr<rest::http::ConnectionSocketInterface> empty;
+    EXPECT_NE(connection, empty);
+    rest::http::ConnectionSocket* pConnection;
+    pConnection = dynamic_cast<rest::http::ConnectionSocket*>(connection.get());
+    EXPECT_NE(pConnection->m_socket, -1);
 
     t.join();
 }
