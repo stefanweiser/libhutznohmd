@@ -34,7 +34,7 @@ namespace http
 {
 
 ListenerSocket::ListenerSocket(const std::string& host, const uint16_t& port)
-    : m_socket(0)
+    : m_socket(-1)
 {
     m_socket = ::socket(PF_INET, SOCK_STREAM, 0);
     if ( m_socket == -1 )

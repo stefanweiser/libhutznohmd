@@ -33,7 +33,7 @@ namespace http
 
 ConnectionSocket::ConnectionSocket(const std::string& host,
                                    const uint16_t& port)
-    : m_socket(0)
+    : m_socket(-1)
 {
     sockaddr_in addr;
     if ( !::inet_aton(host.c_str(), &addr.sin_addr) )
@@ -71,14 +71,40 @@ ConnectionSocket::~ConnectionSocket()
     close(m_socket);
 }
 
-bool ConnectionSocket::receive(std::vector<uint8_t>& /*data*/)
+bool ConnectionSocket::receive(std::vector<uint8_t>& data)
 {
-    return false;
+    if ( m_socket < 0 ) { return false; }
+
+    ssize_t received = ::recv(m_socket, data.data(), data.size(), 0);
+    if ( received <= 0 )
+    {
+        return false;
+    }
+
+    data.resize(received);
+    return true;
 }
 
-bool ConnectionSocket::send(const std::vector<uint8_t>& /*data*/)
+bool ConnectionSocket::send(const std::vector<uint8_t>& data)
 {
-    return false;
+    if ( m_socket < 0 ) { return false; }
+
+    ssize_t sent = 0;
+    do
+    {
+        ssize_t sentBlock = ::send(m_socket,
+                                   data.data() + sent,
+                                   data.size() - sent,
+                                   0);
+        if ( sentBlock < 0 )
+        {
+            return false;
+        }
+        sent += sentBlock;
+    }
+    while ( sent < ssize_t(data.size()) );
+
+    return true;
 }
 
 } // namespace http

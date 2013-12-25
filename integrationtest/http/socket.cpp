@@ -31,7 +31,7 @@ TEST(Socket, ConstructionNoThrow)
                                                10000));
 }
 
-TEST(Socket, Accept)
+TEST(Socket, AcceptSendReceive)
 {
     rest::http::ListenerSocket socket("127.0.0.1",
                                       10000);
@@ -42,6 +42,12 @@ TEST(Socket, Accept)
         rest::http::ConnectionSocket socket2("localhost",
                                              10000);
         EXPECT_NE(socket2.m_socket, -1);
+
+        std::vector<uint8_t> data = { 0, 1, 2, 3, 4, 5, 6, 7 };
+        EXPECT_EQ(socket2.send(data), true);
+        EXPECT_EQ(socket2.receive(data), true);
+        EXPECT_EQ(data.size(), 4);
+        EXPECT_EQ(data, std::vector<uint8_t>({ 0, 1, 2, 3 }));
     });
 
     std::shared_ptr<rest::http::ConnectionSocketInterface> connection;
@@ -51,6 +57,13 @@ TEST(Socket, Accept)
     rest::http::ConnectionSocket* pConnection;
     pConnection = dynamic_cast<rest::http::ConnectionSocket*>(connection.get());
     EXPECT_NE(pConnection->m_socket, -1);
+
+    std::vector<uint8_t> data = { 0, 1, 2, 3 };
+    EXPECT_EQ(connection->send(data), true);
+    data.resize(16);
+    EXPECT_EQ(connection->receive(data), true);
+    EXPECT_EQ(data.size(), 8);
+    EXPECT_EQ(data, std::vector<uint8_t>({ 0, 1, 2, 3, 4, 5, 6, 7 }));
 
     t.join();
 }
