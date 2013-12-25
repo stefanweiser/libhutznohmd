@@ -25,7 +25,7 @@
 namespace rest
 {
 
-namespace http
+namespace socket
 {
 
 class ConnectionSocketInterface
@@ -51,7 +51,7 @@ std::shared_ptr<ConnectionSocketInterface> connect(const std::string& host,
 std::shared_ptr<ListenerSocketInterface> listen(const std::string& host,
                                                 const uint16_t& port);
 
-} // namespace http
+} // namespace socket
 
 } // namespace rest
 

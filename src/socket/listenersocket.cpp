@@ -23,14 +23,14 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-#include <http/connectionsocket.hpp>
+#include <socket/connectionsocket.hpp>
 
 #include "listenersocket.hpp"
 
 namespace rest
 {
 
-namespace http
+namespace socket
 {
 
 ListenerSocket::ListenerSocket(const std::string& host, const uint16_t& port)
@@ -78,6 +78,6 @@ std::shared_ptr<ConnectionSocketInterface> ListenerSocket::accept() const
     return std::make_shared<ConnectionSocket>(client);
 }
 
-} // namespace http
+} // namespace socket
 
 } // namespace rest

@@ -22,25 +22,25 @@
 #define private public
 #define protected public
 
-#include <http/connectionsocket.hpp>
-#include <http/listenersocket.hpp>
+#include <socket/connectionsocket.hpp>
+#include <socket/listenersocket.hpp>
 
 TEST(Socket, ConstructionNoThrow)
 {
-    EXPECT_NO_THROW(rest::http::ListenerSocket("127.0.0.1",
-                                               10000));
+    EXPECT_NO_THROW(rest::socket::ListenerSocket("127.0.0.1",
+                                                 10000));
 }
 
 TEST(Socket, AcceptSendReceive)
 {
-    rest::http::ListenerSocket socket("127.0.0.1",
-                                      10000);
+    rest::socket::ListenerSocket socket("127.0.0.1",
+                                        10000);
     EXPECT_NE(socket.m_socket, -1);
 
     std::thread t([]
     {
-        rest::http::ConnectionSocket socket2("localhost",
-                                             10000);
+        rest::socket::ConnectionSocket socket2("localhost",
+                                               10000);
         EXPECT_NE(socket2.m_socket, -1);
 
         std::vector<uint8_t> data = { 0, 1, 2, 3, 4, 5, 6, 7 };
@@ -50,12 +50,12 @@ TEST(Socket, AcceptSendReceive)
         EXPECT_EQ(data, std::vector<uint8_t>({ 0, 1, 2, 3 }));
     });
 
-    std::shared_ptr<rest::http::ConnectionSocketInterface> connection;
+    std::shared_ptr<rest::socket::ConnectionSocketInterface> connection;
     connection = socket.accept();
-    std::shared_ptr<rest::http::ConnectionSocketInterface> empty;
+    std::shared_ptr<rest::socket::ConnectionSocketInterface> empty;
     EXPECT_NE(connection, empty);
-    rest::http::ConnectionSocket* pConnection;
-    pConnection = dynamic_cast<rest::http::ConnectionSocket*>(connection.get());
+    rest::socket::ConnectionSocket* pConnection;
+    pConnection = dynamic_cast<rest::socket::ConnectionSocket*>(connection.get());
     EXPECT_NE(pConnection->m_socket, -1);
 
     std::vector<uint8_t> data = { 0, 1, 2, 3 };

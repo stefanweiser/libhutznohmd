@@ -28,7 +28,7 @@
 namespace rest
 {
 
-namespace http
+namespace socket
 {
 
 ConnectionSocket::ConnectionSocket(const std::string& host,
@@ -107,6 +107,6 @@ bool ConnectionSocket::send(const std::vector<uint8_t>& data)
     return true;
 }
 
-} // namespace http
+} // namespace socket
 
 } // namespace rest

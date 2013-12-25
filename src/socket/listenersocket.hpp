@@ -20,12 +20,12 @@
 
 #include <librest.hpp>
 
-#include <http/socketinterface.hpp>
+#include <socket/socketinterface.hpp>
 
 namespace rest
 {
 
-namespace http
+namespace socket
 {
 
 class ListenerSocket: public ListenerSocketInterface
@@ -39,7 +39,7 @@ private:
     int m_socket;
 };
 
-} // namespace http
+} // namespace socket
 
 } // namespace rest
 
