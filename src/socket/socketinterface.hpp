@@ -15,8 +15,8 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_HTTP_SOCKETINTERFACE_HPP__
-#define __LIBREST_HTTP_SOCKETINTERFACE_HPP__
+#ifndef __LIBREST_SOCKET_SOCKETINTERFACE_HPP__
+#define __LIBREST_SOCKET_SOCKETINTERFACE_HPP__
 
 #include <cstdint>
 #include <memory>
@@ -55,4 +55,4 @@ std::shared_ptr<ListenerSocketInterface> listen(const std::string& host,
 
 } // namespace rest
 
-#endif // __LIBREST_HTTP_SOCKETINTERFACE_HPP__
+#endif // __LIBREST_SOCKET_SOCKETINTERFACE_HPP__

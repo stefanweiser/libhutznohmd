@@ -15,8 +15,8 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_HTTP_CONNECTIONSOCKET_HPP__
-#define __LIBREST_HTTP_CONNECTIONSOCKET_HPP__
+#ifndef __LIBREST_SOCKET_CONNECTIONSOCKET_HPP__
+#define __LIBREST_SOCKET_CONNECTIONSOCKET_HPP__
 
 #include <librest.hpp>
 
@@ -45,4 +45,4 @@ private:
 
 } // namespace rest
 
-#endif // __LIBREST_HTTP_CONNECTIONSOCKET_HPP__
+#endif // __LIBREST_SOCKET_CONNECTIONSOCKET_HPP__
