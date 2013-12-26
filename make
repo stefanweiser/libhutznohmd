@@ -31,7 +31,6 @@ binary_cmake="$(get_command_path cmake)"
 binary_gpp="$(get_command_path g++)"
 binary_gcov="$(get_command_path gcov)"
 binary_cppcheck="$(get_command_path cppcheck)"
-binary_uncrustify="$(get_command_path uncrustify)"
 binary_astyle="$(get_command_path astyle)"
 binary_doxygen="$(get_command_path doxygen)"
 binary_dot="$(get_command_path dot)"
@@ -42,7 +41,6 @@ min_version_cmake="2.8"
 min_version_gpp="4.8"
 min_version_gcov="4.8"
 min_version_cppcheck="1.60"
-min_version_uncrustify="0.60"
 min_version_astyle="2.03"
 min_version_doxygen="1.7.6"
 min_version_dot="2.26"
@@ -77,12 +75,6 @@ function check_cppcheck()
 {
 	local cppcheck_version=$(${binary_cppcheck} --version | tr ' ' '\n' | tail -n 1)
 	check_version "${binary_cppcheck}" "${cppcheck_version}" "${min_version_cppcheck}"
-}
-
-function check_uncrustify()
-{
-	local uncrustify_version=$(${binary_uncrustify} --version | tr ' ' '\n' | tail -n 1)
-	check_version "${binary_uncrustify}" "${uncrustify_version}" "${min_version_uncrustify}"
 }
 
 function check_astyle()
@@ -125,7 +117,6 @@ function usage()
 	echo "  Steps:"
 	echo "   clean       : Removes all build output."
 	echo "   check       : Checks all sources."
-	echo "   uncrustify  : Uncrustifying all sources."
 	echo "   astyle      : Formats all sources."
 	echo "   doc         : Builds documentation."
 	echo "   bootstrap   : Bootstraps the build."
@@ -170,17 +161,6 @@ function exec_check()
 
 	cd "${build_path}"
 	make check
-}
-
-function exec_uncrustify()
-{
-	check_uncrustify
-
-	cd "${script_path}"
-	local files="$(find "${script_path}/src" "${script_path}/unittest" -name *.cpp -o -name *.hpp)"
-	for file in $files; do
-		uncrustify --replace --no-backup -c "${script_path}/uncrustify.cfg" -l CPP $file
-	done
 }
 
 function exec_astyle()
@@ -255,7 +235,6 @@ opts_words=()
 opts_clean=0
 opts_bootstrap=0
 opts_check=0
-opts_uncrustify=0
 opts_astyle=0
 opts_doc=0
 opts_build=0
@@ -310,9 +289,6 @@ for word in ${opts_words[*]} ; do
 		check)
 			opts_check=1
 			;;
-		uncrustify)
-			opts_uncrustify=1
-			;;
 		astyle)
 			opts_astyle=1
 			;;
@@ -335,7 +311,7 @@ for word in ${opts_words[*]} ; do
 			opts_clean=1
 			opts_bootstrap=1
 			opts_check=1
-			opts_uncrustify=1
+			opts_astyle=1
 			opts_doc=1
 			opts_build=1
 			opts_test=1
@@ -373,10 +349,6 @@ fi
 
 if [ ${opts_check} -ne 0 ]; then
 	exec_check
-fi
-
-if [ ${opts_uncrustify} -ne 0 ]; then
-	exec_uncrustify
 fi
 
 if [ ${opts_astyle} -ne 0 ]; then
