@@ -1,0 +1,13 @@
+--indent-preprocessor
+--pad-oper
+--pad-header
+--unpad-paren
+--add-brackets
+--convert-tabs
+--suffix=none
+--errors-to-stdout
+--indent=spaces=4
+--brackets=break
+--align-pointer=middle
+--align-reference=middle
+--lineend=linux
