@@ -35,6 +35,7 @@ binary_astyle="$(get_command_path astyle)"
 binary_doxygen="$(get_command_path doxygen)"
 binary_dot="$(get_command_path dot)"
 binary_lcov="$(get_command_path lcov)"
+binary_genhtml="$(get_command_path genhtml)"
 binary_rpmbuild="$(get_command_path rpmbuild)"
 
 min_version_cmake="2.8"
@@ -152,7 +153,7 @@ function exec_bootstrap()
 
 	mkdir -p "${build_path}"
 	cd "${build_path}"
-	cmake "${script_path}" -DCMAKE_INSTALL_PREFIX="${install_path}" -DCMAKE_BUILD_TYPE="$1"
+	${binary_cmake} "${script_path}" -DCMAKE_INSTALL_PREFIX="${install_path}" -DCMAKE_BUILD_TYPE="$1"
 }
 
 function exec_check()
@@ -170,7 +171,7 @@ function exec_astyle()
 	cd "${script_path}"
 	local files="$(find "${script_path}/src" "${script_path}/unittest" -name *.cpp -o -name *.hpp)"
 	for file in $files; do
-		astyle --options="${script_path}/astyle.rc" $file
+		${binary_astyle} --options="${script_path}/astyle.rc" $file
 	done
 }
 
@@ -223,12 +224,12 @@ function exec_coverage()
 	exec_clean
 	exec_bootstrap coverage
 	exec_build
-	lcov --zerocounters --directory "${target_path}" --output-file "${tracefile}"
+	${binary_lcov} --zerocounters --directory "${target_path}" --output-file "${tracefile}"
 	exec_test
-	lcov --capture --directory "${target_path}" --output-file "${tracefile}"
-	lcov --remove "${tracefile}" "/usr/include/*" --output-file "${tracefile}"
+	${binary_lcov} --capture --directory "${target_path}" --output-file "${tracefile}"
+	${binary_lcov} --remove "${tracefile}" "/usr/include/*" --output-file "${tracefile}"
 	rm -rf "${lcov_output_path}"
-	genhtml "${tracefile}" --output-directory "${lcov_output_path}"
+	${binary_genhtml} "${tracefile}" --output-directory "${lcov_output_path}"
 }
 
 opts_words=()
