@@ -31,8 +31,9 @@ namespace rest
 namespace socket
 {
 
-std::shared_ptr<ConnectionSocketInterface> connect(const std::string & host,
-                                                   const uint16_t & port)
+std::shared_ptr<ConnectionSocketInterface> connect(
+    const std::string & host,
+    const uint16_t & port)
 {
     auto p = new ConnectionSocket(host, port);
 

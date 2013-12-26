@@ -42,14 +42,12 @@ class HttpServer : public http::IServer
 {
 public:
     //! Creates and binds to a port.
-    explicit HttpServer(//! Address to bind to.
-                        const std::string & address,
-                        //! Port to bind to.
-                        const uint16_t & port,
-                        //! Called if anyone wants to connect.
-                        const http::AcceptFn & acceptFn,
-                        //! Called if anyone requests something.
-                        const http::AccessFn & accessFn);
+    explicit HttpServer(
+        const std::string & address,     //! Address to bind to.
+        const uint16_t & port,           //! Port to bind to.
+        const http::AcceptFn & acceptFn, //! Called if anyone wants to connect.
+        const http::AccessFn & accessFn  //! Called in case of a requests.
+    );
 
     //! Destroys the http server.
     virtual ~HttpServer();

@@ -43,11 +43,13 @@ public:
     virtual std::shared_ptr<ConnectionSocketInterface> accept() const = 0;
 };
 
-std::shared_ptr<ConnectionSocketInterface> connect(const std::string & host,
-                                                   const uint16_t & port);
+std::shared_ptr<ConnectionSocketInterface> connect(
+    const std::string & host,
+    const uint16_t & port);
 
-std::shared_ptr<ListenerSocketInterface> listen(const std::string & host,
-                                                const uint16_t & port);
+std::shared_ptr<ListenerSocketInterface> listen(
+    const std::string & host,
+    const uint16_t & port);
 
 } // namespace socket
 
