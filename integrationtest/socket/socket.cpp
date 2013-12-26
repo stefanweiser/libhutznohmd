@@ -54,9 +54,9 @@ TEST(Socket, AcceptSendReceive)
     connection = socket.accept();
     std::shared_ptr<rest::socket::ConnectionSocketInterface> empty;
     EXPECT_NE(connection, empty);
-    rest::socket::ConnectionSocket* pConnection;
-    pConnection = dynamic_cast<rest::socket::ConnectionSocket*>(connection.get());
-    EXPECT_NE(pConnection->m_socket, -1);
+    rest::socket::ConnectionSocket* c;
+    c = dynamic_cast<rest::socket::ConnectionSocket*>(connection.get());
+    EXPECT_NE(c->m_socket, -1);
 
     std::vector<uint8_t> data = { 0, 1, 2, 3 };
     EXPECT_EQ(connection->send(data), true);

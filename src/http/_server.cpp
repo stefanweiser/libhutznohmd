@@ -24,11 +24,11 @@ namespace http
 {
 
 Server::Server(const std::string& host,
-               const uint16_t& port,
-               const AccessFn& accessFn)
+               const uint16_t   & port,
+               const AccessFn   & accessFn)
     : m_socket()
-    , m_accessFn(accessFn)
-    , m_threads()
+      , m_accessFn(accessFn)
+      , m_threads()
 {
     m_socket = ::rest::socket::listen(host, port);
 }
@@ -56,9 +56,7 @@ void Server::run()
 }
 
 void Server::request(const Connection& /*connection*/)
-{
-    ;
-}
+{}
 
 } // namespace http
 

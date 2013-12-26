@@ -37,6 +37,7 @@ std::shared_ptr<ListenerSocketInterface> listen(const std::string& host,
                                                 const uint16_t   & port)
 {
     auto p = new ListenerSocket(host, port);
+
     return std::shared_ptr<ListenerSocketInterface>(p);
 }
 
@@ -73,7 +74,7 @@ ListenerSocket::~ListenerSocket()
     close(m_socket);
 }
 
-std::shared_ptr<ConnectionSocketInterface>ListenerSocket::accept() const
+std::shared_ptr<ConnectionSocketInterface> ListenerSocket::accept() const
 {
     sockaddr_in addr;
     socklen_t   len = sizeof(addr);

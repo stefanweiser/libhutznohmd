@@ -34,7 +34,7 @@ public:
 
     explicit ListenerSocket(const std::string& host, const uint16_t& port);
     virtual ~ListenerSocket();
-    virtual std::shared_ptr<ConnectionSocketInterface>accept() const;
+    virtual std::shared_ptr<ConnectionSocketInterface> accept() const;
 
 private:
 
