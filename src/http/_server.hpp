@@ -35,25 +35,22 @@ namespace http
 class Server
 {
 private:
-
     typedef std::shared_ptr<rest::socket::ConnectionSocketInterface> Connection;
 
 public:
-
-    Server(const std::string& host,
-           const uint16_t   & port,
-           const AccessFn   & accessFn);
+    Server(const std::string & host,
+           const uint16_t & port,
+           const AccessFn & accessFn);
 
     ~Server();
 
     void run() __attribute__((noreturn));
-    void request(const Connection& connection);
+    void request(const Connection & connection);
 
 private:
-
-    std::shared_ptr<::rest::socket::ListenerSocketInterface> m_socket;
+    std::shared_ptr<rest::socket::ListenerSocketInterface> m_socket;
     AccessFn m_accessFn;
-    std::vector < std::shared_ptr < std::thread >> m_threads;
+    std::vector<std::shared_ptr<std::thread>> m_threads;
 };
 
 } // namespace http

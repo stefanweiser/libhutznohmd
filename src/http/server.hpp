@@ -34,62 +34,60 @@ http::Method convertMethod(const char * const method);
 http::Version convertVersion(const char * const version);
 
 //! Converts librest status codes into libmicrohttpd status codes.
-unsigned int convertStatusCode(const http::StatusCode& statusCode);
+unsigned int convertStatusCode(const http::StatusCode & statusCode);
 
 //! Opens a port to listen on. Implements HTTP to answer requests. Communicates
 //! via callbacks with its user.
 class HttpServer : public http::IServer
 {
 public:
-
     //! Creates and binds to a port.
-    explicit HttpServer(const std::string   & address,  //!< Address to bind to.
-                        const uint16_t      & port,     //!< Port to bind to.
-                        const http::AcceptFn& acceptFn, //!< Called if anyone
-                                                        //!< wants
-                                                        //!< to connect.
-                        const http::AccessFn& accessFn  //!< Called if anyone
-                                                        //!< requests something.
-                        );
+    explicit HttpServer(//! Address to bind to.
+                        const std::string & address,
+                        //! Port to bind to.
+                        const uint16_t & port,
+                        //! Called if anyone wants to connect.
+                        const http::AcceptFn & acceptFn,
+                        //! Called if anyone requests something.
+                        const http::AccessFn & accessFn);
 
     //! Destroys the http server.
     virtual ~HttpServer();
 
     //! Intermediate method to check if the server accepts a connection.
     int accept(const sockaddr * addr,
-               socklen_t        addrlen);
+               socklen_t addrlen);
 
     //! Internal method to build up the request out of what libmicrohttpd is
     //! giving you.
     int access(MHD_Connection * pConnection,
-               const char     * url,
-               const char     * method,
-               const char     * version,
-               const char     * uploadData,
-               size_t         * uploadDataSize,
-               void          ** ptr);
+               const char * url,
+               const char * method,
+               const char * version,
+               const char * uploadData,
+               size_t * uploadDataSize,
+               void ** ptr);
 
     //! Intermediate method to build the response for a request.
-    int access(MHD_Connection   * pConnection,
+    int access(MHD_Connection * pConnection,
                const char * const url,
                const char * const method,
                const char * const version,
-               const std::string& uploadData);
+               const std::string & uploadData);
 
     //! Called to clean up the request.
-    void completed(MHD_Connection           * pConnection,
-                   void                    ** ppData,
+    void completed(MHD_Connection * pConnection,
+                   void ** ppData,
                    MHD_RequestTerminationCode reason);
 
 private:
-
     //! Copy constructor.
-    explicit HttpServer(const HttpServer& rhs);
+    explicit HttpServer(const HttpServer & rhs);
 
     //! Assignment copy.
-    HttpServer& operator=(const HttpServer& rhs);
+    HttpServer & operator=(const HttpServer & rhs);
 
-    MHD_Daemon   * m_pDaemon;  //!< Internal daemon handle.
+    MHD_Daemon * m_pDaemon;    //!< Internal daemon handle.
     http::AcceptFn m_acceptFn; //!< Callback for accepting connections.
     http::AccessFn m_accessFn; //!< Callback to answer requests.
 };

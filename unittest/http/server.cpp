@@ -39,17 +39,13 @@ TEST(Conversion, Version)
 {
     EXPECT_EQ(rest::convertVersion("HTTP/1.0"), rest::http::Version::HTTP_1_0);
     EXPECT_EQ(rest::convertVersion("HTTP/1.1"), rest::http::Version::HTTP_1_1);
-    EXPECT_EQ(rest::convertVersion(
-                  "HTTP/2.0"), rest::http::Version::HTTP_UNKNOWN);
+    EXPECT_EQ(rest::convertVersion("HTTP/2.0"), rest::http::Version::HTTP_UNKNOWN);
 }
 
 
 TEST(Conversion, StatusCode)
 {
-    EXPECT_EQ(rest::convertStatusCode(
-                  rest::http::StatusCode::Ok),              200);
-    EXPECT_EQ(rest::convertStatusCode(
-                  rest::http::StatusCode::NotFound),        404);
-    EXPECT_EQ(rest::convertStatusCode(rest::http::StatusCode::
-                                      InternalServerError), 500);
+    EXPECT_EQ(rest::convertStatusCode(rest::http::StatusCode::Ok), 200);
+    EXPECT_EQ(rest::convertStatusCode(rest::http::StatusCode::NotFound), 404);
+    EXPECT_EQ(rest::convertStatusCode(rest::http::StatusCode::InternalServerError), 500);
 }

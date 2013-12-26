@@ -277,34 +277,32 @@ enum class StatusCode : int32_t
 
 //! Callback type, that is invoked when a client connects. Returning true will
 //! accept the connection and false will refuse it.
-typedef std::function<bool (const sockaddr *, const socklen_t)> AcceptFn;
+typedef std::function<bool (const sockaddr *, const socklen_t) > AcceptFn;
 
 //! Callback type, that is invoked when a client sends a request. Return the
 //! status code to answer with. Set the downloadData if you want to send data
 //! with the response.
-typedef std::function<StatusCode(const std::string& url,
-                                 const Method method,
-                                 const Version version,
-                                 const std::string& uploadData,
-                                 std::string& downloadData)> AccessFn;
+typedef std::function < StatusCode(const std::string & url,
+                                   const Method method,
+                                   const Version version,
+                                   const std::string & uploadData,
+                                   std::string & downloadData) > AccessFn;
 
 //! A http server interface for a server, that interacts via callback with its
 //! users.
 class IServer
 {
 public:
-
     //! Needed to be able to destroy the server correctly.
     virtual ~IServer() {}
-
 };
 
 //! Creates a http server, that interacts via callback.
 std::shared_ptr<IServer> createServer(
-    const std::string& address,   //!< Address to bind to.
-    const uint16_t   & port,      //!< Port to bind to.
-    const AcceptFn   & acceptFn,  //!< Called if someone wants to connect.
-    const AccessFn   & accessFn); //!< Called if someone requests something.
+    const std::string & address,  //!< Address to bind to.
+    const uint16_t & port,        //!< Port to bind to.
+    const AcceptFn & acceptFn,    //!< Called if someone wants to connect.
+    const AccessFn & accessFn);   //!< Called if someone requests something.
 
 } // namespace http
 

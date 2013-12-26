@@ -36,70 +36,70 @@ int acceptCallback(void * pObject, const sockaddr * addr, socklen_t addrlen)
 }
 
 //! Callback used by libmicrohttpd, when someone transmits a request to us.
-int accessCallback(void           * pObject,
+int accessCallback(void * pObject,
                    MHD_Connection * pConnection,
-                   const char     * url,
-                   const char     * method,
-                   const char     * version,
-                   const char     * uploadData,
-                   size_t         * uploadDataSize,
-                   void          ** ptr)
+                   const char * url,
+                   const char * method,
+                   const char * version,
+                   const char * uploadData,
+                   size_t * uploadDataSize,
+                   void ** ptr)
 {
     assert(pObject != nullptr);
     return static_cast<HttpServer *>(pObject)->access(pConnection,
-                                                      url,
-                                                      method,
-                                                      version,
-                                                      uploadData,
-                                                      uploadDataSize,
-                                                      ptr);
+            url,
+            method,
+            version,
+            uploadData,
+            uploadDataSize,
+            ptr);
 }
 
 //! Callback used by libmicrohttpd, when the response of a request was sent.
-void completedCallback(void                     * pObject,
-                       MHD_Connection           * pConnection,
-                       void                    ** ppData,
+void completedCallback(void * pObject,
+                       MHD_Connection * pConnection,
+                       void ** ppData,
                        MHD_RequestTerminationCode reason)
 {
     assert(pObject != nullptr);
     return static_cast<HttpServer *>(pObject)->completed(pConnection,
-                                                         ppData,
-                                                         reason);
+            ppData,
+            reason);
 }
 
 } // namespace
 
 http::Method convertMethod(const char * const method)
 {
-    if ( std::string(method) == std::string(MHD_HTTP_METHOD_HEAD))
+    if (std::string(method) == std::string(MHD_HTTP_METHOD_HEAD))
     {
         return http::Method::HEAD;
     }
-    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_GET))
+    else if (std::string(method) == std::string(MHD_HTTP_METHOD_GET))
     {
         return http::Method::GET;
     }
-    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_PUT))
+    else if (std::string(method) == std::string(MHD_HTTP_METHOD_PUT))
     {
         return http::Method::PUT;
     }
-    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_POST))
+    else if (std::string(method) == std::string(MHD_HTTP_METHOD_POST))
     {
         return http::Method::POST;
     }
-    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_DELETE))
+    else if (std::string(method) == std::string(MHD_HTTP_METHOD_DELETE))
     {
         return http::Method::DELETE;
     }
-    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_TRACE))
+    else if (std::string(method) == std::string(MHD_HTTP_METHOD_TRACE))
     {
         return http::Method::TRACE;
     }
-    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_OPTIONS))
+    else if (std::string(method) == std::string(MHD_HTTP_METHOD_OPTIONS))
     {
         return http::Method::OPTIONS;
     }
-    else if ( std::string(method) == std::string(MHD_HTTP_METHOD_CONNECT))
+    else if (std::string(method) == std::string(MHD_HTTP_METHOD_CONNECT))
     {
         return http::Method::CONNECT;
     }
@@ -111,11 +111,11 @@ http::Method convertMethod(const char * const method)
 
 http::Version convertVersion(const char * const version)
 {
-    if ( std::string(version) == std::string(MHD_HTTP_VERSION_1_0))
+    if (std::string(version) == std::string(MHD_HTTP_VERSION_1_0))
     {
         return http::Version::HTTP_1_0;
     }
-    else if ( std::string(version) == std::string(MHD_HTTP_VERSION_1_1))
+    else if (std::string(version) == std::string(MHD_HTTP_VERSION_1_1))
     {
         return http::Version::HTTP_1_1;
     }
@@ -125,18 +125,18 @@ http::Version convertVersion(const char * const version)
     }
 }
 
-unsigned int convertStatusCode(const http::StatusCode& statusCode)
+unsigned int convertStatusCode(const http::StatusCode & statusCode)
 {
     return static_cast<int32_t>(statusCode);
 }
 
-HttpServer::HttpServer(const std::string   & address,
-                       const uint16_t      & port,
-                       const http::AcceptFn& acceptFn,
-                       const http::AccessFn& accessFn)
+HttpServer::HttpServer(const std::string & address,
+                       const uint16_t & port,
+                       const http::AcceptFn & acceptFn,
+                       const http::AccessFn & accessFn)
     : m_pDaemon(nullptr)
-      , m_acceptFn(acceptFn)
-      , m_accessFn(accessFn)
+    , m_acceptFn(acceptFn)
+    , m_accessFn(accessFn)
 {
     sockaddr_in addr;
 
@@ -165,8 +165,8 @@ HttpServer::~HttpServer()
 
 int HttpServer::accept(const sockaddr * addr, socklen_t addrlen)
 {
-    if ( !m_acceptFn ||
-         (true == m_acceptFn(addr, addrlen)))
+    if (!m_acceptFn ||
+            (true == m_acceptFn(addr, addrlen)))
     {
         return MHD_YES;
     }
@@ -174,12 +174,12 @@ int HttpServer::accept(const sockaddr * addr, socklen_t addrlen)
 }
 
 int HttpServer::access(MHD_Connection * pConnection,
-                       const char     * url,
-                       const char     * method,
-                       const char     * version,
-                       const char     * uploadData,
-                       size_t         * uploadDataSize,
-                       void          ** ptr)
+                       const char * url,
+                       const char * method,
+                       const char * version,
+                       const char * uploadData,
+                       size_t * uploadDataSize,
+                       void ** ptr)
 {
     // This method is called several times:
     // 1. Headers are processed.
@@ -188,7 +188,7 @@ int HttpServer::access(MHD_Connection * pConnection,
 
     assert(ptr != nullptr);
 
-    if ( *ptr == nullptr )
+    if (*ptr == nullptr)
     {
         *ptr = new std::string();
         return MHD_YES;
@@ -197,7 +197,7 @@ int HttpServer::access(MHD_Connection * pConnection,
     std::string * pData = static_cast<std::string *>(*ptr);
     assert(pData != nullptr);
 
-    if ( *uploadDataSize > 0 )
+    if (*uploadDataSize > 0)
     {
         pData->append(uploadData, *uploadDataSize);
         *uploadDataSize = 0;
@@ -209,16 +209,16 @@ int HttpServer::access(MHD_Connection * pConnection,
     }
 }
 
-int HttpServer::access(MHD_Connection   * pConnection,
+int HttpServer::access(MHD_Connection * pConnection,
                        const char * const url,
                        const char * const method,
                        const char * const version,
-                       const std::string& uploadData)
+                       const std::string & uploadData)
 {
     std::string data;
     http::StatusCode statusCode = http::StatusCode::InternalServerError;
 
-    if ( m_accessFn )
+    if (m_accessFn)
     {
         statusCode = m_accessFn(url,
                                 convertMethod(method),
@@ -228,9 +228,9 @@ int HttpServer::access(MHD_Connection   * pConnection,
     }
     MHD_Response * pResponse;
     pResponse = MHD_create_response_from_data(data.size(),
-                                              const_cast<char *>(data.c_str()),
-                                              MHD_NO,
-                                              MHD_YES);
+                const_cast<char *>(data.c_str()),
+                MHD_NO,
+                MHD_YES);
     int result = MHD_queue_response(pConnection,
                                     convertStatusCode(statusCode),
                                     pResponse);
@@ -240,15 +240,15 @@ int HttpServer::access(MHD_Connection   * pConnection,
 }
 
 void HttpServer::completed(MHD_Connection * /*pConnection*/,
-                           void        ** ppData,
+                           void ** ppData,
                            MHD_RequestTerminationCode /*reason*/)
 {
     // Cleanup internal string buffer.
-    if ( ppData != nullptr )
+    if (ppData != nullptr)
     {
-        std::string * p = (std::string *)*ppData;
+        std::string * p = (std::string *) *ppData;
 
-        if ( p != nullptr )
+        if (p != nullptr)
         {
             delete p;
             *ppData = nullptr;
@@ -256,13 +256,13 @@ void HttpServer::completed(MHD_Connection * /*pConnection*/,
     }
 }
 
-HttpServer::HttpServer(const HttpServer& /*rhs*/)
+HttpServer::HttpServer(const HttpServer & /*rhs*/)
     : m_pDaemon(nullptr)
-      , m_acceptFn()
-      , m_accessFn()
+    , m_acceptFn()
+    , m_accessFn()
 {}
 
-HttpServer& HttpServer::operator=(const HttpServer& /*rhs*/)
+HttpServer & HttpServer::operator=(const HttpServer & /*rhs*/)
 {
     m_pDaemon = nullptr;
     return *this;

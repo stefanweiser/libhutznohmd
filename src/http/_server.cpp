@@ -23,19 +23,19 @@ namespace rest
 namespace http
 {
 
-Server::Server(const std::string& host,
-               const uint16_t   & port,
-               const AccessFn   & accessFn)
+Server::Server(const std::string & host,
+               const uint16_t & port,
+               const AccessFn & accessFn)
     : m_socket()
-      , m_accessFn(accessFn)
-      , m_threads()
+    , m_accessFn(accessFn)
+    , m_threads()
 {
-    m_socket = ::rest::socket::listen(host, port);
+    m_socket = rest::socket::listen(host, port);
 }
 
 Server::~Server()
 {
-    for ( std::shared_ptr<std::thread>& ptrThread : m_threads )
+    for (std::shared_ptr<std::thread> & ptrThread : m_threads)
     {
         ptrThread->join();
     }
@@ -43,19 +43,19 @@ Server::~Server()
 
 void Server::run()
 {
-    while ( true )
+    while (true)
     {
         Connection connection;
         connection = m_socket->accept();
 
-        auto thread = std::make_shared<std::thread>(std::bind(&Server::request,
-                                                              this,
-                                                              connection));
+        auto thread = std::make_shared<std::thread> (std::bind(&Server::request,
+                      this,
+                      connection));
         m_threads.push_back(thread);
     }
 }
 
-void Server::request(const Connection& /*connection*/)
+void Server::request(const Connection & /*connection*/)
 {}
 
 } // namespace http

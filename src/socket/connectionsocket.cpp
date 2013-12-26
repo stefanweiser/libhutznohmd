@@ -31,34 +31,34 @@ namespace rest
 namespace socket
 {
 
-std::shared_ptr<ConnectionSocketInterface> connect(const std::string& host,
-                                                   const uint16_t   & port)
+std::shared_ptr<ConnectionSocketInterface> connect(const std::string & host,
+                                                   const uint16_t & port)
 {
     auto p = new ConnectionSocket(host, port);
 
-    return std::shared_ptr<ConnectionSocketInterface>(p);
+    return std::shared_ptr<ConnectionSocketInterface> (p);
 }
 
-ConnectionSocket::ConnectionSocket(const std::string& host,
-                                   const uint16_t   & port)
+ConnectionSocket::ConnectionSocket(const std::string & host,
+                                   const uint16_t & port)
     : m_socket(-1)
 {
     sockaddr_in addr;
 
-    if ( !::inet_aton(host.c_str(), &addr.sin_addr))
+    if (!::inet_aton(host.c_str(), &addr.sin_addr))
     {
         hostent * hostname = ::gethostbyname(host.c_str());
 
-        if ( !hostname )
+        if (!hostname)
         {
             throw std::bad_alloc();
         }
-        addr.sin_addr = *(in_addr *)hostname->h_addr;
+        addr.sin_addr = * (in_addr *) hostname->h_addr;
     }
 
     m_socket = ::socket(PF_INET, SOCK_STREAM, 0);
 
-    if ( m_socket == -1 )
+    if (m_socket == -1)
     {
         throw std::bad_alloc();
     }
@@ -66,14 +66,14 @@ ConnectionSocket::ConnectionSocket(const std::string& host,
     addr.sin_port   = ::htons(port);
     addr.sin_family = AF_INET;
 
-    if ( ::connect(m_socket, (sockaddr *)&addr, sizeof(addr)) == -1 )
+    if (::connect(m_socket, (sockaddr *) &addr, sizeof(addr)) == -1)
     {
         ::close(m_socket);
         throw std::bad_alloc();
     }
 }
 
-ConnectionSocket::ConnectionSocket(const int& socket)
+ConnectionSocket::ConnectionSocket(const int & socket)
     : m_socket(socket)
 {}
 
@@ -82,13 +82,16 @@ ConnectionSocket::~ConnectionSocket()
     close(m_socket);
 }
 
-bool ConnectionSocket::receive(std::vector<uint8_t>& data)
+bool ConnectionSocket::receive(std::vector<uint8_t> & data)
 {
-    if ( m_socket < 0 ) return false;
+    if (m_socket < 0)
+    {
+        return false;
+    }
 
     ssize_t received = ::recv(m_socket, data.data(), data.size(), 0);
 
-    if ( received <= 0 )
+    if (received <= 0)
     {
         return false;
     }
@@ -97,9 +100,12 @@ bool ConnectionSocket::receive(std::vector<uint8_t>& data)
     return true;
 }
 
-bool ConnectionSocket::send(const std::vector<uint8_t>& data)
+bool ConnectionSocket::send(const std::vector<uint8_t> & data)
 {
-    if ( m_socket < 0 ) return false;
+    if (m_socket < 0)
+    {
+        return false;
+    }
 
     ssize_t sent = 0;
 
@@ -110,13 +116,13 @@ bool ConnectionSocket::send(const std::vector<uint8_t>& data)
                                    data.size() - sent,
                                    0);
 
-        if ( sentBlock < 0 )
+        if (sentBlock < 0)
         {
             return false;
         }
         sent += sentBlock;
     }
-    while ( sent < ssize_t(data.size()));
+    while (sent < ssize_t (data.size()));
 
     return true;
 }

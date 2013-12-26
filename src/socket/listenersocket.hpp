@@ -31,13 +31,11 @@ namespace socket
 class ListenerSocket : public ListenerSocketInterface
 {
 public:
-
-    explicit ListenerSocket(const std::string& host, const uint16_t& port);
+    explicit ListenerSocket(const std::string & host, const uint16_t & port);
     virtual ~ListenerSocket();
     virtual std::shared_ptr<ConnectionSocketInterface> accept() const;
 
 private:
-
     int m_socket;
 };
 
