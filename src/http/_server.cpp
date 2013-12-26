@@ -26,12 +26,10 @@ namespace http
 Server::Server(const std::string & host,
                const uint16_t & port,
                const AccessFn & accessFn)
-    : m_socket()
+    : m_socket(rest::socket::listen(host, port))
     , m_accessFn(accessFn)
     , m_threads()
-{
-    m_socket = rest::socket::listen(host, port);
-}
+{}
 
 Server::~Server()
 {
