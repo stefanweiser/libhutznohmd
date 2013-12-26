@@ -15,6 +15,8 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <iostream>
+
 #include "_server.hpp"
 
 namespace rest
@@ -23,10 +25,17 @@ namespace rest
 namespace http
 {
 
-Server::Server(const std::string & host,
-               const uint16_t & port,
-               const AccessFn & accessFn)
-    : m_socket(rest::socket::listen(host, port))
+std::shared_ptr<Server> createServer(
+    const std::string & host,
+    const uint16_t & port,
+    const AccessFn & accessFn)
+{
+    auto socket = rest::socket::listen(host, port);
+    return std::make_shared<Server>(socket, accessFn);
+}
+
+Server::Server(const Listener& socket, const AccessFn & accessFn)
+    : m_socket(socket)
     , m_accessFn(accessFn)
     , m_threads()
 {}
@@ -53,8 +62,16 @@ void Server::run()
     }
 }
 
-void Server::request(const Connection & /*connection*/)
-{}
+void Server::request(const Connection & connection)
+{
+    std::vector<uint8_t> data(4000);
+    if (false == connection->receive(data))
+    {
+        return;
+    }
+    std::string str(data.begin(), data.end());
+    std::cout << str << std::endl;
+}
 
 } // namespace http
 

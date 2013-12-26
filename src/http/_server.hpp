@@ -36,11 +36,10 @@ class Server
 {
 private:
     typedef std::shared_ptr<rest::socket::ConnectionSocketInterface> Connection;
+    typedef std::shared_ptr<rest::socket::ListenerSocketInterface> Listener;
 
 public:
-    Server(const std::string & host,
-           const uint16_t & port,
-           const AccessFn & accessFn);
+    Server(const Listener& socket, const AccessFn & accessFn);
 
     ~Server();
 
@@ -52,6 +51,11 @@ private:
     AccessFn m_accessFn;
     std::vector<std::shared_ptr<std::thread>> m_threads;
 };
+
+std::shared_ptr<Server> createServer(
+    const std::string & host,
+    const uint16_t & port,
+    const AccessFn & accessFn);
 
 } // namespace http
 
