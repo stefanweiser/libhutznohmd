@@ -43,7 +43,7 @@ public:
 
 private:
     Connection accept();
-    void request(const Connection & connection);
+    void parseRequest(const Connection & connection);
 
     std::shared_ptr<rest::socket::ListenerSocketInterface> m_socket;
     AccessFn m_accessFn;

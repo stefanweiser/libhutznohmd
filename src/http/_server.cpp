@@ -44,7 +44,7 @@ Server::Connection Server::accept()
     return m_socket->accept();
 }
 
-void Server::request(const Connection & connection)
+void Server::parseRequest(const Connection & connection)
 {
     std::vector<uint8_t> data(4000);
     if (false == connection->receive(data))

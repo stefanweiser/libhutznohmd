@@ -57,5 +57,5 @@ TEST(Server, Request)
             data = { '0', '1', '2', '3' };
             return true;
         }));
-    server.request(connection);
+    server.parseRequest(connection);
 }
