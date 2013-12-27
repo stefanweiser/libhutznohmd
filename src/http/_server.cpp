@@ -34,7 +34,7 @@ std::shared_ptr<Server> createServer(
     return std::make_shared<Server>(socket, accessFn);
 }
 
-Server::Server(const Listener& socket, const AccessFn & accessFn)
+Server::Server(const Listener & socket, const AccessFn & accessFn)
     : m_socket(socket)
     , m_accessFn(accessFn)
 {}

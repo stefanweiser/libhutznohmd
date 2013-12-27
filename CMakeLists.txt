@@ -7,6 +7,7 @@ get_filename_component(GMOCK_DIR ${PROJECT_DIR}/gmock REALPATH)
 add_subdirectory(src)
 add_subdirectory(unittest)
 add_subdirectory(integrationtest)
+add_subdirectory(examples)
 
 set(CPACK_GENERATOR "DEB;RPM;TBZ2;TGZ")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Stefan Weiser <stefan.weiser@bluewin.ch>")

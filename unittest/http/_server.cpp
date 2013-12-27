@@ -35,8 +35,8 @@ TEST(Server, Accept)
     std::shared_ptr<rest::socket::MockConnectionSocket> connection;
     connection = std::make_shared<rest::socket::MockConnectionSocket>();
     EXPECT_CALL(*socket, accept())
-        .Times(1)
-        .WillOnce(Return(connection));
+    .Times(1)
+    .WillOnce(Return(connection));
 
     rest::http::Server::Connection result = server.accept();
 
@@ -51,11 +51,11 @@ TEST(Server, Request)
     std::shared_ptr<rest::socket::MockConnectionSocket> connection;
     connection = std::make_shared<rest::socket::MockConnectionSocket>();
     EXPECT_CALL(*connection, receive(_))
-        .Times(1)
-        .WillOnce(Invoke([](std::vector<uint8_t> & data) -> bool
-        {
-            data = { '0', '1', '2', '3' };
-            return true;
-        }));
+    .Times(1)
+    .WillOnce(Invoke([](std::vector<uint8_t> & data) -> bool
+    {
+        data = { '0', '1', '2', '3' };
+        return true;
+    }));
     server.parseRequest(connection);
 }

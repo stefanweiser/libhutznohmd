@@ -39,7 +39,7 @@ private:
     typedef std::shared_ptr<rest::socket::ListenerSocketInterface> Listener;
 
 public:
-    Server(const Listener& socket, const AccessFn & accessFn);
+    Server(const Listener & socket, const AccessFn & accessFn);
 
 private:
     Connection accept();
