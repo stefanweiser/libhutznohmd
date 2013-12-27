@@ -37,29 +37,11 @@ std::shared_ptr<Server> createServer(
 Server::Server(const Listener& socket, const AccessFn & accessFn)
     : m_socket(socket)
     , m_accessFn(accessFn)
-    , m_threads()
 {}
 
-Server::~Server()
+Server::Connection Server::accept()
 {
-    for (std::shared_ptr<std::thread> & ptrThread : m_threads)
-    {
-        ptrThread->join();
-    }
-}
-
-void Server::run()
-{
-    while (true)
-    {
-        Connection connection;
-        connection = m_socket->accept();
-
-        auto thread = std::make_shared<std::thread> (std::bind(&Server::request,
-                      this,
-                      connection));
-        m_threads.push_back(thread);
-    }
+    return m_socket->accept();
 }
 
 void Server::request(const Connection & connection)
@@ -70,7 +52,6 @@ void Server::request(const Connection & connection)
         return;
     }
     std::string str(data.begin(), data.end());
-    std::cout << str << std::endl;
 }
 
 } // namespace http

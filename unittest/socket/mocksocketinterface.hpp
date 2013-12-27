@@ -15,47 +15,34 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_HTTP__SERVER_HPP__
-#define __LIBREST_HTTP__SERVER_HPP__
+#ifndef __LIBREST_SOCKET_MOCKSOCKETINTERFACE_HPP__
+#define __LIBREST_SOCKET_MOCKSOCKETINTERFACE_HPP__
 
-#include <functional>
-#include <memory>
-#include <thread>
+#include <gmock/gmock.h>
 
-#include <socket/listenersocket.hpp>
-
-#include <librest.hpp>
+#include <socket/socketinterface.hpp>
 
 namespace rest
 {
 
-namespace http
+namespace socket
 {
 
-class Server
+class MockConnectionSocket : public ConnectionSocketInterface
 {
-private:
-    typedef std::shared_ptr<rest::socket::ConnectionSocketInterface> Connection;
-    typedef std::shared_ptr<rest::socket::ListenerSocketInterface> Listener;
-
 public:
-    Server(const Listener& socket, const AccessFn & accessFn);
-
-private:
-    Connection accept();
-    void request(const Connection & connection);
-
-    std::shared_ptr<rest::socket::ListenerSocketInterface> m_socket;
-    AccessFn m_accessFn;
+    MOCK_METHOD1(receive, bool(std::vector<uint8_t> &));
+    MOCK_METHOD1(send, bool(const std::vector<uint8_t> &));
 };
 
-std::shared_ptr<Server> createServer(
-    const std::string & host,
-    const uint16_t & port,
-    const AccessFn & accessFn);
+class MockListenerSocket : public ListenerSocketInterface
+{
+public:
+    MOCK_CONST_METHOD0(accept, std::shared_ptr<ConnectionSocketInterface>());
+};
 
-} // namespace http
+} // namespace socket
 
 } // namespace rest
 
-#endif // __LIBREST_HTTP__SERVER_HPP__
+#endif // __LIBREST_SOCKET_MOCKSOCKETINTERFACE_HPP__
