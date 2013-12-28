@@ -15,6 +15,8 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cctype>
+
 #include "request.hpp"
 
 namespace rest
@@ -168,12 +170,39 @@ Request::ParserState Request::parseMethod()
 
 Request::ParserState Request::parseURL()
 {
+    char c = getChar();
+    while ( (c == ' ') && (c == '\t') ) { c = getChar(); }
+    while ( (c != ' ') || (c != '\t') )
+    {
+        if ( c == '%' )
+        {
+            char d = getChar();
+            char e = getChar();
+            if ( !std::isxdigit(d) || !std::isxdigit(e) )
+            {
+                return ParserState::Error;
+            }
+            int f = (d > '9') ? ((d &~ 0x20) - 'A' + 10) : (d - '0');
+            int g = (e > '9') ? ((e &~ 0x20) - 'A' + 10) : (e - '0');
+            c = static_cast<char>((f << 4) | g);
+        }
+        else if ( (c == '\n') || (c == '\r') )
+        {
+            return ParserState::Error;
+        }
+
+        m_url += c;
+        c = getChar();
+    }
+
     return ParserState::Finished;
 }
 
 Request::ParserState Request::parseVersion()
 {
-    if ( getChar() != 'H' ) { return ParserState::Error; }
+    char c = getChar();
+    while ( (c == ' ') && (c == '\t') ) { c = getChar(); }
+    if ( c != 'H' ) { return ParserState::Error; }
     if ( getChar() != 'T' ) { return ParserState::Error; }
     if ( getChar() != 'T' ) { return ParserState::Error; }
     if ( getChar() != 'P' ) { return ParserState::Error; }
@@ -181,7 +210,7 @@ Request::ParserState Request::parseVersion()
     if ( getChar() != '1' ) { return ParserState::Error; }
     if ( getChar() != '.' ) { return ParserState::Error; }
 
-    char c = getChar();
+    c = getChar();
     if ( c == '0' )
     {
         m_version = Version::HTTP_1_0;
