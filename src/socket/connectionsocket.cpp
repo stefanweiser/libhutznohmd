@@ -44,6 +44,13 @@ ConnectionSocket::ConnectionSocket(const std::string & host,
                                    const uint16_t & port)
     : m_socket(-1)
 {
+    m_socket = ::socket(PF_INET, SOCK_STREAM, 0);
+
+    if (m_socket == -1)
+    {
+        throw std::bad_alloc();
+    }
+
     sockaddr_in addr;
 
     if (!::inet_aton(host.c_str(), &addr.sin_addr))
@@ -57,14 +64,7 @@ ConnectionSocket::ConnectionSocket(const std::string & host,
         addr.sin_addr = * (in_addr *) hostname->h_addr;
     }
 
-    m_socket = ::socket(PF_INET, SOCK_STREAM, 0);
-
-    if (m_socket == -1)
-    {
-        throw std::bad_alloc();
-    }
-
-    addr.sin_port   = ::htons(port);
+    addr.sin_port = ::htons(port);
     addr.sin_family = AF_INET;
 
     if (::connect(m_socket, (sockaddr *) &addr, sizeof(addr)) == -1)

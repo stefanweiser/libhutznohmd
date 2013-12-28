@@ -53,9 +53,20 @@ ListenerSocket::ListenerSocket(const std::string & host, const uint16_t & port)
     }
 
     sockaddr_in addr;
-    addr.sin_addr.s_addr = ::inet_addr(host.c_str());
-    addr.sin_port        = ::htons(port);
-    addr.sin_family      = AF_INET;
+
+    if (!::inet_aton(host.c_str(), &addr.sin_addr))
+    {
+        hostent * hostname = ::gethostbyname(host.c_str());
+
+        if (!hostname)
+        {
+            throw std::bad_alloc();
+        }
+        addr.sin_addr = * (in_addr *) hostname->h_addr;
+    }
+
+    addr.sin_port = ::htons(port);
+    addr.sin_family = AF_INET;
 
     if (::bind(m_socket, (sockaddr *) &addr, sizeof(addr)) == -1)
     {
