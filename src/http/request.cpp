@@ -25,7 +25,7 @@ namespace rest
 namespace http
 {
 
-Request::Request(const rest::socket::ConnectionPtr& connection)
+Request::Request(const rest::socket::ConnectionPtr & connection)
     : m_connection(connection)
     , m_buffer()
     , m_currentIndex(0)
@@ -39,9 +39,9 @@ Request::Request(const rest::socket::ConnectionPtr& connection)
 void Request::parse()
 {
     ParserState state = ParserState::Method;
-    while ( (state != ParserState::Finished) && (state != ParserState::Error) )
+    while ((state != ParserState::Finished) && (state != ParserState::Error))
     {
-        switch ( state )
+        switch (state)
         {
         case ParserState::Method:
             state = parseMethod();
@@ -73,12 +73,12 @@ void Request::parse()
 
 char Request::getChar()
 {
-    if ( m_currentIndex < m_buffer.size() )
+    if (m_currentIndex < m_buffer.size())
     {
         return m_buffer[m_currentIndex++];
     }
 
-    if ( false == m_connection->receive(m_buffer, 4000) )
+    if (false == m_connection->receive(m_buffer, 4000))
     {
         throw std::exception();
     }
@@ -90,68 +90,155 @@ char Request::getChar()
 Request::ParserState Request::parseMethod()
 {
     char c = getChar();
-    if ( c == 'H' )
+    if (c == 'H')
     {
-        if ( getChar() != 'E' ) { return ParserState::Error; }
-        if ( getChar() != 'A' ) { return ParserState::Error; }
-        if ( getChar() != 'D' ) { return ParserState::Error; }
+        if (getChar() != 'E')
+        {
+            return ParserState::Error;
+        }
+        if (getChar() != 'A')
+        {
+            return ParserState::Error;
+        }
+        if (getChar() != 'D')
+        {
+            return ParserState::Error;
+        }
         m_method = Method::HEAD;
     }
-    else if ( c == 'G' )
+    else if (c == 'G')
     {
-        if ( getChar() != 'E' ) { return ParserState::Error; }
-        if ( getChar() != 'T' ) { return ParserState::Error; }
+        if (getChar() != 'E')
+        {
+            return ParserState::Error;
+        }
+        if (getChar() != 'T')
+        {
+            return ParserState::Error;
+        }
         m_method = Method::GET;
     }
-    else if ( c == 'D' )
+    else if (c == 'D')
     {
-        if ( getChar() != 'E' ) { return ParserState::Error; }
-        if ( getChar() != 'L' ) { return ParserState::Error; }
-        if ( getChar() != 'E' ) { return ParserState::Error; }
-        if ( getChar() != 'T' ) { return ParserState::Error; }
-        if ( getChar() != 'E' ) { return ParserState::Error; }
+        if (getChar() != 'E')
+        {
+            return ParserState::Error;
+        }
+        if (getChar() != 'L')
+        {
+            return ParserState::Error;
+        }
+        if (getChar() != 'E')
+        {
+            return ParserState::Error;
+        }
+        if (getChar() != 'T')
+        {
+            return ParserState::Error;
+        }
+        if (getChar() != 'E')
+        {
+            return ParserState::Error;
+        }
         m_method = Method::DELETE;
     }
-    else if ( c == 'C' )
+    else if (c == 'C')
     {
-        if ( getChar() != 'O' ) { return ParserState::Error; }
-        if ( getChar() != 'N' ) { return ParserState::Error; }
-        if ( getChar() != 'N' ) { return ParserState::Error; }
-        if ( getChar() != 'E' ) { return ParserState::Error; }
-        if ( getChar() != 'C' ) { return ParserState::Error; }
-        if ( getChar() != 'T' ) { return ParserState::Error; }
+        if (getChar() != 'O')
+        {
+            return ParserState::Error;
+        }
+        if (getChar() != 'N')
+        {
+            return ParserState::Error;
+        }
+        if (getChar() != 'N')
+        {
+            return ParserState::Error;
+        }
+        if (getChar() != 'E')
+        {
+            return ParserState::Error;
+        }
+        if (getChar() != 'C')
+        {
+            return ParserState::Error;
+        }
+        if (getChar() != 'T')
+        {
+            return ParserState::Error;
+        }
         m_method = Method::CONNECT;
     }
-    else if ( c == 'O' )
+    else if (c == 'O')
     {
-        if ( getChar() != 'P' ) { return ParserState::Error; }
-        if ( getChar() != 'T' ) { return ParserState::Error; }
-        if ( getChar() != 'I' ) { return ParserState::Error; }
-        if ( getChar() != 'O' ) { return ParserState::Error; }
-        if ( getChar() != 'N' ) { return ParserState::Error; }
-        if ( getChar() != 'S' ) { return ParserState::Error; }
+        if (getChar() != 'P')
+        {
+            return ParserState::Error;
+        }
+        if (getChar() != 'T')
+        {
+            return ParserState::Error;
+        }
+        if (getChar() != 'I')
+        {
+            return ParserState::Error;
+        }
+        if (getChar() != 'O')
+        {
+            return ParserState::Error;
+        }
+        if (getChar() != 'N')
+        {
+            return ParserState::Error;
+        }
+        if (getChar() != 'S')
+        {
+            return ParserState::Error;
+        }
         m_method = Method::OPTIONS;
     }
-    else if ( c == 'T' )
+    else if (c == 'T')
     {
-        if ( getChar() != 'R' ) { return ParserState::Error; }
-        if ( getChar() != 'A' ) { return ParserState::Error; }
-        if ( getChar() != 'C' ) { return ParserState::Error; }
-        if ( getChar() != 'E' ) { return ParserState::Error; }
+        if (getChar() != 'R')
+        {
+            return ParserState::Error;
+        }
+        if (getChar() != 'A')
+        {
+            return ParserState::Error;
+        }
+        if (getChar() != 'C')
+        {
+            return ParserState::Error;
+        }
+        if (getChar() != 'E')
+        {
+            return ParserState::Error;
+        }
         m_method = Method::TRACE;
     }
-    else if ( c == 'P' )
+    else if (c == 'P')
     {
         c = getChar();
-        if ( c == 'O' )
+        if (c == 'O')
         {
-            if ( getChar() != 'S' ) { return ParserState::Error; }
-            if ( getChar() != 'T' ) { return ParserState::Error; }
+            if (getChar() != 'S')
+            {
+                return ParserState::Error;
+            }
+            if (getChar() != 'T')
+            {
+                return ParserState::Error;
+            }
             m_method = Method::POST;
         }
-        else if ( c == 'U' )
+        else if (c == 'U')
         {
-            if ( getChar() != 'T' ) { return ParserState::Error; }
+            if (getChar() != 'T')
+            {
+                return ParserState::Error;
+            }
             m_method = Method::PUT;
         }
         else
@@ -170,14 +257,17 @@ Request::ParserState Request::parseMethod()
 Request::ParserState Request::parseURL()
 {
     char c = getChar();
-    while ( (c == ' ') && (c == '\t') ) { c = getChar(); }
-    while ( (c != ' ') || (c != '\t') )
+    while ((c == ' ') && (c == '\t'))
     {
-        if ( c == '%' )
+        c = getChar();
+    }
+    while ((c != ' ') || (c != '\t'))
+    {
+        if (c == '%')
         {
             char d = getChar();
             char e = getChar();
-            if ( !std::isxdigit(d) || !std::isxdigit(e) )
+            if (!std::isxdigit(d) || !std::isxdigit(e))
             {
                 return ParserState::Error;
             }
@@ -185,7 +275,7 @@ Request::ParserState Request::parseURL()
             int g = (e > '9') ? ((e &~ 0x20) - 'A' + 10) : (e - '0');
             c = static_cast<char>((f << 4) | g);
         }
-        else if ( (c == '\n') || (c == '\r') )
+        else if ((c == '\n') || (c == '\r'))
         {
             return ParserState::Error;
         }
@@ -200,21 +290,45 @@ Request::ParserState Request::parseURL()
 Request::ParserState Request::parseVersion()
 {
     char c = getChar();
-    while ( (c == ' ') && (c == '\t') ) { c = getChar(); }
-    if ( c != 'H' ) { return ParserState::Error; }
-    if ( getChar() != 'T' ) { return ParserState::Error; }
-    if ( getChar() != 'T' ) { return ParserState::Error; }
-    if ( getChar() != 'P' ) { return ParserState::Error; }
-    if ( getChar() != '/' ) { return ParserState::Error; }
-    if ( getChar() != '1' ) { return ParserState::Error; }
-    if ( getChar() != '.' ) { return ParserState::Error; }
+    while ((c == ' ') && (c == '\t'))
+    {
+        c = getChar();
+    }
+    if (c != 'H')
+    {
+        return ParserState::Error;
+    }
+    if (getChar() != 'T')
+    {
+        return ParserState::Error;
+    }
+    if (getChar() != 'T')
+    {
+        return ParserState::Error;
+    }
+    if (getChar() != 'P')
+    {
+        return ParserState::Error;
+    }
+    if (getChar() != '/')
+    {
+        return ParserState::Error;
+    }
+    if (getChar() != '1')
+    {
+        return ParserState::Error;
+    }
+    if (getChar() != '.')
+    {
+        return ParserState::Error;
+    }
 
     c = getChar();
-    if ( c == '0' )
+    if (c == '0')
     {
         m_version = Version::HTTP_1_0;
     }
-    else if ( c == '1' )
+    else if (c == '1')
     {
         m_version = Version::HTTP_1_1;
     }

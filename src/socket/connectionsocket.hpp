@@ -36,7 +36,7 @@ public:
     virtual ~ConnectionSocket();
     virtual bool receive(
         std::vector<uint8_t> & data,
-        const size_t& maxSize);
+        const size_t & maxSize);
     virtual bool send(const std::vector<uint8_t> & data);
 
 private:

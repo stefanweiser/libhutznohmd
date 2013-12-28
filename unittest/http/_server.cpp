@@ -52,7 +52,7 @@ TEST(Server, Request)
     connection = std::make_shared<rest::socket::MockConnectionSocket>();
     EXPECT_CALL(*connection, receive(_, _))
     .Times(1)
-    .WillOnce(Invoke([](std::vector<uint8_t> & data, const size_t&) -> bool
+    .WillOnce(Invoke([](std::vector<uint8_t> & data, const size_t &) -> bool
     {
         data = { '0', '1', '2', '3' };
         return true;

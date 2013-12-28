@@ -35,7 +35,7 @@ public:
 
     virtual bool receive(
         std::vector<uint8_t> & data,
-        const size_t& maxSize) = 0;
+        const size_t & maxSize) = 0;
 
     virtual bool send(const std::vector<uint8_t> & data) = 0;
 };

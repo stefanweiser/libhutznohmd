@@ -31,19 +31,19 @@ void client()
 
     std::cout << "  client receiving" << std::endl;
     std::vector<uint8_t> data2;
-    if ( false == c->receive(data2, 8) )
+    if (false == c->receive(data2, 8))
     {
         throw std::exception();
     }
 
     std::cout << "  client comparing" << std::endl;
-    if ( data != data2 )
+    if (data != data2)
     {
         throw std::exception();
     }
 
     std::cout << "  client sending" << std::endl;
-    if ( false == c->send(data2) )
+    if (false == c->send(data2))
     {
         throw std::exception();
     }
@@ -63,20 +63,20 @@ int main()
     rest::socket::ConnectionPtr c = l->accept();
 
     std::cout << "  server sending" << std::endl;
-    if ( false == c->send(data) )
+    if (false == c->send(data))
     {
         throw std::exception();
     }
 
     std::cout << "  server receiving" << std::endl;
     std::vector<uint8_t> data2;
-    if ( false == c->receive(data2, 8) )
+    if (false == c->receive(data2, 8))
     {
         throw std::exception();
     }
 
     std::cout << "  server comparing" << std::endl;
-    if ( data != data2 )
+    if (data != data2)
     {
         throw std::exception();
     }

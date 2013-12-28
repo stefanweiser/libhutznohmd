@@ -33,7 +33,7 @@ namespace http
 class Request
 {
 public:
-    explicit Request(const rest::socket::ConnectionPtr& connection);
+    explicit Request(const rest::socket::ConnectionPtr & connection);
     void parse();
 
 private:

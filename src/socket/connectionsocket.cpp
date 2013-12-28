@@ -83,7 +83,7 @@ ConnectionSocket::~ConnectionSocket()
 
 bool ConnectionSocket::receive(
     std::vector<uint8_t> & data,
-    const size_t& maxSize)
+    const size_t & maxSize)
 {
     if (m_socket < 0)
     {
