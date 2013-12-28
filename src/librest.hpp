@@ -116,7 +116,7 @@ enum class StatusCode : int32_t
     //! Standard response for successful requests.
     Ok = 200,
 
-    //! Request resultet in a new resource.
+    //! Request resulted in a new resource.
     Created = 201,
 
     //! The server accepted the request. The processing may be not completed,
