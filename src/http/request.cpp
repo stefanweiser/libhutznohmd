@@ -71,36 +71,37 @@ void Request::parse()
     }
 }
 
-char Request::getChar()
+char Request::consumeChar()
 {
-    if (m_currentIndex < m_buffer.size())
+    if (m_currentIndex >= m_buffer.size())
     {
-        return m_buffer[m_currentIndex++];
+        if (false == m_connection->receive(m_buffer, 4000))
+        {
+            throw std::exception();
+        }
     }
-
-    if (false == m_connection->receive(m_buffer, 4000))
+    if (m_currentIndex >= m_buffer.size())
     {
         throw std::exception();
     }
 
-    m_currentIndex = 1;
-    return m_buffer[0];
+    return m_buffer[m_currentIndex++];
 }
 
 Request::ParserState Request::parseMethod()
 {
-    char c = getChar();
+    char c = consumeChar();
     if (c == 'H')
     {
-        if (getChar() != 'E')
+        if (consumeChar() != 'E')
         {
             return ParserState::Error;
         }
-        if (getChar() != 'A')
+        if (consumeChar() != 'A')
         {
             return ParserState::Error;
         }
-        if (getChar() != 'D')
+        if (consumeChar() != 'D')
         {
             return ParserState::Error;
         }
@@ -108,11 +109,11 @@ Request::ParserState Request::parseMethod()
     }
     else if (c == 'G')
     {
-        if (getChar() != 'E')
+        if (consumeChar() != 'E')
         {
             return ParserState::Error;
         }
-        if (getChar() != 'T')
+        if (consumeChar() != 'T')
         {
             return ParserState::Error;
         }
@@ -120,23 +121,23 @@ Request::ParserState Request::parseMethod()
     }
     else if (c == 'D')
     {
-        if (getChar() != 'E')
+        if (consumeChar() != 'E')
         {
             return ParserState::Error;
         }
-        if (getChar() != 'L')
+        if (consumeChar() != 'L')
         {
             return ParserState::Error;
         }
-        if (getChar() != 'E')
+        if (consumeChar() != 'E')
         {
             return ParserState::Error;
         }
-        if (getChar() != 'T')
+        if (consumeChar() != 'T')
         {
             return ParserState::Error;
         }
-        if (getChar() != 'E')
+        if (consumeChar() != 'E')
         {
             return ParserState::Error;
         }
@@ -144,27 +145,27 @@ Request::ParserState Request::parseMethod()
     }
     else if (c == 'C')
     {
-        if (getChar() != 'O')
+        if (consumeChar() != 'O')
         {
             return ParserState::Error;
         }
-        if (getChar() != 'N')
+        if (consumeChar() != 'N')
         {
             return ParserState::Error;
         }
-        if (getChar() != 'N')
+        if (consumeChar() != 'N')
         {
             return ParserState::Error;
         }
-        if (getChar() != 'E')
+        if (consumeChar() != 'E')
         {
             return ParserState::Error;
         }
-        if (getChar() != 'C')
+        if (consumeChar() != 'C')
         {
             return ParserState::Error;
         }
-        if (getChar() != 'T')
+        if (consumeChar() != 'T')
         {
             return ParserState::Error;
         }
@@ -172,27 +173,27 @@ Request::ParserState Request::parseMethod()
     }
     else if (c == 'O')
     {
-        if (getChar() != 'P')
+        if (consumeChar() != 'P')
         {
             return ParserState::Error;
         }
-        if (getChar() != 'T')
+        if (consumeChar() != 'T')
         {
             return ParserState::Error;
         }
-        if (getChar() != 'I')
+        if (consumeChar() != 'I')
         {
             return ParserState::Error;
         }
-        if (getChar() != 'O')
+        if (consumeChar() != 'O')
         {
             return ParserState::Error;
         }
-        if (getChar() != 'N')
+        if (consumeChar() != 'N')
         {
             return ParserState::Error;
         }
-        if (getChar() != 'S')
+        if (consumeChar() != 'S')
         {
             return ParserState::Error;
         }
@@ -200,19 +201,19 @@ Request::ParserState Request::parseMethod()
     }
     else if (c == 'T')
     {
-        if (getChar() != 'R')
+        if (consumeChar() != 'R')
         {
             return ParserState::Error;
         }
-        if (getChar() != 'A')
+        if (consumeChar() != 'A')
         {
             return ParserState::Error;
         }
-        if (getChar() != 'C')
+        if (consumeChar() != 'C')
         {
             return ParserState::Error;
         }
-        if (getChar() != 'E')
+        if (consumeChar() != 'E')
         {
             return ParserState::Error;
         }
@@ -220,14 +221,14 @@ Request::ParserState Request::parseMethod()
     }
     else if (c == 'P')
     {
-        c = getChar();
+        c = consumeChar();
         if (c == 'O')
         {
-            if (getChar() != 'S')
+            if (consumeChar() != 'S')
             {
                 return ParserState::Error;
             }
-            if (getChar() != 'T')
+            if (consumeChar() != 'T')
             {
                 return ParserState::Error;
             }
@@ -235,7 +236,7 @@ Request::ParserState Request::parseMethod()
         }
         else if (c == 'U')
         {
-            if (getChar() != 'T')
+            if (consumeChar() != 'T')
             {
                 return ParserState::Error;
             }
@@ -256,17 +257,17 @@ Request::ParserState Request::parseMethod()
 
 Request::ParserState Request::parseURL()
 {
-    char c = getChar();
+    char c = consumeChar();
     while ((c == ' ') && (c == '\t'))
     {
-        c = getChar();
+        c = consumeChar();
     }
     while ((c != ' ') || (c != '\t'))
     {
         if (c == '%')
         {
-            char d = getChar();
-            char e = getChar();
+            char d = consumeChar();
+            char e = consumeChar();
             if (!std::isxdigit(d) || !std::isxdigit(e))
             {
                 return ParserState::Error;
@@ -281,7 +282,7 @@ Request::ParserState Request::parseURL()
         }
 
         m_url += c;
-        c = getChar();
+        c = consumeChar();
     }
 
     return ParserState::Finished;
@@ -289,41 +290,41 @@ Request::ParserState Request::parseURL()
 
 Request::ParserState Request::parseVersion()
 {
-    char c = getChar();
+    char c = consumeChar();
     while ((c == ' ') && (c == '\t'))
     {
-        c = getChar();
+        c = consumeChar();
     }
     if (c != 'H')
     {
         return ParserState::Error;
     }
-    if (getChar() != 'T')
+    if (consumeChar() != 'T')
     {
         return ParserState::Error;
     }
-    if (getChar() != 'T')
+    if (consumeChar() != 'T')
     {
         return ParserState::Error;
     }
-    if (getChar() != 'P')
+    if (consumeChar() != 'P')
     {
         return ParserState::Error;
     }
-    if (getChar() != '/')
+    if (consumeChar() != '/')
     {
         return ParserState::Error;
     }
-    if (getChar() != '1')
+    if (consumeChar() != '1')
     {
         return ParserState::Error;
     }
-    if (getChar() != '.')
+    if (consumeChar() != '.')
     {
         return ParserState::Error;
     }
 
-    c = getChar();
+    c = consumeChar();
     if (c == '0')
     {
         m_version = Version::HTTP_1_0;

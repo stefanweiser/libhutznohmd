@@ -50,7 +50,7 @@ private:
 
     typedef std::vector<uint8_t> Buffer;
 
-    char getChar();
+    char consumeChar();
     ParserState parseMethod();
     ParserState parseURL();
     ParserState parseVersion();
