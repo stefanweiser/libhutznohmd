@@ -173,7 +173,29 @@ Request::ParserState Request::parseURL()
 
 Request::ParserState Request::parseVersion()
 {
-    return ParserState::Finished;
+    if ( getChar() != 'H' ) { return ParserState::Error; }
+    if ( getChar() != 'T' ) { return ParserState::Error; }
+    if ( getChar() != 'T' ) { return ParserState::Error; }
+    if ( getChar() != 'P' ) { return ParserState::Error; }
+    if ( getChar() != '/' ) { return ParserState::Error; }
+    if ( getChar() != '1' ) { return ParserState::Error; }
+    if ( getChar() != '.' ) { return ParserState::Error; }
+
+    char c = getChar();
+    if ( c == '0' )
+    {
+        m_version = Version::HTTP_1_0;
+    }
+    else if ( c == '1' )
+    {
+        m_version = Version::HTTP_1_1;
+    }
+    else
+    {
+        return ParserState::Error;
+    }
+
+    return ParserState::Headers;
 }
 
 Request::ParserState Request::parseHeaders()
