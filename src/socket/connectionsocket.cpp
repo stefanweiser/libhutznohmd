@@ -35,9 +35,7 @@ std::shared_ptr<ConnectionSocketInterface> connect(
     const std::string & host,
     const uint16_t & port)
 {
-    auto p = new ConnectionSocket(host, port);
-
-    return std::shared_ptr<ConnectionSocketInterface> (p);
+    return std::make_shared<ConnectionSocket>(host, port);
 }
 
 ConnectionSocket::ConnectionSocket(const std::string & host,

@@ -37,9 +37,7 @@ std::shared_ptr<ListenerSocketInterface> listen(
     const std::string & host,
     const uint16_t & port)
 {
-    auto p = new ListenerSocket(host, port);
-
-    return std::shared_ptr<ListenerSocketInterface> (p);
+    return std::make_shared<ListenerSocket>(host, port);
 }
 
 ListenerSocket::ListenerSocket(const std::string & host, const uint16_t & port)
@@ -97,7 +95,7 @@ std::shared_ptr<ConnectionSocketInterface> ListenerSocket::accept() const
         return std::shared_ptr<ConnectionSocketInterface>();
     }
 
-    return std::make_shared<ConnectionSocket> (client);
+    return std::make_shared<ConnectionSocket>(client);
 }
 
 } // namespace socket
