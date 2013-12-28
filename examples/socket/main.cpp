@@ -15,10 +15,75 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cstdint>
 #include <iostream>
+#include <thread>
+#include <vector>
+
+#include <socket/socketinterface.hpp>
+
+std::vector<uint8_t> data = { 0, 1, 2, 3 };
+
+void client()
+{
+    std::cout << "  connecting" << std::endl;
+    rest::socket::ConnectionPtr c = rest::socket::connect("localhost", 30000);
+
+    std::cout << "  client receiving" << std::endl;
+    std::vector<uint8_t> data2(8);
+    if ( false == c->receive(data2) )
+    {
+        throw std::exception();
+    }
+
+    std::cout << "  client comparing" << std::endl;
+    if ( data != data2 )
+    {
+        throw std::exception();
+    }
+
+    std::cout << "  client sending" << std::endl;
+    if ( false == c->send(data2) )
+    {
+        throw std::exception();
+    }
+
+    std::cout << "  client terminating" << std::endl;
+}
 
 int main()
 {
     std::cout << "example_socket" << std::endl;
+
+    std::cout << "  listening" << std::endl;
+    rest::socket::ListenerPtr l = rest::socket::listen("localhost", 30000);
+    std::thread t(&client);
+
+    std::cout << "  accepting" << std::endl;
+    rest::socket::ConnectionPtr c = l->accept();
+
+    std::cout << "  server sending" << std::endl;
+    if ( false == c->send(data) )
+    {
+        throw std::exception();
+    }
+
+    std::cout << "  server receiving" << std::endl;
+    std::vector<uint8_t> data2(8);
+    if ( false == c->receive(data2) )
+    {
+        throw std::exception();
+    }
+
+    std::cout << "  server comparing" << std::endl;
+    if ( data != data2 )
+    {
+        throw std::exception();
+    }
+
+    std::cout << "  joining" << std::endl;
+    t.join();
+
+    std::cout << "  server terminating" << std::endl;
     return 0;
 }

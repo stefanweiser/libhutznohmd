@@ -8,3 +8,4 @@ link_directories(${CMAKE_BINARY_DIR}/lib)
 target_link_libraries(example_socket rest)
 
 include_directories("${PROJECT_DIR}/examples/socket")
+include_directories("${PROJECT_DIR}/src")
