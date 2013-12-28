@@ -30,8 +30,8 @@ void client()
     rest::socket::ConnectionPtr c = rest::socket::connect("localhost", 30000);
 
     std::cout << "  client receiving" << std::endl;
-    std::vector<uint8_t> data2(8);
-    if ( false == c->receive(data2) )
+    std::vector<uint8_t> data2;
+    if ( false == c->receive(data2, 8) )
     {
         throw std::exception();
     }
@@ -69,8 +69,8 @@ int main()
     }
 
     std::cout << "  server receiving" << std::endl;
-    std::vector<uint8_t> data2(8);
-    if ( false == c->receive(data2) )
+    std::vector<uint8_t> data2;
+    if ( false == c->receive(data2, 8) )
     {
         throw std::exception();
     }

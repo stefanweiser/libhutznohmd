@@ -31,7 +31,7 @@ namespace socket
 class MockConnectionSocket : public ConnectionSocketInterface
 {
 public:
-    MOCK_METHOD1(receive, bool(std::vector<uint8_t> &));
+    MOCK_METHOD2(receive, bool(std::vector<uint8_t> &, const size_t&));
     MOCK_METHOD1(send, bool(const std::vector<uint8_t> &));
 };
 

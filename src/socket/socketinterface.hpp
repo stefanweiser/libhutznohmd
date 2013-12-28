@@ -32,7 +32,11 @@ class ConnectionSocketInterface
 {
 public:
     virtual ~ConnectionSocketInterface() {}
-    virtual bool receive(std::vector<uint8_t> & data) = 0;
+
+    virtual bool receive(
+        std::vector<uint8_t> & data,
+        const size_t& maxSize) = 0;
+
     virtual bool send(const std::vector<uint8_t> & data) = 0;
 };
 

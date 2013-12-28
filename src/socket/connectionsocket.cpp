@@ -81,21 +81,25 @@ ConnectionSocket::~ConnectionSocket()
     close(m_socket);
 }
 
-bool ConnectionSocket::receive(std::vector<uint8_t> & data)
+bool ConnectionSocket::receive(
+    std::vector<uint8_t> & data,
+    const size_t& maxSize)
 {
     if (m_socket < 0)
     {
         return false;
     }
 
-    ssize_t received = ::recv(m_socket, data.data(), data.size(), 0);
+    const size_t oldSize = data.size();
+    data.resize(oldSize + maxSize);
+    ssize_t received = ::recv(m_socket, data.data() + oldSize, data.size(), 0);
 
     if (received <= 0)
     {
         return false;
     }
 
-    data.resize(received);
+    data.resize(oldSize + received);
     return true;
 }
 

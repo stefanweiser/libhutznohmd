@@ -34,7 +34,9 @@ public:
     explicit ConnectionSocket(const std::string & host, const uint16_t & port);
     explicit ConnectionSocket(const int & socket);
     virtual ~ConnectionSocket();
-    virtual bool receive(std::vector<uint8_t> & data);
+    virtual bool receive(
+        std::vector<uint8_t> & data,
+        const size_t& maxSize);
     virtual bool send(const std::vector<uint8_t> & data);
 
 private:

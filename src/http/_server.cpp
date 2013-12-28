@@ -46,8 +46,8 @@ rest::socket::ConnectionPtr Server::accept()
 
 void Server::parseRequest(const rest::socket::ConnectionPtr & connection)
 {
-    std::vector<uint8_t> data(4000);
-    if (false == connection->receive(data))
+    std::vector<uint8_t> data;
+    if (false == connection->receive(data, 4000))
     {
         return;
     }

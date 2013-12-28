@@ -78,8 +78,7 @@ char Request::getChar()
         return m_buffer[m_currentIndex++];
     }
 
-    m_buffer.resize(4000);
-    if ( false == m_connection->receive(m_buffer) )
+    if ( false == m_connection->receive(m_buffer, 4000) )
     {
         throw std::exception();
     }

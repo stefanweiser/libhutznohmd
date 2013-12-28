@@ -45,7 +45,8 @@ TEST(Socket, AcceptSendReceive)
 
         std::vector<uint8_t> data = { 0, 1, 2, 3, 4, 5, 6, 7 };
         EXPECT_EQ(socket2.send(data), true);
-        EXPECT_EQ(socket2.receive(data), true);
+        data.clear();
+        EXPECT_EQ(socket2.receive(data, 8), true);
         EXPECT_EQ(data.size(), 4);
         EXPECT_EQ(data, std::vector<uint8_t>({ 0, 1, 2, 3 }));
     });
@@ -60,8 +61,8 @@ TEST(Socket, AcceptSendReceive)
 
     std::vector<uint8_t> data = { 0, 1, 2, 3 };
     EXPECT_EQ(connection->send(data), true);
-    data.resize(16);
-    EXPECT_EQ(connection->receive(data), true);
+    data.clear();
+    EXPECT_EQ(connection->receive(data, 16), true);
     EXPECT_EQ(data.size(), 8);
     EXPECT_EQ(data, std::vector<uint8_t>({ 0, 1, 2, 3, 4, 5, 6, 7 }));
 
