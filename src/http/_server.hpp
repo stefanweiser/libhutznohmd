@@ -34,16 +34,12 @@ namespace http
 
 class Server
 {
-private:
-    typedef std::shared_ptr<rest::socket::ConnectionSocketInterface> Connection;
-    typedef std::shared_ptr<rest::socket::ListenerSocketInterface> Listener;
-
 public:
-    Server(const Listener & socket, const AccessFn & accessFn);
+    Server(const rest::socket::ListenerPtr & socket, const AccessFn & accessFn);
 
 private:
-    Connection accept();
-    void parseRequest(const Connection & connection);
+    rest::socket::ConnectionPtr accept();
+    void parseRequest(const rest::socket::ConnectionPtr & connection);
 
     std::shared_ptr<rest::socket::ListenerSocketInterface> m_socket;
     AccessFn m_accessFn;

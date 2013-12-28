@@ -34,24 +34,25 @@ std::shared_ptr<Server> createServer(
     return std::make_shared<Server>(socket, accessFn);
 }
 
-Server::Server(const Listener & socket, const AccessFn & accessFn)
+Server::Server(
+    const rest::socket::ListenerPtr & socket,
+    const AccessFn & accessFn)
     : m_socket(socket)
     , m_accessFn(accessFn)
 {}
 
-Server::Connection Server::accept()
+rest::socket::ConnectionPtr Server::accept()
 {
     return m_socket->accept();
 }
 
-void Server::parseRequest(const Connection & connection)
+void Server::parseRequest(const rest::socket::ConnectionPtr & connection)
 {
     std::vector<uint8_t> data(4000);
     if (false == connection->receive(data))
     {
         return;
     }
-    std::string str(data.begin(), data.end());
 }
 
 } // namespace http

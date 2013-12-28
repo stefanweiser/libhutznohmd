@@ -38,7 +38,7 @@ TEST(Server, Accept)
     .Times(1)
     .WillOnce(Return(connection));
 
-    rest::http::Server::Connection result = server.accept();
+    rest::socket::ConnectionPtr result = server.accept();
 
     EXPECT_EQ(connection, result);
 }
