@@ -44,18 +44,18 @@ private:
         Version,
         Headers,
         Data,
-        Finished
+        Finished,
+        Error
     };
 
     typedef std::vector<uint8_t> Buffer;
 
-    uint8_t getChar();
+    char getChar();
     ParserState parseMethod();
     ParserState parseURL();
     ParserState parseVersion();
     ParserState parseHeaders();
     ParserState parseData();
-    ParserState parseFinished();
 
     rest::socket::ConnectionPtr m_connection;
     Buffer m_buffer;
