@@ -43,6 +43,9 @@ public:
     virtual std::shared_ptr<ConnectionSocketInterface> accept() const = 0;
 };
 
+typedef std::shared_ptr<ListenerSocketInterface> ListenerPtr;
+typedef std::shared_ptr<ConnectionSocketInterface> ConnectionPtr;
+
 std::shared_ptr<ConnectionSocketInterface> connect(
     const std::string & host,
     const uint16_t & port);
