@@ -18,6 +18,7 @@
 #ifndef __LIBREST_HTTP_REQUEST_HPP__
 #define __LIBREST_HTTP_REQUEST_HPP__
 
+#include <map>
 #include <memory>
 
 #include <socket/listenersocket.hpp>
@@ -37,34 +38,17 @@ public:
     void parse();
 
 private:
-    enum class ParserState
-    {
-        Method,
-        URL,
-        Version,
-        Headers,
-        Data,
-        Finished,
-        Error
-    };
-
     typedef std::vector<uint8_t> Buffer;
 
-    char consumeChar();
-    ParserState parseMethod();
-    ParserState parseURL();
-    ParserState parseVersion();
-    ParserState parseHeaders();
-    ParserState parseData();
+    char consumeChar(size_t & index);
 
     rest::socket::ConnectionPtr m_connection;
     Buffer m_buffer;
-    size_t m_currentIndex;
 
     Method m_method;
     std::string m_url;
     Version m_version;
-    std::vector<std::tuple<std::string, std::string>> m_headers;
+    std::map<std::string, std::string> m_headers;
     Buffer m_data;
 };
 
