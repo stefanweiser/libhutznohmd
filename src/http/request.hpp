@@ -34,12 +34,18 @@ namespace http
 class Request
 {
 public:
+    typedef std::vector<uint8_t> Buffer;
+
     explicit Request(const rest::socket::ConnectionPtr & connection);
     void parse();
 
-private:
-    typedef std::vector<uint8_t> Buffer;
+    Method method() const;
+    std::string url() const;
+    Version version() const;
+    std::string header(const std::string& key) const;
+    Buffer data() const;
 
+private:
     char consumeChar(size_t & index);
 
     rest::socket::ConnectionPtr m_connection;

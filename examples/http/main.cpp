@@ -53,10 +53,9 @@ private:
     std::ifstream m_stream;
 };
 
-int main(int /*argc*/, char** argv)
+int main()
 {
     std::cout << "example_http" << std::endl;
-    std::cout << argv[0] << std::endl;
 
     std::shared_ptr<Connection> connection = std::make_shared<Connection>("../examples/res/request0");
     rest::http::Request request(connection);

@@ -18,7 +18,9 @@
 #include <cctype>
 #include <iostream>
 #include <iomanip>
+#include <iterator>
 #include <set>
+#include <sstream>
 
 #include "request.hpp"
 
@@ -67,7 +69,72 @@ void Request::parse()
         if ( i == 0 )
         {
             // Request-Head
-            ;
+            std::vector<std::string> words;
+            std::string head;
+            for ( size_t j = pair.first; j < pair.second; j++ )
+            {
+                head += m_buffer[j];
+            }
+            std::istringstream iss(head);
+            std::copy(std::istream_iterator<std::string>(iss),
+                std::istream_iterator<std::string>(),
+                std::back_inserter<std::vector<std::string>>(words));
+            if ( words.size() != 3 )
+            {
+                throw std::exception();
+            }
+
+            if ( words[0] == "OPTIONS" )
+            {
+                m_method = Method::OPTIONS;
+            }
+            else if ( words[0] == "GET" )
+            {
+                m_method = Method::GET;
+            }
+            else if ( words[0] == "HEAD" )
+            {
+                m_method = Method::HEAD;
+            }
+            else if ( words[0] == "POST" )
+            {
+                m_method = Method::POST;
+            }
+            else if ( words[0] == "PUT" )
+            {
+                m_method = Method::PUT;
+            }
+            else if ( words[0] == "DELETE" )
+            {
+                m_method = Method::DELETE;
+            }
+            else if ( words[0] == "TRACE" )
+            {
+                m_method = Method::TRACE;
+            }
+            else if ( words[0] == "CONNECT" )
+            {
+                m_method = Method::CONNECT;
+            }
+            else
+            {
+                throw std::exception();
+            }
+
+            m_url = words[1];
+
+            if ( words[2] == "HTTP/1.0" )
+            {
+                m_version = Version::HTTP_1_0;
+            }
+            else if ( words[2] == "HTTP/1.1" )
+            {
+                m_version = Version::HTTP_1_1;
+            }
+            else
+            {
+                throw std::exception();
+            }
         }
         else
         {
@@ -114,6 +181,36 @@ void Request::parse()
         size_t j = dataBegin + i;
         m_data[i] = consumeChar(j);
     }
+}
+
+Method Request::method() const
+{
+    return m_method;
+}
+
+std::string Request::url() const
+{
+    return m_url;
+}
+
+Version Request::version() const
+{
+    return m_version;
+}
+
+std::string Request::header(const std::string& key) const
+{
+    auto it = m_headers.find(key);
+    if ( it != m_headers.end() )
+    {
+        return it->second;
+    }
+    return std::string();
+}
+
+Request::Buffer Request::data() const
+{
+    return m_data;
 }
 
 char Request::consumeChar(size_t & index)
