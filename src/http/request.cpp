@@ -15,6 +15,7 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
 #include <cctype>
 #include <iostream>
 #include <iomanip>
@@ -187,6 +188,7 @@ void Request::parse()
 
                 if ( key != "" )
                 {
+                    std::transform(key.begin(), key.end(), key.begin(), tolower);
                     m_headers[key] = value;
                     lastKey = key;
                 }
