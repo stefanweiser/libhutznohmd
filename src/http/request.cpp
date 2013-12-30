@@ -63,6 +63,7 @@ void Request::parse()
         dataBegin = i;
     }
 
+    std::string lastKey;
     for ( size_t i = 0; i < lineIndices.size(); i++ )
     {
         const auto& pair = lineIndices[i];
@@ -143,35 +144,56 @@ void Request::parse()
             std::string value;
             std::set<char> whitespace = { '\t', ' ', '\n', 'r' };
             bool isKey = true;
-            for ( size_t j = pair.first; j < pair.second; j++ )
+            if ( (m_buffer[pair.first] == ' ') || (m_buffer[pair.first] == '\t') )
             {
-                if ( whitespace.count(m_buffer[j]) == 0 )
+                if ( lastKey == "" )
                 {
-                    if ( isKey == true )
-                    {
-                        if ( m_buffer[j] == ':' )
-                        {
-                            isKey = false;
-                        }
-                        else
-                        {
-                            key += m_buffer[j];
-                        }
-                    }
-                    else
+                    throw std::exception();
+                }
+
+                for ( size_t j = pair.first; j < pair.second; j++ )
+                {
+                    if ( whitespace.count(m_buffer[j]) == 0 )
                     {
                         value += m_buffer[j];
                     }
                 }
-            }
 
-            if ( key != "" )
-            {
-                m_headers[key] = value;
+                m_headers[lastKey] += value;
             }
-            if ( key == "Content-Length" )
+            else
             {
-                m_data.resize(static_cast<size_t>(std::stoull(value)));
+                for ( size_t j = pair.first; j < pair.second; j++ )
+                {
+                    if ( whitespace.count(m_buffer[j]) == 0 )
+                    {
+                        if ( isKey == true )
+                        {
+                            if ( m_buffer[j] == ':' )
+                            {
+                                isKey = false;
+                            }
+                            else
+                            {
+                                key += m_buffer[j];
+                            }
+                        }
+                        else
+                        {
+                            value += m_buffer[j];
+                        }
+                    }
+                }
+
+                if ( key != "" )
+                {
+                    m_headers[key] = value;
+                    lastKey = key;
+                }
+                if ( key == "Content-Length" )
+                {
+                    m_data.resize(static_cast<size_t>(std::stoull(value)));
+                }
             }
         }
     }
