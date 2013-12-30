@@ -15,10 +15,52 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <fstream>
 #include <iostream>
 
-int main()
+#include <socket/socketinterface.hpp>
+#include <http/request.hpp>
+
+class Connection: public rest::socket::ConnectionSocketInterface
+{
+public:
+    Connection(const std::string& filename)
+        : m_stream(filename)
+    {
+        std::cout << " stream is_open() = " << m_stream.is_open() << "."
+                  << std::endl;
+    }
+
+    virtual bool receive(
+        std::vector<uint8_t> & data,
+        const size_t & maxSize)
+    {
+        size_t oldSize = data.size();
+        data.resize(oldSize + maxSize);
+        m_stream.read((char *) data.data() + oldSize, maxSize);
+        size_t readBytes = m_stream.gcount();
+        data.resize(oldSize + readBytes);
+        std::cout << " read " << readBytes << " bytes." << std::endl;
+        return (readBytes > 0);
+    }
+
+    virtual bool send(const std::vector<uint8_t> & /*data*/)
+    {
+        return true;
+    }
+
+private:
+    std::ifstream m_stream;
+};
+
+int main(int /*argc*/, char** argv)
 {
     std::cout << "example_http" << std::endl;
+    std::cout << argv[0] << std::endl;
+
+    std::shared_ptr<Connection> connection = std::make_shared<Connection>("../examples/res/request0");
+    rest::http::Request request(connection);
+    request.parse();
+
     return 0;
 }
