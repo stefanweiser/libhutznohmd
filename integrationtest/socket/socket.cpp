@@ -43,28 +43,28 @@ TEST(Socket, AcceptSendReceive)
                                                10000);
         EXPECT_NE(socket2.m_socket, -1);
 
-        std::vector<uint8_t> data = { 0, 1, 2, 3, 4, 5, 6, 7 };
+        rest::socket::Buffer data = { 0, 1, 2, 3, 4, 5, 6, 7 };
         EXPECT_EQ(socket2.send(data), true);
         data.clear();
         EXPECT_EQ(socket2.receive(data, 8), true);
         EXPECT_EQ(data.size(), 4);
-        EXPECT_EQ(data, std::vector<uint8_t>({ 0, 1, 2, 3 }));
+        EXPECT_EQ(data, rest::socket::Buffer({ 0, 1, 2, 3 }));
     });
 
-    std::shared_ptr<rest::socket::ConnectionSocketInterface> connection;
+    rest::socket::ConnectionPtr connection;
     connection = socket.accept();
-    std::shared_ptr<rest::socket::ConnectionSocketInterface> empty;
+    rest::socket::ConnectionPtr empty;
     EXPECT_NE(connection, empty);
     rest::socket::ConnectionSocket* c;
     c = dynamic_cast<rest::socket::ConnectionSocket*>(connection.get());
     EXPECT_NE(c->m_socket, -1);
 
-    std::vector<uint8_t> data = { 0, 1, 2, 3 };
+    rest::socket::Buffer data = { 0, 1, 2, 3 };
     EXPECT_EQ(connection->send(data), true);
     data.clear();
     EXPECT_EQ(connection->receive(data, 16), true);
     EXPECT_EQ(data.size(), 8);
-    EXPECT_EQ(data, std::vector<uint8_t>({ 0, 1, 2, 3, 4, 5, 6, 7 }));
+    EXPECT_EQ(data, rest::socket::Buffer({ 0, 1, 2, 3, 4, 5, 6, 7 }));
 
     t.join();
 }

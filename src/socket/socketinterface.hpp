@@ -28,35 +28,29 @@ namespace rest
 namespace socket
 {
 
+typedef std::vector<char> Buffer;
+
 class ConnectionSocketInterface
 {
 public:
     virtual ~ConnectionSocketInterface() {}
-
-    virtual bool receive(
-        std::vector<uint8_t> & data,
-        const size_t & maxSize) = 0;
-
-    virtual bool send(const std::vector<uint8_t> & data) = 0;
+    virtual bool receive(Buffer & data, const size_t & maxSize) = 0;
+    virtual bool send(const Buffer & data) = 0;
 };
+
+typedef std::shared_ptr<ConnectionSocketInterface> ConnectionPtr;
 
 class ListenerSocketInterface
 {
 public:
     virtual ~ListenerSocketInterface() {}
-    virtual std::shared_ptr<ConnectionSocketInterface> accept() const = 0;
+    virtual ConnectionPtr accept() const = 0;
 };
 
 typedef std::shared_ptr<ListenerSocketInterface> ListenerPtr;
-typedef std::shared_ptr<ConnectionSocketInterface> ConnectionPtr;
 
-std::shared_ptr<ConnectionSocketInterface> connect(
-    const std::string & host,
-    const uint16_t & port);
-
-std::shared_ptr<ListenerSocketInterface> listen(
-    const std::string & host,
-    const uint16_t & port);
+ConnectionPtr connect(const std::string & host, const uint16_t & port);
+ListenerPtr listen(const std::string & host, const uint16_t & port);
 
 } // namespace socket
 

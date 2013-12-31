@@ -81,9 +81,7 @@ ConnectionSocket::~ConnectionSocket()
     close(m_socket);
 }
 
-bool ConnectionSocket::receive(
-    std::vector<uint8_t> & data,
-    const size_t & maxSize)
+bool ConnectionSocket::receive(Buffer & data, const size_t & maxSize)
 {
     if (m_socket < 0)
     {
@@ -103,7 +101,7 @@ bool ConnectionSocket::receive(
     return true;
 }
 
-bool ConnectionSocket::send(const std::vector<uint8_t> & data)
+bool ConnectionSocket::send(const Buffer & data)
 {
     if (m_socket < 0)
     {

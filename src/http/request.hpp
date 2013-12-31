@@ -34,8 +34,6 @@ namespace http
 class Request
 {
 public:
-    typedef std::vector<uint8_t> Buffer;
-
     explicit Request(const rest::socket::ConnectionPtr & connection);
     void parse();
 
@@ -43,19 +41,19 @@ public:
     std::string url() const;
     Version version() const;
     std::string header(const std::string & key) const;
-    Buffer data() const;
+    rest::socket::Buffer data() const;
 
 private:
     char consumeChar(size_t & index);
 
     rest::socket::ConnectionPtr m_connection;
-    Buffer m_buffer;
+    rest::socket::Buffer m_buffer;
 
     Method m_method;
     std::string m_url;
     Version m_version;
     std::map<std::string, std::string> m_headers;
-    Buffer m_data;
+    rest::socket::Buffer m_data;
 };
 
 } // namespace http

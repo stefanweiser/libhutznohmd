@@ -31,9 +31,7 @@ public:
                   << std::endl;
     }
 
-    virtual bool receive(
-        std::vector<uint8_t> & data,
-        const size_t & maxSize)
+    virtual bool receive(rest::socket::Buffer & data, const size_t & maxSize)
     {
         size_t oldSize = data.size();
         data.resize(oldSize + maxSize);
@@ -44,7 +42,7 @@ public:
         return (readBytes > 0);
     }
 
-    virtual bool send(const std::vector<uint8_t> & /*data*/)
+    virtual bool send(const rest::socket::Buffer & /*data*/)
     {
         return true;
     }
@@ -57,7 +55,8 @@ int main()
 {
     std::cout << "example_http" << std::endl;
 
-    std::shared_ptr<Connection> connection = std::make_shared<Connection>("../examples/res/request0");
+    std::shared_ptr<Connection> connection;
+    connection = std::make_shared<Connection>("../examples/res/request0");
     rest::http::Request request(connection);
     request.parse();
 

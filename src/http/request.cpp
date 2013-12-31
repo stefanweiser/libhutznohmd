@@ -232,7 +232,7 @@ std::string Request::header(const std::string & key) const
     return std::string();
 }
 
-Request::Buffer Request::data() const
+rest::socket::Buffer Request::data() const
 {
     return m_data;
 }
