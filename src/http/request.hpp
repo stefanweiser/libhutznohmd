@@ -42,7 +42,7 @@ public:
     Method method() const;
     std::string url() const;
     Version version() const;
-    std::string header(const std::string& key) const;
+    std::string header(const std::string & key) const;
     Buffer data() const;
 
 private:

@@ -24,7 +24,7 @@
 class Connection: public rest::socket::ConnectionSocketInterface
 {
 public:
-    Connection(const std::string& filename)
+    Connection(const std::string & filename)
         : m_stream(filename)
     {
         std::cout << " stream is_open() = " << m_stream.is_open() << "."

@@ -65,56 +65,56 @@ void Request::parse()
     }
 
     std::string lastKey;
-    for ( size_t i = 0; i < lineIndices.size(); i++ )
+    for (size_t i = 0; i < lineIndices.size(); i++)
     {
-        const auto& pair = lineIndices[i];
-        if ( i == 0 )
+        const auto & pair = lineIndices[i];
+        if (i == 0)
         {
             // Request-Head
             std::vector<std::string> words;
             std::string head;
-            for ( size_t j = pair.first; j < pair.second; j++ )
+            for (size_t j = pair.first; j < pair.second; j++)
             {
                 head += m_buffer[j];
             }
             std::istringstream iss(head);
             std::copy(std::istream_iterator<std::string>(iss),
-                std::istream_iterator<std::string>(),
-                std::back_inserter<std::vector<std::string>>(words));
-            if ( words.size() != 3 )
+                      std::istream_iterator<std::string>(),
+                      std::back_inserter<std::vector<std::string>>(words));
+            if (words.size() != 3)
             {
                 throw std::exception();
             }
 
-            if ( words[0] == "OPTIONS" )
+            if (words[0] == "OPTIONS")
             {
                 m_method = Method::OPTIONS;
             }
-            else if ( words[0] == "GET" )
+            else if (words[0] == "GET")
             {
                 m_method = Method::GET;
             }
-            else if ( words[0] == "HEAD" )
+            else if (words[0] == "HEAD")
             {
                 m_method = Method::HEAD;
             }
-            else if ( words[0] == "POST" )
+            else if (words[0] == "POST")
             {
                 m_method = Method::POST;
             }
-            else if ( words[0] == "PUT" )
+            else if (words[0] == "PUT")
             {
                 m_method = Method::PUT;
             }
-            else if ( words[0] == "DELETE" )
+            else if (words[0] == "DELETE")
             {
                 m_method = Method::DELETE;
             }
-            else if ( words[0] == "TRACE" )
+            else if (words[0] == "TRACE")
             {
                 m_method = Method::TRACE;
             }
-            else if ( words[0] == "CONNECT" )
+            else if (words[0] == "CONNECT")
             {
                 m_method = Method::CONNECT;
             }
@@ -125,11 +125,11 @@ void Request::parse()
 
             m_url = words[1];
 
-            if ( words[2] == "HTTP/1.0" )
+            if (words[2] == "HTTP/1.0")
             {
                 m_version = Version::HTTP_1_0;
             }
-            else if ( words[2] == "HTTP/1.1" )
+            else if (words[2] == "HTTP/1.1")
             {
                 m_version = Version::HTTP_1_1;
             }
@@ -145,16 +145,16 @@ void Request::parse()
             std::string value;
             std::set<char> whitespace = { '\t', ' ', '\n', 'r' };
             bool isKey = true;
-            if ( (m_buffer[pair.first] == ' ') || (m_buffer[pair.first] == '\t') )
+            if ((m_buffer[pair.first] == ' ') || (m_buffer[pair.first] == '\t'))
             {
-                if ( lastKey == "" )
+                if (lastKey == "")
                 {
                     throw std::exception();
                 }
 
-                for ( size_t j = pair.first; j < pair.second; j++ )
+                for (size_t j = pair.first; j < pair.second; j++)
                 {
-                    if ( whitespace.count(m_buffer[j]) == 0 )
+                    if (whitespace.count(m_buffer[j]) == 0)
                     {
                         value += m_buffer[j];
                     }
@@ -164,13 +164,13 @@ void Request::parse()
             }
             else
             {
-                for ( size_t j = pair.first; j < pair.second; j++ )
+                for (size_t j = pair.first; j < pair.second; j++)
                 {
-                    if ( whitespace.count(m_buffer[j]) == 0 )
+                    if (whitespace.count(m_buffer[j]) == 0)
                     {
-                        if ( isKey == true )
+                        if (isKey == true)
                         {
-                            if ( m_buffer[j] == ':' )
+                            if (m_buffer[j] == ':')
                             {
                                 isKey = false;
                             }
@@ -186,13 +186,13 @@ void Request::parse()
                     }
                 }
 
-                if ( key != "" )
+                if (key != "")
                 {
                     std::transform(key.begin(), key.end(), key.begin(), tolower);
                     m_headers[key] = value;
                     lastKey = key;
                 }
-                if ( key == "Content-Length" )
+                if (key == "Content-Length")
                 {
                     m_data.resize(static_cast<size_t>(std::stoull(value)));
                 }
@@ -200,7 +200,7 @@ void Request::parse()
         }
     }
 
-    for ( size_t i = 0; i < m_data.size(); i++ )
+    for (size_t i = 0; i < m_data.size(); i++)
     {
         size_t j = dataBegin + i;
         m_data[i] = consumeChar(j);
@@ -222,10 +222,10 @@ Version Request::version() const
     return m_version;
 }
 
-std::string Request::header(const std::string& key) const
+std::string Request::header(const std::string & key) const
 {
     auto it = m_headers.find(key);
-    if ( it != m_headers.end() )
+    if (it != m_headers.end())
     {
         return it->second;
     }
@@ -241,7 +241,7 @@ char Request::consumeChar(size_t & index)
 {
     if (index >= m_buffer.size())
     {
-       if (false == m_connection->receive(m_buffer, 4000))
+        if (false == m_connection->receive(m_buffer, 4000))
         {
             throw std::exception();
         }
