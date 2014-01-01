@@ -42,20 +42,3 @@ TEST(Server, Accept)
 
     EXPECT_EQ(connection, result);
 }
-
-TEST(Server, Request)
-{
-    std::shared_ptr<rest::socket::MockListenerSocket> socket;
-    socket = std::make_shared<rest::socket::MockListenerSocket>();
-    rest::http::Server server(socket, rest::http::TransactionFn());
-    std::shared_ptr<rest::socket::MockConnectionSocket> connection;
-    connection = std::make_shared<rest::socket::MockConnectionSocket>();
-    EXPECT_CALL(*connection, receive(_, _))
-    .Times(1)
-    .WillOnce(Invoke([](rest::socket::Buffer & data, const size_t &) -> bool
-    {
-        data = { '0', '1', '2', '3' };
-        return true;
-    }));
-    server.parseRequest(connection);
-}
