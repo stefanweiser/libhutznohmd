@@ -52,8 +52,8 @@ public:
 };
 
 //! Callback type, used for every http transaction.
-typedef std::function<void(const RequestInterface & request,
-                           ResponseInterface & response)> TransactionFn;
+typedef std::function < void(const RequestInterface & request,
+                             ResponseInterface & response) > TransactionFn;
 
 class ServerInterface
 {
