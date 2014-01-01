@@ -15,8 +15,8 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_HTTP__SERVER_HPP__
-#define __LIBREST_HTTP__SERVER_HPP__
+#ifndef __LIBREST_HTTP_SERVER_HPP__
+#define __LIBREST_HTTP_SERVER_HPP__
 
 #include <functional>
 #include <memory>
@@ -59,4 +59,4 @@ private:
 
 } // namespace rest
 
-#endif // __LIBREST_HTTP__SERVER_HPP__
+#endif // __LIBREST_HTTP_SERVER_HPP__

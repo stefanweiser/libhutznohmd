@@ -18,7 +18,7 @@
 #include <http/request.hpp>
 #include <http/response.hpp>
 
-#include "_server.hpp"
+#include "server.hpp"
 
 namespace rest
 {

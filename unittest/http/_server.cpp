@@ -21,7 +21,7 @@
 #define private public
 #define protected public
 
-#include <http/_server.hpp>
+#include <http/server.hpp>
 
 #include <socket/mocksocketinterface.hpp>
 
