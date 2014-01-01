@@ -31,7 +31,7 @@ TEST(Server, Accept)
 {
     std::shared_ptr<rest::socket::MockListenerSocket> socket;
     socket = std::make_shared<rest::socket::MockListenerSocket>();
-    rest::http::Server server(socket, rest::http::AccessFn());
+    rest::http::Server server(socket, rest::http::TransactionFn());
     std::shared_ptr<rest::socket::MockConnectionSocket> connection;
     connection = std::make_shared<rest::socket::MockConnectionSocket>();
     EXPECT_CALL(*socket, accept())
@@ -47,7 +47,7 @@ TEST(Server, Request)
 {
     std::shared_ptr<rest::socket::MockListenerSocket> socket;
     socket = std::make_shared<rest::socket::MockListenerSocket>();
-    rest::http::Server server(socket, rest::http::AccessFn());
+    rest::http::Server server(socket, rest::http::TransactionFn());
     std::shared_ptr<rest::socket::MockConnectionSocket> connection;
     connection = std::make_shared<rest::socket::MockConnectionSocket>();
     EXPECT_CALL(*connection, receive(_, _))

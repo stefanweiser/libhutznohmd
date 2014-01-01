@@ -39,26 +39,6 @@ Response::Response(const rest::socket::ConnectionPtr & connection)
     , m_data()
 {}
 
-void Response::setStatusCode(const StatusCode & statusCode)
-{
-    m_statusCode = statusCode;
-}
-
-void Response::setVersion(const Version & version)
-{
-    m_version = version;
-}
-
-void Response::setHeader(const std::string & key, const std::string & value)
-{
-    m_headers[key] = value;
-}
-
-void Response::setData(const rest::socket::Buffer & data)
-{
-    m_data = data;
-}
-
 void Response::deliver()
 {
     std::stringstream head;
@@ -148,6 +128,26 @@ void Response::deliver()
     rest::socket::Buffer buffer(str.begin(), str.end());
     m_connection->send(buffer);
     m_connection->send(m_data);
+}
+
+void Response::setStatusCode(const StatusCode & statusCode)
+{
+    m_statusCode = statusCode;
+}
+
+void Response::setVersion(const Version & version)
+{
+    m_version = version;
+}
+
+void Response::setHeader(const std::string & key, const std::string & value)
+{
+    m_headers[key] = value;
+}
+
+void Response::setData(const rest::socket::Buffer & data)
+{
+    m_data = data;
 }
 
 } // namespace http

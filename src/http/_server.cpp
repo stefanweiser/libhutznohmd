@@ -15,6 +15,9 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <http/request.hpp>
+#include <http/response.hpp>
+
 #include "_server.hpp"
 
 namespace rest
@@ -23,21 +26,41 @@ namespace rest
 namespace http
 {
 
-std::shared_ptr<Server> createServer(
+std::shared_ptr<ServerInterface> createServer(
     const std::string & host,
     const uint16_t & port,
-    const AccessFn & accessFn)
+    const TransactionFn & transactionFn)
 {
     auto socket = rest::socket::listen(host, port);
-    return std::make_shared<Server>(socket, accessFn);
+    return std::make_shared<Server>(socket, transactionFn);
 }
 
 Server::Server(
     const rest::socket::ListenerPtr & socket,
-    const AccessFn & accessFn)
-    : m_socket(socket)
-    , m_accessFn(accessFn)
+    const TransactionFn & transactionFn)
+    : m_threads()
+    , m_socket(socket)
+    , m_transactionFn(transactionFn)
 {}
+
+Server::~Server()
+{
+    for ( auto thread : m_threads )
+    {
+        thread->join();
+    }
+}
+
+void Server::run()
+{
+    while (true)
+    {
+        auto connection = accept();
+        m_threads.insert(std::make_shared<std::thread>(&Server::parseRequest,
+                                                       this,
+                                                       connection));
+    }
+}
 
 rest::socket::ConnectionPtr Server::accept()
 {
@@ -46,11 +69,15 @@ rest::socket::ConnectionPtr Server::accept()
 
 void Server::parseRequest(const rest::socket::ConnectionPtr & connection)
 {
-    rest::socket::Buffer data;
-    if (false == connection->receive(data, 4000))
+    Request request(connection);
+    request.parse();
+
+    Response response(connection);
+    if ( m_transactionFn )
     {
-        return;
+        m_transactionFn(request, response);
     }
+    response.deliver();
 }
 
 } // namespace http

@@ -22,6 +22,7 @@
 #include <memory>
 
 #include <socket/listenersocket.hpp>
+#include <http/httpinterface.hpp>
 
 #include <librest.hpp>
 
@@ -31,17 +32,17 @@ namespace rest
 namespace http
 {
 
-class Request
+class Request: public RequestInterface
 {
 public:
     explicit Request(const rest::socket::ConnectionPtr & connection);
     void parse();
 
-    Method method() const;
-    std::string url() const;
-    Version version() const;
-    std::string header(const std::string & key) const;
-    rest::socket::Buffer data() const;
+    virtual Method method() const;
+    virtual std::string url() const;
+    virtual Version version() const;
+    virtual std::string header(const std::string & key) const;
+    virtual rest::socket::Buffer data() const;
 
 private:
     char consumeChar(size_t & index);

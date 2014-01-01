@@ -22,6 +22,7 @@
 #include <memory>
 
 #include <socket/listenersocket.hpp>
+#include <http/httpinterface.hpp>
 
 #include <librest.hpp>
 
@@ -31,15 +32,16 @@ namespace rest
 namespace http
 {
 
-class Response
+class Response: public ResponseInterface
 {
 public:
     explicit Response(const rest::socket::ConnectionPtr & connection);
-    void setStatusCode(const StatusCode & statusCode);
-    void setVersion(const Version & version);
-    void setHeader(const std::string & key, const std::string & value);
-    void setData(const rest::socket::Buffer & data);
     void deliver();
+
+    virtual void setStatusCode(const StatusCode & statusCode);
+    virtual void setVersion(const Version & version);
+    virtual void setHeader(const std::string & key, const std::string & value);
+    virtual void setData(const rest::socket::Buffer & data);
 
 private:
     rest::socket::ConnectionPtr m_connection;

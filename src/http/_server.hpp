@@ -20,9 +20,11 @@
 
 #include <functional>
 #include <memory>
+#include <set>
 #include <thread>
 
 #include <socket/listenersocket.hpp>
+#include <http/httpinterface.hpp>
 
 #include <librest.hpp>
 
@@ -32,23 +34,25 @@ namespace rest
 namespace http
 {
 
-class Server
+class Server: public ServerInterface
 {
 public:
-    Server(const rest::socket::ListenerPtr & socket, const AccessFn & accessFn);
+    Server(
+        const rest::socket::ListenerPtr & socket,
+        const TransactionFn & transactionFn);
+
+    virtual ~Server();
+
+    virtual void run() __attribute__((noreturn));
 
 private:
     rest::socket::ConnectionPtr accept();
     void parseRequest(const rest::socket::ConnectionPtr & connection);
 
+    std::set<std::shared_ptr<std::thread>> m_threads;
     std::shared_ptr<rest::socket::ListenerSocketInterface> m_socket;
-    AccessFn m_accessFn;
+    TransactionFn m_transactionFn;
 };
-
-std::shared_ptr<Server> createServer(
-    const std::string & host,
-    const uint16_t & port,
-    const AccessFn & accessFn);
 
 } // namespace http
 
