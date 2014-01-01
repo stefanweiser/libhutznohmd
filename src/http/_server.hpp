@@ -24,7 +24,6 @@
 #include <thread>
 
 #include <socket/listenersocket.hpp>
-#include <http/httpinterface.hpp>
 
 #include <librest.hpp>
 
@@ -43,7 +42,8 @@ public:
 
     virtual ~Server();
 
-    virtual void run() __attribute__((noreturn));
+    virtual void run();
+    virtual void stop();
 
 private:
     rest::socket::ConnectionPtr accept();
@@ -52,6 +52,7 @@ private:
     std::set<std::shared_ptr<std::thread>> m_threads;
     std::shared_ptr<rest::socket::ListenerSocketInterface> m_socket;
     TransactionFn m_transactionFn;
+    bool m_shutdown;
 };
 
 } // namespace http

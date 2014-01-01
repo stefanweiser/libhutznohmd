@@ -222,17 +222,17 @@ Version Request::version() const
     return m_version;
 }
 
-std::string Request::header(const std::string & key) const
+const std::string & Request::header(const std::string & key) const
 {
     auto it = m_headers.find(key);
-    if (it != m_headers.end())
+    if (it == m_headers.end())
     {
-        return it->second;
+        throw std::exception();
     }
-    return std::string();
+    return it->second;
 }
 
-rest::socket::Buffer Request::data() const
+rest::Buffer Request::data() const
 {
     return m_data;
 }

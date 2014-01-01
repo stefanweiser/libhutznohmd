@@ -125,7 +125,7 @@ void Response::deliver()
     head << "\r\n";
 
     std::string str = head.str();
-    rest::socket::Buffer buffer(str.begin(), str.end());
+    rest::Buffer buffer(str.begin(), str.end());
     m_connection->send(buffer);
     m_connection->send(m_data);
 }
@@ -145,7 +145,7 @@ void Response::setHeader(const std::string & key, const std::string & value)
     m_headers[key] = value;
 }
 
-void Response::setData(const rest::socket::Buffer & data)
+void Response::setData(const rest::Buffer & data)
 {
     m_data = data;
 }

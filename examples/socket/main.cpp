@@ -22,7 +22,7 @@
 
 #include <socket/socketinterface.hpp>
 
-rest::socket::Buffer data = { 0, 1, 2, 3 };
+rest::Buffer data = { 0, 1, 2, 3 };
 
 void client()
 {
@@ -30,7 +30,7 @@ void client()
     rest::socket::ConnectionPtr c = rest::socket::connect("localhost", 30000);
 
     std::cout << "  client receiving" << std::endl;
-    rest::socket::Buffer data2;
+    rest::Buffer data2;
     if (false == c->receive(data2, 8))
     {
         throw std::exception();
@@ -69,7 +69,7 @@ int main()
     }
 
     std::cout << "  server receiving" << std::endl;
-    rest::socket::Buffer data2;
+    rest::Buffer data2;
     if (false == c->receive(data2, 8))
     {
         throw std::exception();

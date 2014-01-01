@@ -41,6 +41,7 @@ Server::Server(
     : m_threads()
     , m_socket(socket)
     , m_transactionFn(transactionFn)
+    , m_shutdown(false)
 {}
 
 Server::~Server()
@@ -53,13 +54,19 @@ Server::~Server()
 
 void Server::run()
 {
-    while (true)
+    m_shutdown = false;
+    while (false == m_shutdown)
     {
         auto connection = accept();
         m_threads.insert(std::make_shared<std::thread>(&Server::parseRequest,
                          this,
                          connection));
     }
+}
+
+void Server::stop()
+{
+    m_shutdown = true;
 }
 
 rest::socket::ConnectionPtr Server::accept()

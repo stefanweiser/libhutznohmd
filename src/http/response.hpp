@@ -22,7 +22,6 @@
 #include <memory>
 
 #include <socket/listenersocket.hpp>
-#include <http/httpinterface.hpp>
 
 #include <librest.hpp>
 
@@ -41,7 +40,7 @@ public:
     virtual void setStatusCode(const StatusCode & statusCode);
     virtual void setVersion(const Version & version);
     virtual void setHeader(const std::string & key, const std::string & value);
-    virtual void setData(const rest::socket::Buffer & data);
+    virtual void setData(const rest::Buffer & data);
 
 private:
     rest::socket::ConnectionPtr m_connection;
@@ -49,7 +48,7 @@ private:
     StatusCode m_statusCode;
     Version m_version;
     std::map<std::string, std::string> m_headers;
-    rest::socket::Buffer m_data;
+    rest::Buffer m_data;
 };
 
 } // namespace http

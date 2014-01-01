@@ -22,13 +22,13 @@
 #include <memory>
 #include <vector>
 
+#include <librest.hpp>
+
 namespace rest
 {
 
 namespace socket
 {
-
-typedef std::vector<char> Buffer;
 
 class ConnectionSocketInterface
 {

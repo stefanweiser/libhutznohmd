@@ -31,7 +31,7 @@ public:
                   << std::endl;
     }
 
-    virtual bool receive(rest::socket::Buffer & data, const size_t & maxSize)
+    virtual bool receive(rest::Buffer & data, const size_t & maxSize)
     {
         size_t oldSize = data.size();
         data.resize(oldSize + maxSize);
@@ -42,7 +42,7 @@ public:
         return (readBytes > 0);
     }
 
-    virtual bool send(const rest::socket::Buffer & /*data*/)
+    virtual bool send(const rest::Buffer & /*data*/)
     {
         return true;
     }

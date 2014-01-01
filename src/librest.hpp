@@ -29,6 +29,9 @@
 namespace rest
 {
 
+//! Universal buffer type of the library.
+typedef std::vector<char> Buffer;
+
 namespace http
 {
 
@@ -275,34 +278,69 @@ enum class StatusCode : int32_t
     HttpVersionNotSupported = 505
 };
 
-//! Callback type, that is invoked when a client connects. Returning true will
-//! accept the connection and false will refuse it.
-typedef std::function<bool (const sockaddr *, const socklen_t) > AcceptFn;
-
-//! Callback type, that is invoked when a client sends a request. Return the
-//! status code to answer with. Set the downloadData if you want to send data
-//! with the response.
-typedef std::function < StatusCode(const std::string & url,
-                                   const Method method,
-                                   const Version version,
-                                   const std::string & uploadData,
-                                   std::string & downloadData) > AccessFn;
-
-//! A http server interface for a server, that interacts via callback with its
-//! users.
-class IServer
+//! Represents all data, that depend on the request.
+class RequestInterface
 {
 public:
-    //! Needed to be able to destroy the server correctly.
-    virtual ~IServer() {}
+    virtual ~RequestInterface() {}
+
+    //! Requested HTTP method.
+    virtual Method method() const = 0;
+
+    //! Requested URL.
+    virtual std::string url() const = 0;
+
+    //! Requested HTTP version.
+    virtual Version version() const = 0;
+
+    //! Returns the header "key" of the request.
+    virtual const std::string & header(const std::string & key) const = 0;
+
+    //! Returns the data buffer.
+    virtual rest::Buffer data() const = 0;
 };
 
-//! Creates a http server, that interacts via callback.
-std::shared_ptr<IServer> createServer(
-    const std::string & address,  //!< Address to bind to.
-    const uint16_t & port,        //!< Port to bind to.
-    const AcceptFn & acceptFn,    //!< Called if someone wants to connect.
-    const AccessFn & accessFn);   //!< Called if someone requests something.
+//! Represents all data, that get transmitted in the response.
+class ResponseInterface
+{
+public:
+    virtual ~ResponseInterface() {}
+
+    //! Sets the status code.
+    virtual void setStatusCode(const StatusCode & statusCode) = 0;
+
+    //! Sets the HTTP version.
+    virtual void setVersion(const Version & version) = 0;
+
+    //! Sets a header by key to a value.
+    virtual void setHeader(const std::string & key, const std::string & value) = 0;
+
+    //! Sets the content data.
+    virtual void setData(const rest::Buffer & data) = 0;
+};
+
+//! Callback type, used for every http transaction.
+typedef std::function < void(const RequestInterface & request,
+                             ResponseInterface & response) > TransactionFn;
+
+//! Represents a HTTP server.
+class ServerInterface
+{
+public:
+    virtual ~ServerInterface() {}
+
+    //! Runs the server. Won't return till the server shall stop.
+    virtual void run() = 0;
+
+    //! Stops the server from accepting further connections.
+    virtual void stop() = 0;
+};
+
+//! Creates a server, that listens at a host address on specific port.
+std::shared_ptr<ServerInterface> createServer(
+    const std::string & host,
+    const uint16_t & port,
+    const TransactionFn & accessFn);
 
 } // namespace http
 

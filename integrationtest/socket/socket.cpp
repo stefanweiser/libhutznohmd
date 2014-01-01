@@ -43,12 +43,12 @@ TEST(Socket, AcceptSendReceive)
                                                10000);
         EXPECT_NE(socket2.m_socket, -1);
 
-        rest::socket::Buffer data = { 0, 1, 2, 3, 4, 5, 6, 7 };
+        rest::Buffer data = { 0, 1, 2, 3, 4, 5, 6, 7 };
         EXPECT_EQ(socket2.send(data), true);
         data.clear();
         EXPECT_EQ(socket2.receive(data, 8), true);
         EXPECT_EQ(data.size(), 4);
-        EXPECT_EQ(data, rest::socket::Buffer({ 0, 1, 2, 3 }));
+        EXPECT_EQ(data, rest::Buffer({ 0, 1, 2, 3 }));
     });
 
     rest::socket::ConnectionPtr connection;
@@ -59,12 +59,12 @@ TEST(Socket, AcceptSendReceive)
     c = dynamic_cast<rest::socket::ConnectionSocket*>(connection.get());
     EXPECT_NE(c->m_socket, -1);
 
-    rest::socket::Buffer data = { 0, 1, 2, 3 };
+    rest::Buffer data = { 0, 1, 2, 3 };
     EXPECT_EQ(connection->send(data), true);
     data.clear();
     EXPECT_EQ(connection->receive(data, 16), true);
     EXPECT_EQ(data.size(), 8);
-    EXPECT_EQ(data, rest::socket::Buffer({ 0, 1, 2, 3, 4, 5, 6, 7 }));
+    EXPECT_EQ(data, rest::Buffer({ 0, 1, 2, 3, 4, 5, 6, 7 }));
 
     t.join();
 }

@@ -22,7 +22,6 @@
 #include <memory>
 
 #include <socket/listenersocket.hpp>
-#include <http/httpinterface.hpp>
 
 #include <librest.hpp>
 
@@ -41,20 +40,20 @@ public:
     virtual Method method() const;
     virtual std::string url() const;
     virtual Version version() const;
-    virtual std::string header(const std::string & key) const;
-    virtual rest::socket::Buffer data() const;
+    virtual const std::string & header(const std::string & key) const;
+    virtual rest::Buffer data() const;
 
 private:
     char consumeChar(size_t & index);
 
     rest::socket::ConnectionPtr m_connection;
-    rest::socket::Buffer m_buffer;
+    rest::Buffer m_buffer;
 
     Method m_method;
     std::string m_url;
     Version m_version;
     std::map<std::string, std::string> m_headers;
-    rest::socket::Buffer m_data;
+    rest::Buffer m_data;
 };
 
 } // namespace http
