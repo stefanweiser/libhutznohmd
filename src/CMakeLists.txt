@@ -9,7 +9,5 @@ add_library(rest SHARED ${SOURCES} ${HEADERS})
 
 include_directories("${PROJECT_DIR}/src")
 
-target_link_libraries(rest microhttpd)
-
 install(TARGETS rest DESTINATION lib)
 install(FILES librest.hpp DESTINATION include)
