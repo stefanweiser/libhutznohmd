@@ -48,8 +48,9 @@ ListenerSocket::ListenerSocket(const std::string & host, const uint16_t & port)
     }
 
     ::sockaddr_in addr = fillAddress(host, port);
-    if ((::bind(m_socket, (::sockaddr *) &addr, sizeof(addr)) == -1) ||
-            (::listen(m_socket, 4) == -1))
+    int res1 = ::bind(m_socket, (::sockaddr *) &addr, sizeof(addr));
+    int res2 = ::listen(m_socket, 4);
+    if ((res1 == -1) || (res2 == -1))
     {
         ::close(m_socket);
         throw std::bad_alloc();

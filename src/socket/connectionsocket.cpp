@@ -103,7 +103,7 @@ bool ConnectionSocket::send(const rest::Buffer & data)
         const size_t s = data.size() - sent;
         const ::ssize_t sentBlock = ::send(m_socket, p, s, 0);
 
-        if (sentBlock < 0)
+        if (sentBlock <= 0)
         {
             return false;
         }
