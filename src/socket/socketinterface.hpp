@@ -34,8 +34,8 @@ class ConnectionSocketInterface
 {
 public:
     virtual ~ConnectionSocketInterface() {}
-    virtual bool receive(Buffer & data, const size_t & maxSize) = 0;
-    virtual bool send(const Buffer & data) = 0;
+    virtual bool receive(rest::Buffer & data, const size_t & maxSize) = 0;
+    virtual bool send(const rest::Buffer & data) = 0;
 };
 
 typedef std::shared_ptr<ConnectionSocketInterface> ConnectionPtr;

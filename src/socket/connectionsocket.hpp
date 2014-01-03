@@ -18,6 +18,8 @@
 #ifndef __LIBREST_SOCKET_CONNECTIONSOCKET_HPP__
 #define __LIBREST_SOCKET_CONNECTIONSOCKET_HPP__
 
+#include <cstdint>
+
 #include <librest.hpp>
 
 #include <socket/socketinterface.hpp>
@@ -34,11 +36,11 @@ public:
     explicit ConnectionSocket(const std::string & host, const uint16_t & port);
     explicit ConnectionSocket(const int & socket);
     virtual ~ConnectionSocket();
-    virtual bool receive(Buffer & data, const size_t & maxSize);
-    virtual bool send(const Buffer & data);
+    virtual bool receive(rest::Buffer & data, const size_t & maxSize);
+    virtual bool send(const rest::Buffer & data);
 
 private:
-    int m_socket;
+    const int m_socket;
 };
 
 } // namespace socket

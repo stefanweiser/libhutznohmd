@@ -18,13 +18,11 @@
 #ifndef __LIBREST_LIBREST_HPP__
 #define __LIBREST_LIBREST_HPP__
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <string>
 #include <vector>
-
-#include <sys/socket.h>
-#include <unistd.h>
 
 namespace rest
 {

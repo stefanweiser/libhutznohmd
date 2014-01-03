@@ -18,6 +18,10 @@
 #ifndef __LIBREST_SOCKET_LISTENERSOCKET_HPP__
 #define __LIBREST_SOCKET_LISTENERSOCKET_HPP__
 
+#include <cstdint>
+#include <memory>
+#include <string>
+
 #include <librest.hpp>
 
 #include <socket/socketinterface.hpp>
@@ -36,7 +40,7 @@ public:
     virtual std::shared_ptr<ConnectionSocketInterface> accept() const;
 
 private:
-    int m_socket;
+    const int m_socket;
 };
 
 } // namespace socket

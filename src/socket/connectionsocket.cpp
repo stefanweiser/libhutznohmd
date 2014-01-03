@@ -22,6 +22,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 #include "connectionsocket.hpp"
 
@@ -38,34 +39,33 @@ std::shared_ptr<ConnectionSocketInterface> connect(
     return std::make_shared<ConnectionSocket>(host, port);
 }
 
-ConnectionSocket::ConnectionSocket(const std::string & host,
-                                   const uint16_t & port)
-    : m_socket(-1)
+ConnectionSocket::ConnectionSocket(
+    const std::string & host,
+    const uint16_t & port)
+    : m_socket(::socket(PF_INET, SOCK_STREAM, 0))
 {
-    m_socket = ::socket(PF_INET, SOCK_STREAM, 0);
-
     if (m_socket == -1)
     {
         throw std::bad_alloc();
     }
 
-    sockaddr_in addr;
+    ::sockaddr_in addr;
 
     if (!::inet_aton(host.c_str(), &addr.sin_addr))
     {
-        hostent * hostname = ::gethostbyname(host.c_str());
+        const ::hostent * hostname = ::gethostbyname(host.c_str());
 
         if (!hostname)
         {
             throw std::bad_alloc();
         }
-        addr.sin_addr = * (in_addr *) hostname->h_addr;
+        addr.sin_addr = * (::in_addr *) hostname->h_addr;
     }
 
     addr.sin_port = ::htons(port);
     addr.sin_family = AF_INET;
 
-    if (::connect(m_socket, (sockaddr *) &addr, sizeof(addr)) == -1)
+    if (::connect(m_socket, (::sockaddr *) &addr, sizeof(addr)) == -1)
     {
         ::close(m_socket);
         throw std::bad_alloc();
@@ -81,7 +81,7 @@ ConnectionSocket::~ConnectionSocket()
     close(m_socket);
 }
 
-bool ConnectionSocket::receive(Buffer & data, const size_t & maxSize)
+bool ConnectionSocket::receive(rest::Buffer & data, const size_t & maxSize)
 {
     if (m_socket < 0)
     {
@@ -90,7 +90,7 @@ bool ConnectionSocket::receive(Buffer & data, const size_t & maxSize)
 
     const size_t oldSize = data.size();
     data.resize(oldSize + maxSize);
-    ssize_t received = ::recv(m_socket, data.data() + oldSize, data.size(), 0);
+    const ::ssize_t received = ::recv(m_socket, data.data() + oldSize, maxSize, 0);
 
     if (received <= 0)
     {
@@ -101,21 +101,20 @@ bool ConnectionSocket::receive(Buffer & data, const size_t & maxSize)
     return true;
 }
 
-bool ConnectionSocket::send(const Buffer & data)
+bool ConnectionSocket::send(const rest::Buffer & data)
 {
     if (m_socket < 0)
     {
         return false;
     }
 
-    ssize_t sent = 0;
+    ::ssize_t sent = 0;
 
     do
     {
-        ssize_t sentBlock = ::send(m_socket,
-                                   data.data() + sent,
-                                   data.size() - sent,
-                                   0);
+        const void * p = data.data() + sent;
+        const size_t s = data.size() - sent;
+        const ::ssize_t sentBlock = ::send(m_socket, p, s, 0);
 
         if (sentBlock < 0)
         {
@@ -123,7 +122,7 @@ bool ConnectionSocket::send(const Buffer & data)
         }
         sent += sentBlock;
     }
-    while (sent < ssize_t (data.size()));
+    while (sent < ::ssize_t (data.size()));
 
     return true;
 }

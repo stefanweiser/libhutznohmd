@@ -15,13 +15,11 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdint>
-#include <string>
-
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 #include <socket/connectionsocket.hpp>
 
@@ -41,20 +39,18 @@ std::shared_ptr<ListenerSocketInterface> listen(
 }
 
 ListenerSocket::ListenerSocket(const std::string & host, const uint16_t & port)
-    : m_socket(-1)
+    : m_socket(::socket(PF_INET, SOCK_STREAM, 0))
 {
-    m_socket = ::socket(PF_INET, SOCK_STREAM, 0);
-
     if (m_socket == -1)
     {
         throw std::bad_alloc();
     }
 
-    sockaddr_in addr;
+    ::sockaddr_in addr;
 
     if (!::inet_aton(host.c_str(), &addr.sin_addr))
     {
-        hostent * hostname = ::gethostbyname(host.c_str());
+        const ::hostent * hostname = ::gethostbyname(host.c_str());
 
         if (!hostname)
         {
@@ -66,7 +62,7 @@ ListenerSocket::ListenerSocket(const std::string & host, const uint16_t & port)
     addr.sin_port = ::htons(port);
     addr.sin_family = AF_INET;
 
-    if (::bind(m_socket, (sockaddr *) &addr, sizeof(addr)) == -1)
+    if (::bind(m_socket, (::sockaddr *) &addr, sizeof(addr)) == -1)
     {
         ::close(m_socket);
         throw std::bad_alloc();
@@ -86,9 +82,9 @@ ListenerSocket::~ListenerSocket()
 
 std::shared_ptr<ConnectionSocketInterface> ListenerSocket::accept() const
 {
-    sockaddr_in addr;
-    socklen_t   len = sizeof(addr);
-    int client      = ::accept(m_socket, (sockaddr *) &addr, &len);
+    ::sockaddr_in addr;
+    ::socklen_t len = sizeof(addr);
+    const int client = ::accept(m_socket, (::sockaddr *) &addr, &len);
 
     if (client == -1)
     {
