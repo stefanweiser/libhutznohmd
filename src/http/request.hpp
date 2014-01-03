@@ -34,26 +34,29 @@ namespace http
 class Request: public RequestInterface
 {
 public:
-	explicit Request(const rest::socket::ConnectionPtr & connection);
-	void parse();
+    explicit Request(const rest::socket::ConnectionPtr & connection);
+    void parse();
 
-	virtual Method method() const;
-	virtual std::string url() const;
-	virtual Version version() const;
-	virtual const std::string & header(const std::string & key) const;
-	virtual rest::Buffer data() const;
+    virtual Method method() const;
+    virtual std::string url() const;
+    virtual Version version() const;
+    virtual const std::string & header(const std::string & key) const;
+    virtual rest::Buffer data() const;
 
 private:
-	char consumeChar(size_t & index);
+    char consumeChar(size_t & index);
 
-	rest::socket::ConnectionPtr m_connection;
-	rest::Buffer m_buffer;
+    static Method parseMethod(const std::string & word);
+    static Version parseVersion(const std::string & word);
 
-	Method m_method;
-	std::string m_url;
-	Version m_version;
-	std::map<std::string, std::string> m_headers;
-	rest::Buffer m_data;
+    rest::socket::ConnectionPtr m_connection;
+    rest::Buffer m_buffer;
+
+    Method m_method;
+    std::string m_url;
+    Version m_version;
+    std::map<std::string, std::string> m_headers;
+    rest::Buffer m_data;
 };
 
 } // namespace http

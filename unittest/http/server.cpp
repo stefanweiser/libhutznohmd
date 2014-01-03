@@ -27,6 +27,44 @@
 
 using namespace testing;
 
+TEST(Server, ConstructionDestruction)
+{
+    std::shared_ptr<rest::http::ServerInterface> server;
+    server = rest::http::createServer("127.0.0.1", 10000, rest::http::TransactionFn());
+}
+
+TEST(Server, ParsingRequest)
+{
+    bool called = false;
+    auto transaction = [&called](
+                           const rest::http::RequestInterface & /*request*/,
+                           rest::http::ResponseInterface & /*response*/)
+    {
+        called = true;
+    };
+    rest::http::Server server(rest::socket::ListenerPtr(), transaction);
+
+    std::shared_ptr<rest::socket::MockConnectionSocket> socket;
+    socket = std::make_shared<rest::socket::MockConnectionSocket>();
+    EXPECT_CALL(*socket, receive(_, _))
+    .Times(1)
+    .WillOnce(Invoke([](rest::Buffer & data, const size_t & /*maxSize*/) -> bool
+    {
+        std::stringstream str;
+        str << "GET / HTTP/1.1\r\n";
+        str << "\r\n";
+        std::string reqData = str.str();
+        data = rest::Buffer(reqData.begin(), reqData.end());
+        return true;
+    }));
+    EXPECT_CALL(*socket, send(_))
+    .Times(2)
+    .WillRepeatedly(Return(true));
+    EXPECT_EQ(called, false);
+    server.parseRequest(socket);
+    EXPECT_EQ(called, true);
+}
+
 TEST(Server, Accept)
 {
     std::shared_ptr<rest::socket::MockListenerSocket> socket;
