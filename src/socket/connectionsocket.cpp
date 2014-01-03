@@ -24,6 +24,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include <socket/utility.hpp>
+
 #include "connectionsocket.hpp"
 
 namespace rest
@@ -49,22 +51,7 @@ ConnectionSocket::ConnectionSocket(
         throw std::bad_alloc();
     }
 
-    ::sockaddr_in addr;
-
-    if (!::inet_aton(host.c_str(), &addr.sin_addr))
-    {
-        const ::hostent * hostname = ::gethostbyname(host.c_str());
-
-        if (!hostname)
-        {
-            throw std::bad_alloc();
-        }
-        addr.sin_addr = * (::in_addr *) hostname->h_addr;
-    }
-
-    addr.sin_port = ::htons(port);
-    addr.sin_family = AF_INET;
-
+    ::sockaddr_in addr = fillAddress(host, port);
     if (::connect(m_socket, (::sockaddr *) &addr, sizeof(addr)) == -1)
     {
         ::close(m_socket);
@@ -78,7 +65,7 @@ ConnectionSocket::ConnectionSocket(const int & socket)
 
 ConnectionSocket::~ConnectionSocket()
 {
-    close(m_socket);
+    ::close(m_socket);
 }
 
 bool ConnectionSocket::receive(rest::Buffer & data, const size_t & maxSize)

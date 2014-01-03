@@ -22,6 +22,7 @@
 #include <unistd.h>
 
 #include <socket/connectionsocket.hpp>
+#include <socket/utility.hpp>
 
 #include "listenersocket.hpp"
 
@@ -46,29 +47,9 @@ ListenerSocket::ListenerSocket(const std::string & host, const uint16_t & port)
         throw std::bad_alloc();
     }
 
-    ::sockaddr_in addr;
-
-    if (!::inet_aton(host.c_str(), &addr.sin_addr))
-    {
-        const ::hostent * hostname = ::gethostbyname(host.c_str());
-
-        if (!hostname)
-        {
-            throw std::bad_alloc();
-        }
-        addr.sin_addr = * (in_addr *) hostname->h_addr;
-    }
-
-    addr.sin_port = ::htons(port);
-    addr.sin_family = AF_INET;
-
-    if (::bind(m_socket, (::sockaddr *) &addr, sizeof(addr)) == -1)
-    {
-        ::close(m_socket);
-        throw std::bad_alloc();
-    }
-
-    if (::listen(m_socket, 4) == -1)
+    ::sockaddr_in addr = fillAddress(host, port);
+    if ((::bind(m_socket, (::sockaddr *) &addr, sizeof(addr)) == -1) ||
+            (::listen(m_socket, 4) == -1))
     {
         ::close(m_socket);
         throw std::bad_alloc();
@@ -77,7 +58,7 @@ ListenerSocket::ListenerSocket(const std::string & host, const uint16_t & port)
 
 ListenerSocket::~ListenerSocket()
 {
-    close(m_socket);
+    ::close(m_socket);
 }
 
 std::shared_ptr<ConnectionSocketInterface> ListenerSocket::accept() const

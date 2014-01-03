@@ -27,20 +27,18 @@
 
 TEST(Socket, ConstructionNoThrow)
 {
-    EXPECT_NO_THROW(rest::socket::ListenerSocket("127.0.0.1",
-                                                 10000));
+    EXPECT_NO_THROW(rest::socket::ListenerSocket("127.0.0.1", 10000));
 }
 
 TEST(Socket, AcceptSendReceive)
 {
-    rest::socket::ListenerSocket socket("127.0.0.1",
-                                        10000);
+    rest::socket::ListenerSocket socket("127.0.0.1", 10000);
     EXPECT_NE(socket.m_socket, -1);
 
     std::thread t([]
     {
         rest::socket::ConnectionSocket socket2("localhost",
-                                               10000);
+        10000);
         EXPECT_NE(socket2.m_socket, -1);
 
         rest::Buffer data = { 0, 1, 2, 3, 4, 5, 6, 7 };
@@ -55,8 +53,8 @@ TEST(Socket, AcceptSendReceive)
     connection = socket.accept();
     rest::socket::ConnectionPtr empty;
     EXPECT_NE(connection, empty);
-    rest::socket::ConnectionSocket* c;
-    c = dynamic_cast<rest::socket::ConnectionSocket*>(connection.get());
+    rest::socket::ConnectionSocket * c;
+    c = dynamic_cast<rest::socket::ConnectionSocket *>(connection.get());
     EXPECT_NE(c->m_socket, -1);
 
     rest::Buffer data = { 0, 1, 2, 3 };
@@ -65,6 +63,49 @@ TEST(Socket, AcceptSendReceive)
     EXPECT_EQ(connection->receive(data, 16), true);
     EXPECT_EQ(data.size(), 8);
     EXPECT_EQ(data, rest::Buffer({ 0, 1, 2, 3, 4, 5, 6, 7 }));
+
+    t.join();
+}
+
+TEST(Socket, WrongConstructionArguments)
+{
+    rest::socket::ListenerPtr listener;
+    EXPECT_NO_THROW(listener = rest::socket::listen("localhost", 10000));
+
+    EXPECT_THROW(rest::socket::ListenerSocket socket("127.0.0.1", 10000), std::bad_alloc);
+}
+
+TEST(Socket, AcceptingClosedSocket)
+{
+    rest::socket::ListenerSocket listener("127.0.0.1", 10000);
+    EXPECT_EQ(::close(listener.m_socket), 0);
+    EXPECT_EQ(listener.accept(), rest::socket::ConnectionPtr());
+}
+
+TEST(Socket, NormalUseCase)
+{
+    rest::socket::ListenerPtr listener;
+    EXPECT_NO_THROW(listener = rest::socket::listen("localhost", 10000));
+
+    std::thread t([]
+    {
+        rest::socket::ConnectionPtr connection;
+        EXPECT_NO_THROW(connection = rest::socket::connect("localhost", 10000));
+        EXPECT_NE(connection, rest::socket::ConnectionPtr());
+        rest::Buffer data;
+        EXPECT_TRUE(connection->receive(data, 8));
+        EXPECT_EQ(data, rest::Buffer({ 0, 1, 2, 3 }));
+        data = { 4, 5, 6, 7 };
+        EXPECT_TRUE(connection->send(data));
+    });
+
+    rest::socket::ConnectionPtr connection = listener->accept();
+    EXPECT_NE(connection, rest::socket::ConnectionPtr());
+    rest::Buffer data = { 0, 1, 2, 3 };
+    EXPECT_TRUE(connection->send(data));
+    data.clear();
+    EXPECT_TRUE(connection->receive(data, 8));
+    EXPECT_EQ(data, rest::Buffer({ 4, 5, 6, 7 }));
 
     t.join();
 }
