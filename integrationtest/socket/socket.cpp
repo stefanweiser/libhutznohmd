@@ -33,7 +33,7 @@ int initRandomizer()
 
 uint16_t dicePort()
 {
-	return 10000 + (rand() % 10000);
+	return 10000 + (rand() % 50000);
 }
 
 static int once = initRandomizer();
