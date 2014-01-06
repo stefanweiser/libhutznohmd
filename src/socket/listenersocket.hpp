@@ -26,6 +26,8 @@
 
 #include <socket/socketinterface.hpp>
 
+#include <socket/utility.hpp>
+
 namespace rest
 {
 
@@ -37,10 +39,12 @@ class ListenerSocket : public ListenerSocketInterface
 public:
     explicit ListenerSocket(const std::string & host, const uint16_t & port);
     virtual ~ListenerSocket();
-    virtual std::shared_ptr<ConnectionSocketInterface> accept() const;
+    virtual ConnectionPtr accept() const;
+    virtual void stop();
 
 private:
     const int m_socket;
+    NotificationPipe m_notifier;
 };
 
 } // namespace socket

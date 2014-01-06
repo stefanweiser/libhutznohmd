@@ -25,33 +25,45 @@
 #include <socket/connectionsocket.hpp>
 #include <socket/listenersocket.hpp>
 
-int initRandomizer()
+namespace
 {
-    srand(time(NULL));
-    return 0;
+
+void disableTimeWait(int socket)
+{
+    ::linger l = ::linger {1, 0};
+    ::setsockopt(socket, SOL_SOCKET, SO_LINGER, &l, sizeof(l));
 }
 
-uint16_t dicePort()
+int getSocket(const rest::socket::ConnectionPtr & connection)
 {
-    return 10000 + (rand() % 50000);
+    return std::dynamic_pointer_cast<rest::socket::ConnectionSocket>(connection)->m_socket;
 }
 
-static int once = initRandomizer();
+int getSocket(const rest::socket::ListenerPtr & listener)
+{
+    return std::dynamic_pointer_cast<rest::socket::ListenerSocket>(listener)->m_socket;
+}
+
+}
 
 TEST(Socket, ConstructionNoThrow)
 {
-    EXPECT_NO_THROW(rest::socket::ListenerSocket("127.0.0.1", dicePort()));
+    EXPECT_NO_THROW(
+        rest::socket::ListenerSocket l("127.0.0.1", 10000);
+        disableTimeWait(l.m_socket));
+
 }
 
 TEST(Socket, AcceptSendReceive)
 {
-    uint16_t port = dicePort();
-    rest::socket::ListenerSocket socket("127.0.0.1", port);
+    rest::socket::ListenerSocket socket("127.0.0.1", 10000);
+    disableTimeWait(socket.m_socket);
     EXPECT_NE(socket.m_socket, -1);
 
-    std::thread t([&port]
+    std::thread t([]
     {
-        rest::socket::ConnectionSocket socket2("localhost", port);
+        rest::socket::ConnectionSocket socket2("localhost", 10000);
+        disableTimeWait(socket2.m_socket);
         EXPECT_NE(socket2.m_socket, -1);
 
         rest::Buffer data = { 0, 1, 2, 3, 4, 5, 6, 7 };
@@ -62,10 +74,9 @@ TEST(Socket, AcceptSendReceive)
         EXPECT_EQ(data, rest::Buffer({ 0, 1, 2, 3 }));
     });
 
-    rest::socket::ConnectionPtr connection;
-    connection = socket.accept();
-    rest::socket::ConnectionPtr empty;
-    EXPECT_NE(connection, empty);
+    rest::socket::ConnectionPtr connection = socket.accept();
+    EXPECT_NE(connection, rest::socket::ConnectionPtr());
+    disableTimeWait(getSocket(connection));
     rest::socket::ConnectionSocket * c;
     c = dynamic_cast<rest::socket::ConnectionSocket *>(connection.get());
     EXPECT_NE(c->m_socket, -1);
@@ -82,53 +93,56 @@ TEST(Socket, AcceptSendReceive)
 
 TEST(Socket, WrongConstructionArguments)
 {
-    uint16_t port = dicePort();
     rest::socket::ListenerPtr listener;
-    EXPECT_NO_THROW(listener = rest::socket::listen("localhost", port));
+    EXPECT_NO_THROW(listener = rest::socket::listen("localhost", 10000));
+    disableTimeWait(getSocket(listener));
 
-    EXPECT_THROW(rest::socket::ListenerSocket socket("127.0.0.1", port), std::bad_alloc);
+    EXPECT_THROW(rest::socket::ListenerSocket socket("127.0.0.1", 10000), std::bad_alloc);
 }
 
 TEST(Socket, AcceptingClosedSocket)
 {
-    rest::socket::ListenerSocket listener("127.0.0.1", dicePort());
+    rest::socket::ListenerSocket listener("127.0.0.1", 10000);
+    disableTimeWait(listener.m_socket);
     EXPECT_EQ(::close(listener.m_socket), 0);
     EXPECT_EQ(listener.accept(), rest::socket::ConnectionPtr());
 }
 
 TEST(Socket, ConnectionRefused)
 {
-    EXPECT_THROW(rest::socket::ConnectionSocket connection("127.0.0.1", dicePort()), std::bad_alloc);
+    EXPECT_THROW(rest::socket::ConnectionSocket connection("127.0.0.1", 10000), std::bad_alloc);
 }
 
 TEST(Socket, ReceiveSendClosedSocket)
 {
-    uint16_t port = dicePort();
     rest::socket::ListenerPtr listener;
-    EXPECT_NO_THROW(listener = rest::socket::listen("localhost", port));
+    EXPECT_NO_THROW(listener = rest::socket::listen("localhost", 10000));
+    disableTimeWait(getSocket(listener));
 
     bool disconnected = false;
-    std::thread t([&disconnected, &port]
+    std::thread t([&disconnected]
     {
-        rest::socket::ConnectionSocket connection2("localhost", port);
+        rest::socket::ConnectionSocket connection("localhost", 10000);
+        disableTimeWait(connection.m_socket);
         while (disconnected == false)
         {
             usleep(1);
         }
 
         rest::Buffer data;
-        EXPECT_FALSE(connection2.receive(data, 8));
+        EXPECT_FALSE(connection.receive(data, 8));
 
-        EXPECT_EQ(::close(connection2.m_socket), 0);
-        EXPECT_FALSE(connection2.receive(data, 8));
-        EXPECT_FALSE(connection2.send(data));
+        EXPECT_EQ(::close(connection.m_socket), 0);
+        EXPECT_FALSE(connection.receive(data, 8));
+        EXPECT_FALSE(connection.send(data));
 
-        const_cast<int &>(connection2.m_socket) = -1;
-        EXPECT_FALSE(connection2.receive(data, 8));
-        EXPECT_FALSE(connection2.send(data));
+        const_cast<int &>(connection.m_socket) = -1;
+        EXPECT_FALSE(connection.receive(data, 8));
+        EXPECT_FALSE(connection.send(data));
     });
 
     rest::socket::ConnectionPtr connection = listener->accept();
+    disableTimeWait(getSocket(connection));
     connection.reset();
     disconnected = true;
     t.join();
@@ -136,15 +150,16 @@ TEST(Socket, ReceiveSendClosedSocket)
 
 TEST(Socket, NormalUseCase)
 {
-    uint16_t port = dicePort();
     rest::socket::ListenerPtr listener;
-    EXPECT_NO_THROW(listener = rest::socket::listen("localhost", port));
+    EXPECT_NO_THROW(listener = rest::socket::listen("localhost", 10000));
+    disableTimeWait(getSocket(listener));
 
-    std::thread t([&port]
+    std::thread t([]
     {
         rest::socket::ConnectionPtr connection;
-        EXPECT_NO_THROW(connection = rest::socket::connect("localhost", port));
+        EXPECT_NO_THROW(connection = rest::socket::connect("localhost", 10000));
         EXPECT_NE(connection, rest::socket::ConnectionPtr());
+        disableTimeWait(getSocket(connection));
         rest::Buffer data;
         EXPECT_TRUE(connection->receive(data, 8));
         EXPECT_EQ(data, rest::Buffer({ 0, 1, 2, 3 }));
@@ -154,6 +169,7 @@ TEST(Socket, NormalUseCase)
 
     rest::socket::ConnectionPtr connection = listener->accept();
     EXPECT_NE(connection, rest::socket::ConnectionPtr());
+    disableTimeWait(getSocket(connection));
     rest::Buffer data = { 0, 1, 2, 3 };
     EXPECT_TRUE(connection->send(data));
     data.clear();

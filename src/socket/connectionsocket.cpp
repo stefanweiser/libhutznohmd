@@ -24,8 +24,6 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include <socket/utility.hpp>
-
 #include "connectionsocket.hpp"
 
 namespace rest
@@ -34,7 +32,7 @@ namespace rest
 namespace socket
 {
 
-std::shared_ptr<ConnectionSocketInterface> connect(
+ConnectionPtr connect(
     const std::string & host,
     const uint16_t & port)
 {
@@ -45,8 +43,26 @@ ConnectionSocket::ConnectionSocket(
     const std::string & host,
     const uint16_t & port)
     : m_socket(::socket(PF_INET, SOCK_STREAM, 0))
+    , m_notifier()
 {
     if (m_socket == -1)
+    {
+        throw std::bad_alloc();
+    }
+
+    ::fd_set readSet;
+    ::fd_set writeSet;
+    FD_ZERO(&readSet);
+    FD_ZERO(&writeSet);
+    FD_SET(m_socket, &writeSet);
+    FD_SET(m_notifier.receiver(), &readSet);
+    int maxFd = std::max(m_socket, m_notifier.receiver());
+    if (::select(maxFd + 1, &readSet, &writeSet, nullptr, nullptr) <= 0)
+    {
+        throw std::bad_alloc();
+    }
+
+    if (FD_ISSET(m_notifier.receiver(), &readSet) != 0)
     {
         throw std::bad_alloc();
     }
@@ -61,10 +77,12 @@ ConnectionSocket::ConnectionSocket(
 
 ConnectionSocket::ConnectionSocket(const int & socket)
     : m_socket(socket)
+    , m_notifier()
 {}
 
 ConnectionSocket::~ConnectionSocket()
 {
+    ::shutdown(m_socket, SHUT_RDWR);
     ::close(m_socket);
 }
 

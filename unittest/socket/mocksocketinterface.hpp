@@ -38,7 +38,8 @@ public:
 class MockListenerSocket : public ListenerSocketInterface
 {
 public:
-    MOCK_CONST_METHOD0(accept, std::shared_ptr<ConnectionSocketInterface>());
+    MOCK_CONST_METHOD0(accept, ConnectionPtr());
+    MOCK_METHOD0(stop, void());
 };
 
 } // namespace socket

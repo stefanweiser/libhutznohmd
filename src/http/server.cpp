@@ -54,24 +54,22 @@ Server::~Server()
 
 void Server::run()
 {
-    m_shutdown = false;
     while (false == m_shutdown)
     {
-        auto connection = accept();
-        m_threads.insert(std::make_shared<std::thread>(&Server::parseRequest,
-                         this,
-                         connection));
+        auto connection = m_socket->accept();
+        if (connection)
+        {
+            m_threads.insert(std::make_shared<std::thread>(&Server::parseRequest,
+                             this,
+                             connection));
+        }
     }
 }
 
 void Server::stop()
 {
     m_shutdown = true;
-}
-
-rest::socket::ConnectionPtr Server::accept()
-{
-    return m_socket->accept();
+    m_socket->stop();
 }
 
 void Server::parseRequest(const rest::socket::ConnectionPtr & connection)

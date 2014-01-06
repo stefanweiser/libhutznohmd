@@ -27,12 +27,6 @@
 
 using namespace testing;
 
-TEST(Server, ConstructionDestruction)
-{
-    std::shared_ptr<rest::http::ServerInterface> server;
-    server = rest::http::createServer("127.0.0.1", 10000, rest::http::TransactionFn());
-}
-
 TEST(Server, ParsingRequest)
 {
     bool called = false;
@@ -63,20 +57,4 @@ TEST(Server, ParsingRequest)
     EXPECT_EQ(called, false);
     server.parseRequest(socket);
     EXPECT_EQ(called, true);
-}
-
-TEST(Server, Accept)
-{
-    std::shared_ptr<rest::socket::MockListenerSocket> socket;
-    socket = std::make_shared<rest::socket::MockListenerSocket>();
-    rest::http::Server server(socket, rest::http::TransactionFn());
-    std::shared_ptr<rest::socket::MockConnectionSocket> connection;
-    connection = std::make_shared<rest::socket::MockConnectionSocket>();
-    EXPECT_CALL(*socket, accept())
-    .Times(1)
-    .WillOnce(Return(connection));
-
-    rest::socket::ConnectionPtr result = server.accept();
-
-    EXPECT_EQ(connection, result);
 }

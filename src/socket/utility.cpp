@@ -15,6 +15,9 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <array>
+
+#include <fcntl.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -49,6 +52,36 @@ namespace socket
     addr.sin_family = AF_INET;
 
     return addr;
+}
+
+NotificationPipe::NotificationPipe()
+    : m_receiveFd(-1)
+    , m_sendFd(-1)
+{
+    std::array<int, 2> pipeFd;
+    if (::pipe(pipeFd.data()) != 0)
+    {
+        throw std::bad_alloc();
+    }
+    m_receiveFd = pipeFd[0];
+    m_sendFd = pipeFd[1];
+    ::fcntl(m_sendFd, F_SETFL, O_NONBLOCK);
+}
+
+NotificationPipe::~NotificationPipe()
+{
+    ::close(m_sendFd);
+    ::close(m_receiveFd);
+}
+
+int NotificationPipe::receiver() const
+{
+    return m_receiveFd;
+}
+
+void NotificationPipe::notify()
+{
+    ::write(m_sendFd, "1", 1);
 }
 
 } // namespace socket

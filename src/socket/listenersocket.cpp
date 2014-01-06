@@ -22,7 +22,6 @@
 #include <unistd.h>
 
 #include <socket/connectionsocket.hpp>
-#include <socket/utility.hpp>
 
 #include "listenersocket.hpp"
 
@@ -41,6 +40,7 @@ std::shared_ptr<ListenerSocketInterface> listen(
 
 ListenerSocket::ListenerSocket(const std::string & host, const uint16_t & port)
     : m_socket(::socket(PF_INET, SOCK_STREAM, 0))
+    , m_notifier()
 {
     if (m_socket == -1)
     {
@@ -59,21 +59,43 @@ ListenerSocket::ListenerSocket(const std::string & host, const uint16_t & port)
 
 ListenerSocket::~ListenerSocket()
 {
+    ::shutdown(m_socket, SHUT_RDWR);
     ::close(m_socket);
 }
 
-std::shared_ptr<ConnectionSocketInterface> ListenerSocket::accept() const
+ConnectionPtr ListenerSocket::accept() const
 {
     ::sockaddr_in addr;
     ::socklen_t len = sizeof(addr);
+
+    ::fd_set readSet;
+    FD_ZERO(&readSet);
+    FD_SET(m_socket, &readSet);
+    FD_SET(m_notifier.receiver(), &readSet);
+    int maxFd = std::max(m_socket, m_notifier.receiver());
+    if (::select(maxFd + 1, &readSet, nullptr, nullptr, nullptr) <= 0)
+    {
+        return ConnectionPtr();
+    }
+
+    if (FD_ISSET(m_notifier.receiver(), &readSet) != 0)
+    {
+        return ConnectionPtr();
+    }
+
     const int client = ::accept(m_socket, (::sockaddr *) &addr, &len);
 
     if (client == -1)
     {
-        return std::shared_ptr<ConnectionSocketInterface>();
+        return ConnectionPtr();
     }
 
     return std::make_shared<ConnectionSocket>(client);
+}
+
+void ListenerSocket::stop()
+{
+    m_notifier.notify();
 }
 
 } // namespace socket

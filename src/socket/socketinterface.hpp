@@ -45,6 +45,7 @@ class ListenerSocketInterface
 public:
     virtual ~ListenerSocketInterface() {}
     virtual ConnectionPtr accept() const = 0;
+    virtual void stop() = 0;
 };
 
 typedef std::shared_ptr<ListenerSocketInterface> ListenerPtr;

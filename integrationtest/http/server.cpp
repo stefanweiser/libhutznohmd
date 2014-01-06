@@ -22,24 +22,69 @@
 #define protected public
 
 #include <http/server.hpp>
+#include <socket/connectionsocket.hpp>
 
 using namespace testing;
 
+namespace
+{
+
+void disableTimeWait(int socket)
+{
+    ::linger l = ::linger {1, 0};
+    ::setsockopt(socket, SOL_SOCKET, SO_LINGER, &l, sizeof(l));
+}
+
+int getSocket(const std::shared_ptr<rest::http::ServerInterface> & server)
+{
+    auto listener = std::dynamic_pointer_cast<rest::http::Server>(server)->m_socket;
+    return std::dynamic_pointer_cast<rest::socket::ListenerSocket>(listener)->m_socket;
+}
+
+int getSocket(const rest::socket::ConnectionPtr & connection)
+{
+    return std::dynamic_pointer_cast<rest::socket::ConnectionSocket>(connection)->m_socket;
+}
+
+int getSocket(const rest::socket::ListenerPtr & listener)
+{
+    return std::dynamic_pointer_cast<rest::socket::ListenerSocket>(listener)->m_socket;
+}
+
+}
+
+TEST(Server, ConstructionDestruction)
+{
+    std::shared_ptr<rest::http::ServerInterface> server;
+    server = rest::http::createServer("127.0.0.1", 10000, rest::http::TransactionFn());
+    disableTimeWait(getSocket(server));
+}
+
 TEST(Server, NormalUseCase)
 {
-//  bool called = false;
-//  auto transaction = [&called] (
-//      const rest::http::RequestInterface & /*request*/,
-//      rest::http::ResponseInterface & /*response*/)
-//  {
-//      called = true;
-//  };
+    bool called = false;
+    auto transaction = [&called](
+                           const rest::http::RequestInterface & /*request*/,
+                           rest::http::ResponseInterface & /*response*/)
+    {
+        called = true;
+    };
 
-//  std::shared_ptr<rest::http::ServerInterface> server;
-//  server = rest::http::createServer("localhost", 10000, transaction);
+    std::shared_ptr<rest::http::ServerInterface> server;
+    server = rest::http::createServer("localhost", 10001, transaction);
+    disableTimeWait(getSocket(server));
 
-//  std::thread t(std::bind(&rest::http::ServerInterface::run, server.get()));
+    std::thread t(std::bind(&rest::http::ServerInterface::run, server.get()));
 
-//  server->stop();
-//  t.join();
+    rest::socket::ConnectionPtr connection = rest::socket::connect("localhost", 10001);
+    disableTimeWait(getSocket(connection));
+    std::string request = "GET / HTTP/1.1\r\n\r\n";
+    EXPECT_FALSE(called);
+    EXPECT_TRUE(connection->send(rest::Buffer(request.begin(), request.end())));
+    rest::Buffer data;
+    EXPECT_TRUE(connection->receive(data, 4000));
+    EXPECT_TRUE(called);
+
+    server->stop();
+    t.join();
 }

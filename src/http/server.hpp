@@ -46,7 +46,6 @@ public:
     virtual void stop();
 
 private:
-    rest::socket::ConnectionPtr accept();
     void parseRequest(const rest::socket::ConnectionPtr & connection);
 
     std::set<std::shared_ptr<std::thread>> m_threads;
