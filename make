@@ -124,18 +124,20 @@ function usage()
 	echo "  usage: ${script_name} [step] [target] [options]"
 	echo ""
 	echo "  Steps:"
-	echo "   clean       : Removes all build output."
-	echo "   check       : Checks all sources."
-	echo "   astyle      : Formats all sources."
-	echo "   doc         : Builds documentation."
-	echo "   bootstrap   : Bootstraps the build."
-	echo "   build       : Builds the targets."
-	echo "   test        : Tests the targets."
-	echo "   install     : Installs the targets."
-	echo "   package     : Builds packages."
-	echo "   all         : Builds all steps."
-	echo "   coverage    : Generates lcov output."
-	echo "   valgrind    : Check all tests with valgrind."
+	echo "   clean           : Removes all build output."
+	echo "   check           : Checks all sources."
+	echo "   astyle          : Formats all sources."
+	echo "   doc             : Builds documentation."
+	echo "   bootstrap       : Bootstraps the build."
+	echo "   build           : Builds the targets."
+	echo "   test            : Executes unit and integration tests."
+	echo "   unittest        : Executes unit tests."
+	echo "   integrationtest : Executes integration tests."
+	echo "   install         : Installs the targets."
+	echo "   package         : Builds packages."
+	echo "   all             : Builds all steps."
+	echo "   coverage        : Generates lcov output."
+	echo "   valgrind        : Check all tests with valgrind."
 	echo ""
 	echo "  Targets (only needed for bootstraping):"
 	echo "   debug"
@@ -204,10 +206,15 @@ function exec_build()
 	make -j"$(grep processor /proc/cpuinfo | wc -l)" all
 }
 
-function exec_test()
+function exec_unittest()
 {
 	cd "${build_path}"
 	LD_LIBRARY_PATH="${build_path}/src" "${build_path}/unittest/unittest_rest"
+}
+
+function exec_integrationtest()
+{
+	cd "${build_path}"
 	LD_LIBRARY_PATH="${build_path}/src" "${build_path}/integrationtest/integrationtest_rest"
 }
 
@@ -237,7 +244,8 @@ function exec_coverage()
 	exec_bootstrap coverage
 	exec_build
 	${binary_lcov} --zerocounters --directory "${target_path}" --output-file "${tracefile}"
-	exec_test
+	exec_unittest
+	exec_integrationtest
 	${binary_lcov} --capture --directory "${target_path}" --output-file "${tracefile}"
 	${binary_lcov} --remove "${tracefile}" "/usr/include/*" --output-file "${tracefile}"
 	rm -rf "${lcov_output_path}"
@@ -258,7 +266,8 @@ opts_check=0
 opts_astyle=0
 opts_doc=0
 opts_build=0
-opts_test=0
+opts_unittest=0
+opts_integrationtest=0
 opts_install=0
 opts_package=0
 opts_coverage=0
@@ -320,7 +329,14 @@ for word in ${opts_words[*]} ; do
 			opts_build=1
 			;;
 		test)
-			opts_test=1
+			opts_unittest=1
+			opts_integrationtest=1
+			;;
+		unittest)
+			opts_unittest=1
+			;;
+		integrationtest)
+			opts_integrationtest=1
 			;;
 		install)
 			opts_install=1
@@ -335,7 +351,8 @@ for word in ${opts_words[*]} ; do
 			opts_astyle=1
 			opts_doc=1
 			opts_build=1
-			opts_test=1
+			opts_unittest=1
+			opts_integrationtest=1
 			opts_install=1
 			opts_package=1
 			;;
@@ -387,8 +404,12 @@ if [ ${opts_build} -ne 0 ]; then
 	exec_build
 fi
 
-if [ ${opts_test} -ne 0 ]; then
-	exec_test
+if [ ${opts_unittest} -ne 0 ]; then
+	exec_unittest
+fi
+
+if [ ${opts_integrationtest} -ne 0 ]; then
+	exec_integrationtest
 fi
 
 if [ ${opts_install} -ne 0 ]; then
