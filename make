@@ -37,6 +37,7 @@ binary_dot="$(get_command_path dot)"
 binary_lcov="$(get_command_path lcov)"
 binary_genhtml="$(get_command_path genhtml)"
 binary_rpmbuild="$(get_command_path rpmbuild)"
+binary_valgrind="$(get_command_path valgrind)"
 
 min_version_cmake="2.8"
 min_version_gpp="4.8"
@@ -47,6 +48,7 @@ min_version_doxygen="1.7.6"
 min_version_dot="2.26"
 min_version_lcov="1.9"
 min_version_rpmbuild="4.9"
+min_version_valgrind="3.7.0"
 
 script_path=$(dirname `readlink -f $0`)
 script_name=$(basename `readlink -f $0`)
@@ -107,6 +109,12 @@ function check_rpmbuild()
 	local rpmbuild_version=$(${binary_rpmbuild} --version | tr ' ' '\n' | tail -n 1)
 	check_version "${binary_rpmbuild}" "${rpmbuild_version}" "${min_version_rpmbuild}"
 }
+ 
+function check_valgrind()
+{
+	local valgrind_version=$(${binary_valgrind} --version | tr '-' '\n' | tail -n 1)
+	check_version "${binary_valgrind}" "${valgrind_version}" "${min_version_valgrind}"
+}
 
 function usage()
 {
@@ -127,6 +135,7 @@ function usage()
 	echo "   package     : Builds packages."
 	echo "   all         : Builds all steps."
 	echo "   coverage    : Generates lcov output."
+	echo "   valgrind    : Check all tests with valgrind."
 	echo ""
 	echo "  Targets (only needed for bootstraping):"
 	echo "   debug"
@@ -137,8 +146,11 @@ function usage()
 	echo "   -h"
 	echo "   --help        : Displays this help information"
 	echo ""
-	echo "  Example (complete debug):"
-	echo "    ${script_name} complete debug"
+	echo "  Example (all debug):"
+	echo "    ${script_name} all debug"
+	echo ""
+	echo "  Example (do a cppcheck):"
+	echo "    ${script_name} check"
 	echo ""
 }
 
@@ -232,6 +244,13 @@ function exec_coverage()
 	${binary_genhtml} "${tracefile}" --output-directory "${lcov_output_path}"
 }
 
+function exec_valgrind()
+{
+	cd "${build_path}"
+	LD_LIBRARY_PATH="${build_path}/src" ${binary_valgrind} "${build_path}/unittest/unittest_rest"
+	LD_LIBRARY_PATH="${build_path}/src" ${binary_valgrind} "${build_path}/integrationtest/integrationtest_rest"
+}
+
 opts_words=()
 opts_clean=0
 opts_bootstrap=0
@@ -243,6 +262,7 @@ opts_test=0
 opts_install=0
 opts_package=0
 opts_coverage=0
+opts_valgrind=0
 opts_build_type="debug"
 
 args=$(getopt \
@@ -322,6 +342,9 @@ for word in ${opts_words[*]} ; do
 		coverage)
 			opts_coverage=1
 			;;
+		valgrind)
+			opts_valgrind=1
+			;;
 
 		debug)
 			opts_build_type="debug"
@@ -378,6 +401,10 @@ fi
 
 if [ ${opts_coverage} -ne 0 ]; then
 	exec_coverage
+fi
+
+if [ ${opts_valgrind} -ne 0 ]; then
+	exec_valgrind
 fi
 
 exit 0
