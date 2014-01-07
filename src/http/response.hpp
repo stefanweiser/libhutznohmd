@@ -43,6 +43,9 @@ public:
     virtual void setData(const rest::Buffer & data);
 
 private:
+    static void deliverVersion(std::ostream & os, const Version & version);
+    static void deliverStatusCodeText(std::ostream & os, const StatusCode & statusCode);
+
     rest::socket::ConnectionPtr m_connection;
 
     StatusCode m_statusCode;
