@@ -49,19 +49,19 @@ TEST(Response, SetAndDeliver)
     response.setStatusCode(rest::http::StatusCode::Ok);
     response.setVersion(rest::http::Version::HTTP_1_1);
 
-    EXPECT_CALL(*socket, send(_))
+    EXPECT_CALL(*socket, send(An<const rest::Buffer &>()))
     .Times(2)
     .WillRepeatedly(Return(true));
     EXPECT_NO_THROW(response.deliver());
 
     response.setVersion(rest::http::Version::HTTP_1_0);
-    EXPECT_CALL(*socket, send(_))
+    EXPECT_CALL(*socket, send(An<const rest::Buffer &>()))
     .Times(2)
     .WillRepeatedly(Return(true));
     EXPECT_NO_THROW(response.deliver());
 
     response.setVersion(rest::http::Version::HTTP_UNKNOWN);
-    EXPECT_CALL(*socket, send(_))
+    EXPECT_CALL(*socket, send(An<const rest::Buffer &>()))
     .Times(0);
     EXPECT_THROW(response.deliver(), std::exception);
 }

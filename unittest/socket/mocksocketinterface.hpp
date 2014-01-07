@@ -33,6 +33,7 @@ class MockConnectionSocket : public ConnectionSocketInterface
 public:
     MOCK_METHOD2(receive, bool(rest::Buffer &, const size_t &));
     MOCK_METHOD1(send, bool(const rest::Buffer &));
+    MOCK_METHOD1(send, bool(const std::string &));
 };
 
 typedef std::shared_ptr<MockConnectionSocket> MockConnectionPtr;

@@ -51,7 +51,7 @@ TEST(Server, ParsingRequest)
         data = rest::Buffer(reqData.begin(), reqData.end());
         return true;
     }));
-    EXPECT_CALL(*socket, send(_))
+    EXPECT_CALL(*socket, send(An<const rest::Buffer &>()))
     .Times(2)
     .WillRepeatedly(Return(true));
     EXPECT_EQ(called, false);

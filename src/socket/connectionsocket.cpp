@@ -108,6 +108,16 @@ bool ConnectionSocket::receive(rest::Buffer & data, const size_t & maxSize)
 
 bool ConnectionSocket::send(const rest::Buffer & data)
 {
+    return send(data.data(), data.size());
+}
+
+bool ConnectionSocket::send(const std::string & data)
+{
+    return send(data.data(), data.size());
+}
+
+bool ConnectionSocket::send(const char * p, const size_t & s)
+{
     if (m_socket < 0)
     {
         return false;
@@ -117,9 +127,9 @@ bool ConnectionSocket::send(const rest::Buffer & data)
 
     do
     {
-        const void * p = data.data() + sent;
-        const size_t s = data.size() - sent;
-        const ::ssize_t sentBlock = ::send(m_socket, p, s, 0);
+        const void * q = p + sent;
+        const size_t t = s - sent;
+        const ::ssize_t sentBlock = ::send(m_socket, q, t, 0);
 
         if (sentBlock <= 0)
         {
@@ -127,7 +137,7 @@ bool ConnectionSocket::send(const rest::Buffer & data)
         }
         sent += sentBlock;
     }
-    while (sent < ::ssize_t (data.size()));
+    while (sent < static_cast<::ssize_t>(s));
 
     return true;
 }

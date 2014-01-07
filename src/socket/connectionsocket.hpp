@@ -39,8 +39,11 @@ public:
     virtual ~ConnectionSocket();
     virtual bool receive(rest::Buffer & data, const size_t & maxSize);
     virtual bool send(const rest::Buffer & data);
+    virtual bool send(const std::string & data);
 
 private:
+    bool send(const char * p, const size_t & s);
+
     const int m_socket;
     NotificationPipe m_notifier;
 };

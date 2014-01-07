@@ -47,6 +47,11 @@ public:
         return true;
     }
 
+    virtual bool send(const std::string & /*data*/)
+    {
+        return true;
+    }
+
 private:
     std::ifstream m_stream;
 };
