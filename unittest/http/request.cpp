@@ -62,7 +62,7 @@ TEST(Request, Version)
 
 TEST(Request, SetAndDeliver)
 {
-    std::shared_ptr<rest::socket::MockConnectionSocket> socket;
+    rest::socket::MockConnectionPtr socket;
     socket = std::make_shared<rest::socket::MockConnectionSocket>();
     rest::http::Request request(socket);
 
@@ -94,7 +94,7 @@ TEST(Request, SetAndDeliver)
 
 TEST(Request, NoNeededDataAvailable)
 {
-    std::shared_ptr<rest::socket::MockConnectionSocket> socket;
+    rest::socket::MockConnectionPtr socket;
     socket = std::make_shared<rest::socket::MockConnectionSocket>();
     rest::http::Request request(socket);
 

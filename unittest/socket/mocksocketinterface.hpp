@@ -35,6 +35,8 @@ public:
     MOCK_METHOD1(send, bool(const rest::Buffer &));
 };
 
+typedef std::shared_ptr<MockConnectionSocket> MockConnectionPtr;
+
 class MockListenerSocket : public ListenerSocketInterface
 {
 public:

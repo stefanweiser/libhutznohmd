@@ -31,9 +31,7 @@ namespace rest
 namespace socket
 {
 
-std::shared_ptr<ListenerSocketInterface> listen(
-    const std::string & host,
-    const uint16_t & port)
+ListenerPtr listen(const std::string & host, const uint16_t & port)
 {
     return std::make_shared<ListenerSocket>(host, port);
 }

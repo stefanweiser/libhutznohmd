@@ -35,7 +35,7 @@ void disableTimeWait(int socket)
     ::setsockopt(socket, SOL_SOCKET, SO_LINGER, &l, sizeof(l));
 }
 
-int getSocket(const std::shared_ptr<rest::http::ServerInterface> & server)
+int getSocket(const rest::http::ServerPtr & server)
 {
     auto listener = std::dynamic_pointer_cast<rest::http::Server>(server)->m_socket;
     return std::dynamic_pointer_cast<rest::socket::ListenerSocket>(listener)->m_socket;
@@ -55,7 +55,7 @@ int getSocket(const rest::socket::ListenerPtr & listener)
 
 TEST(Server, ConstructionDestruction)
 {
-    std::shared_ptr<rest::http::ServerInterface> server;
+    rest::http::ServerPtr server;
     server = rest::http::createServer("127.0.0.1", 10000, rest::http::TransactionFn());
     disableTimeWait(getSocket(server));
 }
@@ -70,7 +70,7 @@ TEST(Server, NormalUseCase)
         called = true;
     };
 
-    std::shared_ptr<rest::http::ServerInterface> server;
+    rest::http::ServerPtr server;
     server = rest::http::createServer("localhost", 10001, transaction);
     disableTimeWait(getSocket(server));
 

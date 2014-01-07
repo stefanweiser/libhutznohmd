@@ -26,7 +26,7 @@ namespace rest
 namespace http
 {
 
-std::shared_ptr<ServerInterface> createServer(
+ServerPtr createServer(
     const std::string & host,
     const uint16_t & port,
     const TransactionFn & transactionFn)

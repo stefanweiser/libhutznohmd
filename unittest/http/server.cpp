@@ -38,7 +38,7 @@ TEST(Server, ParsingRequest)
     };
     rest::http::Server server(rest::socket::ListenerPtr(), transaction);
 
-    std::shared_ptr<rest::socket::MockConnectionSocket> socket;
+    rest::socket::MockConnectionPtr socket;
     socket = std::make_shared<rest::socket::MockConnectionSocket>();
     EXPECT_CALL(*socket, receive(_, _))
     .Times(1)

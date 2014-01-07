@@ -40,7 +40,7 @@ TEST(Response, ConstructionDestruction)
 
 TEST(Response, SetAndDeliver)
 {
-    std::shared_ptr<rest::socket::MockConnectionSocket> socket;
+    rest::socket::MockConnectionPtr socket;
     socket = std::make_shared<rest::socket::MockConnectionSocket>();
     rest::http::Response response(socket);
 

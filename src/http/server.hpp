@@ -49,7 +49,7 @@ private:
     void parseRequest(const rest::socket::ConnectionPtr & connection);
 
     std::set<std::shared_ptr<std::thread>> m_threads;
-    std::shared_ptr<rest::socket::ListenerSocketInterface> m_socket;
+    rest::socket::ListenerPtr m_socket;
     TransactionFn m_transactionFn;
     bool m_shutdown;
 };

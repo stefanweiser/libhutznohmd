@@ -334,8 +334,11 @@ public:
     virtual void stop() = 0;
 };
 
+//! Shortcut typedef for a HTTP server.
+typedef std::shared_ptr<ServerInterface> ServerPtr;
+
 //! Creates a server, that listens at a host address on specific port.
-std::shared_ptr<ServerInterface> createServer(
+ServerPtr createServer(
     const std::string & host,
     const uint16_t & port,
     const TransactionFn & accessFn);
