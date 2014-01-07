@@ -52,7 +52,10 @@ TEST(Server, ParsingRequest)
         return true;
     }));
     EXPECT_CALL(*socket, send(An<const rest::Buffer &>()))
-    .Times(2)
+    .Times(1)
+    .WillRepeatedly(Return(true));
+    EXPECT_CALL(*socket, send(An<const std::string &>()))
+    .Times(1)
     .WillRepeatedly(Return(true));
     EXPECT_EQ(called, false);
     server.parseRequest(socket);

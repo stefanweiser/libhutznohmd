@@ -80,7 +80,7 @@ TEST(Server, NormalUseCase)
     disableTimeWait(getSocket(connection));
     std::string request = "GET / HTTP/1.1\r\n\r\n";
     EXPECT_FALSE(called);
-    EXPECT_TRUE(connection->send(rest::Buffer(request.begin(), request.end())));
+    EXPECT_TRUE(connection->send(request));
     rest::Buffer data;
     EXPECT_TRUE(connection->receive(data, 4000));
     EXPECT_TRUE(called);

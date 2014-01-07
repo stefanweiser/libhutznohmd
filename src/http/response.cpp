@@ -52,9 +52,7 @@ void Response::deliver()
     }
     head << "\r\n";
 
-    std::string str = head.str();
-    rest::Buffer buffer(str.begin(), str.end());
-    m_connection->send(buffer);
+    m_connection->send(head.str());
     m_connection->send(m_data);
 }
 
