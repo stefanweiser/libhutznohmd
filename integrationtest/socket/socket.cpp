@@ -62,14 +62,15 @@ TEST(Socket, AcceptSendReceive)
 
     std::thread t([]
     {
-        rest::socket::ConnectionSocket socket2("localhost", 10000);
-        disableTimeWait(socket2.m_socket);
-        EXPECT_NE(socket2.m_socket, -1);
+        std::shared_ptr<rest::socket::ConnectionSocket> connection;
+        connection = rest::socket::ConnectionSocket::create("localhost", 10000);
+        disableTimeWait(connection->m_socket);
+        EXPECT_NE(connection->m_socket, -1);
 
         rest::Buffer data = { 0, 1, 2, 3, 4, 5, 6, 7 };
-        EXPECT_EQ(socket2.send(data), true);
+        EXPECT_EQ(connection->send(data), true);
         data.clear();
-        EXPECT_EQ(socket2.receive(data, 8), true);
+        EXPECT_EQ(connection->receive(data, 8), true);
         EXPECT_EQ(data.size(), 4);
         EXPECT_EQ(data, rest::Buffer({ 0, 1, 2, 3 }));
     });
@@ -110,7 +111,7 @@ TEST(Socket, AcceptingClosedSocket)
 
 TEST(Socket, ConnectionRefused)
 {
-    EXPECT_THROW(rest::socket::ConnectionSocket connection("127.0.0.1", 10000), std::bad_alloc);
+    EXPECT_EQ(rest::socket::ConnectionSocket::create("127.0.0.1", 10000), rest::socket::ConnectionPtr());
 }
 
 TEST(Socket, ReceiveSendClosedSocket)
@@ -122,23 +123,24 @@ TEST(Socket, ReceiveSendClosedSocket)
     bool disconnected = false;
     std::thread t([&disconnected]
     {
-        rest::socket::ConnectionSocket connection("localhost", 10000);
-        disableTimeWait(connection.m_socket);
+        std::shared_ptr<rest::socket::ConnectionSocket> connection;
+        connection = rest::socket::ConnectionSocket::create("localhost", 10000);
+        disableTimeWait(connection->m_socket);
         while (disconnected == false)
         {
             usleep(1);
         }
 
         rest::Buffer data;
-        EXPECT_FALSE(connection.receive(data, 8));
+        EXPECT_FALSE(connection->receive(data, 8));
 
-        EXPECT_EQ(::close(connection.m_socket), 0);
-        EXPECT_FALSE(connection.receive(data, 8));
-        EXPECT_FALSE(connection.send(data));
+        EXPECT_EQ(::close(connection->m_socket), 0);
+        EXPECT_FALSE(connection->receive(data, 8));
+        EXPECT_FALSE(connection->send(data));
 
-        const_cast<int &>(connection.m_socket) = -1;
-        EXPECT_FALSE(connection.receive(data, 8));
-        EXPECT_FALSE(connection.send(data));
+        const_cast<int &>(connection->m_socket) = -1;
+        EXPECT_FALSE(connection->receive(data, 8));
+        EXPECT_FALSE(connection->send(data));
     });
 
     rest::socket::ConnectionPtr connection = listener->accept();

@@ -36,43 +36,46 @@ ConnectionPtr connect(
     const std::string & host,
     const uint16_t & port)
 {
-    return std::make_shared<ConnectionSocket>(host, port);
+    return ConnectionSocket::create(host, port);
 }
 
-ConnectionSocket::ConnectionSocket(
+std::shared_ptr<ConnectionSocket> ConnectionSocket::create(
     const std::string & host,
     const uint16_t & port)
-    : m_socket(::socket(PF_INET, SOCK_STREAM, 0))
-    , m_notifier()
 {
-    if (m_socket == -1)
+    int socket = ::socket(PF_INET, SOCK_STREAM, 0);
+    if (socket == -1)
     {
-        throw std::bad_alloc();
+        return std::shared_ptr<ConnectionSocket>();
     }
+
+    std::shared_ptr<ConnectionSocket> result;
+    result = std::make_shared<ConnectionSocket>(socket);
 
     ::fd_set readSet;
     ::fd_set writeSet;
     FD_ZERO(&readSet);
     FD_ZERO(&writeSet);
-    FD_SET(m_socket, &writeSet);
-    FD_SET(m_notifier.receiver(), &readSet);
-    int maxFd = std::max(m_socket, m_notifier.receiver());
+    FD_SET(result->m_socket, &writeSet);
+    FD_SET(result->m_notifier.receiver(), &readSet);
+    int maxFd = std::max(result->m_socket, result->m_notifier.receiver());
     if (::select(maxFd + 1, &readSet, &writeSet, nullptr, nullptr) <= 0)
     {
-        throw std::bad_alloc();
+        return std::shared_ptr<ConnectionSocket>();
     }
 
-    if (FD_ISSET(m_notifier.receiver(), &readSet) != 0)
+    if (FD_ISSET(result->m_notifier.receiver(), &readSet) != 0)
     {
-        throw std::bad_alloc();
+        return std::shared_ptr<ConnectionSocket>();
     }
 
     ::sockaddr_in addr = fillAddress(host, port);
-    if (::connect(m_socket, (::sockaddr *) &addr, sizeof(addr)) == -1)
+    if (::connect(result->m_socket, (::sockaddr *) &addr, sizeof(addr)) == -1)
     {
-        ::close(m_socket);
-        throw std::bad_alloc();
+        return std::shared_ptr<ConnectionSocket>();
     }
+
+    return result;
 }
 
 ConnectionSocket::ConnectionSocket(const int & socket)

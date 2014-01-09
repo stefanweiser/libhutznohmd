@@ -34,7 +34,10 @@ namespace socket
 class ConnectionSocket : public ConnectionSocketInterface
 {
 public:
-    explicit ConnectionSocket(const std::string & host, const uint16_t & port);
+    static std::shared_ptr<ConnectionSocket> create(
+        const std::string & host,
+        const uint16_t & port);
+
     explicit ConnectionSocket(const int & socket);
     virtual ~ConnectionSocket();
     virtual bool receive(rest::Buffer & data, const size_t & maxSize);
