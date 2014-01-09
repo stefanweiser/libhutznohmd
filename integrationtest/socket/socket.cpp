@@ -95,7 +95,7 @@ TEST(Socket, AcceptSendReceive)
 TEST(Socket, WrongConstructionArguments)
 {
     rest::socket::ListenerPtr listener;
-    EXPECT_NO_THROW(listener = rest::socket::listen("localhost", 10000));
+    listener = rest::socket::listen("localhost", 10000);
     disableTimeWait(getSocket(listener));
 
     EXPECT_EQ(rest::socket::listen("127.0.0.1", 10000), rest::socket::ListenerPtr());
@@ -117,7 +117,7 @@ TEST(Socket, ConnectionRefused)
 TEST(Socket, ReceiveSendClosedSocket)
 {
     rest::socket::ListenerPtr listener;
-    EXPECT_NO_THROW(listener = rest::socket::listen("localhost", 10000));
+    listener = rest::socket::listen("localhost", 10000);
     disableTimeWait(getSocket(listener));
 
     bool disconnected = false;
@@ -153,13 +153,13 @@ TEST(Socket, ReceiveSendClosedSocket)
 TEST(Socket, NormalUseCase)
 {
     rest::socket::ListenerPtr listener;
-    EXPECT_NO_THROW(listener = rest::socket::listen("localhost", 10000));
+    listener = rest::socket::listen("localhost", 10000);
     disableTimeWait(getSocket(listener));
 
     std::thread t([]
     {
         rest::socket::ConnectionPtr connection;
-        EXPECT_NO_THROW(connection = rest::socket::connect("localhost", 10000));
+        connection = rest::socket::connect("localhost", 10000);
         EXPECT_NE(connection, rest::socket::ConnectionPtr());
         disableTimeWait(getSocket(connection));
         rest::Buffer data;
