@@ -33,19 +33,20 @@ void client()
     rest::Buffer data2;
     if (false == c->receive(data2, 8))
     {
-        throw std::exception();
+        std::cout << "  client aborts on receive" << std::endl;
+        abort();
     }
 
     std::cout << "  client comparing" << std::endl;
     if (data != data2)
     {
-        throw std::exception();
+        std::cout << "  client aborts on compare" << std::endl;
     }
 
     std::cout << "  client sending" << std::endl;
     if (false == c->send(data2))
     {
-        throw std::exception();
+        std::cout << "  client aborts on send" << std::endl;
     }
 
     std::cout << "  client terminating" << std::endl;
@@ -65,20 +66,20 @@ int main()
     std::cout << "  server sending" << std::endl;
     if (false == c->send(data))
     {
-        throw std::exception();
+        std::cout << "  server aborts on send" << std::endl;
     }
 
     std::cout << "  server receiving" << std::endl;
     rest::Buffer data2;
     if (false == c->receive(data2, 8))
     {
-        throw std::exception();
+        std::cout << "  server aborts on receive" << std::endl;
     }
 
     std::cout << "  server comparing" << std::endl;
     if (data != data2)
     {
-        throw std::exception();
+        std::cout << "  server aborts on comparing" << std::endl;
     }
 
     std::cout << "  joining" << std::endl;

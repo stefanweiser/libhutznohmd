@@ -39,6 +39,7 @@ Request::Request(const rest::socket::ConnectionPtr & connection)
     , m_version(Version::HTTP_UNKNOWN)
     , m_headers()
     , m_data()
+    , m_emptyString()
 {}
 
 void Request::parse()
@@ -55,6 +56,10 @@ void Request::parse()
             char c = consumeChar(i);
             while (c != '\n')
             {
+                if (c == '\0')
+                {
+                    return;
+                }
                 if (c != '\r')
                 {
                     emptyLine = false;
@@ -86,7 +91,7 @@ void Request::parse()
                       std::back_inserter<std::vector<std::string>>(words));
             if (words.size() != 3)
             {
-                throw std::exception();
+                return;
             }
 
             m_method = parseMethod(words[0]);
@@ -104,7 +109,7 @@ void Request::parse()
             {
                 if (lastKey == "")
                 {
-                    throw std::exception();
+                    return;
                 }
 
                 for (size_t j = pair.first; j < pair.second; j++)
@@ -184,7 +189,7 @@ const std::string & Request::header(const std::string & key) const
     auto it = m_headers.find(_key);
     if (it == m_headers.end())
     {
-        throw std::exception();
+        return m_emptyString;
     }
     return it->second;
 }
@@ -200,7 +205,7 @@ char Request::consumeChar(size_t & index)
     {
         if (false == m_connection->receive(m_buffer, 4000))
         {
-            throw std::exception();
+            return '\0';
         }
     }
 
@@ -243,7 +248,7 @@ Method Request::parseMethod(const std::string & word)
     }
     else
     {
-        throw std::exception();
+        return Method::UNKNOWN;
     }
 }
 
@@ -259,7 +264,7 @@ Version Request::parseVersion(const std::string & word)
     }
     else
     {
-        throw std::exception();
+        return Version::HTTP_UNKNOWN;
     }
 }
 

@@ -68,8 +68,10 @@ TEST(Response, SetAndDeliver)
 
     response.setVersion(rest::http::Version::HTTP_UNKNOWN);
     EXPECT_CALL(*socket, send(An<const rest::Buffer &>()))
-    .Times(0);
+    .Times(1)
+    .WillRepeatedly(Return(true));
     EXPECT_CALL(*socket, send(An<const std::string &>()))
-    .Times(0);
-    EXPECT_THROW(response.deliver(), std::exception);
+    .Times(1)
+    .WillRepeatedly(Return(true));
+    response.deliver();
 }

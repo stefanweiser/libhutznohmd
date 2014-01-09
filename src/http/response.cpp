@@ -88,7 +88,7 @@ void Response::deliverVersion(std::ostream & os, const Version & version)
     }
     else
     {
-        throw std::exception();
+        os << "HTTP/?.?";
     }
 }
 

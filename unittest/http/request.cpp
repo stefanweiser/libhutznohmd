@@ -50,14 +50,14 @@ TEST(Request, Methods)
     EXPECT_EQ(rest::http::Request::parseMethod("DELETE"), rest::http::Method::DELETE);
     EXPECT_EQ(rest::http::Request::parseMethod("TRACE"), rest::http::Method::TRACE);
     EXPECT_EQ(rest::http::Request::parseMethod("CONNECT"), rest::http::Method::CONNECT);
-    EXPECT_THROW(rest::http::Request::parseMethod("???"), std::exception);
+    EXPECT_EQ(rest::http::Request::parseMethod("???"), rest::http::Method::UNKNOWN);
 }
 
 TEST(Request, Version)
 {
     EXPECT_EQ(rest::http::Request::parseVersion("HTTP/1.0"), rest::http::Version::HTTP_1_0);
     EXPECT_EQ(rest::http::Request::parseVersion("HTTP/1.1"), rest::http::Version::HTTP_1_1);
-    EXPECT_THROW(rest::http::Request::parseVersion("???"), std::exception);
+    EXPECT_EQ(rest::http::Request::parseVersion("???"), rest::http::Version::HTTP_UNKNOWN);
 }
 
 TEST(Request, SetAndDeliver)
@@ -84,7 +84,7 @@ TEST(Request, SetAndDeliver)
     request.parse();
 
     EXPECT_EQ(request.header("Content-Length"), "1");
-    EXPECT_THROW(request.header("???"), std::exception);
+    EXPECT_EQ(request.header("???"), "");
     EXPECT_EQ(request.m_headers.size(), 2);
     EXPECT_EQ(request.data(), rest::Buffer({ '0' }));
     EXPECT_EQ(request.method(), rest::http::Method::GET);
@@ -101,5 +101,5 @@ TEST(Request, NoNeededDataAvailable)
     EXPECT_CALL(*socket, receive(_, _))
     .Times(1)
     .WillOnce(Return(false));
-    EXPECT_THROW(request.parse(), std::exception);
+    request.parse();
 }

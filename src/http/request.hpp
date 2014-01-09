@@ -57,6 +57,7 @@ private:
     Version m_version;
     std::map<std::string, std::string> m_headers;
     rest::Buffer m_data;
+    const std::string m_emptyString;
 };
 
 } // namespace http
