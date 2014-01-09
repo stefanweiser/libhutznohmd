@@ -37,7 +37,11 @@ namespace socket
 class ListenerSocket : public ListenerSocketInterface
 {
 public:
-    explicit ListenerSocket(const std::string & host, const uint16_t & port);
+    static std::shared_ptr<ListenerSocket> create(
+        const std::string & host,
+        const uint16_t & port);
+
+    explicit ListenerSocket(const int & socket);
     virtual ~ListenerSocket();
     virtual ConnectionPtr accept() const;
     virtual void stop();

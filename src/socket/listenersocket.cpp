@@ -33,27 +33,37 @@ namespace socket
 
 ListenerPtr listen(const std::string & host, const uint16_t & port)
 {
-    return std::make_shared<ListenerSocket>(host, port);
+    return ListenerSocket::create(host, port);
 }
 
-ListenerSocket::ListenerSocket(const std::string & host, const uint16_t & port)
-    : m_socket(::socket(PF_INET, SOCK_STREAM, 0))
-    , m_notifier()
+std::shared_ptr<ListenerSocket> ListenerSocket::create(
+    const std::string & host,
+    const uint16_t & port)
 {
-    if (m_socket == -1)
+    const int socket = ::socket(PF_INET, SOCK_STREAM, 0);
+    if (socket == -1)
     {
-        throw std::bad_alloc();
+        return std::shared_ptr<ListenerSocket>();
     }
+
+    std::shared_ptr<ListenerSocket> result;
+    result = std::make_shared<ListenerSocket>(socket);
 
     ::sockaddr_in addr = fillAddress(host, port);
-    int res1 = ::bind(m_socket, (::sockaddr *) &addr, sizeof(addr));
-    int res2 = ::listen(m_socket, 4);
+    int res1 = ::bind(result->m_socket, (::sockaddr *) &addr, sizeof(addr));
+    int res2 = ::listen(result->m_socket, 4);
     if ((res1 == -1) || (res2 == -1))
     {
-        ::close(m_socket);
-        throw std::bad_alloc();
+        return std::shared_ptr<ListenerSocket>();
     }
+
+    return result;
 }
+
+ListenerSocket::ListenerSocket(const int & socket)
+    : m_socket(socket)
+    , m_notifier()
+{}
 
 ListenerSocket::~ListenerSocket()
 {

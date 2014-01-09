@@ -48,17 +48,17 @@ int getSocket(const rest::socket::ListenerPtr & listener)
 
 TEST(Socket, ConstructionNoThrow)
 {
-    EXPECT_NO_THROW(
-        rest::socket::ListenerSocket l("127.0.0.1", 10000);
-        disableTimeWait(l.m_socket));
+    auto l = rest::socket::ListenerSocket::create("127.0.0.1", 10000);
+    disableTimeWait(l->m_socket);
+    EXPECT_NE(l, std::shared_ptr<rest::socket::ListenerSocket>());
 
 }
 
 TEST(Socket, AcceptSendReceive)
 {
-    rest::socket::ListenerSocket socket("127.0.0.1", 10000);
-    disableTimeWait(socket.m_socket);
-    EXPECT_NE(socket.m_socket, -1);
+    auto socket = rest::socket::ListenerSocket::create("127.0.0.1", 10000);
+    disableTimeWait(socket->m_socket);
+    EXPECT_NE(socket->m_socket, -1);
 
     std::thread t([]
     {
@@ -75,7 +75,7 @@ TEST(Socket, AcceptSendReceive)
         EXPECT_EQ(data, rest::Buffer({ 0, 1, 2, 3 }));
     });
 
-    rest::socket::ConnectionPtr connection = socket.accept();
+    rest::socket::ConnectionPtr connection = socket->accept();
     EXPECT_NE(connection, rest::socket::ConnectionPtr());
     disableTimeWait(getSocket(connection));
     rest::socket::ConnectionSocket * c;
@@ -98,15 +98,15 @@ TEST(Socket, WrongConstructionArguments)
     EXPECT_NO_THROW(listener = rest::socket::listen("localhost", 10000));
     disableTimeWait(getSocket(listener));
 
-    EXPECT_THROW(rest::socket::ListenerSocket socket("127.0.0.1", 10000), std::bad_alloc);
+    EXPECT_EQ(rest::socket::listen("127.0.0.1", 10000), rest::socket::ListenerPtr());
 }
 
 TEST(Socket, AcceptingClosedSocket)
 {
-    rest::socket::ListenerSocket listener("127.0.0.1", 10000);
-    disableTimeWait(listener.m_socket);
-    EXPECT_EQ(::close(listener.m_socket), 0);
-    EXPECT_EQ(listener.accept(), rest::socket::ConnectionPtr());
+    auto listener = rest::socket::ListenerSocket::create("127.0.0.1", 10000);
+    disableTimeWait(listener->m_socket);
+    EXPECT_EQ(::close(listener->m_socket), 0);
+    EXPECT_EQ(listener->accept(), rest::socket::ConnectionPtr());
 }
 
 TEST(Socket, ConnectionRefused)

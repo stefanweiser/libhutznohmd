@@ -43,7 +43,7 @@ std::shared_ptr<ConnectionSocket> ConnectionSocket::create(
     const std::string & host,
     const uint16_t & port)
 {
-    int socket = ::socket(PF_INET, SOCK_STREAM, 0);
+    const int socket = ::socket(PF_INET, SOCK_STREAM, 0);
     if (socket == -1)
     {
         return std::shared_ptr<ConnectionSocket>();
