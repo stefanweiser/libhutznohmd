@@ -35,5 +35,6 @@ TEST(SocketUtility, FillAddressOk)
 
 TEST(SocketUtility, FillAddressThrow)
 {
-    EXPECT_THROW(rest::socket::fillAddress("127:0:0:1", 0x8000), std::bad_alloc);
+    ::sockaddr_in addr = rest::socket::fillAddress("127:0:0:1", 0x8000);
+    EXPECT_EQ(addr.sin_family, AF_UNSPEC);
 }

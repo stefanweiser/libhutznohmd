@@ -43,7 +43,8 @@ namespace socket
 
         if (!hostname)
         {
-            throw std::bad_alloc();
+            addr.sin_family = AF_UNSPEC;
+            return addr;
         }
         addr.sin_addr = * (::in_addr *) hostname->h_addr;
     }
@@ -59,13 +60,12 @@ NotificationPipe::NotificationPipe()
     , m_sendFd(-1)
 {
     std::array<int, 2> pipeFd;
-    if (::pipe(pipeFd.data()) != 0)
+    if (::pipe(pipeFd.data()) == 0)
     {
-        throw std::bad_alloc();
+        m_receiveFd = pipeFd[0];
+        m_sendFd = pipeFd[1];
+        ::fcntl(m_sendFd, F_SETFL, O_NONBLOCK);
     }
-    m_receiveFd = pipeFd[0];
-    m_sendFd = pipeFd[1];
-    ::fcntl(m_sendFd, F_SETFL, O_NONBLOCK);
 }
 
 NotificationPipe::~NotificationPipe()
