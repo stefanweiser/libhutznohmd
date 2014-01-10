@@ -18,6 +18,8 @@
 #ifndef __LIBREST_HTTP_HEADERS_ACCEPT_HPP__
 #define __LIBREST_HTTP_HEADERS_ACCEPT_HPP__
 
+#include <cstdint>
+#include <map>
 #include <string>
 
 namespace rest
@@ -26,11 +28,31 @@ namespace rest
 namespace http
 {
 
-class Accept
+class MimeType
 {
 public:
-	explicit Accept(const std::string & /*value*/){}
+	enum class Type
+	{
+		Wildcard
+
+	};
+
+	enum class Subtype
+	{
+		Wildcard
+	};
+
+	explicit MimeType(const std::string & string);
+
+private:
+	const std::string m_string;
+	Type m_type;
+	Subtype m_subtype;
+	uint16_t m_quality;
+	std::map<std::string, std::string> m_extensions;
 };
+
+std::istream& operator>>(std::istream& is, MimeType& type);
 
 } // namespace http
 

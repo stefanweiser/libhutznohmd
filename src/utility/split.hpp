@@ -15,25 +15,29 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_HTTP_HEADERS_ACCEPT_HPP__
-#define __LIBREST_HTTP_HEADERS_ACCEPT_HPP__
+#ifndef __LIBREST_UTILITY_SPLIT_HPP__
+#define __LIBREST_UTILITY_SPLIT_HPP__
 
+#include <sstream>
 #include <string>
+#include <vector>
 
 namespace rest
 {
 
-namespace http
+inline std::vector<std::string> split(const std::string& s, const char delemiter)
 {
+	std::vector<std::string> words;
+	std::istringstream iss(s);
+	std::string segment;
+	while (std::getline(iss, segment, delemiter))
+	{
+		words.push_back(segment);
+	}
 
-class Accept
-{
-public:
-	explicit Accept(const std::string & /*value*/){}
-};
-
-} // namespace http
+	return words;
+}
 
 } // namespace rest
 
-#endif // __LIBREST_HTTP_HEADERS_ACCEPT_HPP__
+#endif // __LIBREST_UTILITY_SPLIT_HPP__

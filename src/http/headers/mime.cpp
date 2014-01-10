@@ -15,10 +15,13 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_HTTP_HEADERS_ACCEPT_HPP__
-#define __LIBREST_HTTP_HEADERS_ACCEPT_HPP__
+#include <iostream>
+#include <sstream>
+#include <vector>
 
-#include <string>
+#include <utility/split.hpp>
+
+#include "mime.hpp"
 
 namespace rest
 {
@@ -26,14 +29,20 @@ namespace rest
 namespace http
 {
 
-class Accept
+MimeType::MimeType(const std::string & string)
+	: m_string(string)
+	, m_type(Type::Wildcard)
+	, m_subtype(Subtype::Wildcard)
+	, m_quality(10)
+	, m_extensions()
 {
-public:
-	explicit Accept(const std::string & /*value*/){}
-};
+	std::vector<std::string> words = split(m_string, ';');
+	if ( words.empty() )
+	{
+		return;
+	}
+}
 
 } // namespace http
 
 } // namespace rest
-
-#endif // __LIBREST_HTTP_HEADERS_ACCEPT_HPP__

@@ -15,25 +15,17 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_HTTP_HEADERS_ACCEPT_HPP__
-#define __LIBREST_HTTP_HEADERS_ACCEPT_HPP__
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
-#include <string>
+#define private public
+#define protected public
 
-namespace rest
+#include <http/headers/mime.hpp>
+
+using namespace testing;
+
+TEST(Mime, Simple)
 {
-
-namespace http
-{
-
-class Accept
-{
-public:
-	explicit Accept(const std::string & /*value*/){}
-};
-
-} // namespace http
-
-} // namespace rest
-
-#endif // __LIBREST_HTTP_HEADERS_ACCEPT_HPP__
+	rest::http::MimeType mime("text/plain; q=0.7; charset=us-ascii");
+}
