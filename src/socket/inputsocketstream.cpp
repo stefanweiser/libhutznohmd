@@ -23,6 +23,36 @@ namespace rest
 namespace socket
 {
 
+InputSocketStream::InputSocketStream(const ConnectionPtr& connection)
+	: m_connection(connection)
+	, m_flags{false, false, false}
+{
+	if (m_connection)
+	{
+		m_flags.sane = true;
+	}
+	else
+	{
+		m_flags.error = true;
+	}
+}
+
+char InputSocketStream::get()
+{
+	return '\0';
+}
+
+void InputSocketStream::unget()
+{
+	;
+}
+
+InputSocketStream& operator>>(InputSocketStream& is, char& c)
+{
+	c = is.get();
+	return is;
+}
+
 } // namespace socket
 
 } // namespace rest

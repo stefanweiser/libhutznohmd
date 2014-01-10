@@ -18,11 +18,36 @@
 #ifndef __LIBREST_SOCKET_INPUTSOCKETSTREAM_HPP__
 #define __LIBREST_SOCKET_INPUTSOCKETSTREAM_HPP__
 
+#include <socket/socketinterface.hpp>
+
 namespace rest
 {
 
 namespace socket
 {
+
+class InputSocketStream
+{
+public:
+
+	explicit InputSocketStream(const ConnectionPtr& connection);
+
+	char get();
+	void unget();
+
+private:
+	struct Flags
+	{
+		bool sane : 1;
+		bool eof : 1;
+		bool error : 1;
+	};
+
+	ConnectionPtr m_connection;
+	Flags m_flags;
+};
+
+InputSocketStream& operator>>(InputSocketStream& is, char& c);
 
 } // namespace socket
 
