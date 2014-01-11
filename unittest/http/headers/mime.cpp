@@ -27,5 +27,5 @@ using namespace testing;
 
 TEST(Mime, Simple)
 {
-	rest::http::MimeType mime("text/plain; q=0.7; charset=us-ascii");
+    rest::http::MimeType mime("text/plain; q=0.7; charset=us-ascii");
 }

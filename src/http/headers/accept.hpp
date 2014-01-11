@@ -29,7 +29,7 @@ namespace http
 class Accept
 {
 public:
-	explicit Accept(const std::string & /*value*/){}
+    explicit Accept(const std::string & /*value*/) {}
 };
 
 } // namespace http

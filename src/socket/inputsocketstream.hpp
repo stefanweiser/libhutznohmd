@@ -30,24 +30,24 @@ class InputSocketStream
 {
 public:
 
-	explicit InputSocketStream(const ConnectionPtr& connection);
+    explicit InputSocketStream(const ConnectionPtr & connection);
 
-	char get();
-	void unget();
+    char get();
+    void unget();
 
 private:
-	struct Flags
-	{
-		bool sane : 1;
-		bool eof : 1;
-		bool error : 1;
-	};
+    struct Flags
+    {
+        bool sane : 1;
+        bool eof : 1;
+        bool error : 1;
+    };
 
-	ConnectionPtr m_connection;
-	Flags m_flags;
+    ConnectionPtr m_connection;
+    Flags m_flags;
 };
 
-InputSocketStream& operator>>(InputSocketStream& is, char& c);
+InputSocketStream & operator>>(InputSocketStream & is, char & c);
 
 } // namespace socket
 

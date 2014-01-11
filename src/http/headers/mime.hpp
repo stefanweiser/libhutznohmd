@@ -31,28 +31,28 @@ namespace http
 class MimeType
 {
 public:
-	enum class Type
-	{
-		Wildcard
+    enum class Type
+    {
+        Wildcard
 
-	};
+    };
 
-	enum class Subtype
-	{
-		Wildcard
-	};
+    enum class Subtype
+    {
+        Wildcard
+    };
 
-	explicit MimeType(const std::string & string);
+    explicit MimeType(const std::string & string);
 
 private:
-	const std::string m_string;
-	Type m_type;
-	Subtype m_subtype;
-	uint16_t m_quality;
-	std::map<std::string, std::string> m_extensions;
+    const std::string m_string;
+    Type m_type;
+    Subtype m_subtype;
+    uint16_t m_quality;
+    std::map<std::string, std::string> m_extensions;
 };
 
-std::istream& operator>>(std::istream& is, MimeType& type);
+std::istream & operator>>(std::istream & is, MimeType & type);
 
 } // namespace http
 

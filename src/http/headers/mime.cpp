@@ -30,17 +30,17 @@ namespace http
 {
 
 MimeType::MimeType(const std::string & string)
-	: m_string(string)
-	, m_type(Type::Wildcard)
-	, m_subtype(Subtype::Wildcard)
-	, m_quality(10)
-	, m_extensions()
+    : m_string(string)
+    , m_type(Type::Wildcard)
+    , m_subtype(Subtype::Wildcard)
+    , m_quality(10)
+    , m_extensions()
 {
-	std::vector<std::string> words = split(m_string, ';');
-	if ( words.empty() )
-	{
-		return;
-	}
+    std::vector<std::string> words = split(m_string, ';');
+    if (words.empty())
+    {
+        return;
+    }
 }
 
 } // namespace http

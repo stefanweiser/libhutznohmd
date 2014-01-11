@@ -25,17 +25,17 @@
 namespace rest
 {
 
-inline std::vector<std::string> split(const std::string& s, const char delemiter)
+inline std::vector<std::string> split(const std::string & s, const char delemiter)
 {
-	std::vector<std::string> words;
-	std::istringstream iss(s);
-	std::string segment;
-	while (std::getline(iss, segment, delemiter))
-	{
-		words.push_back(segment);
-	}
+    std::vector<std::string> words;
+    std::istringstream iss(s);
+    std::string segment;
+    while (std::getline(iss, segment, delemiter))
+    {
+        words.push_back(segment);
+    }
 
-	return words;
+    return words;
 }
 
 } // namespace rest
