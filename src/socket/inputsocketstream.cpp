@@ -25,7 +25,9 @@ namespace socket
 
 InputSocketStream::InputSocketStream(const ConnectionPtr & connection)
     : m_connection(connection)
-    , m_flags {false, false, false}
+    , m_buffer()
+    , m_index(0)
+    , m_flags({false, false, false})
 {
     if (m_connection)
     {
@@ -39,12 +41,33 @@ InputSocketStream::InputSocketStream(const ConnectionPtr & connection)
 
 char InputSocketStream::get()
 {
-    return '\0';
+    if (m_index == m_buffer.size())
+    {
+        if (m_flags.eof == true)
+        {
+            return '\0';
+        }
+
+        if (false == m_connection->receive(m_buffer, 4000))
+        {
+            m_flags.sane = false;
+            m_flags.eof = true;
+            m_flags.error = false;
+            return '\0';
+        }
+    }
+
+    return m_buffer[m_index++];
 }
 
 void InputSocketStream::unget()
 {
-    ;
+    if (m_index == 0)
+    {
+        return;
+    }
+
+    m_index--;
 }
 
 InputSocketStream & operator>>(InputSocketStream & is, char & c)

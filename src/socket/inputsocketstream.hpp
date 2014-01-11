@@ -44,6 +44,8 @@ private:
     };
 
     ConnectionPtr m_connection;
+    Buffer m_buffer;
+    size_t m_index;
     Flags m_flags;
 };
 
