@@ -71,10 +71,41 @@ void InputSocketStream::unget()
     m_index--;
 }
 
-InputSocketStream & operator>>(InputSocketStream & is, char & c)
+InputSocketStream & operator>>(InputSocketStream & iss, char & c)
 {
-    c = is.get();
-    return is;
+    c = iss.get();
+    return iss;
+}
+
+InputSocketStream & operator>>(InputSocketStream & iss, std::string & s)
+{
+    s.clear();
+    bool finished = false;
+    do
+    {
+        char c, d;
+        iss >> c;
+        switch (c)
+        {
+        case '\r':
+            iss >> d;
+            if (d != '\n')
+            {
+                iss.unget();
+            }
+
+        case '\0':
+        case '\n':
+            finished = true;
+            break;
+
+        default:
+            s += c;
+            break;
+        }
+    }
+    while (finished == false);
+    return iss;
 }
 
 } // namespace socket

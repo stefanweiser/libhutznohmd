@@ -49,7 +49,12 @@ private:
     Flags m_flags;
 };
 
-InputSocketStream & operator>>(InputSocketStream & is, char & c);
+//! Reads one character from the stream or '\0' in case of error or eof.
+InputSocketStream & operator>>(InputSocketStream & iss, char & c);
+
+//! Reads a whole line from the stream. A line ends on '\0', '\n', '\r' character or "\r\n"
+//! sequence.
+InputSocketStream & operator>>(InputSocketStream & iss, std::string & s);
 
 } // namespace socket
 

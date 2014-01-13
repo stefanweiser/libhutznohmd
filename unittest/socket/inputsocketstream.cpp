@@ -129,3 +129,105 @@ TEST(InputSocketStream, Unget)
     iss.unget();
     EXPECT_EQ(iss.get(), 3);
 }
+
+TEST(InputSocketStream, StringNull)
+{
+    rest::socket::MockConnectionPtr socket;
+    socket = std::make_shared<rest::socket::MockConnectionSocket>();
+    rest::socket::InputSocketStream iss(socket);
+
+    EXPECT_CALL(*socket, receive(_, _))
+    .Times(2)
+    .WillOnce(Invoke([](rest::Buffer & data, const size_t & /*maxSize*/) -> bool
+    {
+        std::string reqData = "abc";
+        data = rest::Buffer(reqData.begin(), reqData.end());
+        return true;
+    }))
+    .WillOnce(Invoke([](rest::Buffer & /*data*/, const size_t & /*maxSize*/) -> bool
+    {
+        return false;
+    }));
+
+    std::string s;
+    iss >> s;
+    EXPECT_EQ(s, "abc");
+}
+
+TEST(InputSocketStream, StringNewline)
+{
+    rest::socket::MockConnectionPtr socket;
+    socket = std::make_shared<rest::socket::MockConnectionSocket>();
+    rest::socket::InputSocketStream iss(socket);
+
+    EXPECT_CALL(*socket, receive(_, _))
+    .Times(2)
+    .WillOnce(Invoke([](rest::Buffer & data, const size_t & /*maxSize*/) -> bool
+    {
+        std::string reqData = "abc\ndef";
+        data = rest::Buffer(reqData.begin(), reqData.end());
+        return true;
+    }))
+    .WillOnce(Invoke([](rest::Buffer & /*data*/, const size_t & /*maxSize*/) -> bool
+    {
+        return false;
+    }));
+
+    std::string s;
+    iss >> s;
+    EXPECT_EQ(s, "abc");
+    iss >> s;
+    EXPECT_EQ(s, "def");
+}
+
+TEST(InputSocketStream, StringCarriageReturn)
+{
+    rest::socket::MockConnectionPtr socket;
+    socket = std::make_shared<rest::socket::MockConnectionSocket>();
+    rest::socket::InputSocketStream iss(socket);
+
+    EXPECT_CALL(*socket, receive(_, _))
+    .Times(2)
+    .WillOnce(Invoke([](rest::Buffer & data, const size_t & /*maxSize*/) -> bool
+    {
+        std::string reqData = "abc\rdef";
+        data = rest::Buffer(reqData.begin(), reqData.end());
+        return true;
+    }))
+    .WillOnce(Invoke([](rest::Buffer & /*data*/, const size_t & /*maxSize*/) -> bool
+    {
+        return false;
+    }));
+
+    std::string s;
+    iss >> s;
+    EXPECT_EQ(s, "abc");
+    iss >> s;
+    EXPECT_EQ(s, "def");
+}
+
+TEST(InputSocketStream, StringCarriageReturnNewline)
+{
+    rest::socket::MockConnectionPtr socket;
+    socket = std::make_shared<rest::socket::MockConnectionSocket>();
+    rest::socket::InputSocketStream iss(socket);
+
+    EXPECT_CALL(*socket, receive(_, _))
+    .Times(2)
+    .WillOnce(Invoke([](rest::Buffer & data, const size_t & /*maxSize*/) -> bool
+    {
+        std::string reqData = "abc\r\ndef";
+        data = rest::Buffer(reqData.begin(), reqData.end());
+        return true;
+    }))
+    .WillOnce(Invoke([](rest::Buffer & /*data*/, const size_t & /*maxSize*/) -> bool
+    {
+        return false;
+    }));
+
+    std::string s;
+    iss >> s;
+    EXPECT_EQ(s, "abc");
+    iss >> s;
+    EXPECT_EQ(s, "def");
+}
