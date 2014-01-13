@@ -41,14 +41,15 @@ InputSocketStream::InputSocketStream(const ConnectionPtr & connection)
 
 char InputSocketStream::get()
 {
+    if ((m_flags.error == true) || (m_flags.eof == true))
+    {
+        return '\0';
+    }
+
     if (m_index == m_buffer.size())
     {
-        if (m_flags.eof == true)
-        {
-            return '\0';
-        }
-
-        if (false == m_connection->receive(m_buffer, 4000))
+        const bool received = m_connection->receive(m_buffer, 4000);
+        if (false == received)
         {
             m_flags.sane = false;
             m_flags.eof = true;
@@ -62,7 +63,7 @@ char InputSocketStream::get()
 
 void InputSocketStream::unget()
 {
-    if (m_index == 0)
+    if ((m_index == 0) || (m_flags.error == true))
     {
         return;
     }
