@@ -44,14 +44,6 @@ Server::Server(
     , m_shutdown(false)
 {}
 
-Server::~Server()
-{
-    for (auto thread : m_threads)
-    {
-        thread->join();
-    }
-}
-
 void Server::run()
 {
     while (false == m_shutdown)
@@ -64,6 +56,12 @@ void Server::run()
                              connection));
         }
     }
+
+    for (auto thread : m_threads)
+    {
+        thread->join();
+    }
+    m_threads.clear();
 }
 
 void Server::stop()

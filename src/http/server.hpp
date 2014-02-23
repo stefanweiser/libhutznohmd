@@ -40,8 +40,6 @@ public:
         const rest::socket::ListenerPtr & socket,
         const TransactionFn & transactionFn);
 
-    virtual ~Server();
-
     virtual void run();
     virtual void stop();
 

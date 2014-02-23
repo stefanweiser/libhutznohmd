@@ -120,12 +120,14 @@ TEST(Socket, ReceiveSendClosedSocket)
     listener = rest::socket::listen("localhost", 10000);
     disableTimeWait(getSocket(listener));
 
+    bool connected = false;
     bool disconnected = false;
-    std::thread t([&disconnected]
+    std::thread t([&disconnected, &connected]
     {
         std::shared_ptr<rest::socket::ConnectionSocket> connection;
         connection = rest::socket::ConnectionSocket::create("localhost", 10000);
         disableTimeWait(connection->m_socket);
+        connected = true;
         while (disconnected == false)
         {
             usleep(1);
@@ -145,6 +147,10 @@ TEST(Socket, ReceiveSendClosedSocket)
 
     rest::socket::ConnectionPtr connection = listener->accept();
     disableTimeWait(getSocket(connection));
+    while (connected == false)
+    {
+        usleep(1);
+    }
     connection.reset();
     disconnected = true;
     t.join();
