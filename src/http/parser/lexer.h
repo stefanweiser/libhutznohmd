@@ -85,6 +85,7 @@ public:
     void takeHeader();
     int get();
     void error(const char * s);
+    bool valid() const;
     const HttpMethod & method() const;
     const HttpVersion & version() const;
     const std::string url() const;

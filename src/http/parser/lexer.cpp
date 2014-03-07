@@ -151,9 +151,13 @@ int HttpParser::get()
     return c;
 }
 
-void HttpParser::error(const char * s)
+void HttpParser::error(const char *)
 {
-    std::cout << s << std::endl;
+}
+
+bool HttpParser::valid() const
+{
+    return m_finished;
 }
 
 const HttpMethod & HttpParser::method() const
