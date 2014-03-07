@@ -195,7 +195,7 @@ function exec_astyle()
 	check_astyle
 
 	cd "${script_path}"
-	local files="$(find "${script_path}/src" "${script_path}/integrationtest" "${script_path}/unittest" "${script_path}/examples" -name *.cpp -o -name *.hpp)"
+	local files="$(find "${script_path}/src" "${script_path}/integrationtest" "${script_path}/unittest" "${script_path}/examples" -name *.cpp -o -name *.hpp -o -name *.h)"
 	for file in $files; do
 		${binary_astyle} --options="${script_path}/astyle.rc" $file
 	done
