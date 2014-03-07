@@ -19,6 +19,8 @@
 #define __LIBREST_HTTP_PARSER_LEXER_H__
 
 #ifdef __cplusplus
+#include <functional>
+
 extern "C"
 {
 #endif
@@ -70,7 +72,7 @@ namespace http
 class HttpParser
 {
 public:
-    explicit HttpParser();
+    explicit HttpParser(const std::function<int()> & getFn, const std::function<int()> & peekFn);
     void parse();
     void finished();
     void setHttpVerb(const HttpMethod & newMethod);
@@ -91,6 +93,8 @@ public:
     const std::map<std::string, std::string> & headers() const;
 
 private:
+    std::function<int()> m_getFn;
+    std::function<int()> m_peekFn;
     bool m_finished;
     char m_lastChar;
     std::string m_headerKey;

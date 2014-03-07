@@ -50,8 +50,10 @@ char toLower(const char c)
 
 }
 
-HttpParser::HttpParser()
-    : m_finished(false)
+HttpParser::HttpParser(const std::function<int()> & getFn, const std::function<int()> & peekFn)
+    : m_getFn(getFn)
+    , m_peekFn(peekFn)
+    , m_finished(false)
     , m_lastChar(0)
     , m_headerKey()
     , m_headerValue()
@@ -126,21 +128,21 @@ int HttpParser::get()
         return -1;
     }
 
-    int c = std::cin.get();
+    int c = m_getFn();
     if (c == '\r')
     {
-        if (std::cin.peek() == '\n')
+        if (m_peekFn() == '\n')
         {
-            std::cin.get();
+            m_getFn();
         }
         c = '\n';
     }
 
     if (c == '\n')
     {
-        if ((std::cin.peek() == ' ') || (std::cin.peek() == '\t'))
+        if ((m_peekFn() == ' ') || (m_peekFn() == '\t'))
         {
-            std::cin.get();
+            m_getFn();
             c = ' ';
         }
     }

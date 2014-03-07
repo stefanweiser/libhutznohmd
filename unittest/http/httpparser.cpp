@@ -27,7 +27,7 @@ using namespace testing;
 
 TEST(HttpParser, ConstructionDestruction)
 {
-    rest::http::HttpParser parser;
+    rest::http::HttpParser parser([]() -> int { return 0; }, []() -> int { return 0; });
     EXPECT_EQ(parser.m_finished, false);
     EXPECT_EQ(parser.m_lastChar, 0);
     EXPECT_EQ(parser.m_headerKey.empty(), true);
