@@ -66,6 +66,28 @@ int connectSignalSafe(int sockfd, const ::sockaddr * addr, socklen_t len)
     return res;
 }
 
+ssize_t sendSignalSafe(int fd, const void * buf, size_t n, int flags)
+{
+    ssize_t sent;
+    do
+    {
+        sent = ::send(fd, buf, n, flags);
+    }
+    while ((sent == -1) && (errno == EINTR));
+    return sent;
+}
+
+ssize_t recvSignalSafe(int fd, void * buf, size_t n, int flags)
+{
+    ssize_t received;
+    do
+    {
+        received = ::recv(fd, buf, n, flags);
+    }
+    while ((received == -1) && (errno == EINTR));
+    return received;
+}
+
 ::sockaddr_in fillAddress(const std::string & host, const uint16_t & port)
 {
     ::sockaddr_in addr;

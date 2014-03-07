@@ -40,6 +40,10 @@ int acceptSignalSafe(int fd, ::sockaddr * addr, socklen_t * len);
 
 int connectSignalSafe(int sockfd, const ::sockaddr * addr, socklen_t len);
 
+ssize_t sendSignalSafe(int fd, const void * buf, size_t n, int flags);
+
+ssize_t recvSignalSafe(int fd, void * buf, size_t n, int flags);
+
 ::sockaddr_in fillAddress(const std::string & host, const uint16_t & port);
 
 class NotificationPipe

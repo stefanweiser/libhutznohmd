@@ -94,6 +94,7 @@ bool ConnectionSocket::connect()
     addr.in = &m_addr;
     if (connectSignalSafe(m_socket, addr.base, sizeof(m_addr)) != 0)
     {
+        close();
         return false;
     }
     m_isConnected = true;
@@ -117,7 +118,7 @@ bool ConnectionSocket::receive(rest::Buffer & data, const size_t & maxSize)
 
     const size_t oldSize = data.size();
     data.resize(oldSize + maxSize);
-    const ::ssize_t received = ::recv(m_socket, data.data() + oldSize, maxSize, 0);
+    const ::ssize_t received = recvSignalSafe(m_socket, data.data() + oldSize, maxSize, 0);
 
     if (received <= 0)
     {
@@ -151,7 +152,7 @@ bool ConnectionSocket::send(const char * p, const size_t & s)
     {
         const void * q = p + sent;
         const size_t t = s - sent;
-        const ::ssize_t sentBlock = ::send(m_socket, q, t, 0);
+        const ::ssize_t sentBlock = sendSignalSafe(m_socket, q, t, 0);
 
         if (sentBlock <= 0)
         {
