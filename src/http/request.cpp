@@ -17,8 +17,6 @@
 
 #include <algorithm>
 #include <cctype>
-#include <iostream>
-#include <iomanip>
 #include <iterator>
 #include <set>
 #include <sstream>

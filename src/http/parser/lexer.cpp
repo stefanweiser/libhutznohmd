@@ -17,8 +17,6 @@
 
 #include <cmath>
 #include <cstdint>
-#include <iostream>
-#include <iomanip>
 #include <map>
 
 #include "lexer.h"
