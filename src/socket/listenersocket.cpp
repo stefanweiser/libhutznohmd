@@ -99,6 +99,11 @@ ConnectionPtr ListenerSocket::accept()
     return std::make_shared<ConnectionSocket>(client);
 }
 
+bool ListenerSocket::listening() const
+{
+    return (m_socket != -1);
+}
+
 void ListenerSocket::stop()
 {
     ::shutdown(m_socket, SHUT_RDWR);

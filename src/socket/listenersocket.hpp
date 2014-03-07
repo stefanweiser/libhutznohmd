@@ -44,6 +44,7 @@ public:
     explicit ListenerSocket(const int & socket);
     virtual ~ListenerSocket();
     virtual ConnectionPtr accept();
+    virtual bool listening() const;
     virtual void stop();
 
 private:
