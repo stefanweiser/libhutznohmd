@@ -20,6 +20,8 @@
 
 #include <cstdint>
 
+#include <netinet/in.h>
+
 #include <librest.hpp>
 
 #include <socket/socketinterface.hpp>
@@ -38,7 +40,9 @@ public:
         const uint16_t & port);
 
     explicit ConnectionSocket(const int & socket);
+    explicit ConnectionSocket(const int & socket, const ::sockaddr_in & addr);
     virtual ~ConnectionSocket();
+    virtual bool connect();
     virtual void close();
     virtual bool receive(rest::Buffer & data, const size_t & maxSize);
     virtual bool send(const rest::Buffer & data);
@@ -47,7 +51,9 @@ public:
 private:
     bool send(const char * p, const size_t & s);
 
+    bool m_isConnected;
     int m_socket;
+    const ::sockaddr_in m_addr;
 };
 
 } // namespace socket

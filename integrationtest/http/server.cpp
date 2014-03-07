@@ -77,6 +77,7 @@ TEST(Server, NormalUseCase)
     std::thread t(std::bind(&rest::http::ServerInterface::run, server.get()));
 
     rest::socket::ConnectionPtr connection = rest::socket::connect("localhost", 10001);
+    EXPECT_TRUE(connection->connect());
     disableTimeWait(getSocket(connection));
     std::string request = "GET / HTTP/1.1\r\n\r\n";
     EXPECT_FALSE(called);

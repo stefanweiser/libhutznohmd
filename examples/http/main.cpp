@@ -31,6 +31,11 @@ public:
                   << std::endl;
     }
 
+    virtual bool connect()
+    {
+        return false;
+    }
+
     virtual void close() {}
 
     virtual bool receive(rest::Buffer & data, const size_t & maxSize)

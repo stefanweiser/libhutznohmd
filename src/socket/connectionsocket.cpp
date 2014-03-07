@@ -20,7 +20,6 @@
 
 #include <arpa/inet.h>
 #include <netdb.h>
-#include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
@@ -51,20 +50,22 @@ std::shared_ptr<ConnectionSocket> ConnectionSocket::create(
         return std::shared_ptr<ConnectionSocket>();
     }
 
-    std::shared_ptr<ConnectionSocket> result;
-    result = std::make_shared<ConnectionSocket>(socket);
-
-    ::sockaddr_in addr = fillAddress(host, port);
-    if (::connect(result->m_socket, (::sockaddr *) &addr, sizeof(addr)) == -1)
-    {
-        return std::shared_ptr<ConnectionSocket>();
-    }
+    const ::sockaddr_in addr = fillAddress(host, port);
+    std::shared_ptr<ConnectionSocket> result = std::make_shared<ConnectionSocket>(socket, addr);
 
     return result;
 }
 
 ConnectionSocket::ConnectionSocket(const int & socket)
-    : m_socket(socket)
+    : m_isConnected(true)
+    , m_socket(socket)
+    , m_addr()
+{}
+
+ConnectionSocket::ConnectionSocket(const int & socket, const ::sockaddr_in & addr)
+    : m_isConnected(false)
+    , m_socket(socket)
+    , m_addr(addr)
 {}
 
 ConnectionSocket::~ConnectionSocket()
@@ -72,16 +73,31 @@ ConnectionSocket::~ConnectionSocket()
     close();
 }
 
+bool ConnectionSocket::connect()
+{
+    if (true == m_isConnected)
+    {
+        return false;
+    }
+    if (::connect(m_socket, (const ::sockaddr *) &m_addr, sizeof(m_addr)) == -1)
+    {
+        return false;
+    }
+    m_isConnected = true;
+    return true;
+}
+
 void ConnectionSocket::close()
 {
     ::shutdown(m_socket, SHUT_RDWR);
     ::close(m_socket);
     m_socket = -1;
+    m_isConnected = false;
 }
 
 bool ConnectionSocket::receive(rest::Buffer & data, const size_t & maxSize)
 {
-    if (m_socket < 0)
+    if (false == m_isConnected)
     {
         return false;
     }
@@ -111,7 +127,7 @@ bool ConnectionSocket::send(const std::string & data)
 
 bool ConnectionSocket::send(const char * p, const size_t & s)
 {
-    if (m_socket < 0)
+    if (false == m_isConnected)
     {
         return false;
     }

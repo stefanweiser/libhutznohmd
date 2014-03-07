@@ -31,6 +31,7 @@ namespace socket
 class MockConnectionSocket : public ConnectionSocketInterface
 {
 public:
+    MOCK_METHOD0(connect, bool());
     MOCK_METHOD0(close, void());
     MOCK_METHOD2(receive, bool(rest::Buffer &, const size_t &));
     MOCK_METHOD1(send, bool(const rest::Buffer &));

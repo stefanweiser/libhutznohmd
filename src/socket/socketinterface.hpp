@@ -34,6 +34,7 @@ class ConnectionSocketInterface
 {
 public:
     virtual ~ConnectionSocketInterface() {}
+    virtual bool connect() = 0;
     virtual void close() = 0;
     virtual bool receive(rest::Buffer & data, const size_t & maxSize) = 0;
     virtual bool send(const rest::Buffer & data) = 0;

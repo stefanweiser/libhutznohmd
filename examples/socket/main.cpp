@@ -28,6 +28,11 @@ void client()
 {
     std::cout << "  connecting" << std::endl;
     rest::socket::ConnectionPtr c = rest::socket::connect("localhost", 30000);
+    if (false == c->connect())
+    {
+        std::cout << "  client not connected" << std::endl;
+        abort();
+    }
 
     std::cout << "  client receiving" << std::endl;
     rest::Buffer data2;

@@ -51,45 +51,6 @@ TEST(Socket, ConstructionNoThrow)
     auto l = rest::socket::ListenerSocket::create("127.0.0.1", 10000);
     disableTimeWait(l->m_socket);
     EXPECT_NE(l, std::shared_ptr<rest::socket::ListenerSocket>());
-
-}
-
-TEST(Socket, AcceptSendReceive)
-{
-    auto socket = rest::socket::ListenerSocket::create("127.0.0.1", 10000);
-    disableTimeWait(socket->m_socket);
-    EXPECT_NE(socket->m_socket, -1);
-
-    std::thread t([]
-    {
-        std::shared_ptr<rest::socket::ConnectionSocket> connection;
-        connection = rest::socket::ConnectionSocket::create("localhost", 10000);
-        disableTimeWait(connection->m_socket);
-        EXPECT_NE(connection->m_socket, -1);
-
-        rest::Buffer data = { 0, 1, 2, 3, 4, 5, 6, 7 };
-        EXPECT_EQ(connection->send(data), true);
-        data.clear();
-        EXPECT_EQ(connection->receive(data, 8), true);
-        EXPECT_EQ(data.size(), 4);
-        EXPECT_EQ(data, rest::Buffer({ 0, 1, 2, 3 }));
-    });
-
-    rest::socket::ConnectionPtr connection = socket->accept();
-    EXPECT_NE(connection, rest::socket::ConnectionPtr());
-    disableTimeWait(getSocket(connection));
-    rest::socket::ConnectionSocket * c;
-    c = dynamic_cast<rest::socket::ConnectionSocket *>(connection.get());
-    EXPECT_NE(c->m_socket, -1);
-
-    rest::Buffer data = { 0, 1, 2, 3 };
-    EXPECT_EQ(connection->send(data), true);
-    data.clear();
-    EXPECT_EQ(connection->receive(data, 16), true);
-    EXPECT_EQ(data.size(), 8);
-    EXPECT_EQ(data, rest::Buffer({ 0, 1, 2, 3, 4, 5, 6, 7 }));
-
-    t.join();
 }
 
 TEST(Socket, WrongConstructionArguments)
@@ -111,7 +72,9 @@ TEST(Socket, AcceptingClosedSocket)
 
 TEST(Socket, ConnectionRefused)
 {
-    EXPECT_EQ(rest::socket::ConnectionSocket::create("127.0.0.1", 10000), rest::socket::ConnectionPtr());
+    rest::socket::ConnectionPtr connection;
+    connection = rest::socket::ConnectionSocket::create("127.0.0.1", 10000);
+    EXPECT_FALSE(connection->connect());
 }
 
 TEST(Socket, ReceiveSendClosedSocket)
@@ -126,6 +89,7 @@ TEST(Socket, ReceiveSendClosedSocket)
     {
         std::shared_ptr<rest::socket::ConnectionSocket> connection;
         connection = rest::socket::ConnectionSocket::create("localhost", 10000);
+        connection->connect();
         disableTimeWait(connection->m_socket);
         connected = true;
         while (disconnected == false)
@@ -166,6 +130,7 @@ TEST(Socket, NormalUseCase)
     {
         rest::socket::ConnectionPtr connection;
         connection = rest::socket::connect("localhost", 10000);
+        EXPECT_TRUE(connection->connect());
         EXPECT_NE(connection, rest::socket::ConnectionPtr());
         disableTimeWait(getSocket(connection));
         rest::Buffer data;
