@@ -73,13 +73,26 @@ ConnectionSocket::~ConnectionSocket()
     close();
 }
 
+namespace
+{
+
+union Addr
+{
+    const ::sockaddr * base;
+    const ::sockaddr_in * in;
+};
+
+}
+
 bool ConnectionSocket::connect()
 {
     if (true == m_isConnected)
     {
         return false;
     }
-    if (::connect(m_socket, (const ::sockaddr *) &m_addr, sizeof(m_addr)) != 0)
+    Addr addr;
+    addr.in = &m_addr;
+    if (::connect(m_socket, addr.base, sizeof(m_addr)) != 0)
     {
         return false;
     }

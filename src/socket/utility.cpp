@@ -17,6 +17,7 @@
 
 #include <array>
 
+#include <assert.h>
 #include <fcntl.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -49,7 +50,7 @@ namespace socket
         addr.sin_addr = * (::in_addr *) hostname->h_addr;
     }
 
-    addr.sin_port = ::htons(port);
+    addr.sin_port = htons(port);
     addr.sin_family = AF_INET;
 
     return addr;
@@ -81,7 +82,7 @@ int NotificationPipe::receiver() const
 
 void NotificationPipe::notify()
 {
-    ::write(m_sendFd, "1", 1);
+    assert(::write(m_sendFd, "1", 1) != 1);
 }
 
 } // namespace socket

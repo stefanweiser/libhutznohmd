@@ -36,6 +36,17 @@ ListenerPtr listen(const std::string & host, const uint16_t & port)
     return ListenerSocket::create(host, port);
 }
 
+namespace
+{
+
+union Addr
+{
+    ::sockaddr base;
+    ::sockaddr_in in;
+};
+
+}
+
 std::shared_ptr<ListenerSocket> ListenerSocket::create(
     const std::string & host,
     const uint16_t & port)
@@ -49,8 +60,9 @@ std::shared_ptr<ListenerSocket> ListenerSocket::create(
     std::shared_ptr<ListenerSocket> result;
     result = std::make_shared<ListenerSocket>(socket);
 
-    ::sockaddr_in addr = fillAddress(host, port);
-    int res1 = ::bind(result->m_socket, (::sockaddr *) &addr, sizeof(addr));
+    Addr addr;
+    addr.in = fillAddress(host, port);
+    int res1 = ::bind(result->m_socket, &(addr.base), sizeof(addr));
     int res2 = ::listen(result->m_socket, 4);
     if ((res1 == -1) || (res2 == -1))
     {
@@ -73,7 +85,7 @@ ListenerSocket::~ListenerSocket()
 
 ConnectionPtr ListenerSocket::accept() const
 {
-    ::sockaddr_in addr;
+    Addr addr;
     ::socklen_t len = sizeof(addr);
 
     ::fd_set readSet;
@@ -91,7 +103,7 @@ ConnectionPtr ListenerSocket::accept() const
         return ConnectionPtr();
     }
 
-    const int client = ::accept(m_socket, (::sockaddr *) &addr, &len);
+    const int client = ::accept(m_socket, &(addr.base), &len);
 
     if (client == -1)
     {
@@ -104,6 +116,8 @@ ConnectionPtr ListenerSocket::accept() const
 void ListenerSocket::stop()
 {
     m_notifier.notify();
+    ::shutdown(m_socket, SHUT_RDWR);
+    ::close(m_socket);
 }
 
 } // namespace socket

@@ -28,8 +28,8 @@ TEST(SocketUtility, FillAddressOk)
 {
     ::sockaddr_in addr = rest::socket::fillAddress("127.0.0.1", 0x8000);
     EXPECT_EQ(addr.sin_family, AF_INET);
-    EXPECT_EQ(addr.sin_port, ::ntohs(0x8000));
-    EXPECT_EQ(addr.sin_addr.s_addr, ::ntohl(0x7F000001));
+    EXPECT_EQ(addr.sin_port, ntohs(0x8000));
+    EXPECT_EQ(addr.sin_addr.s_addr, ntohl(0x7F000001));
 }
 
 TEST(SocketUtility, FillAddressThrow)
