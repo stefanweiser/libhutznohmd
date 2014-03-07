@@ -31,6 +31,8 @@ public:
                   << std::endl;
     }
 
+    virtual void close() {}
+
     virtual bool receive(rest::Buffer & data, const size_t & maxSize)
     {
         size_t oldSize = data.size();

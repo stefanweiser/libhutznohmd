@@ -69,8 +69,14 @@ ConnectionSocket::ConnectionSocket(const int & socket)
 
 ConnectionSocket::~ConnectionSocket()
 {
+    close();
+}
+
+void ConnectionSocket::close()
+{
     ::shutdown(m_socket, SHUT_RDWR);
     ::close(m_socket);
+    m_socket = -1;
 }
 
 bool ConnectionSocket::receive(rest::Buffer & data, const size_t & maxSize)

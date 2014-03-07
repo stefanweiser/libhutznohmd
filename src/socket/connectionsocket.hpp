@@ -39,6 +39,7 @@ public:
 
     explicit ConnectionSocket(const int & socket);
     virtual ~ConnectionSocket();
+    virtual void close();
     virtual bool receive(rest::Buffer & data, const size_t & maxSize);
     virtual bool send(const rest::Buffer & data);
     virtual bool send(const std::string & data);
@@ -46,7 +47,7 @@ public:
 private:
     bool send(const char * p, const size_t & s);
 
-    const int m_socket;
+    int m_socket;
 };
 
 } // namespace socket
