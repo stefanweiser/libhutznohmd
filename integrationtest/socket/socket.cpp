@@ -51,6 +51,7 @@ TEST(Socket, ConstructionNoThrow)
     auto l = rest::socket::ListenerSocket::create("127.0.0.1", 10000);
     disableTimeWait(l->m_socket);
     EXPECT_NE(l, std::shared_ptr<rest::socket::ListenerSocket>());
+    EXPECT_TRUE(l->listening());
 }
 
 TEST(Socket, WrongConstructionArguments)
@@ -60,6 +61,7 @@ TEST(Socket, WrongConstructionArguments)
     disableTimeWait(getSocket(listener));
 
     EXPECT_EQ(rest::socket::listen("127.0.0.1", 10000), rest::socket::ListenerPtr());
+    EXPECT_TRUE(listener->listening());
 }
 
 TEST(Socket, AcceptingClosedSocket)
@@ -82,6 +84,7 @@ TEST(Socket, ReceiveSendClosedSocket)
     rest::socket::ListenerPtr listener;
     listener = rest::socket::listen("localhost", 10000);
     disableTimeWait(getSocket(listener));
+    EXPECT_TRUE(listener->listening());
 
     bool connected = false;
     bool disconnected = false;
@@ -118,6 +121,7 @@ TEST(Socket, ReceiveSendClosedSocket)
     connection.reset();
     disconnected = true;
     t.join();
+    EXPECT_TRUE(listener->listening());
 }
 
 TEST(Socket, DoubleConnect)
@@ -125,6 +129,7 @@ TEST(Socket, DoubleConnect)
     rest::socket::ListenerPtr listener;
     listener = rest::socket::listen("localhost", 10000);
     disableTimeWait(getSocket(listener));
+    EXPECT_TRUE(listener->listening());
 
     std::thread t([]
     {
@@ -138,6 +143,7 @@ TEST(Socket, DoubleConnect)
     rest::socket::ConnectionPtr connection = listener->accept();
     disableTimeWait(getSocket(connection));
     t.join();
+    EXPECT_TRUE(listener->listening());
 }
 
 TEST(Socket, UnconnectedSendReceive)
@@ -168,14 +174,18 @@ TEST(Socket, TerminateTryToAccept)
     rest::socket::ListenerPtr listener;
     listener = rest::socket::listen("localhost", 10000);
     disableTimeWait(getSocket(listener));
+    EXPECT_TRUE(listener->listening());
 
     std::thread t([&listener]
     {
         EXPECT_EQ(listener->accept(), rest::socket::ConnectionPtr());
+        EXPECT_FALSE(listener->listening());
     });
 
+    EXPECT_TRUE(listener->listening());
     listener->stop();
     t.join();
+    EXPECT_FALSE(listener->listening());
 }
 
 TEST(Socket, NormalUseCase)
@@ -183,6 +193,7 @@ TEST(Socket, NormalUseCase)
     rest::socket::ListenerPtr listener;
     listener = rest::socket::listen("localhost", 10000);
     disableTimeWait(getSocket(listener));
+    EXPECT_TRUE(listener->listening());
 
     std::thread t([]
     {
@@ -208,4 +219,5 @@ TEST(Socket, NormalUseCase)
     EXPECT_EQ(data, rest::Buffer({ 4, 5, 6, 7 }));
 
     t.join();
+    EXPECT_TRUE(listener->listening());
 }
