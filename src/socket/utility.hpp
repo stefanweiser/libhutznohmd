@@ -46,20 +46,6 @@ ssize_t recvSignalSafe(int fd, void * buf, size_t n, int flags);
 
 ::sockaddr_in fillAddress(const std::string & host, const uint16_t & port);
 
-class NotificationPipe
-{
-public:
-    NotificationPipe();
-    ~NotificationPipe();
-
-    int receiver() const;
-    void notify();
-
-private:
-    int m_receiveFd;
-    int m_sendFd;
-};
-
 } // namespace socket
 
 } // namespace rest

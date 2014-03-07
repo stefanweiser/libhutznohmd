@@ -49,7 +49,6 @@ public:
 
 private:
     int m_socket;
-    NotificationPipe m_notifier;
 };
 
 } // namespace socket

@@ -74,7 +74,6 @@ std::shared_ptr<ListenerSocket> ListenerSocket::create(
 
 ListenerSocket::ListenerSocket(const int & socket)
     : m_socket(socket)
-    , m_notifier()
 {}
 
 ListenerSocket::~ListenerSocket()

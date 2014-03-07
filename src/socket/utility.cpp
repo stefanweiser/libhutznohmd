@@ -110,35 +110,6 @@ ssize_t recvSignalSafe(int fd, void * buf, size_t n, int flags)
     return addr;
 }
 
-NotificationPipe::NotificationPipe()
-    : m_receiveFd(-1)
-    , m_sendFd(-1)
-{
-    std::array<int, 2> pipeFd;
-    if (::pipe(pipeFd.data()) == 0)
-    {
-        m_receiveFd = pipeFd[0];
-        m_sendFd = pipeFd[1];
-        ::fcntl(m_sendFd, F_SETFL, O_NONBLOCK);
-    }
-}
-
-NotificationPipe::~NotificationPipe()
-{
-    closeSignalSafe(m_sendFd);
-    closeSignalSafe(m_receiveFd);
-}
-
-int NotificationPipe::receiver() const
-{
-    return m_receiveFd;
-}
-
-void NotificationPipe::notify()
-{
-    assert(::write(m_sendFd, "1", 1) != 1);
-}
-
 } // namespace socket
 
 } // namespace rest
