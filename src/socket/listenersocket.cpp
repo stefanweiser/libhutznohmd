@@ -83,7 +83,7 @@ ListenerSocket::~ListenerSocket()
     ::close(m_socket);
 }
 
-ConnectionPtr ListenerSocket::accept() const
+ConnectionPtr ListenerSocket::accept()
 {
     Addr addr;
     ::socklen_t len = sizeof(addr);
@@ -92,6 +92,7 @@ ConnectionPtr ListenerSocket::accept() const
 
     if (client == -1)
     {
+        stop();
         return ConnectionPtr();
     }
 

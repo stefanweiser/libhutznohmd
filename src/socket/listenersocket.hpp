@@ -43,7 +43,7 @@ public:
 
     explicit ListenerSocket(const int & socket);
     virtual ~ListenerSocket();
-    virtual ConnectionPtr accept() const;
+    virtual ConnectionPtr accept();
     virtual void stop();
 
 private:

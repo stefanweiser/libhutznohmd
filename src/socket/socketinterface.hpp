@@ -47,7 +47,7 @@ class ListenerSocketInterface
 {
 public:
     virtual ~ListenerSocketInterface() {}
-    virtual ConnectionPtr accept() const = 0;
+    virtual ConnectionPtr accept() = 0;
     virtual void stop() = 0;
 };
 
