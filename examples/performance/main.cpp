@@ -16,6 +16,7 @@
  */
 
 #include <chrono>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 
@@ -25,15 +26,18 @@ int main()
 {
     std::cout << "example_performance" << std::endl;
 
-    std::stringstream str("GET / HTTP/1.1\r\n\r\n");
-    rest::http::HttpParser parser(std::bind((int(std::istream::*)()) &std::istream::get, &str),
-                                  std::bind(&std::istream::peek, &str));
-
+    std::stringstream s("GET / HTTP/1.1\r\n\r\n");
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
+    for (size_t i = 0; i < 1000; i++)
+    {
+        rest::http::HttpParser parser(std::bind((int(std::istream::*)()) &std::istream::get, &s),
+                                      std::bind(&std::istream::peek, &s));
+        parser.parse();
+    }
     std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
-    parser.parse();
     auto diff = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
-    std::cout << std::fixed << (diff.count() * 1000.0) << " ms." << std::endl;
+    std::cout << std::fixed << std::setprecision(3) << (diff.count() * 1000.0) << " us."
+              << std::endl;
 
     return 0;
 }
