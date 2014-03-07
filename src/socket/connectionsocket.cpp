@@ -92,7 +92,7 @@ bool ConnectionSocket::connect()
     }
     Addr addr;
     addr.in = &m_addr;
-    if (::connect(m_socket, addr.base, sizeof(m_addr)) != 0)
+    if (connectSignalSafe(m_socket, addr.base, sizeof(m_addr)) != 0)
     {
         return false;
     }
@@ -103,7 +103,7 @@ bool ConnectionSocket::connect()
 void ConnectionSocket::close()
 {
     ::shutdown(m_socket, SHUT_RDWR);
-    ::close(m_socket);
+    closeSignalSafe(m_socket);
     m_socket = -1;
     m_isConnected = false;
 }

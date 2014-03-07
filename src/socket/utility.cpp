@@ -34,6 +34,38 @@ namespace rest
 namespace socket
 {
 
+void closeSignalSafe(int fd)
+{
+    int res;
+    do
+    {
+        res = ::close(fd);
+    }
+    while ((res == -1) && (errno == EINTR));
+}
+
+int acceptSignalSafe(int sockfd, ::sockaddr * addr, socklen_t * len)
+{
+    int res;
+    do
+    {
+        res = ::accept(sockfd, addr, len);
+    }
+    while ((res == -1) && (errno == EINTR));
+    return res;
+}
+
+int connectSignalSafe(int sockfd, const ::sockaddr * addr, socklen_t len)
+{
+    int res;
+    do
+    {
+        res = ::connect(sockfd, addr, len);
+    }
+    while ((res == -1) && (errno == EINTR));
+    return res;
+}
+
 ::sockaddr_in fillAddress(const std::string & host, const uint16_t & port)
 {
     ::sockaddr_in addr;
@@ -71,8 +103,8 @@ NotificationPipe::NotificationPipe()
 
 NotificationPipe::~NotificationPipe()
 {
-    ::close(m_sendFd);
-    ::close(m_receiveFd);
+    closeSignalSafe(m_sendFd);
+    closeSignalSafe(m_receiveFd);
 }
 
 int NotificationPipe::receiver() const

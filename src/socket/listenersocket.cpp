@@ -79,8 +79,7 @@ ListenerSocket::ListenerSocket(const int & socket)
 
 ListenerSocket::~ListenerSocket()
 {
-    ::shutdown(m_socket, SHUT_RDWR);
-    ::close(m_socket);
+    stop();
 }
 
 ConnectionPtr ListenerSocket::accept()
@@ -88,8 +87,7 @@ ConnectionPtr ListenerSocket::accept()
     Addr addr;
     ::socklen_t len = sizeof(addr);
 
-    const int client = ::accept(m_socket, &(addr.base), &len);
-
+    const int client = acceptSignalSafe(m_socket, &(addr.base), &len);
     if (client == -1)
     {
         stop();
@@ -107,7 +105,7 @@ bool ListenerSocket::listening() const
 void ListenerSocket::stop()
 {
     ::shutdown(m_socket, SHUT_RDWR);
-    ::close(m_socket);
+    closeSignalSafe(m_socket);
     m_socket = -1;
 }
 

@@ -34,6 +34,12 @@ namespace rest
 namespace socket
 {
 
+void closeSignalSafe(int fd);
+
+int acceptSignalSafe(int fd, ::sockaddr * addr, socklen_t * len);
+
+int connectSignalSafe(int sockfd, const ::sockaddr * addr, socklen_t len);
+
 ::sockaddr_in fillAddress(const std::string & host, const uint16_t & port);
 
 class NotificationPipe
