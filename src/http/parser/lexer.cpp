@@ -57,7 +57,7 @@ HttpParser::HttpParser()
     , m_headerValue()
     , m_method(METHOD_UNKNOWN)
     , m_version(VERSION_UNKNOWN)
-    , m_uri()
+    , m_url()
     , m_statusCode(0)
     , m_reasonPhrase()
     , m_headers()
@@ -92,9 +92,9 @@ void HttpParser::setStatusCode(uint16_t factor)
     m_statusCode = static_cast<uint16_t>(m_statusCode + n);
 }
 
-void HttpParser::appendToUri()
+void HttpParser::appendToUrl()
 {
-    m_uri += toLower(m_lastChar);
+    m_url += toLower(m_lastChar);
 }
 
 void HttpParser::appendToReasonPhrase()
@@ -164,9 +164,9 @@ const HttpVersion & HttpParser::version() const
     return m_version;
 }
 
-const std::string HttpParser::uri() const
+const std::string HttpParser::url() const
 {
-    return m_uri;
+    return m_url;
 }
 
 const uint16_t & HttpParser::statusCode() const
@@ -220,9 +220,9 @@ void setStatusCode(httpscan_t scanner, uint16_t factor)
     static_cast<rest::http::HttpParser *>(scanner)->setStatusCode(factor);
 }
 
-void appendToUri(httpscan_t scanner)
+void appendToUrl(httpscan_t scanner)
 {
-    static_cast<rest::http::HttpParser *>(scanner)->appendToUri();
+    static_cast<rest::http::HttpParser *>(scanner)->appendToUrl();
 }
 
 void appendToReasonPhrase(httpscan_t scanner)

@@ -34,7 +34,7 @@ TEST(HttpParser, ConstructionDestruction)
     EXPECT_EQ(parser.m_headerValue.empty(), true);
     EXPECT_EQ(parser.m_method, METHOD_UNKNOWN);
     EXPECT_EQ(parser.m_method, VERSION_UNKNOWN);
-    EXPECT_EQ(parser.m_uri.empty(), true);
+    EXPECT_EQ(parser.m_url.empty(), true);
     EXPECT_EQ(parser.m_statusCode, 0);
     EXPECT_EQ(parser.m_reasonPhrase.empty(), true);
     EXPECT_EQ(parser.m_headers.empty(), true);

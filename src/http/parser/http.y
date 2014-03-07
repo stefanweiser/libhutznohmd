@@ -21,7 +21,7 @@ first-line:     request-line | response-line
 
 request-line:   http-verb
                 whitespace
-                uri
+                url
                 whitespace
                 version
 
@@ -49,9 +49,9 @@ delete: d e l e t e
 trace: t r a c e
 connect: c o n n e c t
 
-uri: uri uri-char { appendToUri(scanner); }
-     | uri-char { appendToUri(scanner); }
-uri-char: letter | digit | '-' | '.' | '_' | '~' | ':' | '/' | '?' | '#' | '[' | ']' | '@' | '!' | '$' | '&' | '\'' | '(' | ')' | '*' | '+' | ',' | ';' | '='
+url: url url-char { appendToUrl(scanner); }
+     | url-char { appendToUrl(scanner); }
+url-char: letter | digit | '-' | '.' | '_' | '~' | ':' | '/' | '?' | '#' | '[' | ']' | '@' | '!' | '$' | '&' | '\'' | '(' | ')' | '*' | '+' | ',' | ';' | '='
 
 version: h t t p '/' '1' '.' '0' { setHttpVersion(scanner, VERSION_HTTP_1_0); }
          | h t t p '/' '1' '.' '1' { setHttpVersion(scanner, VERSION_HTTP_1_1); }

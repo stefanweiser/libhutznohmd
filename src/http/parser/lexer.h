@@ -23,7 +23,7 @@ extern "C"
 {
 #endif
 
-typedef void* httpscan_t;
+typedef void * httpscan_t;
 
 typedef enum
 {
@@ -45,14 +45,14 @@ typedef enum
     VERSION_HTTP_1_1 = 2
 } HttpVersion;
 
-int httplex(int* httplval, httpscan_t scanner);
-void httperror(httpscan_t scanner, const char* s);
+int httplex(int * httplval, httpscan_t scanner);
+void httperror(httpscan_t scanner, const char * s);
 
 void httpFinished(httpscan_t scanner);
 void setHttpVerb(httpscan_t scanner, HttpMethod method);
 void setHttpVersion(httpscan_t scanner, HttpVersion version);
 void setStatusCode(httpscan_t scanner, uint16_t factor);
-void appendToUri(httpscan_t scanner);
+void appendToUrl(httpscan_t scanner);
 void appendToReasonPhrase(httpscan_t scanner);
 void appendToHeaderKey(httpscan_t scanner);
 void appendToHeaderValue(httpscan_t scanner);
@@ -73,19 +73,19 @@ public:
     explicit HttpParser();
     void parse();
     void finished();
-    void setHttpVerb(const HttpMethod& newMethod);
-    void setHttpVersion(const HttpVersion& newVersion);
+    void setHttpVerb(const HttpMethod & newMethod);
+    void setHttpVersion(const HttpVersion & newVersion);
     void setStatusCode(uint16_t factor);
-    void appendToUri();
+    void appendToUrl();
     void appendToReasonPhrase();
     void appendToHeaderKey();
     void appendToHeaderValue();
     void takeHeader();
     int get();
-    void error(const char* s);
+    void error(const char * s);
     const HttpMethod & method() const;
     const HttpVersion & version() const;
-    const std::string uri() const;
+    const std::string url() const;
     const uint16_t & statusCode() const;
     const std::string reasonPhrase() const;
     const std::map<std::string, std::string> & headers() const;
@@ -98,7 +98,7 @@ private:
 
     HttpMethod m_method;
     HttpVersion m_version;
-    std::string m_uri;
+    std::string m_url;
     uint16_t m_statusCode;
     std::string m_reasonPhrase;
     std::map<std::string, std::string> m_headers;
