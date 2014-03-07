@@ -79,7 +79,7 @@ bool ConnectionSocket::connect()
     {
         return false;
     }
-    if (::connect(m_socket, (const ::sockaddr *) &m_addr, sizeof(m_addr)) == -1)
+    if (::connect(m_socket, (const ::sockaddr *) &m_addr, sizeof(m_addr)) != 0)
     {
         return false;
     }

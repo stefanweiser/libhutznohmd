@@ -89,7 +89,7 @@ TEST(Socket, ReceiveSendClosedSocket)
     {
         std::shared_ptr<rest::socket::ConnectionSocket> connection;
         connection = rest::socket::ConnectionSocket::create("localhost", 10000);
-        connection->connect();
+        EXPECT_TRUE(connection->connect());
         disableTimeWait(connection->m_socket);
         connected = true;
         while (disconnected == false)
@@ -117,6 +117,64 @@ TEST(Socket, ReceiveSendClosedSocket)
     }
     connection.reset();
     disconnected = true;
+    t.join();
+}
+
+TEST(Socket, DoubleConnect)
+{
+    rest::socket::ListenerPtr listener;
+    listener = rest::socket::listen("localhost", 10000);
+    disableTimeWait(getSocket(listener));
+
+    std::thread t([]
+    {
+        std::shared_ptr<rest::socket::ConnectionSocket> connection;
+        connection = rest::socket::ConnectionSocket::create("localhost", 10000);
+        EXPECT_TRUE(connection->connect());
+        EXPECT_FALSE(connection->connect());
+        disableTimeWait(connection->m_socket);
+    });
+
+    rest::socket::ConnectionPtr connection = listener->accept();
+    disableTimeWait(getSocket(connection));
+    t.join();
+}
+
+TEST(Socket, UnconnectedSendReceive)
+{
+    std::shared_ptr<rest::socket::ConnectionSocket> connection;
+    connection = rest::socket::ConnectionSocket::create("localhost", 10000);
+    rest::Buffer data;
+    EXPECT_FALSE(connection->send(""));
+    EXPECT_FALSE(connection->receive(data, 0));
+}
+
+TEST(Socket, TerminateTryToConnect)
+{
+    std::shared_ptr<rest::socket::ConnectionSocket> connection;
+    connection = rest::socket::ConnectionSocket::create("240.0.0.1", 65535);
+
+    std::thread t([&connection]
+    {
+        EXPECT_FALSE(connection->connect());
+    });
+
+    connection->close();
+    t.join();
+}
+
+TEST(Socket, TerminateTryToAccept)
+{
+    rest::socket::ListenerPtr listener;
+    listener = rest::socket::listen("localhost", 10000);
+    disableTimeWait(getSocket(listener));
+
+    std::thread t([&listener]
+    {
+        EXPECT_EQ(listener->accept(), rest::socket::ConnectionPtr());
+    });
+
+    listener->stop();
     t.join();
 }
 
