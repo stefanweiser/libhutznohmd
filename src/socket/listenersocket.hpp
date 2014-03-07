@@ -47,7 +47,7 @@ public:
     virtual void stop();
 
 private:
-    const int m_socket;
+    int m_socket;
     NotificationPipe m_notifier;
 };
 

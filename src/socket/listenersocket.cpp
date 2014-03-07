@@ -88,21 +88,6 @@ ConnectionPtr ListenerSocket::accept() const
     Addr addr;
     ::socklen_t len = sizeof(addr);
 
-    ::fd_set readSet;
-    FD_ZERO(&readSet);
-    FD_SET(m_socket, &readSet);
-    FD_SET(m_notifier.receiver(), &readSet);
-    int maxFd = std::max(m_socket, m_notifier.receiver());
-    if (::select(maxFd + 1, &readSet, nullptr, nullptr, nullptr) <= 0)
-    {
-        return ConnectionPtr();
-    }
-
-    if (FD_ISSET(m_notifier.receiver(), &readSet) != 0)
-    {
-        return ConnectionPtr();
-    }
-
     const int client = ::accept(m_socket, &(addr.base), &len);
 
     if (client == -1)
@@ -115,9 +100,9 @@ ConnectionPtr ListenerSocket::accept() const
 
 void ListenerSocket::stop()
 {
-    m_notifier.notify();
     ::shutdown(m_socket, SHUT_RDWR);
     ::close(m_socket);
+    m_socket = -1;
 }
 
 } // namespace socket
