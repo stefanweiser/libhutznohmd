@@ -20,6 +20,7 @@
 
 #ifdef __cplusplus
 #include <functional>
+#include <map>
 
 extern "C"
 {
