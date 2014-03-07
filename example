@@ -10,11 +10,12 @@ function usage()
 	echo ""
 	echo "  This script assists you to execute examples."
 	echo ""
-	echo "  usage: ${script_name} [step] [target] [options]"
+	echo "  usage: ${script_name} [name] [options]"
 	echo ""
 	echo "  Examples:"
-	echo "   http    : HTTP examples."
-	echo "   socket  : Socket examples."
+	echo "   http        : HTTP examples."
+	echo "   socket      : Socket examples."
+	echo "   performance : Performance test."
 	echo ""
 	echo "  Options:"
 	echo "   -h"
@@ -37,9 +38,16 @@ function exec_socket()
 	LD_LIBRARY_PATH="${build_path}/src" "${build_path}/examples/socket/example_socket"
 }
 
+function exec_performance()
+{
+	cd "${build_path}"
+	LD_LIBRARY_PATH="${build_path}/src" "${build_path}/examples/performance/example_performance"
+}
+
 opts_words=()
 opts_http=0
 opts_socket=0
+opts_performance=0
 
 args=$(getopt \
 	--options "h" \
@@ -70,21 +78,29 @@ while [ $# -ne 0 ]; do
 	shift
 done
 
-for word in ${opts_words[*]} ; do
-	case "${word}" in
-		http)
-			opts_http=1
-			;;
-		socket)
-			opts_socket=1
-			;;
+if [ ${#opts_words[@]} -gt 0 ]; then
+	for word in ${opts_words[*]} ; do
+		case "${word}" in
+			http)
+				opts_http=1
+				;;
+			socket)
+				opts_socket=1
+				;;
+			performance)
+				opts_performance=1
+				;;
 
-		*)
-			echo "ERROR: Found invalid argument. (${word})"
-			exit 1
-			;;
-	esac
-done
+			*)
+				echo "ERROR: Found invalid argument. (${word})"
+				exit 1
+				;;
+		esac
+	done
+else
+	usage
+	exit 1
+fi
 
 if [ ${opts_http} -ne 0 ]; then
 	exec_http
@@ -92,6 +108,10 @@ fi
 
 if [ ${opts_socket} -ne 0 ]; then
 	exec_socket
+fi
+
+if [ ${opts_performance} -ne 0 ]; then
+	exec_performance
 fi
 
 exit 0
