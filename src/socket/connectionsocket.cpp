@@ -24,6 +24,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include <socket/utility.hpp>
+
 #include "connectionsocket.hpp"
 
 namespace rest
@@ -52,23 +54,6 @@ std::shared_ptr<ConnectionSocket> ConnectionSocket::create(
     std::shared_ptr<ConnectionSocket> result;
     result = std::make_shared<ConnectionSocket>(socket);
 
-    ::fd_set readSet;
-    ::fd_set writeSet;
-    FD_ZERO(&readSet);
-    FD_ZERO(&writeSet);
-    FD_SET(result->m_socket, &writeSet);
-    FD_SET(result->m_notifier.receiver(), &readSet);
-    int maxFd = std::max(result->m_socket, result->m_notifier.receiver());
-    if (::select(maxFd + 1, &readSet, &writeSet, nullptr, nullptr) <= 0)
-    {
-        return std::shared_ptr<ConnectionSocket>();
-    }
-
-    if (FD_ISSET(result->m_notifier.receiver(), &readSet) != 0)
-    {
-        return std::shared_ptr<ConnectionSocket>();
-    }
-
     ::sockaddr_in addr = fillAddress(host, port);
     if (::connect(result->m_socket, (::sockaddr *) &addr, sizeof(addr)) == -1)
     {
@@ -80,7 +65,6 @@ std::shared_ptr<ConnectionSocket> ConnectionSocket::create(
 
 ConnectionSocket::ConnectionSocket(const int & socket)
     : m_socket(socket)
-    , m_notifier()
 {}
 
 ConnectionSocket::~ConnectionSocket()

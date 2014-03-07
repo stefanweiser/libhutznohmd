@@ -23,7 +23,6 @@
 #include <librest.hpp>
 
 #include <socket/socketinterface.hpp>
-#include <socket/utility.hpp>
 
 namespace rest
 {
@@ -48,7 +47,6 @@ private:
     bool send(const char * p, const size_t & s);
 
     const int m_socket;
-    NotificationPipe m_notifier;
 };
 
 } // namespace socket
