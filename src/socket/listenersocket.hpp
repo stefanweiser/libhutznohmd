@@ -48,6 +48,7 @@ public:
     virtual void stop();
 
 private:
+    bool m_isListening;
     int m_socket;
 };
 

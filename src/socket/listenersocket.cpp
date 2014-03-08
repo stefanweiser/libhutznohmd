@@ -73,12 +73,14 @@ std::shared_ptr<ListenerSocket> ListenerSocket::create(
 }
 
 ListenerSocket::ListenerSocket(const int & socket)
-    : m_socket(socket)
+    : m_isListening(true)
+    , m_socket(socket)
 {}
 
 ListenerSocket::~ListenerSocket()
 {
     stop();
+    closeSignalSafe(m_socket);
 }
 
 ConnectionPtr ListenerSocket::accept()
@@ -89,7 +91,6 @@ ConnectionPtr ListenerSocket::accept()
     const int client = acceptSignalSafe(m_socket, &(addr.base), &len);
     if (client == -1)
     {
-        stop();
         return ConnectionPtr();
     }
 
@@ -98,14 +99,13 @@ ConnectionPtr ListenerSocket::accept()
 
 bool ListenerSocket::listening() const
 {
-    return (m_socket != -1);
+    return m_isListening;
 }
 
 void ListenerSocket::stop()
 {
     ::shutdown(m_socket, SHUT_RDWR);
-    closeSignalSafe(m_socket);
-    m_socket = -1;
+    m_isListening = false;
 }
 
 } // namespace socket
