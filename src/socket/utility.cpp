@@ -22,6 +22,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <sys/poll.h>
 #include <unistd.h>
 
 #include <socket/connectionsocket.hpp>
@@ -57,12 +58,37 @@ int acceptSignalSafe(int sockfd, ::sockaddr * addr, socklen_t * len)
 
 int connectSignalSafe(int sockfd, const ::sockaddr * addr, socklen_t len)
 {
-    int res;
-    do
+    int res = ::connect(sockfd, addr, len);
+    if (res == -1)
     {
-        res = ::connect(sockfd, addr, len);
+
+        if (errno != EINTR)
+        {
+            return res;
+        }
+        pollfd p{sockfd, POLLOUT, 0};
+        do
+        {
+            res = ::poll(&p, 1, -1);
+            if ((res == -1) && (errno != EINTR))
+            {
+                return res;
+            }
+        }
+        while (res == -1);
+
+        int error;
+        socklen_t l = sizeof(error);
+        res = getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &error, &l);
+        if (res == -1)
+        {
+            return res;
+        }
+        if (error != 0)
+        {
+            return -1;
+        }
     }
-    while ((res == -1) && (errno == EINTR));
     return res;
 }
 
