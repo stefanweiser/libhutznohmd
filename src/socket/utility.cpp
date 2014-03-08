@@ -66,7 +66,7 @@ int connectSignalSafe(int sockfd, const ::sockaddr * addr, socklen_t len)
         {
             return res;
         }
-        pollfd p{sockfd, POLLOUT, 0};
+        pollfd p {sockfd, POLLOUT, 0};
         do
         {
             res = ::poll(&p, 1, -1);

@@ -71,6 +71,7 @@ ConnectionSocket::ConnectionSocket(const int & socket, const ::sockaddr_in & add
 ConnectionSocket::~ConnectionSocket()
 {
     close();
+    closeSignalSafe(m_socket);
 }
 
 namespace
@@ -103,10 +104,8 @@ bool ConnectionSocket::connect()
 
 void ConnectionSocket::close()
 {
-    ::shutdown(m_socket, SHUT_RDWR);
-    closeSignalSafe(m_socket);
-    m_socket = -1;
     m_isConnected = false;
+    ::shutdown(m_socket, SHUT_RDWR);
 }
 
 bool ConnectionSocket::receive(rest::Buffer & data, const size_t & maxSize)

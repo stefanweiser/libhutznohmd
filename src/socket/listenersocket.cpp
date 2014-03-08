@@ -104,8 +104,8 @@ bool ListenerSocket::listening() const
 
 void ListenerSocket::stop()
 {
-    ::shutdown(m_socket, SHUT_RDWR);
     m_isListening = false;
+    ::shutdown(m_socket, SHUT_RDWR);
 }
 
 } // namespace socket

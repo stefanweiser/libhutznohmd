@@ -72,6 +72,14 @@ TEST(Socket, AcceptingClosedSocket)
     EXPECT_EQ(listener->accept(), rest::socket::ConnectionPtr());
 }
 
+TEST(Socket, ConnectingShutDownSocket)
+{
+    rest::socket::ConnectionPtr connection;
+    connection = rest::socket::ConnectionSocket::create("127.0.0.1", 10000);
+    connection->close();
+    EXPECT_FALSE(connection->connect());
+}
+
 TEST(Socket, ConnectionRefused)
 {
     rest::socket::ConnectionPtr connection;
@@ -165,6 +173,7 @@ TEST(Socket, TerminateTryToConnect)
         EXPECT_FALSE(connection->connect());
     });
 
+    usleep(10000);
     connection->close();
     t.join();
 }
@@ -182,6 +191,7 @@ TEST(Socket, TerminateTryToAccept)
         EXPECT_FALSE(listener->listening());
     });
 
+    usleep(10000);
     EXPECT_TRUE(listener->listening());
     listener->stop();
     t.join();
