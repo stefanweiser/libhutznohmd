@@ -71,12 +71,12 @@ TEST(Server, NormalUseCase)
     };
 
     rest::http::ServerPtr server;
-    server = rest::http::createServer("localhost", 10001, transaction);
+    server = rest::http::createServer("localhost", 10000, transaction);
     disableTimeWait(getSocket(server));
 
     std::thread t(std::bind(&rest::http::ServerInterface::run, server.get()));
 
-    rest::socket::ConnectionPtr connection = rest::socket::connect("localhost", 10001);
+    rest::socket::ConnectionPtr connection = rest::socket::connect("localhost", 10000);
     EXPECT_TRUE(connection->connect());
     disableTimeWait(getSocket(connection));
     std::string request = "GET / HTTP/1.1\r\n\r\n";
