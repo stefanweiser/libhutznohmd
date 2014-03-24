@@ -128,12 +128,11 @@ private:
     bool m_finished;
 };
 
-class HttpParser
+class Data
 {
 public:
-    explicit HttpParser(const std::function<int()> & getFn, const std::function<int()> & peekFn);
-    ~HttpParser();
-    void parse();
+    explicit Data();
+
     void setHttpVerb(const HttpMethod & newMethod);
     void setHttpVersion(const HttpVersion & newVersion);
     void setStatusCode(uint16_t factor, char token);
@@ -142,8 +141,32 @@ public:
     void appendToHeaderKey(char token);
     void appendToHeaderValue(char token);
     void takeHeader();
-    int get();
-    void error(const char * s);
+
+    const HttpMethod & method() const;
+    const HttpVersion & version() const;
+    const std::string url() const;
+    const uint16_t & statusCode() const;
+    const std::string reasonPhrase() const;
+    const std::map<std::string, std::string> & headers() const;
+
+private:
+    std::string m_headerKey;
+    std::string m_headerValue;
+
+    HttpMethod m_method;
+    HttpVersion m_version;
+    std::string m_url;
+    uint16_t m_statusCode;
+    std::string m_reasonPhrase;
+    std::map<std::string, std::string> m_headers;
+};
+
+class HttpParser
+{
+public:
+    explicit HttpParser(const std::function<int()> & getFn, const std::function<int()> & peekFn);
+    ~HttpParser();
+    void parse();
     bool valid() const;
     const HttpMethod & method() const;
     const HttpVersion & version() const;
@@ -157,16 +180,7 @@ private:
     HttpParser & operator=(const HttpParser & parser) = delete;
 
     Lexer m_lexer;
-    std::string m_headerKey;
-    std::string m_headerValue;
-
-    HttpMethod m_method;
-    HttpVersion m_version;
-    std::string m_url;
-    uint16_t m_statusCode;
-    std::string m_reasonPhrase;
-    std::map<std::string, std::string> m_headers;
-
+    Data m_data;
     httpscan_t * m_httpscan;
 };
 
