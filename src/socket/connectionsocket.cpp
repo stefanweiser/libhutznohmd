@@ -45,8 +45,7 @@ std::shared_ptr<ConnectionSocket> ConnectionSocket::create(
     const uint16_t & port)
 {
     const int socket = ::socket(PF_INET, SOCK_STREAM, 0);
-    if (socket == -1)
-    {
+    if (socket == -1) {
         return std::shared_ptr<ConnectionSocket>();
     }
 
@@ -77,8 +76,7 @@ ConnectionSocket::~ConnectionSocket()
 namespace
 {
 
-union Addr
-{
+union Addr {
     const ::sockaddr * base;
     const ::sockaddr_in * in;
 };
@@ -87,14 +85,12 @@ union Addr
 
 bool ConnectionSocket::connect()
 {
-    if (true == m_isConnected)
-    {
+    if (true == m_isConnected) {
         return false;
     }
     Addr addr;
     addr.in = &m_addr;
-    if (connectSignalSafe(m_socket, addr.base, sizeof(m_addr)) != 0)
-    {
+    if (connectSignalSafe(m_socket, addr.base, sizeof(m_addr)) != 0) {
         close();
         return false;
     }
@@ -110,8 +106,7 @@ void ConnectionSocket::close()
 
 bool ConnectionSocket::receive(rest::Buffer & data, const size_t & maxSize)
 {
-    if (false == m_isConnected)
-    {
+    if (false == m_isConnected) {
         return false;
     }
 
@@ -119,8 +114,7 @@ bool ConnectionSocket::receive(rest::Buffer & data, const size_t & maxSize)
     data.resize(oldSize + maxSize);
     const ::ssize_t received = recvSignalSafe(m_socket, data.data() + oldSize, maxSize, 0);
 
-    if (received <= 0)
-    {
+    if (received <= 0) {
         return false;
     }
 
@@ -140,26 +134,22 @@ bool ConnectionSocket::send(const std::string & data)
 
 bool ConnectionSocket::send(const char * p, const size_t & s)
 {
-    if (false == m_isConnected)
-    {
+    if (false == m_isConnected) {
         return false;
     }
 
     ::ssize_t sent = 0;
 
-    do
-    {
+    do {
         const void * q = p + sent;
         const size_t t = s - sent;
         const ::ssize_t sentBlock = sendSignalSafe(m_socket, q, t, 0);
 
-        if (sentBlock <= 0)
-        {
+        if (sentBlock <= 0) {
             return false;
         }
         sent += sentBlock;
-    }
-    while (sent < static_cast<::ssize_t>(s));
+    } while (sent < static_cast<::ssize_t>(s));
 
     return true;
 }

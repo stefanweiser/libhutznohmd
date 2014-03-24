@@ -39,8 +39,7 @@ ListenerPtr listen(const std::string & host, const uint16_t & port)
 namespace
 {
 
-union Addr
-{
+union Addr {
     ::sockaddr base;
     ::sockaddr_in in;
 };
@@ -52,8 +51,7 @@ std::shared_ptr<ListenerSocket> ListenerSocket::create(
     const uint16_t & port)
 {
     const int socket = ::socket(PF_INET, SOCK_STREAM, 0);
-    if (socket == -1)
-    {
+    if (socket == -1) {
         return std::shared_ptr<ListenerSocket>();
     }
 
@@ -64,8 +62,7 @@ std::shared_ptr<ListenerSocket> ListenerSocket::create(
     addr.in = fillAddress(host, port);
     int res1 = ::bind(result->m_socket, &(addr.base), sizeof(addr));
     int res2 = ::listen(result->m_socket, 4);
-    if ((res1 == -1) || (res2 == -1))
-    {
+    if ((res1 == -1) || (res2 == -1)) {
         return std::shared_ptr<ListenerSocket>();
     }
 
@@ -89,8 +86,7 @@ ConnectionPtr ListenerSocket::accept()
     ::socklen_t len = sizeof(addr);
 
     const int client = acceptSignalSafe(m_socket, &(addr.base), &len);
-    if (client == -1)
-    {
+    if (client == -1) {
         return ConnectionPtr();
     }
 

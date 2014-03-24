@@ -44,8 +44,7 @@ void Response::deliver()
     deliverStatusCodeText(head, m_statusCode);
     head << "\r\n";
 
-    for (const auto & pair : m_headers)
-    {
+    for (const auto & pair : m_headers) {
         head << pair.first << ": " << pair.second << "\r\n";
     }
     head << "\r\n";
@@ -76,24 +75,18 @@ void Response::setData(const rest::Buffer & data)
 
 void Response::deliverVersion(std::ostream & os, const Version & version)
 {
-    if (version == Version::HTTP_1_0)
-    {
+    if (version == Version::HTTP_1_0) {
         os << "HTTP/1.0 ";
-    }
-    else if (version == Version::HTTP_1_1)
-    {
+    } else if (version == Version::HTTP_1_1) {
         os << "HTTP/1.1 ";
-    }
-    else
-    {
+    } else {
         os << "HTTP/?.?";
     }
 }
 
 void Response::deliverStatusCodeText(std::ostream & os, const StatusCode & statusCode)
 {
-    static const std::map<StatusCode, std::string> statusCodeText =
-    {
+    static const std::map<StatusCode, std::string> statusCodeText = {
         {StatusCode::Continue, "100 Continue"},
         {StatusCode::SwitchingProtocols, "101 Switching Protocols"},
         {StatusCode::Processing, "102 Processing"},
@@ -147,8 +140,7 @@ void Response::deliverStatusCodeText(std::ostream & os, const StatusCode & statu
         {StatusCode::HttpVersionNotSupported, "505 Http Version Not Supported"}
     };
     auto it = statusCodeText.find(statusCode);
-    if (it != statusCodeText.end())
-    {
+    if (it != statusCodeText.end()) {
         os << it->second;
     }
 }

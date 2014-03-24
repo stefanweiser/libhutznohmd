@@ -28,26 +28,30 @@ using namespace testing;
 class Fixture
 {
 public:
-    Fixture(const std::string & req)
-        : m_str(req)
-        , m_parser(std::bind((int(std::istream::*)()) &std::istream::get, &m_str),
-                   std::bind(&std::istream::peek, &m_str))
-    {}
-
-    ~Fixture()
-    {
-        EXPECT_EQ(m_parser.valid(), m_parser.m_finished);
-        EXPECT_EQ(m_parser.method(), m_parser.m_method);
-        EXPECT_EQ(m_parser.version(), m_parser.m_version);
-        EXPECT_EQ(m_parser.url(), m_parser.m_url);
-        EXPECT_EQ(m_parser.statusCode(), m_parser.m_statusCode);
-        EXPECT_EQ(m_parser.reasonPhrase(), m_parser.m_reasonPhrase);
-        EXPECT_EQ(m_parser.headers(), m_parser.m_headers);
-    }
+    explicit Fixture(const std::string & req);
+    ~Fixture();
 
     std::stringstream m_str;
     rest::http::HttpParser m_parser;
 };
+
+Fixture::Fixture(const std::string & req)
+    : m_str(req)
+    , m_parser(std::bind((int(std::istream::*)()) &std::istream::get, &m_str),
+               std::bind(&std::istream::peek, &m_str))
+{
+}
+
+Fixture::~Fixture()
+{
+    EXPECT_EQ(m_parser.valid(), m_parser.m_finished);
+    EXPECT_EQ(m_parser.method(), m_parser.m_method);
+    EXPECT_EQ(m_parser.version(), m_parser.m_version);
+    EXPECT_EQ(m_parser.url(), m_parser.m_url);
+    EXPECT_EQ(m_parser.statusCode(), m_parser.m_statusCode);
+    EXPECT_EQ(m_parser.reasonPhrase(), m_parser.m_reasonPhrase);
+    EXPECT_EQ(m_parser.headers(), m_parser.m_headers);
+}
 
 TEST(HttpParser, ConstructionDestruction)
 {

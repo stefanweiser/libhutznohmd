@@ -46,8 +46,7 @@ TEST(Request, SetAndDeliver)
 
     EXPECT_CALL(*socket, receive(_, _))
     .Times(1)
-    .WillOnce(Invoke([](rest::Buffer & data, const size_t & /*maxSize*/) -> bool
-    {
+    .WillOnce(Invoke([](rest::Buffer & data, const size_t & /*maxSize*/) -> bool {
         std::stringstream str;
         str << "GET / HTTP/1.1\r\n";
         str << "Content-Length: 1\r\n";

@@ -96,15 +96,13 @@ TEST(Socket, ReceiveSendClosedSocket)
 
     bool connected = false;
     bool disconnected = false;
-    std::thread t([&disconnected, &connected]
-    {
+    std::thread t([&disconnected, &connected] {
         std::shared_ptr<rest::socket::ConnectionSocket> connection;
         connection = rest::socket::ConnectionSocket::create("localhost", 10000);
         EXPECT_TRUE(connection->connect());
         disableTimeWait(connection->m_socket);
         connected = true;
-        while (disconnected == false)
-        {
+        while (disconnected == false) {
             usleep(1);
         }
 
@@ -122,8 +120,7 @@ TEST(Socket, ReceiveSendClosedSocket)
 
     rest::socket::ConnectionPtr connection = listener->accept();
     disableTimeWait(getSocket(connection));
-    while (connected == false)
-    {
+    while (connected == false) {
         usleep(1);
     }
     connection.reset();
@@ -139,8 +136,7 @@ TEST(Socket, DoubleConnect)
     disableTimeWait(getSocket(listener));
     EXPECT_TRUE(listener->listening());
 
-    std::thread t([]
-    {
+    std::thread t([] {
         std::shared_ptr<rest::socket::ConnectionSocket> connection;
         connection = rest::socket::ConnectionSocket::create("localhost", 10000);
         EXPECT_TRUE(connection->connect());
@@ -168,8 +164,7 @@ TEST(Socket, TerminateTryToConnect)
     std::shared_ptr<rest::socket::ConnectionSocket> connection;
     connection = rest::socket::ConnectionSocket::create("240.0.0.1", 65535);
 
-    std::thread t([&connection]
-    {
+    std::thread t([&connection] {
         EXPECT_FALSE(connection->connect());
     });
 
@@ -185,8 +180,7 @@ TEST(Socket, TerminateTryToAccept)
     disableTimeWait(getSocket(listener));
     EXPECT_TRUE(listener->listening());
 
-    std::thread t([&listener]
-    {
+    std::thread t([&listener] {
         EXPECT_EQ(listener->accept(), rest::socket::ConnectionPtr());
         EXPECT_FALSE(listener->listening());
     });
@@ -205,8 +199,7 @@ TEST(Socket, NormalUseCase)
     disableTimeWait(getSocket(listener));
     EXPECT_TRUE(listener->listening());
 
-    std::thread t([]
-    {
+    std::thread t([] {
         rest::socket::ConnectionPtr connection;
         connection = rest::socket::connect("localhost", 10000);
         EXPECT_TRUE(connection->connect());

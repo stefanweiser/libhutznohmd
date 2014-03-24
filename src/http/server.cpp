@@ -46,19 +46,16 @@ Server::Server(
 
 void Server::run()
 {
-    while (false == m_shutdown)
-    {
+    while (false == m_shutdown) {
         auto connection = m_socket->accept();
-        if (connection)
-        {
+        if (connection) {
             m_threads.insert(std::make_shared<std::thread>(&Server::parseRequest,
                              this,
                              connection));
         }
     }
 
-    for (auto thread : m_threads)
-    {
+    for (auto thread : m_threads) {
         thread->join();
     }
     m_threads.clear();
@@ -76,8 +73,7 @@ void Server::parseRequest(const rest::socket::ConnectionPtr & connection)
     request.parse();
 
     Response response(connection);
-    if (m_transactionFn)
-    {
+    if (m_transactionFn) {
         m_transactionFn(request, response);
     }
     response.deliver();

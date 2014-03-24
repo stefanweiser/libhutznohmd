@@ -57,8 +57,7 @@ void Request::parse()
 {
     m_httpParser.parse();
     size_t contentLength = lexical_cast<size_t>(header("content-length"));
-    while (contentLength > 0)
-    {
+    while (contentLength > 0) {
         peek();
         size_t oldSize = m_data.size();
         m_data.insert(m_data.end(), m_buffer.begin() + m_index, m_buffer.end());
@@ -85,8 +84,7 @@ Version Request::version() const
 const std::string & Request::header(const std::string & key) const
 {
     auto it = m_httpParser.headers().find(key);
-    if (it != m_httpParser.headers().end())
-    {
+    if (it != m_httpParser.headers().end()) {
         return it->second;
     }
     return m_empty;
@@ -99,10 +97,8 @@ rest::Buffer Request::data() const
 
 int Request::get()
 {
-    if (m_index >= m_buffer.size())
-    {
-        if (false == m_connection->receive(m_buffer, 4000))
-        {
+    if (m_index >= m_buffer.size()) {
+        if (false == m_connection->receive(m_buffer, 4000)) {
             return '\0';
         }
     }
@@ -112,10 +108,8 @@ int Request::get()
 
 int Request::peek()
 {
-    if (m_index >= m_buffer.size())
-    {
-        if (false == m_connection->receive(m_buffer, 4000))
-        {
+    if (m_index >= m_buffer.size()) {
+        if (false == m_connection->receive(m_buffer, 4000)) {
             return '\0';
         }
     }

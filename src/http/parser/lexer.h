@@ -28,8 +28,7 @@ extern "C"
 
 typedef void * httpscan_t;
 
-typedef enum
-{
+typedef enum {
     METHOD_UNKNOWN = 0,
     METHOD_HEAD = 1,
     METHOD_GET = 2,
@@ -41,8 +40,7 @@ typedef enum
     METHOD_CONNECT = 8
 } HttpMethod;
 
-typedef enum
-{
+typedef enum {
     VERSION_UNKNOWN = 0,
     VERSION_HTTP_1_0 = 1,
     VERSION_HTTP_1_1 = 2

@@ -30,10 +30,8 @@ using namespace testing;
 TEST(Server, ParsingRequest)
 {
     bool called = false;
-    auto transaction = [&called](
-                           const rest::http::RequestInterface & /*request*/,
-                           rest::http::ResponseInterface & /*response*/)
-    {
+    auto transaction = [&called](const rest::http::RequestInterface & /*request*/,
+    rest::http::ResponseInterface & /*response*/) {
         called = true;
     };
     rest::http::Server server(rest::socket::ListenerPtr(), transaction);
@@ -41,8 +39,7 @@ TEST(Server, ParsingRequest)
     rest::socket::MockConnectionPtr socket;
     socket = std::make_shared<rest::socket::MockConnectionSocket>();
     EXPECT_CALL(*socket, receive(_, _))
-    .WillOnce(Invoke([](rest::Buffer & data, const size_t & /*maxSize*/) -> bool
-    {
+    .WillOnce(Invoke([](rest::Buffer & data, const size_t & /*maxSize*/) -> bool {
         std::stringstream str;
         str << "GET / HTTP/1.1\r\n";
         str << "\r\n";
@@ -50,8 +47,7 @@ TEST(Server, ParsingRequest)
         data = rest::Buffer(reqData.begin(), reqData.end());
         return true;
     }))
-    .WillRepeatedly(Invoke([](rest::Buffer & /*data*/, const size_t & /*maxSize*/) -> bool
-    {
+    .WillRepeatedly(Invoke([](rest::Buffer & /*data*/, const size_t & /*maxSize*/) -> bool {
         return false;
     }))
     ;

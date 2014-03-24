@@ -28,29 +28,25 @@ void client()
 {
     std::cout << "  connecting" << std::endl;
     rest::socket::ConnectionPtr c = rest::socket::connect("localhost", 30000);
-    if (false == c->connect())
-    {
+    if (false == c->connect()) {
         std::cout << "  client not connected" << std::endl;
         abort();
     }
 
     std::cout << "  client receiving" << std::endl;
     rest::Buffer data2;
-    if (false == c->receive(data2, 8))
-    {
+    if (false == c->receive(data2, 8)) {
         std::cout << "  client aborts on receive" << std::endl;
         abort();
     }
 
     std::cout << "  client comparing" << std::endl;
-    if (data != data2)
-    {
+    if (data != data2) {
         std::cout << "  client aborts on compare" << std::endl;
     }
 
     std::cout << "  client sending" << std::endl;
-    if (false == c->send(data2))
-    {
+    if (false == c->send(data2)) {
         std::cout << "  client aborts on send" << std::endl;
     }
 
@@ -69,21 +65,18 @@ int main()
     rest::socket::ConnectionPtr c = l->accept();
 
     std::cout << "  server sending" << std::endl;
-    if (false == c->send(data))
-    {
+    if (false == c->send(data)) {
         std::cout << "  server aborts on send" << std::endl;
     }
 
     std::cout << "  server receiving" << std::endl;
     rest::Buffer data2;
-    if (false == c->receive(data2, 8))
-    {
+    if (false == c->receive(data2, 8)) {
         std::cout << "  server aborts on receive" << std::endl;
     }
 
     std::cout << "  server comparing" << std::endl;
-    if (data != data2)
-    {
+    if (data != data2) {
         std::cout << "  server aborts on comparing" << std::endl;
     }
 

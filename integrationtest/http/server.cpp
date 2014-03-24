@@ -63,10 +63,8 @@ TEST(Server, ConstructionDestruction)
 TEST(Server, NormalUseCase)
 {
     bool called = false;
-    auto transaction = [&called](
-                           const rest::http::RequestInterface & /*request*/,
-                           rest::http::ResponseInterface & /*response*/)
-    {
+    auto transaction = [&called](const rest::http::RequestInterface & /*request*/,
+    rest::http::ResponseInterface & /*response*/) {
         called = true;
     };
 

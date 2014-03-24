@@ -39,8 +39,7 @@ namespace
 
 char toLower(const char c)
 {
-    if (c >= 'A' && c <= 'Z')
-    {
+    if (c >= 'A' && c <= 'Z') {
         return (c | 0x60);
     }
     return c;
@@ -121,25 +120,20 @@ void HttpParser::takeHeader()
 
 int HttpParser::get()
 {
-    if (true == m_finished)
-    {
+    if (true == m_finished) {
         return -1;
     }
 
     int c = m_getFn();
-    if (c == '\r')
-    {
-        if (m_peekFn() == '\n')
-        {
+    if (c == '\r') {
+        if (m_peekFn() == '\n') {
             m_getFn();
         }
         c = '\n';
     }
 
-    if ((c == '\n') && (m_lastChar != '\n'))
-    {
-        if ((m_peekFn() == ' ') || (m_peekFn() == '\t'))
-        {
+    if ((c == '\n') && (m_lastChar != '\n')) {
+        if ((m_peekFn() == ' ') || (m_peekFn() == '\t')) {
             m_getFn();
             c = ' ';
         }

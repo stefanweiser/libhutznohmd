@@ -24,44 +24,52 @@
 class Connection: public rest::socket::ConnectionSocketInterface
 {
 public:
-    Connection(const std::string & filename)
-        : m_stream(filename)
-    {
-        std::cout << " stream is_open() = " << m_stream.is_open() << "."
-                  << std::endl;
-    }
+    explicit Connection(const std::string & filename);
 
-    virtual bool connect()
-    {
-        return false;
-    }
-
-    virtual void close() {}
-
-    virtual bool receive(rest::Buffer & data, const size_t & maxSize)
-    {
-        size_t oldSize = data.size();
-        data.resize(oldSize + maxSize);
-        m_stream.read((char *) data.data() + oldSize, maxSize);
-        size_t readBytes = m_stream.gcount();
-        data.resize(oldSize + readBytes);
-        std::cout << " read " << readBytes << " bytes." << std::endl;
-        return (readBytes > 0);
-    }
-
-    virtual bool send(const rest::Buffer & /*data*/)
-    {
-        return true;
-    }
-
-    virtual bool send(const std::string & /*data*/)
-    {
-        return true;
-    }
+    virtual bool connect();
+    virtual void close();
+    virtual bool receive(rest::Buffer & data, const size_t & maxSize);
+    virtual bool send(const rest::Buffer & data);
+    virtual bool send(const std::string & data);
 
 private:
     std::ifstream m_stream;
 };
+
+Connection::Connection(const std::string & filename)
+    : m_stream(filename)
+{
+    std::cout << " stream is_open() = " << m_stream.is_open() << "." << std::endl;
+}
+
+bool Connection::connect()
+{
+    return false;
+}
+
+void Connection::close()
+{}
+
+bool Connection::receive(rest::Buffer & data, const size_t & maxSize)
+{
+    size_t oldSize = data.size();
+    data.resize(oldSize + maxSize);
+    m_stream.read((char *) data.data() + oldSize, maxSize);
+    size_t readBytes = m_stream.gcount();
+    data.resize(oldSize + readBytes);
+    std::cout << " read " << readBytes << " bytes." << std::endl;
+    return (readBytes > 0);
+}
+
+bool Connection::send(const rest::Buffer & /*data*/)
+{
+    return true;
+}
+
+bool Connection::send(const std::string & /*data*/)
+{
+    return true;
+}
 
 int main()
 {

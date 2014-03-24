@@ -38,54 +38,43 @@ namespace socket
 void closeSignalSafe(int fd)
 {
     int res;
-    do
-    {
+    do {
         res = ::close(fd);
-    }
-    while ((res == -1) && (errno == EINTR));
+    } while ((res == -1) && (errno == EINTR));
 }
 
 int acceptSignalSafe(int sockfd, ::sockaddr * addr, socklen_t * len)
 {
     int res;
-    do
-    {
+    do {
         res = ::accept(sockfd, addr, len);
-    }
-    while ((res == -1) && (errno == EINTR));
+    } while ((res == -1) && (errno == EINTR));
     return res;
 }
 
 int connectSignalSafe(int sockfd, const ::sockaddr * addr, socklen_t len)
 {
     int res = ::connect(sockfd, addr, len);
-    if (res == -1)
-    {
+    if (res == -1) {
 
-        if (errno != EINTR)
-        {
+        if (errno != EINTR) {
             return res;
         }
         pollfd p {sockfd, POLLOUT, 0};
-        do
-        {
+        do {
             res = ::poll(&p, 1, -1);
-            if ((res == -1) && (errno != EINTR))
-            {
+            if ((res == -1) && (errno != EINTR)) {
                 return res;
             }
-        }
-        while (res == -1);
+        } while (res == -1);
 
         int error;
         socklen_t l = sizeof(error);
         res = getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &error, &l);
-        if (res == -1)
-        {
+        if (res == -1) {
             return res;
         }
-        if (error != 0)
-        {
+        if (error != 0) {
             return -1;
         }
     }
@@ -95,22 +84,18 @@ int connectSignalSafe(int sockfd, const ::sockaddr * addr, socklen_t len)
 ssize_t sendSignalSafe(int fd, const void * buf, size_t n, int flags)
 {
     ssize_t sent;
-    do
-    {
+    do {
         sent = ::send(fd, buf, n, flags);
-    }
-    while ((sent == -1) && (errno == EINTR));
+    } while ((sent == -1) && (errno == EINTR));
     return sent;
 }
 
 ssize_t recvSignalSafe(int fd, void * buf, size_t n, int flags)
 {
     ssize_t received;
-    do
-    {
+    do {
         received = ::recv(fd, buf, n, flags);
-    }
-    while ((received == -1) && (errno == EINTR));
+    } while ((received == -1) && (errno == EINTR));
     return received;
 }
 
@@ -118,12 +103,10 @@ ssize_t recvSignalSafe(int fd, void * buf, size_t n, int flags)
 {
     ::sockaddr_in addr;
 
-    if (!::inet_aton(host.c_str(), &addr.sin_addr))
-    {
+    if (!::inet_aton(host.c_str(), &addr.sin_addr)) {
         const ::hostent * hostname = ::gethostbyname(host.c_str());
 
-        if (!hostname)
-        {
+        if (!hostname) {
             addr.sin_family = AF_UNSPEC;
             return addr;
         }
