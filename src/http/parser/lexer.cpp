@@ -214,9 +214,11 @@ const std::map<std::string, std::string> & HttpParser::headers() const
 
 
 
-int httplex(int *, httpscan_t * scanner)
+int httplex(int * lval, httpscan_t * scanner)
 {
-    return scanner->m_lexer->get();
+    int result = scanner->m_lexer->get();
+    *lval = result;
+    return result;
 }
 
 void httperror(httpscan_t * scanner, const char * s)
