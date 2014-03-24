@@ -33,31 +33,9 @@ TEST(Request, ConstructionDestruction)
     request = std::make_shared<rest::http::Request>(rest::socket::ConnectionPtr());
     EXPECT_EQ(request->m_connection, rest::socket::ConnectionPtr());
     EXPECT_EQ(request->m_buffer.size(), 0);
-    EXPECT_EQ(request->m_method, rest::http::Method::UNKNOWN);
-    EXPECT_EQ(request->m_url, std::string());
-    EXPECT_EQ(request->m_version, rest::http::Version::HTTP_UNKNOWN);
-    EXPECT_EQ(request->m_headers.size(), 0);
     EXPECT_EQ(request->m_data.size(), 0);
-}
-
-TEST(Request, Methods)
-{
-    EXPECT_EQ(rest::http::Request::parseMethod("OPTIONS"), rest::http::Method::OPTIONS);
-    EXPECT_EQ(rest::http::Request::parseMethod("GET"), rest::http::Method::GET);
-    EXPECT_EQ(rest::http::Request::parseMethod("HEAD"), rest::http::Method::HEAD);
-    EXPECT_EQ(rest::http::Request::parseMethod("POST"), rest::http::Method::POST);
-    EXPECT_EQ(rest::http::Request::parseMethod("PUT"), rest::http::Method::PUT);
-    EXPECT_EQ(rest::http::Request::parseMethod("DELETE"), rest::http::Method::DELETE);
-    EXPECT_EQ(rest::http::Request::parseMethod("TRACE"), rest::http::Method::TRACE);
-    EXPECT_EQ(rest::http::Request::parseMethod("CONNECT"), rest::http::Method::CONNECT);
-    EXPECT_EQ(rest::http::Request::parseMethod("???"), rest::http::Method::UNKNOWN);
-}
-
-TEST(Request, Version)
-{
-    EXPECT_EQ(rest::http::Request::parseVersion("HTTP/1.0"), rest::http::Version::HTTP_1_0);
-    EXPECT_EQ(rest::http::Request::parseVersion("HTTP/1.1"), rest::http::Version::HTTP_1_1);
-    EXPECT_EQ(rest::http::Request::parseVersion("???"), rest::http::Version::HTTP_UNKNOWN);
+    EXPECT_EQ(request->m_index, 0);
+    EXPECT_EQ(request->m_empty, "");
 }
 
 TEST(Request, SetAndDeliver)
@@ -83,9 +61,9 @@ TEST(Request, SetAndDeliver)
     }));
     request.parse();
 
-    EXPECT_EQ(request.header("Content-Length"), "1");
+    EXPECT_EQ(request.header("content-length"), " 1");
     EXPECT_EQ(request.header("???"), "");
-    EXPECT_EQ(request.m_headers.size(), 2);
+    EXPECT_EQ(request.m_httpParser.headers().size(), 2);
     EXPECT_EQ(request.data(), rest::Buffer({ '0' }));
     EXPECT_EQ(request.method(), rest::http::Method::GET);
     EXPECT_EQ(request.url(), "/");

@@ -32,164 +32,64 @@ namespace http
 Request::Request(const rest::socket::ConnectionPtr & connection)
     : m_connection(connection)
     , m_buffer()
-    , m_method(Method::UNKNOWN)
-    , m_url()
-    , m_version(Version::HTTP_UNKNOWN)
-    , m_headers()
+    , m_httpParser(std::bind(&Request::get, this), std::bind(&Request::peek, this))
     , m_data()
-    , m_emptyString()
+    , m_index(0)
+    , m_empty()
 {}
+
+namespace
+{
+
+template <typename T>
+T lexical_cast(const std::string & str)
+{
+    T var = T();
+    std::istringstream iss;
+    iss.str(str);
+    iss >> var;
+    return var;
+}
+
+} // namespace
 
 void Request::parse()
 {
-    bool emptyLine;
-    std::vector<std::pair<size_t, size_t>> lineIndices;
-    size_t dataBegin;
+    m_httpParser.parse();
+    size_t contentLength = lexical_cast<size_t>(header("content-length"));
+    while (contentLength > 0)
     {
-        size_t i = 0;
-        do
-        {
-            emptyLine = true;
-            const size_t begin = i;
-            char c = consumeChar(i);
-            while (c != '\n')
-            {
-                if (c == '\0')
-                {
-                    return;
-                }
-                if (c != '\r')
-                {
-                    emptyLine = false;
-                }
-                c = consumeChar(i);
-            }
-            lineIndices.push_back(std::make_pair(begin, i));
-        }
-        while (false == emptyLine);
-        dataBegin = i;
-    }
-
-    std::string lastKey;
-    for (size_t i = 0; i < lineIndices.size(); i++)
-    {
-        const auto & pair = lineIndices[i];
-        if (i == 0)
-        {
-            // Request-Head
-            std::vector<std::string> words;
-            std::string head;
-            for (size_t j = pair.first; j < pair.second; j++)
-            {
-                head += m_buffer[j];
-            }
-            std::istringstream iss(head);
-            std::copy(std::istream_iterator<std::string>(iss),
-                      std::istream_iterator<std::string>(),
-                      std::back_inserter<std::vector<std::string>>(words));
-            if (words.size() != 3)
-            {
-                return;
-            }
-
-            m_method = parseMethod(words[0]);
-            m_url = words[1];
-            m_version = parseVersion(words[2]);
-        }
-        else
-        {
-            // Reqeust body
-            std::string key;
-            std::string value;
-            std::set<char> whitespace = { '\t', ' ', '\n', '\r' };
-            bool isKey = true;
-            if ((m_buffer[pair.first] == ' ') || (m_buffer[pair.first] == '\t'))
-            {
-                if (lastKey == "")
-                {
-                    return;
-                }
-
-                for (size_t j = pair.first; j < pair.second; j++)
-                {
-                    if (whitespace.count(m_buffer[j]) == 0)
-                    {
-                        value += m_buffer[j];
-                    }
-                }
-
-                m_headers[lastKey] += value;
-            }
-            else
-            {
-                for (size_t j = pair.first; j < pair.second; j++)
-                {
-                    if (whitespace.count(m_buffer[j]) == 0)
-                    {
-                        if (isKey == true)
-                        {
-                            if (m_buffer[j] == ':')
-                            {
-                                isKey = false;
-                            }
-                            else
-                            {
-                                key += m_buffer[j];
-                            }
-                        }
-                        else
-                        {
-                            value += m_buffer[j];
-                        }
-                    }
-                }
-
-                if (key != "")
-                {
-                    std::transform(key.begin(), key.end(), key.begin(), tolower);
-                    m_headers[key] = value;
-                    lastKey = key;
-                }
-                if (key == "content-length")
-                {
-                    m_data.resize(static_cast<size_t>(std::stoull(value)));
-                }
-            }
-        }
-    }
-
-    for (size_t i = 0; i < m_data.size(); i++)
-    {
-        size_t j = dataBegin + i;
-        m_data[i] = consumeChar(j);
+        peek();
+        size_t oldSize = m_data.size();
+        m_data.insert(m_data.end(), m_buffer.begin() + m_index, m_buffer.end());
+        m_index = m_buffer.size();
+        contentLength -= (m_data.size() - oldSize);
     }
 }
 
 Method Request::method() const
 {
-    return m_method;
+    return static_cast<Method>(m_httpParser.method());
 }
 
 std::string Request::url() const
 {
-    return m_url;
+    return m_httpParser.url();
 }
 
 Version Request::version() const
 {
-    return m_version;
+    return static_cast<Version>(m_httpParser.version());
 }
 
 const std::string & Request::header(const std::string & key) const
 {
-    std::string _key = key;
-    std::transform(_key.begin(), _key.end(), _key.begin(), tolower);
-    auto it = m_headers.find(_key);
-    if (it == m_headers.end())
+    auto it = m_httpParser.headers().find(key);
+    if (it != m_httpParser.headers().end())
     {
-        return m_emptyString;
+        return it->second;
     }
-    return it->second;
+    return m_empty;
 }
 
 rest::Buffer Request::data() const
@@ -197,9 +97,9 @@ rest::Buffer Request::data() const
     return m_data;
 }
 
-char Request::consumeChar(size_t & index)
+int Request::get()
 {
-    if (index >= m_buffer.size())
+    if (m_index >= m_buffer.size())
     {
         if (false == m_connection->receive(m_buffer, 4000))
         {
@@ -207,63 +107,20 @@ char Request::consumeChar(size_t & index)
         }
     }
 
-    return m_buffer[index++];
+    return m_buffer[m_index++];
 }
 
-Method Request::parseMethod(const std::string & word)
+int Request::peek()
 {
-    if (word == "OPTIONS")
+    if (m_index >= m_buffer.size())
     {
-        return Method::OPTIONS;
+        if (false == m_connection->receive(m_buffer, 4000))
+        {
+            return '\0';
+        }
     }
-    else if (word == "GET")
-    {
-        return Method::GET;
-    }
-    else if (word == "HEAD")
-    {
-        return Method::HEAD;
-    }
-    else if (word == "POST")
-    {
-        return Method::POST;
-    }
-    else if (word == "PUT")
-    {
-        return Method::PUT;
-    }
-    else if (word == "DELETE")
-    {
-        return Method::DELETE;
-    }
-    else if (word == "TRACE")
-    {
-        return Method::TRACE;
-    }
-    else if (word == "CONNECT")
-    {
-        return Method::CONNECT;
-    }
-    else
-    {
-        return Method::UNKNOWN;
-    }
-}
 
-Version Request::parseVersion(const std::string & word)
-{
-    if (word == "HTTP/1.0")
-    {
-        return Version::HTTP_1_0;
-    }
-    else if (word == "HTTP/1.1")
-    {
-        return Version::HTTP_1_1;
-    }
-    else
-    {
-        return Version::HTTP_UNKNOWN;
-    }
+    return m_buffer[m_index];
 }
 
 } // namespace http

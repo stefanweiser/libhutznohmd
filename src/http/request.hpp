@@ -25,6 +25,8 @@
 
 #include <librest.hpp>
 
+#include <http/parser/lexer.h>
+
 namespace rest
 {
 
@@ -44,20 +46,15 @@ public:
     virtual rest::Buffer data() const;
 
 private:
-    char consumeChar(size_t & index);
-
-    static Method parseMethod(const std::string & word);
-    static Version parseVersion(const std::string & word);
+    int get();
+    int peek();
 
     rest::socket::ConnectionPtr m_connection;
     rest::Buffer m_buffer;
-
-    Method m_method;
-    std::string m_url;
-    Version m_version;
-    std::map<std::string, std::string> m_headers;
+    rest::http::HttpParser m_httpParser;
     rest::Buffer m_data;
-    const std::string m_emptyString;
+    size_t m_index;
+    std::string m_empty;
 };
 
 } // namespace http

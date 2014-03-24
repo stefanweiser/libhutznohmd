@@ -41,7 +41,6 @@ TEST(Server, ParsingRequest)
     rest::socket::MockConnectionPtr socket;
     socket = std::make_shared<rest::socket::MockConnectionSocket>();
     EXPECT_CALL(*socket, receive(_, _))
-    .Times(1)
     .WillOnce(Invoke([](rest::Buffer & data, const size_t & /*maxSize*/) -> bool
     {
         std::stringstream str;
@@ -50,7 +49,12 @@ TEST(Server, ParsingRequest)
         std::string reqData = str.str();
         data = rest::Buffer(reqData.begin(), reqData.end());
         return true;
-    }));
+    }))
+    .WillRepeatedly(Invoke([](rest::Buffer & /*data*/, const size_t & /*maxSize*/) -> bool
+    {
+        return false;
+    }))
+    ;
     EXPECT_CALL(*socket, send(An<const rest::Buffer &>()))
     .Times(1)
     .WillRepeatedly(Return(true));
