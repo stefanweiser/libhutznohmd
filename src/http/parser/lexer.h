@@ -31,13 +31,13 @@ typedef void * httpscan_t;
 typedef enum
 {
     METHOD_UNKNOWN = 0,
-    METHOD_OPTIONS = 1,
+    METHOD_HEAD = 1,
     METHOD_GET = 2,
-    METHOD_HEAD = 3,
-    METHOD_POST = 4,
-    METHOD_PUT = 5,
-    METHOD_DELETE = 6,
-    METHOD_TRACE = 7,
+    METHOD_PUT = 3,
+    METHOD_DELETE = 4,
+    METHOD_POST = 5,
+    METHOD_TRACE = 6,
+    METHOD_OPTIONS = 7,
     METHOD_CONNECT = 8
 } HttpMethod;
 
