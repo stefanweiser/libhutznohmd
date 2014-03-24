@@ -24,9 +24,13 @@
 extern "C"
 {
 
-    int httpparse(void * scanner);
+    int httpparse(httpscan_t * scanner);
 
 }
+
+typedef struct httpscan {
+    rest::http::HttpParser * m_parser;
+} httpscan_t;
 
 namespace rest
 {
@@ -60,14 +64,20 @@ HttpParser::HttpParser(const std::function<int()> & getFn, const std::function<i
     , m_statusCode(0)
     , m_reasonPhrase()
     , m_headers()
+    , m_httpscan(new httpscan {this})
 {}
+
+HttpParser::~HttpParser()
+{
+    delete m_httpscan;
+}
 
 void HttpParser::parse()
 {
     m_finished = false;
     m_headerKey.clear();
     m_headerValue.clear();
-    httpparse(this);
+    httpparse(m_httpscan);
 }
 
 void HttpParser::finished()
@@ -188,58 +198,58 @@ const std::map<std::string, std::string> & HttpParser::headers() const
 
 
 
-int httplex(int *, httpscan_t scanner)
+int httplex(int *, httpscan_t * scanner)
 {
-    return static_cast<rest::http::HttpParser *>(scanner)->get();
+    return scanner->m_parser->get();
 }
 
-void httperror(httpscan_t scanner, const char * s)
+void httperror(httpscan_t * scanner, const char * s)
 {
-    static_cast<rest::http::HttpParser *>(scanner)->error(s);
+    scanner->m_parser->error(s);
 }
 
-void httpFinished(httpscan_t scanner)
+void httpFinished(httpscan_t * scanner)
 {
-    static_cast<rest::http::HttpParser *>(scanner)->finished();
+    scanner->m_parser->finished();
 }
 
-void setHttpVerb(httpscan_t scanner, HttpMethod method)
+void setHttpVerb(httpscan_t * scanner, HttpMethod method)
 {
-    static_cast<rest::http::HttpParser *>(scanner)->setHttpVerb(method);
+    scanner->m_parser->setHttpVerb(method);
 }
 
-void setHttpVersion(httpscan_t scanner, HttpVersion version)
+void setHttpVersion(httpscan_t * scanner, HttpVersion version)
 {
-    static_cast<rest::http::HttpParser *>(scanner)->setHttpVersion(version);
+    scanner->m_parser->setHttpVersion(version);
 }
 
-void setStatusCode(httpscan_t scanner, uint16_t factor)
+void setStatusCode(httpscan_t * scanner, uint16_t factor)
 {
-    static_cast<rest::http::HttpParser *>(scanner)->setStatusCode(factor);
+    scanner->m_parser->setStatusCode(factor);
 }
 
-void appendToUrl(httpscan_t scanner)
+void appendToUrl(httpscan_t * scanner)
 {
-    static_cast<rest::http::HttpParser *>(scanner)->appendToUrl();
+    scanner->m_parser->appendToUrl();
 }
 
-void appendToReasonPhrase(httpscan_t scanner)
+void appendToReasonPhrase(httpscan_t * scanner)
 {
-    static_cast<rest::http::HttpParser *>(scanner)->appendToReasonPhrase();
+    scanner->m_parser->appendToReasonPhrase();
 }
 
-void appendToHeaderKey(httpscan_t scanner)
+void appendToHeaderKey(httpscan_t * scanner)
 {
-    static_cast<rest::http::HttpParser *>(scanner)->appendToHeaderKey();
+    scanner->m_parser->appendToHeaderKey();
 }
 
-void appendToHeaderValue(httpscan_t scanner)
+void appendToHeaderValue(httpscan_t * scanner)
 {
-    static_cast<rest::http::HttpParser *>(scanner)->appendToHeaderValue();
+    scanner->m_parser->appendToHeaderValue();
 }
 
-void takeHeader(httpscan_t scanner)
+void takeHeader(httpscan_t * scanner)
 {
-    static_cast<rest::http::HttpParser *>(scanner)->takeHeader();
+    scanner->m_parser->takeHeader();
 }
 

@@ -18,6 +18,8 @@
 #ifndef __LIBREST_HTTP_PARSER_LEXER_H__
 #define __LIBREST_HTTP_PARSER_LEXER_H__
 
+#include <http/parser/httpscan.h>
+
 #ifdef __cplusplus
 #include <functional>
 #include <map>
@@ -25,8 +27,6 @@
 extern "C"
 {
 #endif
-
-typedef void * httpscan_t;
 
 typedef enum {
     METHOD_UNKNOWN = 0,
@@ -38,7 +38,8 @@ typedef enum {
     METHOD_TRACE = 6,
     METHOD_OPTIONS = 7,
     METHOD_CONNECT = 8
-} HttpMethod;
+}
+HttpMethod;
 
 typedef enum {
     VERSION_UNKNOWN = 0,
@@ -46,18 +47,18 @@ typedef enum {
     VERSION_HTTP_1_1 = 2
 } HttpVersion;
 
-int httplex(int * httplval, httpscan_t scanner);
-void httperror(httpscan_t scanner, const char * s);
+int httplex(int * httplval, httpscan_t * scanner);
+void httperror(httpscan_t * scanner, const char * s);
 
-void httpFinished(httpscan_t scanner);
-void setHttpVerb(httpscan_t scanner, HttpMethod method);
-void setHttpVersion(httpscan_t scanner, HttpVersion version);
-void setStatusCode(httpscan_t scanner, uint16_t factor);
-void appendToUrl(httpscan_t scanner);
-void appendToReasonPhrase(httpscan_t scanner);
-void appendToHeaderKey(httpscan_t scanner);
-void appendToHeaderValue(httpscan_t scanner);
-void takeHeader(httpscan_t scanner);
+void httpFinished(httpscan_t * scanner);
+void setHttpVerb(httpscan_t * scanner, HttpMethod method);
+void setHttpVersion(httpscan_t * scanner, HttpVersion version);
+void setStatusCode(httpscan_t * scanner, uint16_t factor);
+void appendToUrl(httpscan_t * scanner);
+void appendToReasonPhrase(httpscan_t * scanner);
+void appendToHeaderKey(httpscan_t * scanner);
+void appendToHeaderValue(httpscan_t * scanner);
+void takeHeader(httpscan_t * scanner);
 
 #ifdef __cplusplus
 }
@@ -115,6 +116,7 @@ class HttpParser
 {
 public:
     explicit HttpParser(const std::function<int()> & getFn, const std::function<int()> & peekFn);
+    ~HttpParser();
     void parse();
     void finished();
     void setHttpVerb(const HttpMethod & newMethod);
@@ -136,6 +138,9 @@ public:
     const std::map<std::string, std::string> & headers() const;
 
 private:
+    HttpParser(const HttpParser & parser) = delete;
+    HttpParser & operator=(const HttpParser & parser) = delete;
+
     std::function<int()> m_getFn;
     std::function<int()> m_peekFn;
     bool m_finished;
@@ -149,6 +154,8 @@ private:
     uint16_t m_statusCode;
     std::string m_reasonPhrase;
     std::map<std::string, std::string> m_headers;
+
+    httpscan_t * m_httpscan;
 };
 
 } // namespace http

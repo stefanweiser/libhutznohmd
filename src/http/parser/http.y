@@ -18,14 +18,15 @@
 %{
 #include <stdint.h>
 
+#include <http/parser/httpscan.h>
 #include "http.h"
 #include <http/parser/lexer.h>
 %}
 
 %pure-parser
 %define api.prefix "http"
-%lex-param {httpscan_t scanner}
-%parse-param {void* scanner}
+%lex-param {httpscan_t* scanner}
+%parse-param {httpscan_t* scanner}
 
 %%
 
