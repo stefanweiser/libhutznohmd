@@ -42,40 +42,40 @@ namespace http
 enum class Method
 {
     //! The request is of unknown method. It is recommended to assert this case.
-    UNKNOWN,
+    UNKNOWN = 0,
 
     //! The HEAD method is identical to GET except that the server must not
     //! return a message-body in the response. The method must not have side
     //! effects.
-    HEAD,
+    HEAD = 1,
 
     //! The GET method is used to retrieve informations from the entity assigned
     //! to the URI. The method must not have side effects.
-    GET,
+    GET = 2,
 
     //! The PUT method requests to store data to the entity represented by the
     //! URI. This method has to be idempotent.
-    PUT,
+    PUT = 3,
 
     //! The DELETE method requests that the origin server deletes the resource
     //! identified by the URI. This method has to be idempotent.
-    DELETE,
+    DELETE = 4,
 
     //! The POST method is used to request that the origin server accept the
     //! entity enclosed in the request.
-    POST,
+    POST = 5,
 
     //! The TRACE method has to return the message. The client is able to see
     //! whether there are modifications made by intermediate servers.
-    TRACE,
+    TRACE = 6,
 
     //! The OPTIONS method returns all available methods on the URI.
-    OPTIONS,
+    OPTIONS = 7,
 
     //! Converts the request connection to a transparent TCP/IP tunnel, usually
     //! to facilitate SSL-encrypted communication through an unencrypted HTTP
     //! proxy.
-    CONNECT
+    CONNECT = 8
 };
 
 //! Defines the HTTP version used by the request.
@@ -83,16 +83,16 @@ enum class Version
 {
     //! The request is of unknown version. It is recommended to assert this
     //! case.
-    HTTP_UNKNOWN,
+    HTTP_UNKNOWN = 0,
 
     //! The older version of the HTTP protocol.
-    HTTP_1_0,
+    HTTP_1_0 = 1,
 
     //! Main difference to version 1.0 is that servers on one IP address can
     //! host more than one website. The second difference is that persistent
     //! connections are the default case now and non-persistence must be
     //! explicitly wished.
-    HTTP_1_1
+    HTTP_1_1 = 2
 };
 
 //! An request is answered with a response. These responses carry a status code
