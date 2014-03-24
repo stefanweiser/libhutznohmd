@@ -30,6 +30,7 @@ extern "C"
 
 typedef struct httpscan {
     rest::http::HttpParser * m_parser;
+    rest::http::Lexer * m_lexer;
 } httpscan_t;
 
 namespace rest
@@ -51,11 +52,55 @@ char toLower(const char c)
 
 }
 
-HttpParser::HttpParser(const std::function<int()> & getFn, const std::function<int()> & peekFn)
+Lexer::Lexer(const std::function<int()> & getFn, const std::function<int()> & peekFn)
     : m_getFn(getFn)
     , m_peekFn(peekFn)
-    , m_finished(false)
     , m_lastChar(0)
+    , m_finished(false)
+{}
+
+void Lexer::finish()
+{
+    m_finished = true;
+}
+
+void Lexer::error(const char * /*s*/)
+{
+}
+
+int Lexer::get()
+{
+    if (true == m_finished) {
+        return -1;
+    }
+
+    int c = m_getFn();
+    if (c == '\r') {
+        if (m_peekFn() == '\n') {
+            m_getFn();
+        }
+        c = '\n';
+    }
+
+    if ((c == '\n') && (m_lastChar != '\n')) {
+        if ((m_peekFn() == ' ') || (m_peekFn() == '\t')) {
+            m_getFn();
+            c = ' ';
+        }
+    }
+
+    m_lastChar = static_cast<char>(c);
+    return c;
+}
+
+char Lexer::lastChar() const
+{
+    return m_lastChar;
+}
+
+HttpParser::HttpParser(const std::function<int()> & getFn, const std::function<int()> & peekFn)
+    : m_lexer(getFn, peekFn)
+    , m_finished(false)
     , m_headerKey()
     , m_headerValue()
     , m_method(METHOD_UNKNOWN)
@@ -64,7 +109,7 @@ HttpParser::HttpParser(const std::function<int()> & getFn, const std::function<i
     , m_statusCode(0)
     , m_reasonPhrase()
     , m_headers()
-    , m_httpscan(new httpscan {this})
+    , m_httpscan(new httpscan {this, &m_lexer})
 {}
 
 HttpParser::~HttpParser()
@@ -97,28 +142,28 @@ void HttpParser::setHttpVersion(const HttpVersion & newVersion)
 
 void HttpParser::setStatusCode(uint16_t factor)
 {
-    uint16_t n = static_cast<uint16_t>((m_lastChar - '0') * factor);
+    uint16_t n = static_cast<uint16_t>((m_lexer.lastChar() - '0') * factor);
     m_statusCode = static_cast<uint16_t>(m_statusCode + n);
 }
 
 void HttpParser::appendToUrl()
 {
-    m_url += toLower(m_lastChar);
+    m_url += toLower(m_lexer.lastChar());
 }
 
 void HttpParser::appendToReasonPhrase()
 {
-    m_reasonPhrase += m_lastChar;
+    m_reasonPhrase += m_lexer.lastChar();
 }
 
 void HttpParser::appendToHeaderKey()
 {
-    m_headerKey += toLower(m_lastChar);
+    m_headerKey += toLower(m_lexer.lastChar());
 }
 
 void HttpParser::appendToHeaderValue()
 {
-    m_headerValue += m_lastChar;
+    m_headerValue += m_lexer.lastChar();
 }
 
 void HttpParser::takeHeader()
@@ -126,35 +171,6 @@ void HttpParser::takeHeader()
     m_headers[m_headerKey] = m_headerValue;
     m_headerKey.clear();
     m_headerValue.clear();
-}
-
-int HttpParser::get()
-{
-    if (true == m_finished) {
-        return -1;
-    }
-
-    int c = m_getFn();
-    if (c == '\r') {
-        if (m_peekFn() == '\n') {
-            m_getFn();
-        }
-        c = '\n';
-    }
-
-    if ((c == '\n') && (m_lastChar != '\n')) {
-        if ((m_peekFn() == ' ') || (m_peekFn() == '\t')) {
-            m_getFn();
-            c = ' ';
-        }
-    }
-
-    m_lastChar = static_cast<char>(c);
-    return c;
-}
-
-void HttpParser::error(const char *)
-{
 }
 
 bool HttpParser::valid() const
@@ -200,17 +216,18 @@ const std::map<std::string, std::string> & HttpParser::headers() const
 
 int httplex(int *, httpscan_t * scanner)
 {
-    return scanner->m_parser->get();
+    return scanner->m_lexer->get();
 }
 
 void httperror(httpscan_t * scanner, const char * s)
 {
-    scanner->m_parser->error(s);
+    scanner->m_lexer->error(s);
 }
 
 void httpFinished(httpscan_t * scanner)
 {
     scanner->m_parser->finished();
+    scanner->m_lexer->finish();
 }
 
 void setHttpVerb(httpscan_t * scanner, HttpMethod method)

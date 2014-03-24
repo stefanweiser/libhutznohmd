@@ -112,6 +112,22 @@ enum class HeaderType
     LastModified
 };
 
+class Lexer
+{
+public:
+    explicit Lexer(const std::function<int()> & getFn, const std::function<int()> & peekFn);
+    void finish();
+    void error(const char * s);
+    int get();
+    char lastChar() const;
+
+private:
+    std::function<int()> m_getFn;
+    std::function<int()> m_peekFn;
+    char m_lastChar;
+    bool m_finished;
+};
+
 class HttpParser
 {
 public:
@@ -141,10 +157,8 @@ private:
     HttpParser(const HttpParser & parser) = delete;
     HttpParser & operator=(const HttpParser & parser) = delete;
 
-    std::function<int()> m_getFn;
-    std::function<int()> m_peekFn;
+    Lexer m_lexer;
     bool m_finished;
-    char m_lastChar;
     std::string m_headerKey;
     std::string m_headerValue;
 
