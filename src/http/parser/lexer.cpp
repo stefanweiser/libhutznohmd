@@ -136,7 +136,7 @@ int HttpParser::get()
         c = '\n';
     }
 
-    if (c == '\n')
+    if ((c == '\n') && (m_lastChar != '\n'))
     {
         if ((m_peekFn() == ' ') || (m_peekFn() == '\t'))
         {
