@@ -93,11 +93,6 @@ int Lexer::get()
     return c;
 }
 
-char Lexer::lastChar() const
-{
-    return m_lastChar;
-}
-
 HttpParser::HttpParser(const std::function<int()> & getFn, const std::function<int()> & peekFn)
     : m_lexer(getFn, peekFn)
     , m_finished(false)
@@ -140,30 +135,30 @@ void HttpParser::setHttpVersion(const HttpVersion & newVersion)
     m_version = newVersion;
 }
 
-void HttpParser::setStatusCode(uint16_t factor)
+void HttpParser::setStatusCode(uint16_t factor, char token)
 {
-    uint16_t n = static_cast<uint16_t>((m_lexer.lastChar() - '0') * factor);
+    uint16_t n = static_cast<uint16_t>((token - '0') * factor);
     m_statusCode = static_cast<uint16_t>(m_statusCode + n);
 }
 
-void HttpParser::appendToUrl()
+void HttpParser::appendToUrl(char token)
 {
-    m_url += toLower(m_lexer.lastChar());
+    m_url += toLower(token);
 }
 
-void HttpParser::appendToReasonPhrase()
+void HttpParser::appendToReasonPhrase(char token)
 {
-    m_reasonPhrase += m_lexer.lastChar();
+    m_reasonPhrase += token;
 }
 
-void HttpParser::appendToHeaderKey()
+void HttpParser::appendToHeaderKey(char token)
 {
-    m_headerKey += toLower(m_lexer.lastChar());
+    m_headerKey += toLower(token);
 }
 
-void HttpParser::appendToHeaderValue()
+void HttpParser::appendToHeaderValue(char token)
 {
-    m_headerValue += m_lexer.lastChar();
+    m_headerValue += token;
 }
 
 void HttpParser::takeHeader()
@@ -242,29 +237,29 @@ void setHttpVersion(httpscan_t * scanner, HttpVersion version)
     scanner->m_parser->setHttpVersion(version);
 }
 
-void setStatusCode(httpscan_t * scanner, uint16_t factor)
+void setStatusCode(httpscan_t * scanner, uint16_t factor, char token)
 {
-    scanner->m_parser->setStatusCode(factor);
+    scanner->m_parser->setStatusCode(factor, token);
 }
 
-void appendToUrl(httpscan_t * scanner)
+void appendToUrl(httpscan_t * scanner, char token)
 {
-    scanner->m_parser->appendToUrl();
+    scanner->m_parser->appendToUrl(token);
 }
 
-void appendToReasonPhrase(httpscan_t * scanner)
+void appendToReasonPhrase(httpscan_t * scanner, char token)
 {
-    scanner->m_parser->appendToReasonPhrase();
+    scanner->m_parser->appendToReasonPhrase(token);
 }
 
-void appendToHeaderKey(httpscan_t * scanner)
+void appendToHeaderKey(httpscan_t * scanner, char token)
 {
-    scanner->m_parser->appendToHeaderKey();
+    scanner->m_parser->appendToHeaderKey(token);
 }
 
-void appendToHeaderValue(httpscan_t * scanner)
+void appendToHeaderValue(httpscan_t * scanner, char token)
 {
-    scanner->m_parser->appendToHeaderValue();
+    scanner->m_parser->appendToHeaderValue(token);
 }
 
 void takeHeader(httpscan_t * scanner)

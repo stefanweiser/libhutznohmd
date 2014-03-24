@@ -53,11 +53,11 @@ void httperror(httpscan_t * scanner, const char * s);
 void httpFinished(httpscan_t * scanner);
 void setHttpVerb(httpscan_t * scanner, HttpMethod method);
 void setHttpVersion(httpscan_t * scanner, HttpVersion version);
-void setStatusCode(httpscan_t * scanner, uint16_t factor);
-void appendToUrl(httpscan_t * scanner);
-void appendToReasonPhrase(httpscan_t * scanner);
-void appendToHeaderKey(httpscan_t * scanner);
-void appendToHeaderValue(httpscan_t * scanner);
+void setStatusCode(httpscan_t * scanner, uint16_t factor, char token);
+void appendToUrl(httpscan_t * scanner, char token);
+void appendToReasonPhrase(httpscan_t * scanner, char token);
+void appendToHeaderKey(httpscan_t * scanner, char token);
+void appendToHeaderValue(httpscan_t * scanner, char token);
 void takeHeader(httpscan_t * scanner);
 
 #ifdef __cplusplus
@@ -119,7 +119,6 @@ public:
     void finish();
     void error(const char * s);
     int get();
-    char lastChar() const;
 
 private:
     std::function<int()> m_getFn;
@@ -137,11 +136,11 @@ public:
     void finished();
     void setHttpVerb(const HttpMethod & newMethod);
     void setHttpVersion(const HttpVersion & newVersion);
-    void setStatusCode(uint16_t factor);
-    void appendToUrl();
-    void appendToReasonPhrase();
-    void appendToHeaderKey();
-    void appendToHeaderValue();
+    void setStatusCode(uint16_t factor, char token);
+    void appendToUrl(char token);
+    void appendToReasonPhrase(char token);
+    void appendToHeaderKey(char token);
+    void appendToHeaderValue(char token);
     void takeHeader();
     int get();
     void error(const char * s);
