@@ -50,7 +50,7 @@ typedef enum {
 int httplex(int * httplval, httpscan_t * scanner);
 void httperror(httpscan_t * scanner, const char * s);
 
-void httpFinished(httpscan_t * scanner);
+void httpFinish(httpscan_t * scanner);
 void setHttpVerb(httpscan_t * scanner, HttpMethod method);
 void setHttpVersion(httpscan_t * scanner, HttpVersion version);
 void setStatusCode(httpscan_t * scanner, uint16_t factor, char token);
@@ -117,6 +117,7 @@ class Lexer
 public:
     explicit Lexer(const std::function<int()> & getFn, const std::function<int()> & peekFn);
     void finish();
+    bool finished() const;
     void error(const char * s);
     int get();
 
@@ -133,7 +134,6 @@ public:
     explicit HttpParser(const std::function<int()> & getFn, const std::function<int()> & peekFn);
     ~HttpParser();
     void parse();
-    void finished();
     void setHttpVerb(const HttpMethod & newMethod);
     void setHttpVersion(const HttpVersion & newVersion);
     void setStatusCode(uint16_t factor, char token);
@@ -157,7 +157,6 @@ private:
     HttpParser & operator=(const HttpParser & parser) = delete;
 
     Lexer m_lexer;
-    bool m_finished;
     std::string m_headerKey;
     std::string m_headerValue;
 

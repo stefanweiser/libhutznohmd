@@ -44,7 +44,7 @@ Fixture::Fixture(const std::string & req)
 
 Fixture::~Fixture()
 {
-    EXPECT_EQ(m_parser.valid(), m_parser.m_finished);
+    EXPECT_EQ(m_parser.valid(), m_parser.m_lexer.m_finished);
     EXPECT_EQ(m_parser.method(), m_parser.m_method);
     EXPECT_EQ(m_parser.version(), m_parser.m_version);
     EXPECT_EQ(m_parser.url(), m_parser.m_url);
@@ -56,7 +56,7 @@ Fixture::~Fixture()
 TEST(HttpParser, ConstructionDestruction)
 {
     Fixture fixture("");
-    EXPECT_EQ(fixture.m_parser.m_finished, false);
+    EXPECT_EQ(fixture.m_parser.m_lexer.m_finished, false);
     EXPECT_EQ(fixture.m_parser.m_lexer.m_lastChar, 0);
     EXPECT_EQ(fixture.m_parser.m_headerKey.empty(), true);
     EXPECT_EQ(fixture.m_parser.m_headerValue.empty(), true);
@@ -72,7 +72,7 @@ TEST(HttpParser, OptionsRequest)
 {
     Fixture fixture("OPTIONS / HTTP/1.1\r\n\r\n");
     fixture.m_parser.parse();
-    EXPECT_EQ(fixture.m_parser.m_finished, true);
+    EXPECT_EQ(fixture.m_parser.m_lexer.m_finished, true);
     EXPECT_EQ(fixture.m_parser.m_lexer.m_lastChar, '\n');
     EXPECT_EQ(fixture.m_parser.m_headerKey.empty(), true);
     EXPECT_EQ(fixture.m_parser.m_headerValue.empty(), true);
@@ -88,7 +88,7 @@ TEST(HttpParser, GetRequest)
 {
     Fixture fixture("GET / HTTP/1.0\r\n\r\n");
     fixture.m_parser.parse();
-    EXPECT_EQ(fixture.m_parser.m_finished, true);
+    EXPECT_EQ(fixture.m_parser.m_lexer.m_finished, true);
     EXPECT_EQ(fixture.m_parser.m_lexer.m_lastChar, '\n');
     EXPECT_EQ(fixture.m_parser.m_headerKey.empty(), true);
     EXPECT_EQ(fixture.m_parser.m_headerValue.empty(), true);
@@ -104,7 +104,7 @@ TEST(HttpParser, HeadRequest)
 {
     Fixture fixture("HEAD / HTTP/1.1\r\n\r\n");
     fixture.m_parser.parse();
-    EXPECT_EQ(fixture.m_parser.m_finished, true);
+    EXPECT_EQ(fixture.m_parser.m_lexer.m_finished, true);
     EXPECT_EQ(fixture.m_parser.m_lexer.m_lastChar, '\n');
     EXPECT_EQ(fixture.m_parser.m_headerKey.empty(), true);
     EXPECT_EQ(fixture.m_parser.m_headerValue.empty(), true);
@@ -120,7 +120,7 @@ TEST(HttpParser, PostRequest)
 {
     Fixture fixture("POST / HTTP/1.1\r\n\r\n");
     fixture.m_parser.parse();
-    EXPECT_EQ(fixture.m_parser.m_finished, true);
+    EXPECT_EQ(fixture.m_parser.m_lexer.m_finished, true);
     EXPECT_EQ(fixture.m_parser.m_lexer.m_lastChar, '\n');
     EXPECT_EQ(fixture.m_parser.m_headerKey.empty(), true);
     EXPECT_EQ(fixture.m_parser.m_headerValue.empty(), true);
@@ -136,7 +136,7 @@ TEST(HttpParser, PutRequest)
 {
     Fixture fixture("PUT /bla HTTP/1.1\r\nContent-Length:\n\t0\r\n\r\n");
     fixture.m_parser.parse();
-    EXPECT_EQ(fixture.m_parser.m_finished, true);
+    EXPECT_EQ(fixture.m_parser.m_lexer.m_finished, true);
     EXPECT_EQ(fixture.m_parser.m_lexer.m_lastChar, '\n');
     EXPECT_EQ(fixture.m_parser.m_headerKey.empty(), true);
     EXPECT_EQ(fixture.m_parser.m_headerValue.empty(), true);
@@ -154,7 +154,7 @@ TEST(HttpParser, DeleteRequest)
 {
     Fixture fixture("DELETE / HTTP/1.1\r\nContent-Length:\n 0\r\n\r\n");
     fixture.m_parser.parse();
-    EXPECT_EQ(fixture.m_parser.m_finished, true);
+    EXPECT_EQ(fixture.m_parser.m_lexer.m_finished, true);
     EXPECT_EQ(fixture.m_parser.m_lexer.m_lastChar, '\n');
     EXPECT_EQ(fixture.m_parser.m_headerKey.empty(), true);
     EXPECT_EQ(fixture.m_parser.m_headerValue.empty(), true);
@@ -172,7 +172,7 @@ TEST(HttpParser, TraceRequest)
 {
     Fixture fixture("TRACE / HTTP/1.1\r\n\r\n");
     fixture.m_parser.parse();
-    EXPECT_EQ(fixture.m_parser.m_finished, true);
+    EXPECT_EQ(fixture.m_parser.m_lexer.m_finished, true);
     EXPECT_EQ(fixture.m_parser.m_lexer.m_lastChar, '\n');
     EXPECT_EQ(fixture.m_parser.m_headerKey.empty(), true);
     EXPECT_EQ(fixture.m_parser.m_headerValue.empty(), true);
@@ -188,7 +188,7 @@ TEST(HttpParser, ConnectRequest)
 {
     Fixture fixture("CONNECT / HTTP/1.1\r\n\r\n");
     fixture.m_parser.parse();
-    EXPECT_EQ(fixture.m_parser.m_finished, true);
+    EXPECT_EQ(fixture.m_parser.m_lexer.m_finished, true);
     EXPECT_EQ(fixture.m_parser.m_lexer.m_lastChar, '\n');
     EXPECT_EQ(fixture.m_parser.m_headerKey.empty(), true);
     EXPECT_EQ(fixture.m_parser.m_headerValue.empty(), true);
@@ -204,7 +204,7 @@ TEST(HttpParser, GoneResponse)
 {
     Fixture fixture("HTTP/1.1 410 Gone\r\n\r\n");
     fixture.m_parser.parse();
-    EXPECT_EQ(fixture.m_parser.m_finished, true);
+    EXPECT_EQ(fixture.m_parser.m_lexer.m_finished, true);
     EXPECT_EQ(fixture.m_parser.m_lexer.m_lastChar, '\n');
     EXPECT_EQ(fixture.m_parser.m_headerKey.empty(), true);
     EXPECT_EQ(fixture.m_parser.m_headerValue.empty(), true);
@@ -220,7 +220,7 @@ TEST(HttpParser, NotFoundResponse)
 {
     Fixture fixture("HTTP/1.1 404 Not Found\r\n\r\n");
     fixture.m_parser.parse();
-    EXPECT_EQ(fixture.m_parser.m_finished, true);
+    EXPECT_EQ(fixture.m_parser.m_lexer.m_finished, true);
     EXPECT_EQ(fixture.m_parser.m_lexer.m_lastChar, '\n');
     EXPECT_EQ(fixture.m_parser.m_headerKey.empty(), true);
     EXPECT_EQ(fixture.m_parser.m_headerValue.empty(), true);
@@ -236,7 +236,7 @@ TEST(HttpParser, CustomResponse)
 {
     Fixture fixture("HTTP/1.1 555 X0Y1Z2\r\n\r\n");
     fixture.m_parser.parse();
-    EXPECT_EQ(fixture.m_parser.m_finished, true);
+    EXPECT_EQ(fixture.m_parser.m_lexer.m_finished, true);
     EXPECT_EQ(fixture.m_parser.m_lexer.m_lastChar, '\n');
     EXPECT_EQ(fixture.m_parser.m_headerKey.empty(), true);
     EXPECT_EQ(fixture.m_parser.m_headerValue.empty(), true);
@@ -252,7 +252,7 @@ TEST(HttpParser, Custom2Response)
 {
     Fixture fixture("HTTP/1.1 555 9X0Y1Z2\r\n\r\n");
     fixture.m_parser.parse();
-    EXPECT_EQ(fixture.m_parser.m_finished, true);
+    EXPECT_EQ(fixture.m_parser.m_lexer.m_finished, true);
     EXPECT_EQ(fixture.m_parser.m_lexer.m_lastChar, '\n');
     EXPECT_EQ(fixture.m_parser.m_headerKey.empty(), true);
     EXPECT_EQ(fixture.m_parser.m_headerValue.empty(), true);
@@ -269,7 +269,7 @@ TEST(HttpParser, HttpError)
 {
     Fixture fixture("abcdefghijklmnopqrstuvwxyz");
     fixture.m_parser.parse();
-    EXPECT_EQ(fixture.m_parser.m_finished, false);
+    EXPECT_EQ(fixture.m_parser.m_lexer.m_finished, false);
     EXPECT_EQ(fixture.m_parser.m_lexer.m_lastChar, 'a');
     EXPECT_EQ(fixture.m_parser.m_headerKey.empty(), true);
     EXPECT_EQ(fixture.m_parser.m_headerValue.empty(), true);

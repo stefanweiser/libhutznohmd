@@ -33,7 +33,7 @@
 http:           first-line
                 newline
                 headers
-                newline { httpFinished(scanner); }
+                newline { httpFinish(scanner); }
 
 first-line:     request-line | response-line
 

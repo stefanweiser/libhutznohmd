@@ -64,6 +64,11 @@ void Lexer::finish()
     m_finished = true;
 }
 
+bool Lexer::finished() const
+{
+    return m_finished;
+}
+
 void Lexer::error(const char * /*s*/)
 {
 }
@@ -95,7 +100,6 @@ int Lexer::get()
 
 HttpParser::HttpParser(const std::function<int()> & getFn, const std::function<int()> & peekFn)
     : m_lexer(getFn, peekFn)
-    , m_finished(false)
     , m_headerKey()
     , m_headerValue()
     , m_method(METHOD_UNKNOWN)
@@ -114,15 +118,9 @@ HttpParser::~HttpParser()
 
 void HttpParser::parse()
 {
-    m_finished = false;
     m_headerKey.clear();
     m_headerValue.clear();
     httpparse(m_httpscan);
-}
-
-void HttpParser::finished()
-{
-    m_finished = true;
 }
 
 void HttpParser::setHttpVerb(const HttpMethod & newMethod)
@@ -170,7 +168,7 @@ void HttpParser::takeHeader()
 
 bool HttpParser::valid() const
 {
-    return m_finished;
+    return m_lexer.finished();
 }
 
 const HttpMethod & HttpParser::method() const
@@ -221,9 +219,8 @@ void httperror(httpscan_t * scanner, const char * s)
     scanner->m_lexer->error(s);
 }
 
-void httpFinished(httpscan_t * scanner)
+void httpFinish(httpscan_t * scanner)
 {
-    scanner->m_parser->finished();
     scanner->m_lexer->finish();
 }
 
