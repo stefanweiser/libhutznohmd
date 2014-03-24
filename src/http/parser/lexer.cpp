@@ -109,7 +109,7 @@ void HttpParser::appendToHeaderKey()
 
 void HttpParser::appendToHeaderValue()
 {
-    m_headerValue += toLower(m_lastChar);
+    m_headerValue += m_lastChar;
 }
 
 void HttpParser::takeHeader()
