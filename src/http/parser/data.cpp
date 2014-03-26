@@ -18,6 +18,7 @@
 #include <cmath>
 #include <cstdint>
 #include <map>
+#include <sstream>
 
 #include "data.h"
 
@@ -56,7 +57,17 @@ char toLower(const char c)
     return c;
 }
 
+template <typename T>
+T lexical_cast(const std::string & str)
+{
+    T var = T();
+    std::istringstream iss;
+    iss.str(str);
+    iss >> var;
+    return var;
 }
+
+} // namespace
 
 Data::Data()
     : m_headerKey()
@@ -67,6 +78,7 @@ Data::Data()
     , m_statusCode(0)
     , m_reasonPhrase()
     , m_headers()
+    , m_contentLength(0)
 {
 }
 
@@ -108,6 +120,11 @@ void Data::appendToHeaderValue(char token)
 
 void Data::takeHeader()
 {
+    HeaderType type = headerStringToEnum(m_headerKey);
+    if (type == HeaderType::ContentLength) {
+        m_contentLength = lexical_cast<size_t>(m_headerValue);
+    }
+
     m_headers[m_headerKey] = m_headerValue;
     m_headerKey.clear();
     m_headerValue.clear();
@@ -123,7 +140,7 @@ const HttpVersion & Data::version() const
     return m_version;
 }
 
-const std::string Data::url() const
+const std::string & Data::url() const
 {
     return m_url;
 }
@@ -133,7 +150,7 @@ const uint16_t & Data::statusCode() const
     return m_statusCode;
 }
 
-const std::string Data::reasonPhrase() const
+const std::string & Data::reasonPhrase() const
 {
     return m_reasonPhrase;
 }
@@ -141,6 +158,11 @@ const std::string Data::reasonPhrase() const
 const std::map<std::string, std::string> & Data::headers() const
 {
     return m_headers;
+}
+
+const size_t & Data::contentLength() const
+{
+    return m_contentLength;
 }
 
 HeaderType headerStringToEnum(const std::string & s)

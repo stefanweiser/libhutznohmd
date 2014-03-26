@@ -41,6 +41,7 @@ public:
     const uint16_t & statusCode() const;
     const std::string reasonPhrase() const;
     const std::map<std::string, std::string> & headers() const;
+    const size_t & contentLength() const;
 
 private:
     HttpParser(const HttpParser & parser) = delete;

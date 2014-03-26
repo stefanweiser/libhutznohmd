@@ -93,6 +93,11 @@ const std::map<std::string, std::string> & HttpParser::headers() const
     return m_data.headers();
 }
 
+const size_t & HttpParser::contentLength() const
+{
+    return m_data.contentLength();
+}
+
 } // namespace http
 
 } // namespace rest

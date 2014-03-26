@@ -128,10 +128,11 @@ public:
 
     const HttpMethod & method() const;
     const HttpVersion & version() const;
-    const std::string url() const;
+    const std::string & url() const;
     const uint16_t & statusCode() const;
-    const std::string reasonPhrase() const;
+    const std::string & reasonPhrase() const;
     const std::map<std::string, std::string> & headers() const;
+    const size_t & contentLength() const;
 
 private:
     std::string m_headerKey;
@@ -143,6 +144,8 @@ private:
     uint16_t m_statusCode;
     std::string m_reasonPhrase;
     std::map<std::string, std::string> m_headers;
+
+    size_t m_contentLength;
 };
 
 HeaderType headerStringToEnum(const std::string & s);

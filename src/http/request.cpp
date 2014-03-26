@@ -19,7 +19,6 @@
 #include <cctype>
 #include <iterator>
 #include <set>
-#include <sstream>
 
 #include "request.hpp"
 
@@ -38,25 +37,10 @@ Request::Request(const rest::socket::ConnectionPtr & connection)
     , m_empty()
 {}
 
-namespace
-{
-
-template <typename T>
-T lexical_cast(const std::string & str)
-{
-    T var = T();
-    std::istringstream iss;
-    iss.str(str);
-    iss >> var;
-    return var;
-}
-
-} // namespace
-
 void Request::parse()
 {
     m_httpParser.parse();
-    ssize_t contentLength = lexical_cast<ssize_t>(header("content-length"));
+    ssize_t contentLength = m_httpParser.contentLength();
     while (contentLength > 0) {
         peek();
         size_t oldSize = m_data.size();
