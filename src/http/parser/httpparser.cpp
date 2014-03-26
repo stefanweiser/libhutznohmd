@@ -19,7 +19,7 @@
 #include <cstdint>
 #include <map>
 
-#include "httpparser.h"
+#include "httpparser.hpp"
 
 extern "C"
 {

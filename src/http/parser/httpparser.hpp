@@ -15,8 +15,8 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_HTTP_PARSER_HTTPPARSER_H__
-#define __LIBREST_HTTP_PARSER_HTTPPARSER_H__
+#ifndef __LIBREST_HTTP_PARSER_HTTPPARSER_HPP__
+#define __LIBREST_HTTP_PARSER_HTTPPARSER_HPP__
 
 #include <http/parser/httpscan.h>
 #include <http/parser/data.h>
@@ -98,4 +98,4 @@ private:
 
 } // namespace rest
 
-#endif /* __LIBREST_HTTP_PARSER_HTTPPARSER_H__ */
+#endif /* __LIBREST_HTTP_PARSER_HTTPPARSER_HPP__ */

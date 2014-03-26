@@ -20,7 +20,7 @@
 #include <iostream>
 #include <sstream>
 
-#include <http/parser/httpparser.h>
+#include <http/parser/httpparser.hpp>
 
 void test(const std::string & request)
 {

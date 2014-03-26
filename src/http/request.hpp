@@ -25,7 +25,7 @@
 
 #include <librest.hpp>
 
-#include <http/parser/httpparser.h>
+#include <http/parser/httpparser.hpp>
 
 namespace rest
 {

@@ -21,7 +21,7 @@
 #define private public
 #define protected public
 
-#include <http/parser/httpparser.h>
+#include <http/parser/httpparser.hpp>
 
 using namespace testing;
 
