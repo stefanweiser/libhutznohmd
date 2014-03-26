@@ -38,7 +38,7 @@ TEST(Request, ConstructionDestruction)
     EXPECT_EQ(request->m_empty, "");
 }
 
-TEST(Request, SetAndDeliver)
+TEST(Request, Parse)
 {
     rest::socket::MockConnectionPtr socket;
     socket = std::make_shared<rest::socket::MockConnectionSocket>();
@@ -64,6 +64,42 @@ TEST(Request, SetAndDeliver)
     EXPECT_EQ(request.header("???"), "");
     EXPECT_EQ(request.m_httpParser.headers().size(), 2);
     EXPECT_EQ(request.data(), rest::Buffer({ '0' }));
+    EXPECT_EQ(request.method(), rest::http::Method::GET);
+    EXPECT_EQ(request.url(), "/");
+    EXPECT_EQ(request.version(), rest::http::Version::HTTP_1_1);
+}
+
+TEST(Request, ParseLargeRequest)
+{
+    rest::socket::MockConnectionPtr socket;
+    socket = std::make_shared<rest::socket::MockConnectionSocket>();
+    rest::http::Request request(socket);
+
+    EXPECT_CALL(*socket, receive(_, _))
+    .Times(3)
+    .WillOnce(Invoke([](rest::Buffer & data, const size_t & /*maxSize*/) -> bool {
+        std::stringstream str;
+        str << "GET / HTTP/1.1\r\n";
+        str << "Content-Length: 2000\r\n";
+        str << "Accept: text/html,\r\n";
+        str << " text/xml\r\n";
+        str << "\r\n";
+        std::string reqData = str.str();
+        data = rest::Buffer(reqData.begin(), reqData.end());
+        return true;
+    }))
+    .WillRepeatedly(Invoke([](rest::Buffer & data, const size_t & /*maxSize*/) -> bool {
+        rest::Buffer content(1000, '0');
+        data.insert(data.end(), content.begin(), content.end());
+        return true;
+    }));
+    request.parse();
+
+    EXPECT_EQ(request.header("content-length"), " 2000");
+    EXPECT_EQ(request.header("???"), "");
+    EXPECT_EQ(request.m_httpParser.headers().size(), 2);
+    EXPECT_EQ(request.data().size(), 2000);
+    EXPECT_EQ(request.data(), rest::Buffer(2000, '0'));
     EXPECT_EQ(request.method(), rest::http::Method::GET);
     EXPECT_EQ(request.url(), "/");
     EXPECT_EQ(request.version(), rest::http::Version::HTTP_1_1);
