@@ -56,7 +56,7 @@ T lexical_cast(const std::string & str)
 void Request::parse()
 {
     m_httpParser.parse();
-    size_t contentLength = lexical_cast<size_t>(header("content-length"));
+    ssize_t contentLength = lexical_cast<ssize_t>(header("content-length"));
     while (contentLength > 0) {
         peek();
         size_t oldSize = m_data.size();
