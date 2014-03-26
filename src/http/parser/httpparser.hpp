@@ -28,49 +28,6 @@ namespace rest
 namespace http
 {
 
-enum class HeaderType
-{
-    Custom,
-    Accept,
-    AcceptCharset,
-    AcceptEncoding,
-    AcceptLanguage,
-    Authorization,
-    Expect,
-    From,
-    Host,
-    IfMatch,
-    IfModifiedSince,
-    IfNoneMatch,
-    IfRange,
-    IfUnmodifiedSince,
-    MaxForwards,
-    ProxyAuthorization,
-    Range,
-    Referer,
-    TE,
-    UserAgent,
-    AcceptRanges,
-    Age,
-    ETag,
-    Location,
-    ProxyAuthenticate,
-    RetryAfter,
-    Server,
-    Vary,
-    WWWAuthenticate,
-    Allow,
-    ContentEncoding,
-    ContentLanguage,
-    ContentLength,
-    ContentLocation,
-    ContentMD5,
-    ContentRange,
-    ContentType,
-    Expires,
-    LastModified
-};
-
 class HttpParser
 {
 public:

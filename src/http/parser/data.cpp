@@ -143,6 +143,60 @@ const std::map<std::string, std::string> & Data::headers() const
     return m_headers;
 }
 
+HeaderType headerStringToEnum(const std::string & s)
+{
+    const static std::map<std::string, HeaderType> stringToEnumMap = {
+        {"accept", HeaderType::Accept},
+        {"accept-charset", HeaderType::AcceptCharset},
+        {"accept-encoding", HeaderType::AcceptEncoding},
+        {"accept-language", HeaderType::AcceptLanguage},
+        {"accept-ranges", HeaderType::AcceptRanges},
+        {"age", HeaderType::Age},
+        {"allow", HeaderType::Allow},
+        {"authorization", HeaderType::Authorization},
+        {"cache-control", HeaderType::CacheControl},
+        {"connection", HeaderType::Connection},
+        {"content-encoding", HeaderType::ContentEncoding},
+        {"content-language", HeaderType::ContentLanguage},
+        {"content-length", HeaderType::ContentLength},
+        {"content-location", HeaderType::ContentLocation},
+        {"content-md5", HeaderType::ContentMD5},
+        {"content-range", HeaderType::ContentRange},
+        {"content-type", HeaderType::ContentType},
+        {"cookie", HeaderType::Cookie},
+        {"date", HeaderType::Date},
+        {"etag", HeaderType::ETag},
+        {"expect", HeaderType::Expect},
+        {"expires", HeaderType::Expires},
+        {"from", HeaderType::From},
+        {"host", HeaderType::Host},
+        {"if-match", HeaderType::IfMatch},
+        {"if-modified-since", HeaderType::IfModifiedSince},
+        {"if-none-match", HeaderType::IfNoneMatch},
+        {"if-range", HeaderType::IfRange},
+        {"if-unmodified-since", HeaderType::IfUnmodifiedSince},
+        {"last-modified", HeaderType::LastModified},
+        {"location", HeaderType::Location},
+        {"max-forwards", HeaderType::MaxForwards},
+        {"proxy-authenticate", HeaderType::ProxyAuthenticate},
+        {"proxy-authorization", HeaderType::ProxyAuthorization},
+        {"range", HeaderType::Range},
+        {"referer", HeaderType::Referer},
+        {"retry-after", HeaderType::RetryAfter},
+        {"server", HeaderType::Server},
+        {"te", HeaderType::TE},
+        {"user-agent", HeaderType::UserAgent},
+        {"vary", HeaderType::Vary},
+        {"www-authenticate", HeaderType::WWWAuthenticate}
+    };
+
+    auto it = stringToEnumMap.find(s);
+    if (it != stringToEnumMap.end()) {
+        return it->second;
+    }
+    return HeaderType::Custom;
+}
+
 } // namespace http
 
 } // namespace rest

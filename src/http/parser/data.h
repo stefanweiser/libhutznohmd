@@ -65,6 +65,53 @@ namespace rest
 namespace http
 {
 
+enum class HeaderType
+{
+    Custom,
+    Accept,
+    AcceptCharset,
+    AcceptEncoding,
+    AcceptLanguage,
+    AcceptRanges,
+    Age,
+    Allow,
+    Authorization,
+    CacheControl,
+    Connection,
+    ContentEncoding,
+    ContentLanguage,
+    ContentLength,
+    ContentLocation,
+    ContentMD5,
+    ContentRange,
+    ContentType,
+    Cookie,
+    Date,
+    ETag,
+    Expect,
+    Expires,
+    From,
+    Host,
+    IfMatch,
+    IfModifiedSince,
+    IfNoneMatch,
+    IfRange,
+    IfUnmodifiedSince,
+    LastModified,
+    Location,
+    MaxForwards,
+    ProxyAuthenticate,
+    ProxyAuthorization,
+    Range,
+    Referer,
+    RetryAfter,
+    Server,
+    TE,
+    UserAgent,
+    Vary,
+    WWWAuthenticate
+};
+
 class Data
 {
 public:
@@ -97,6 +144,8 @@ private:
     std::string m_reasonPhrase;
     std::map<std::string, std::string> m_headers;
 };
+
+HeaderType headerStringToEnum(const std::string & s);
 
 } // namespace http
 
