@@ -34,22 +34,21 @@ namespace rest
 namespace socket
 {
 
-class ListenerSocket : public ListenerSocketInterface
+class listener_socket : public listener_socket_interface
 {
 public:
-    static std::shared_ptr<ListenerSocket> create(
-        const std::string & host,
-        const uint16_t & port);
+    static std::shared_ptr<listener_socket> create(const std::string & host,
+            const uint16_t & port);
 
-    explicit ListenerSocket(const int & socket);
-    virtual ~ListenerSocket();
-    virtual ConnectionPtr accept();
+    explicit listener_socket(const int & socket);
+    virtual ~listener_socket();
+    virtual connection_pointer accept();
     virtual bool listening() const;
     virtual void stop();
 
 private:
-    bool m_isListening;
-    int m_socket;
+    bool is_listening_;
+    int socket_;
 };
 
 } // namespace socket

@@ -30,32 +30,32 @@ namespace rest
 namespace socket
 {
 
-class ConnectionSocketInterface
+class connection_socket_interface
 {
 public:
-    virtual ~ConnectionSocketInterface() {}
+    virtual ~connection_socket_interface() {}
     virtual bool connect() = 0;
     virtual void close() = 0;
-    virtual bool receive(rest::Buffer & data, const size_t & maxSize) = 0;
-    virtual bool send(const rest::Buffer & data) = 0;
+    virtual bool receive(rest::buffer & data, const size_t & max_size) = 0;
+    virtual bool send(const rest::buffer & data) = 0;
     virtual bool send(const std::string & data) = 0;
 };
 
-typedef std::shared_ptr<ConnectionSocketInterface> ConnectionPtr;
+typedef std::shared_ptr<connection_socket_interface> connection_pointer;
 
-class ListenerSocketInterface
+class listener_socket_interface
 {
 public:
-    virtual ~ListenerSocketInterface() {}
-    virtual ConnectionPtr accept() = 0;
+    virtual ~listener_socket_interface() {}
+    virtual connection_pointer accept() = 0;
     virtual bool listening() const = 0;
     virtual void stop() = 0;
 };
 
-typedef std::shared_ptr<ListenerSocketInterface> ListenerPtr;
+typedef std::shared_ptr<listener_socket_interface> listener_pointer;
 
-ConnectionPtr connect(const std::string & host, const uint16_t & port);
-ListenerPtr listen(const std::string & host, const uint16_t & port);
+connection_pointer connect(const std::string & host, const uint16_t & port);
+listener_pointer listen(const std::string & host, const uint16_t & port);
 
 } // namespace socket
 

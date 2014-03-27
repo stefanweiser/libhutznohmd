@@ -27,37 +27,36 @@
 
 using namespace testing;
 
-TEST(Server, ParsingRequest)
+TEST(server, parsing_request)
 {
     bool called = false;
-    auto transaction = [&called](const rest::http::RequestInterface & /*request*/,
-    rest::http::ResponseInterface & /*response*/) {
+    auto transaction = [&called](const rest::http::request_interface & /*request*/,
+    rest::http::response_interface & /*response*/) {
         called = true;
     };
-    rest::http::Server server(rest::socket::ListenerPtr(), transaction);
+    rest::http::server server(rest::socket::listener_pointer(), transaction);
 
-    rest::socket::MockConnectionPtr socket;
-    socket = std::make_shared<rest::socket::MockConnectionSocket>();
+    auto socket = std::make_shared<rest::socket::connection_socket_mock>();
     EXPECT_CALL(*socket, receive(_, _))
-    .WillOnce(Invoke([](rest::Buffer & data, const size_t & /*maxSize*/) -> bool {
-        std::stringstream str;
-        str << "GET / HTTP/1.1\r\n";
-        str << "\r\n";
-        std::string reqData = str.str();
-        data = rest::Buffer(reqData.begin(), reqData.end());
+    .WillOnce(Invoke([](rest::buffer & data, const size_t & /*max_size*/) -> bool {
+        std::stringstream stream;
+        stream << "GET / HTTP/1.1\r\n";
+        stream << "\r\n";
+        std::string request_data = stream.str();
+        data = rest::buffer(request_data.begin(), request_data.end());
         return true;
     }))
-    .WillRepeatedly(Invoke([](rest::Buffer & /*data*/, const size_t & /*maxSize*/) -> bool {
+    .WillRepeatedly(Invoke([](rest::buffer & /*data*/, const size_t & /*max_size*/) -> bool {
         return false;
     }))
     ;
-    EXPECT_CALL(*socket, send(An<const rest::Buffer &>()))
+    EXPECT_CALL(*socket, send(An<const rest::buffer &>()))
     .Times(1)
     .WillRepeatedly(Return(true));
     EXPECT_CALL(*socket, send(An<const std::string &>()))
     .Times(1)
     .WillRepeatedly(Return(true));
     EXPECT_EQ(called, false);
-    server.parseRequest(socket);
+    server.parse_request(socket);
     EXPECT_EQ(called, true);
 }

@@ -28,199 +28,187 @@
 namespace
 {
 
-void disableTimeWait(int socket)
+void disable_time_wait(int socket)
 {
     ::linger l = ::linger {1, 0};
     ::setsockopt(socket, SOL_SOCKET, SO_LINGER, &l, sizeof(l));
 }
 
-int getSocket(const rest::socket::ConnectionPtr & connection)
+int get_socket(const rest::socket::connection_pointer & connection)
 {
-    return std::dynamic_pointer_cast<rest::socket::ConnectionSocket>(connection)->m_socket;
+    return std::dynamic_pointer_cast<rest::socket::connection_socket>(connection)->socket_;
 }
 
-int getSocket(const rest::socket::ListenerPtr & listener)
+int get_socket(const rest::socket::listener_pointer & listener)
 {
-    return std::dynamic_pointer_cast<rest::socket::ListenerSocket>(listener)->m_socket;
+    return std::dynamic_pointer_cast<rest::socket::listener_socket>(listener)->socket_;
 }
 
 }
 
-TEST(Socket, ConstructionNoThrow)
+TEST(socket, construction_no_throw)
 {
-    auto l = rest::socket::ListenerSocket::create("127.0.0.1", 10000);
-    disableTimeWait(l->m_socket);
-    EXPECT_NE(l, std::shared_ptr<rest::socket::ListenerSocket>());
-    EXPECT_TRUE(l->listening());
-}
-
-TEST(Socket, WrongConstructionArguments)
-{
-    rest::socket::ListenerPtr listener;
-    listener = rest::socket::listen("localhost", 10000);
-    disableTimeWait(getSocket(listener));
-
-    EXPECT_EQ(rest::socket::listen("127.0.0.1", 10000), rest::socket::ListenerPtr());
+    auto listener = rest::socket::listener_socket::create("127.0.0.1", 10000);
+    disable_time_wait(listener->socket_);
+    EXPECT_NE(listener, std::shared_ptr<rest::socket::listener_socket>());
     EXPECT_TRUE(listener->listening());
 }
 
-TEST(Socket, AcceptingClosedSocket)
+TEST(socket, wrong_construction_arguments)
 {
-    auto listener = rest::socket::ListenerSocket::create("127.0.0.1", 10000);
-    disableTimeWait(listener->m_socket);
-    EXPECT_EQ(::close(listener->m_socket), 0);
-    EXPECT_EQ(listener->accept(), rest::socket::ConnectionPtr());
+    auto listener = rest::socket::listen("localhost", 10000);
+    disable_time_wait(get_socket(listener));
+
+    EXPECT_EQ(rest::socket::listen("127.0.0.1", 10000), rest::socket::listener_pointer());
+    EXPECT_TRUE(listener->listening());
 }
 
-TEST(Socket, ConnectingShutDownSocket)
+TEST(socket, accepting_closed_socket)
 {
-    rest::socket::ConnectionPtr connection;
-    connection = rest::socket::ConnectionSocket::create("127.0.0.1", 10000);
+    auto listener = rest::socket::listener_socket::create("127.0.0.1", 10000);
+    disable_time_wait(listener->socket_);
+    EXPECT_EQ(::close(listener->socket_), 0);
+    EXPECT_EQ(listener->accept(), rest::socket::connection_pointer());
+}
+
+TEST(socket, connecting_closed_socket)
+{
+    auto connection = rest::socket::connection_socket::create("127.0.0.1", 10000);
     connection->close();
     EXPECT_FALSE(connection->connect());
 }
 
-TEST(Socket, ConnectionRefused)
+TEST(socket, connection_refused)
 {
-    rest::socket::ConnectionPtr connection;
-    connection = rest::socket::ConnectionSocket::create("127.0.0.1", 10000);
+    auto connection = rest::socket::connection_socket::create("127.0.0.1", 10000);
     EXPECT_FALSE(connection->connect());
 }
 
-TEST(Socket, ReceiveSendClosedSocket)
+TEST(socket, receive_send_closed_socket)
 {
-    rest::socket::ListenerPtr listener;
-    listener = rest::socket::listen("localhost", 10000);
-    disableTimeWait(getSocket(listener));
+    auto listener = rest::socket::listen("localhost", 10000);
+    disable_time_wait(get_socket(listener));
     EXPECT_TRUE(listener->listening());
 
     bool connected = false;
     bool disconnected = false;
-    std::thread t([&disconnected, &connected] {
-        std::shared_ptr<rest::socket::ConnectionSocket> connection;
-        connection = rest::socket::ConnectionSocket::create("localhost", 10000);
+    std::thread thread([&disconnected, &connected] {
+        auto connection = rest::socket::connection_socket::create("localhost", 10000);
         EXPECT_TRUE(connection->connect());
-        disableTimeWait(connection->m_socket);
+        disable_time_wait(connection->socket_);
         connected = true;
         while (disconnected == false) {
             usleep(1);
         }
 
-        rest::Buffer data;
+        rest::buffer data;
         EXPECT_FALSE(connection->receive(data, 8));
 
-        EXPECT_EQ(::close(connection->m_socket), 0);
+        EXPECT_EQ(::close(connection->socket_), 0);
         EXPECT_FALSE(connection->receive(data, 8));
         EXPECT_FALSE(connection->send(data));
 
-        const_cast<int &>(connection->m_socket) = -1;
+        const_cast<int &>(connection->socket_) = -1;
         EXPECT_FALSE(connection->receive(data, 8));
         EXPECT_FALSE(connection->send(data));
     });
 
-    rest::socket::ConnectionPtr connection = listener->accept();
-    disableTimeWait(getSocket(connection));
+    rest::socket::connection_pointer connection = listener->accept();
+    disable_time_wait(get_socket(connection));
     while (connected == false) {
         usleep(1);
     }
     connection.reset();
     disconnected = true;
-    t.join();
+    thread.join();
     EXPECT_TRUE(listener->listening());
 }
 
-TEST(Socket, DoubleConnect)
+TEST(socket, double_connect)
 {
-    rest::socket::ListenerPtr listener;
-    listener = rest::socket::listen("localhost", 10000);
-    disableTimeWait(getSocket(listener));
+    rest::socket::listener_pointer listener = rest::socket::listen("localhost", 10000);
+    disable_time_wait(get_socket(listener));
     EXPECT_TRUE(listener->listening());
 
-    std::thread t([] {
-        std::shared_ptr<rest::socket::ConnectionSocket> connection;
-        connection = rest::socket::ConnectionSocket::create("localhost", 10000);
+    std::thread thread([] {
+        auto connection = rest::socket::connection_socket::create("localhost", 10000);
         EXPECT_TRUE(connection->connect());
         EXPECT_FALSE(connection->connect());
-        disableTimeWait(connection->m_socket);
+        disable_time_wait(connection->socket_);
     });
 
-    rest::socket::ConnectionPtr connection = listener->accept();
-    disableTimeWait(getSocket(connection));
-    t.join();
+    rest::socket::connection_pointer connection = listener->accept();
+    disable_time_wait(get_socket(connection));
+    thread.join();
     EXPECT_TRUE(listener->listening());
 }
 
-TEST(Socket, UnconnectedSendReceive)
+TEST(socket, unconnected_send_receive)
 {
-    std::shared_ptr<rest::socket::ConnectionSocket> connection;
-    connection = rest::socket::ConnectionSocket::create("localhost", 10000);
-    rest::Buffer data;
+    auto connection = rest::socket::connection_socket::create("localhost", 10000);
+    rest::buffer data;
     EXPECT_FALSE(connection->send(""));
     EXPECT_FALSE(connection->receive(data, 0));
 }
 
-TEST(Socket, TerminateTryToConnect)
+TEST(socket, terminate_try_to_connect)
 {
-    std::shared_ptr<rest::socket::ConnectionSocket> connection;
-    connection = rest::socket::ConnectionSocket::create("240.0.0.1", 65535);
+    auto connection = rest::socket::connection_socket::create("240.0.0.1", 65535);
 
-    std::thread t([&connection] {
+    std::thread thread([&connection] {
         EXPECT_FALSE(connection->connect());
     });
 
     usleep(10000);
     connection->close();
-    t.join();
+    thread.join();
 }
 
-TEST(Socket, TerminateTryToAccept)
+TEST(socket, terminate_try_to_accept)
 {
-    rest::socket::ListenerPtr listener;
-    listener = rest::socket::listen("localhost", 10000);
-    disableTimeWait(getSocket(listener));
+    rest::socket::listener_pointer listener = rest::socket::listen("localhost", 10000);
+    disable_time_wait(get_socket(listener));
     EXPECT_TRUE(listener->listening());
 
-    std::thread t([&listener] {
-        EXPECT_EQ(listener->accept(), rest::socket::ConnectionPtr());
+    std::thread thread([&listener] {
+        EXPECT_EQ(listener->accept(), rest::socket::connection_pointer());
         EXPECT_FALSE(listener->listening());
     });
 
     usleep(10000);
     EXPECT_TRUE(listener->listening());
     listener->stop();
-    t.join();
+    thread.join();
     EXPECT_FALSE(listener->listening());
 }
 
-TEST(Socket, NormalUseCase)
+TEST(socket, normal_use_case)
 {
-    rest::socket::ListenerPtr listener;
-    listener = rest::socket::listen("localhost", 10000);
-    disableTimeWait(getSocket(listener));
+    rest::socket::listener_pointer listener = rest::socket::listen("localhost", 10000);
+    disable_time_wait(get_socket(listener));
     EXPECT_TRUE(listener->listening());
 
-    std::thread t([] {
-        rest::socket::ConnectionPtr connection;
-        connection = rest::socket::connect("localhost", 10000);
+    std::thread thread([] {
+        rest::socket::connection_pointer connection = rest::socket::connect("localhost", 10000);
         EXPECT_TRUE(connection->connect());
-        EXPECT_NE(connection, rest::socket::ConnectionPtr());
-        disableTimeWait(getSocket(connection));
-        rest::Buffer data;
+        EXPECT_NE(connection, rest::socket::connection_pointer());
+        disable_time_wait(get_socket(connection));
+        rest::buffer data;
         EXPECT_TRUE(connection->receive(data, 8));
-        EXPECT_EQ(data, rest::Buffer({ 0, 1, 2, 3 }));
+        EXPECT_EQ(data, rest::buffer({ 0, 1, 2, 3 }));
         data = { 4, 5, 6, 7 };
         EXPECT_TRUE(connection->send(data));
     });
 
-    rest::socket::ConnectionPtr connection = listener->accept();
-    EXPECT_NE(connection, rest::socket::ConnectionPtr());
-    disableTimeWait(getSocket(connection));
-    rest::Buffer data = { 0, 1, 2, 3 };
+    rest::socket::connection_pointer connection = listener->accept();
+    EXPECT_NE(connection, rest::socket::connection_pointer());
+    disable_time_wait(get_socket(connection));
+    rest::buffer data = { 0, 1, 2, 3 };
     EXPECT_TRUE(connection->send(data));
     data.clear();
     EXPECT_TRUE(connection->receive(data, 8));
-    EXPECT_EQ(data, rest::Buffer({ 4, 5, 6, 7 }));
+    EXPECT_EQ(data, rest::buffer({ 4, 5, 6, 7 }));
 
-    t.join();
+    thread.join();
     EXPECT_TRUE(listener->listening());
 }

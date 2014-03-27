@@ -28,16 +28,16 @@ namespace rest
 namespace http
 {
 
-class Lexer;
-class Data;
+class lexer;
+class data;
 
 }
 
 }
 
 typedef struct httpscan {
-    rest::http::Lexer * m_lexer;
-    rest::http::Data * m_data;
+    rest::http::lexer * lexer;
+    rest::http::data * data;
 } httpscan_t;
 
 namespace rest
@@ -49,7 +49,7 @@ namespace http
 namespace
 {
 
-char toLower(const char c)
+char to_lower(const char c)
 {
     if (c >= 'A' && c <= 'Z') {
         return (c | 0x60);
@@ -58,165 +58,165 @@ char toLower(const char c)
 }
 
 template <typename T>
-T lexical_cast(const std::string & str)
+T lexical_cast(const std::string & s)
 {
-    T var = T();
-    std::istringstream iss;
-    iss.str(str);
-    iss >> var;
-    return var;
+    T result = T();
+    std::istringstream input_stream;
+    input_stream.str(s);
+    input_stream >> result;
+    return result;
 }
 
 } // namespace
 
-Data::Data()
-    : m_headerKey()
-    , m_headerValue()
-    , m_method(METHOD_UNKNOWN)
-    , m_version(VERSION_UNKNOWN)
-    , m_url()
-    , m_statusCode(0)
-    , m_reasonPhrase()
-    , m_headers()
-    , m_contentLength(0)
+data::data()
+    : header_key_()
+    , header_value_()
+    , method_(METHOD_UNKNOWN)
+    , version_(VERSION_UNKNOWN)
+    , url_()
+    , status_code_(0)
+    , reason_phrase_()
+    , headers_()
+    , content_length_(0)
 {
 }
 
-void Data::setHttpVerb(const HttpMethod & newMethod)
+void data::set_http_verb(const http_method & m)
 {
-    m_method = newMethod;
+    method_ = m;
 }
 
-void Data::setHttpVersion(const HttpVersion & newVersion)
+void data::set_http_version(const http_version & v)
 {
-    m_version = newVersion;
+    version_ = v;
 }
 
-void Data::setStatusCode(uint16_t factor, char token)
+void data::set_status_code(uint16_t factor, char token)
 {
     uint16_t n = static_cast<uint16_t>((token - '0') * factor);
-    m_statusCode = static_cast<uint16_t>(m_statusCode + n);
+    status_code_ = static_cast<uint16_t>(status_code_ + n);
 }
 
-void Data::appendToUrl(char token)
+void data::append_to_url(char token)
 {
-    m_url += toLower(token);
+    url_ += to_lower(token);
 }
 
-void Data::appendToReasonPhrase(char token)
+void data::append_to_reason_phrase(char token)
 {
-    m_reasonPhrase += token;
+    reason_phrase_ += token;
 }
 
-void Data::appendToHeaderKey(char token)
+void data::append_to_header_key(char token)
 {
-    m_headerKey += toLower(token);
+    header_key_ += to_lower(token);
 }
 
-void Data::appendToHeaderValue(char token)
+void data::append_to_header_value(char token)
 {
-    m_headerValue += token;
+    header_value_ += token;
 }
 
-void Data::takeHeader()
+void data::take_header()
 {
-    HeaderType type = headerStringToEnum(m_headerKey);
-    if (type == HeaderType::ContentLength) {
-        m_contentLength = lexical_cast<size_t>(m_headerValue);
+    header_type type = header_string_to_enum(header_key_);
+    if (type == header_type::CONTENT_LENGTH) {
+        content_length_ = lexical_cast<size_t>(header_value_);
     }
 
-    m_headers[m_headerKey] = m_headerValue;
-    m_headerKey.clear();
-    m_headerValue.clear();
+    headers_[header_key_] = header_value_;
+    header_key_.clear();
+    header_value_.clear();
 }
 
-const HttpMethod & Data::method() const
+const http_method & data::method() const
 {
-    return m_method;
+    return method_;
 }
 
-const HttpVersion & Data::version() const
+const http_version & data::version() const
 {
-    return m_version;
+    return version_;
 }
 
-const std::string & Data::url() const
+const std::string & data::url() const
 {
-    return m_url;
+    return url_;
 }
 
-const uint16_t & Data::statusCode() const
+const uint16_t & data::status_code() const
 {
-    return m_statusCode;
+    return status_code_;
 }
 
-const std::string & Data::reasonPhrase() const
+const std::string & data::reason_phrase() const
 {
-    return m_reasonPhrase;
+    return reason_phrase_;
 }
 
-const std::map<std::string, std::string> & Data::headers() const
+const std::map<std::string, std::string> & data::headers() const
 {
-    return m_headers;
+    return headers_;
 }
 
-const size_t & Data::contentLength() const
+const size_t & data::content_length() const
 {
-    return m_contentLength;
+    return content_length_;
 }
 
-HeaderType headerStringToEnum(const std::string & s)
+header_type header_string_to_enum(const std::string & s)
 {
-    const static std::map<std::string, HeaderType> stringToEnumMap = {
-        {"accept", HeaderType::Accept},
-        {"accept-charset", HeaderType::AcceptCharset},
-        {"accept-encoding", HeaderType::AcceptEncoding},
-        {"accept-language", HeaderType::AcceptLanguage},
-        {"accept-ranges", HeaderType::AcceptRanges},
-        {"age", HeaderType::Age},
-        {"allow", HeaderType::Allow},
-        {"authorization", HeaderType::Authorization},
-        {"cache-control", HeaderType::CacheControl},
-        {"connection", HeaderType::Connection},
-        {"content-encoding", HeaderType::ContentEncoding},
-        {"content-language", HeaderType::ContentLanguage},
-        {"content-length", HeaderType::ContentLength},
-        {"content-location", HeaderType::ContentLocation},
-        {"content-md5", HeaderType::ContentMD5},
-        {"content-range", HeaderType::ContentRange},
-        {"content-type", HeaderType::ContentType},
-        {"cookie", HeaderType::Cookie},
-        {"date", HeaderType::Date},
-        {"etag", HeaderType::ETag},
-        {"expect", HeaderType::Expect},
-        {"expires", HeaderType::Expires},
-        {"from", HeaderType::From},
-        {"host", HeaderType::Host},
-        {"if-match", HeaderType::IfMatch},
-        {"if-modified-since", HeaderType::IfModifiedSince},
-        {"if-none-match", HeaderType::IfNoneMatch},
-        {"if-range", HeaderType::IfRange},
-        {"if-unmodified-since", HeaderType::IfUnmodifiedSince},
-        {"last-modified", HeaderType::LastModified},
-        {"location", HeaderType::Location},
-        {"max-forwards", HeaderType::MaxForwards},
-        {"proxy-authenticate", HeaderType::ProxyAuthenticate},
-        {"proxy-authorization", HeaderType::ProxyAuthorization},
-        {"range", HeaderType::Range},
-        {"referer", HeaderType::Referer},
-        {"retry-after", HeaderType::RetryAfter},
-        {"server", HeaderType::Server},
-        {"te", HeaderType::TE},
-        {"user-agent", HeaderType::UserAgent},
-        {"vary", HeaderType::Vary},
-        {"www-authenticate", HeaderType::WWWAuthenticate}
+    const static std::map<std::string, header_type> string_to_enum_map = {
+        {"accept", header_type::ACCEPT},
+        {"accept-charset", header_type::ACCEPT_CHARSET},
+        {"accept-encoding", header_type::ACCEPT_ENCODING},
+        {"accept-language", header_type::ACCEPT_LANGUAGE},
+        {"accept-ranges", header_type::ACCEPT_RANGES},
+        {"age", header_type::AGE},
+        {"allow", header_type::ALLOW},
+        {"authorization", header_type::AUTHORIZATION},
+        {"cache-control", header_type::CACHE_CONTROL},
+        {"connection", header_type::CONNECTION},
+        {"content-encoding", header_type::CONTENT_ENCODING},
+        {"content-language", header_type::CONTENT_LANGUAGE},
+        {"content-length", header_type::CONTENT_LENGTH},
+        {"content-location", header_type::CONTENT_LOCATION},
+        {"content-md5", header_type::CONTENT_MD5},
+        {"content-range", header_type::CONTENT_RANGE},
+        {"content-type", header_type::CONTENT_TYPE},
+        {"cookie", header_type::COOKIE},
+        {"date", header_type::DATE},
+        {"etag", header_type::ETAG},
+        {"expect", header_type::EXPECT},
+        {"expires", header_type::EXPIRES},
+        {"from", header_type::FROM},
+        {"host", header_type::HOST},
+        {"if-match", header_type::IF_MATCH},
+        {"if-modified-since", header_type::IF_MODIFIED_SINCE},
+        {"if-none-match", header_type::IF_NONE_MATCH},
+        {"if-range", header_type::IF_RANGE},
+        {"if-unmodified-since", header_type::IF_UNMODIFIED_SINCE},
+        {"last-modified", header_type::LAST_MODIFIED},
+        {"location", header_type::LOCATION},
+        {"max-forwards", header_type::MAX_FORWARDS},
+        {"proxy-authenticate", header_type::PROXY_AUTHENTICATE},
+        {"proxy-authorization", header_type::PROXY_AUTHORIZATION},
+        {"range", header_type::RANGE},
+        {"referer", header_type::REFERER},
+        {"retry-after", header_type::RETRY_AFTER},
+        {"server", header_type::SERVER},
+        {"te", header_type::TE},
+        {"user-agent", header_type::USER_AGENT},
+        {"vary", header_type::VARY},
+        {"www-authenticate", header_type::WWW_AUTHENTICATE}
     };
 
-    auto it = stringToEnumMap.find(s);
-    if (it != stringToEnumMap.end()) {
+    auto it = string_to_enum_map.find(s);
+    if (it != string_to_enum_map.end()) {
         return it->second;
     }
-    return HeaderType::Custom;
+    return header_type::CUSTOM;
 }
 
 } // namespace http
@@ -225,42 +225,42 @@ HeaderType headerStringToEnum(const std::string & s)
 
 
 
-void setHttpVerb(httpscan_t * scanner, HttpMethod method)
+void set_http_verb(httpscan_t * scanner, http_method method)
 {
-    scanner->m_data->setHttpVerb(method);
+    scanner->data->set_http_verb(method);
 }
 
-void setHttpVersion(httpscan_t * scanner, HttpVersion version)
+void set_http_version(httpscan_t * scanner, http_version version)
 {
-    scanner->m_data->setHttpVersion(version);
+    scanner->data->set_http_version(version);
 }
 
-void setStatusCode(httpscan_t * scanner, uint16_t factor, char token)
+void set_status_code(httpscan_t * scanner, uint16_t factor, char token)
 {
-    scanner->m_data->setStatusCode(factor, token);
+    scanner->data->set_status_code(factor, token);
 }
 
-void appendToUrl(httpscan_t * scanner, char token)
+void append_to_url(httpscan_t * scanner, char token)
 {
-    scanner->m_data->appendToUrl(token);
+    scanner->data->append_to_url(token);
 }
 
-void appendToReasonPhrase(httpscan_t * scanner, char token)
+void append_to_reason_phrase(httpscan_t * scanner, char token)
 {
-    scanner->m_data->appendToReasonPhrase(token);
+    scanner->data->append_to_reason_phrase(token);
 }
 
-void appendToHeaderKey(httpscan_t * scanner, char token)
+void append_to_header_key(httpscan_t * scanner, char token)
 {
-    scanner->m_data->appendToHeaderKey(token);
+    scanner->data->append_to_header_key(token);
 }
 
-void appendToHeaderValue(httpscan_t * scanner, char token)
+void append_to_header_value(httpscan_t * scanner, char token)
 {
-    scanner->m_data->appendToHeaderValue(token);
+    scanner->data->append_to_header_value(token);
 }
 
-void takeHeader(httpscan_t * scanner)
+void take_header(httpscan_t * scanner)
 {
-    scanner->m_data->takeHeader();
+    scanner->data->take_header();
 }

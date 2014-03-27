@@ -28,22 +28,22 @@ namespace rest
 namespace socket
 {
 
-class MockConnectionSocket : public ConnectionSocketInterface
+class connection_socket_mock : public connection_socket_interface
 {
 public:
     MOCK_METHOD0(connect, bool());
     MOCK_METHOD0(close, void());
-    MOCK_METHOD2(receive, bool(rest::Buffer &, const size_t &));
-    MOCK_METHOD1(send, bool(const rest::Buffer &));
+    MOCK_METHOD2(receive, bool(rest::buffer &, const size_t &));
+    MOCK_METHOD1(send, bool(const rest::buffer &));
     MOCK_METHOD1(send, bool(const std::string &));
 };
 
-typedef std::shared_ptr<MockConnectionSocket> MockConnectionPtr;
+typedef std::shared_ptr<connection_socket_mock> connection_mock_pointer;
 
-class MockListenerSocket : public ListenerSocketInterface
+class listener_socket_mock : public listener_socket_interface
 {
 public:
-    MOCK_CONST_METHOD0(accept, ConnectionPtr());
+    MOCK_CONST_METHOD0(accept, connection_pointer());
     MOCK_METHOD0(stop, void());
 };
 

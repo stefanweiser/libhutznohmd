@@ -27,8 +27,8 @@ void test(const std::string & request)
     std::stringstream s(request);
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
     for (size_t i = 0; i < 1000; i++) {
-        rest::http::HttpParser parser(std::bind((int(std::istream::*)()) &std::istream::get, &s),
-                                      std::bind(&std::istream::peek, &s));
+        rest::http::http_parser parser(std::bind((int(std::istream::*)()) &std::istream::get, &s),
+                                       std::bind(&std::istream::peek, &s));
         parser.parse();
     }
     std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();

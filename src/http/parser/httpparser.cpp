@@ -29,8 +29,8 @@ extern "C"
 }
 
 typedef struct httpscan {
-    rest::http::Lexer * m_lexer;
-    rest::http::Data * m_data;
+    rest::http::lexer * m_lexer;
+    rest::http::data * m_data;
 } httpscan_t;
 
 namespace rest
@@ -39,63 +39,63 @@ namespace rest
 namespace http
 {
 
-HttpParser::HttpParser(const std::function<int()> & getFn,
-                       const std::function<int()> & peekFn)
-    : m_lexer(getFn, peekFn)
-    , m_data()
-    , m_httpscan(new httpscan {&m_lexer, &m_data})
+http_parser::http_parser(const std::function<int()> & get_functor,
+                         const std::function<int()> & peek_functor)
+    : lexer_(get_functor, peek_functor)
+    , data_()
+    , httpscan_(new httpscan {&lexer_, &data_})
 {}
 
-HttpParser::~HttpParser()
+http_parser::~http_parser()
 {
-    delete m_httpscan;
+    delete httpscan_;
 }
 
-void HttpParser::parse()
+void http_parser::parse()
 {
-    if (false == m_lexer.finished()) {
-        httpparse(m_httpscan);
+    if (false == lexer_.finished()) {
+        httpparse(httpscan_);
     }
 }
 
-bool HttpParser::valid() const
+bool http_parser::valid() const
 {
-    return m_lexer.finished();
+    return lexer_.finished();
 }
 
-const HttpMethod & HttpParser::method() const
+const http_method & http_parser::method() const
 {
-    return m_data.method();
+    return data_.method();
 }
 
-const HttpVersion & HttpParser::version() const
+const http_version & http_parser::version() const
 {
-    return m_data.version();
+    return data_.version();
 }
 
-const std::string HttpParser::url() const
+const std::string http_parser::url() const
 {
-    return m_data.url();
+    return data_.url();
 }
 
-const uint16_t & HttpParser::statusCode() const
+const uint16_t & http_parser::status_code() const
 {
-    return m_data.statusCode();
+    return data_.status_code();
 }
 
-const std::string HttpParser::reasonPhrase() const
+const std::string http_parser::reason_phrase() const
 {
-    return m_data.reasonPhrase();
+    return data_.reason_phrase();
 }
 
-const std::map<std::string, std::string> & HttpParser::headers() const
+const std::map<std::string, std::string> & http_parser::headers() const
 {
-    return m_data.headers();
+    return data_.headers();
 }
 
-const size_t & HttpParser::contentLength() const
+const size_t & http_parser::content_length() const
 {
-    return m_data.contentLength();
+    return data_.content_length();
 }
 
 } // namespace http

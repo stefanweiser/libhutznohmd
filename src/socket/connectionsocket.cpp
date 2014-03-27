@@ -33,123 +33,121 @@ namespace rest
 namespace socket
 {
 
-ConnectionPtr connect(
-    const std::string & host,
-    const uint16_t & port)
+connection_pointer connect(const std::string & host,
+                           const uint16_t & port)
 {
-    return ConnectionSocket::create(host, port);
+    return connection_socket::create(host, port);
 }
 
-std::shared_ptr<ConnectionSocket> ConnectionSocket::create(
-    const std::string & host,
-    const uint16_t & port)
+std::shared_ptr<connection_socket> connection_socket::create(const std::string & host,
+        const uint16_t & port)
 {
     const int socket = ::socket(PF_INET, SOCK_STREAM, 0);
     if (socket == -1) {
-        return std::shared_ptr<ConnectionSocket>();
+        return std::shared_ptr<connection_socket>();
     }
 
-    const ::sockaddr_in addr = fillAddress(host, port);
-    std::shared_ptr<ConnectionSocket> result = std::make_shared<ConnectionSocket>(socket, addr);
+    const ::sockaddr_in address = fill_address(host, port);
+    auto result = std::make_shared<connection_socket>(socket, address);
 
     return result;
 }
 
-ConnectionSocket::ConnectionSocket(const int & socket)
-    : m_isConnected(true)
-    , m_socket(socket)
-    , m_addr()
+connection_socket::connection_socket(const int & socket)
+    : is_connected_(true)
+    , socket_(socket)
+    , address_()
 {}
 
-ConnectionSocket::ConnectionSocket(const int & socket, const ::sockaddr_in & addr)
-    : m_isConnected(false)
-    , m_socket(socket)
-    , m_addr(addr)
+connection_socket::connection_socket(const int & socket, const ::sockaddr_in & address)
+    : is_connected_(false)
+    , socket_(socket)
+    , address_(address)
 {}
 
-ConnectionSocket::~ConnectionSocket()
+connection_socket::~connection_socket()
 {
     close();
-    closeSignalSafe(m_socket);
+    close_signal_safe(socket_);
 }
 
 namespace
 {
 
-union Addr {
+union address_union {
     const ::sockaddr * base;
     const ::sockaddr_in * in;
 };
 
 }
 
-bool ConnectionSocket::connect()
+bool connection_socket::connect()
 {
-    if (true == m_isConnected) {
+    if (true == is_connected_) {
         return false;
     }
-    Addr addr;
-    addr.in = &m_addr;
-    if (connectSignalSafe(m_socket, addr.base, sizeof(m_addr)) != 0) {
+    address_union address;
+    address.in = &address_;
+    if (connect_signal_safe(socket_, address.base, sizeof(address_)) != 0) {
         close();
         return false;
     }
-    m_isConnected = true;
+    is_connected_ = true;
     return true;
 }
 
-void ConnectionSocket::close()
+void connection_socket::close()
 {
-    m_isConnected = false;
-    ::shutdown(m_socket, SHUT_RDWR);
+    is_connected_ = false;
+    ::shutdown(socket_, SHUT_RDWR);
 }
 
-bool ConnectionSocket::receive(rest::Buffer & data, const size_t & maxSize)
+bool connection_socket::receive(rest::buffer & data, const size_t & max_size)
 {
-    if (false == m_isConnected) {
+    if (false == is_connected_) {
         return false;
     }
 
-    const size_t oldSize = data.size();
-    data.resize(oldSize + maxSize);
-    const ::ssize_t received = recvSignalSafe(m_socket, data.data() + oldSize, maxSize, 0);
+    const size_t old_size = data.size();
+    data.resize(old_size + max_size);
+    const ::ssize_t received = receive_signal_safe(socket_, data.data() + old_size, max_size, 0);
 
     if (received <= 0) {
         return false;
     }
 
-    data.resize(oldSize + received);
+    data.resize(old_size + received);
     return true;
 }
 
-bool ConnectionSocket::send(const rest::Buffer & data)
+bool connection_socket::send(const rest::buffer & data)
 {
     return send(data.data(), data.size());
 }
 
-bool ConnectionSocket::send(const std::string & data)
+bool connection_socket::send(const std::string & data)
 {
     return send(data.data(), data.size());
 }
 
-bool ConnectionSocket::send(const char * p, const size_t & s)
+bool connection_socket::send(const char * buffer, const size_t & size)
 {
-    if (false == m_isConnected) {
+    if (false == is_connected_) {
         return false;
     }
 
-    ::ssize_t sent = 0;
+    ::ssize_t sent_size = 0;
 
     do {
-        const void * q = p + sent;
-        const size_t t = s - sent;
-        const ::ssize_t sentBlock = sendSignalSafe(m_socket, q, t, 0);
+        const void * block = buffer + sent_size;
+        const size_t block_size = size - sent_size;
+        const ::ssize_t sent_block_size = send_signal_safe(socket_, block, block_size, 0);
 
-        if (sentBlock <= 0) {
+        if (sent_block_size <= 0) {
             return false;
         }
-        sent += sentBlock;
-    } while (sent < static_cast<::ssize_t>(s));
+        sent_size += sent_block_size;
+    } while (sent_size < static_cast<::ssize_t>(size));
 
     return true;
 }

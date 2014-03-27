@@ -35,88 +35,88 @@ namespace rest
 namespace socket
 {
 
-void closeSignalSafe(int fd)
+void close_signal_safe(int file_descriptor)
 {
-    int res;
+    int result;
     do {
-        res = ::close(fd);
-    } while ((res == -1) && (errno == EINTR));
+        result = ::close(file_descriptor);
+    } while ((result == -1) && (errno == EINTR));
 }
 
-int acceptSignalSafe(int sockfd, ::sockaddr * addr, socklen_t * len)
+int accept_signal_safe(int socket_descriptor, ::sockaddr * address, socklen_t * size)
 {
-    int res;
+    int result;
     do {
-        res = ::accept(sockfd, addr, len);
-    } while ((res == -1) && (errno == EINTR));
-    return res;
+        result = ::accept(socket_descriptor, address, size);
+    } while ((result == -1) && (errno == EINTR));
+    return result;
 }
 
-int connectSignalSafe(int sockfd, const ::sockaddr * addr, socklen_t len)
+int connect_signal_safe(int socket_file_descriptor, const ::sockaddr * address, socklen_t size)
 {
-    int res = ::connect(sockfd, addr, len);
-    if (res == -1) {
+    int result = ::connect(socket_file_descriptor, address, size);
+    if (result == -1) {
 
         if (errno != EINTR) {
-            return res;
+            return result;
         }
-        pollfd p {sockfd, POLLOUT, 0};
+        pollfd p {socket_file_descriptor, POLLOUT, 0};
         do {
-            res = ::poll(&p, 1, -1);
-            if ((res == -1) && (errno != EINTR)) {
-                return res;
+            result = ::poll(&p, 1, -1);
+            if ((result == -1) && (errno != EINTR)) {
+                return result;
             }
-        } while (res == -1);
+        } while (result == -1);
 
         int error;
-        socklen_t l = sizeof(error);
-        res = getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &error, &l);
-        if (res == -1) {
-            return res;
+        socklen_t s = sizeof(error);
+        result = getsockopt(socket_file_descriptor, SOL_SOCKET, SO_ERROR, &error, &s);
+        if (result == -1) {
+            return result;
         }
         if (error != 0) {
             return -1;
         }
     }
-    return res;
+    return result;
 }
 
-ssize_t sendSignalSafe(int fd, const void * buf, size_t n, int flags)
+ssize_t send_signal_safe(int file_descriptor, const void * buffer, size_t size, int flags)
 {
     ssize_t sent;
     do {
-        sent = ::send(fd, buf, n, flags);
+        sent = ::send(file_descriptor, buffer, size, flags);
     } while ((sent == -1) && (errno == EINTR));
     return sent;
 }
 
-ssize_t recvSignalSafe(int fd, void * buf, size_t n, int flags)
+ssize_t receive_signal_safe(int file_descriptor, void * buffer, size_t size, int flags)
 {
     ssize_t received;
     do {
-        received = ::recv(fd, buf, n, flags);
+        received = ::recv(file_descriptor, buffer, size, flags);
     } while ((received == -1) && (errno == EINTR));
     return received;
 }
 
-::sockaddr_in fillAddress(const std::string & host, const uint16_t & port)
+::sockaddr_in fill_address(const std::string & host, const uint16_t & port)
 {
-    ::sockaddr_in addr;
+    ::sockaddr_in address;
 
-    if (!::inet_aton(host.c_str(), &addr.sin_addr)) {
+    if (!::inet_aton(host.c_str(), &address.sin_addr)) {
         const ::hostent * hostname = ::gethostbyname(host.c_str());
 
         if (!hostname) {
-            addr.sin_family = AF_UNSPEC;
-            return addr;
+            address.sin_family = AF_UNSPEC;
+            return address;
         }
-        addr.sin_addr = * (::in_addr *) hostname->h_addr;
+        address.sin_addr = * (::in_addr *) hostname->h_addr;
     }
 
-    addr.sin_port = htons(port);
-    addr.sin_family = AF_INET;
+    address.sin_port = htons(port);
+    address.sin_family = AF_INET;
 
-    return addr;
+    return address;
 }
 
 } // namespace socket

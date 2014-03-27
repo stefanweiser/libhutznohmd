@@ -21,52 +21,52 @@
 #include <socket/socketinterface.hpp>
 #include <http/request.hpp>
 
-class Connection: public rest::socket::ConnectionSocketInterface
+class connection: public rest::socket::connection_socket_interface
 {
 public:
-    explicit Connection(const std::string & filename);
+    explicit connection(const std::string & filename);
 
     virtual bool connect();
     virtual void close();
-    virtual bool receive(rest::Buffer & data, const size_t & maxSize);
-    virtual bool send(const rest::Buffer & data);
+    virtual bool receive(rest::buffer & data, const size_t & max_size);
+    virtual bool send(const rest::buffer & data);
     virtual bool send(const std::string & data);
 
 private:
-    std::ifstream m_stream;
+    std::ifstream stream_;
 };
 
-Connection::Connection(const std::string & filename)
-    : m_stream(filename)
+connection::connection(const std::string & filename)
+    : stream_(filename)
 {
-    std::cout << " stream is_open() = " << m_stream.is_open() << "." << std::endl;
+    std::cout << " stream is_open() = " << stream_.is_open() << "." << std::endl;
 }
 
-bool Connection::connect()
+bool connection::connect()
 {
     return false;
 }
 
-void Connection::close()
+void connection::close()
 {}
 
-bool Connection::receive(rest::Buffer & data, const size_t & maxSize)
+bool connection::receive(rest::buffer & data, const size_t & max_size)
 {
-    size_t oldSize = data.size();
-    data.resize(oldSize + maxSize);
-    m_stream.read((char *) data.data() + oldSize, maxSize);
-    size_t readBytes = m_stream.gcount();
-    data.resize(oldSize + readBytes);
-    std::cout << " read " << readBytes << " bytes." << std::endl;
-    return (readBytes > 0);
+    size_t old_size = data.size();
+    data.resize(old_size + max_size);
+    stream_.read((char *) data.data() + old_size, max_size);
+    size_t read_bytes = stream_.gcount();
+    data.resize(old_size + read_bytes);
+    std::cout << " read " << read_bytes << " bytes." << std::endl;
+    return (read_bytes > 0);
 }
 
-bool Connection::send(const rest::Buffer & /*data*/)
+bool connection::send(const rest::buffer & /*data*/)
 {
     return true;
 }
 
-bool Connection::send(const std::string & /*data*/)
+bool connection::send(const std::string & /*data*/)
 {
     return true;
 }
@@ -75,9 +75,8 @@ int main()
 {
     std::cout << "example_http" << std::endl;
 
-    std::shared_ptr<Connection> connection;
-    connection = std::make_shared<Connection>("../examples/res/request0");
-    rest::http::Request request(connection);
+    auto connection = std::make_shared<::connection>("../examples/res/request0");
+    rest::http::request request(connection);
     request.parse();
 
     return 0;

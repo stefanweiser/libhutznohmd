@@ -29,118 +29,118 @@ namespace rest
 namespace http
 {
 
-Response::Response(const rest::socket::ConnectionPtr & connection)
-    : m_connection(connection)
-    , m_statusCode(StatusCode::InternalServerError)
-    , m_version(Version::HTTP_1_1)
-    , m_headers()
-    , m_data()
+response::response(const rest::socket::connection_pointer & connection)
+    : connection_(connection)
+    , status_code_(status_code::INTERNAL_SERVER_ERROR)
+    , version_(version::HTTP_1_1)
+    , headers_()
+    , data_()
 {}
 
-void Response::deliver()
+void response::deliver()
 {
     std::stringstream head;
-    deliverVersion(head, m_version);
-    deliverStatusCodeText(head, m_statusCode);
+    deliver_version(head, version_);
+    deliver_status_code_text(head, status_code_);
     head << "\r\n";
 
-    for (const auto & pair : m_headers) {
+    for (const auto & pair : headers_) {
         head << pair.first << ": " << pair.second << "\r\n";
     }
     head << "\r\n";
 
-    m_connection->send(head.str());
-    m_connection->send(m_data);
+    connection_->send(head.str());
+    connection_->send(data_);
 }
 
-void Response::setStatusCode(const StatusCode & statusCode)
+void response::set_status_code(const rest::http::status_code & status_code)
 {
-    m_statusCode = statusCode;
+    status_code_ = status_code;
 }
 
-void Response::setVersion(const Version & version)
+void response::set_version(const rest::http::version & version)
 {
-    m_version = version;
+    version_ = version;
 }
 
-void Response::setHeader(const std::string & key, const std::string & value)
+void response::set_header(const std::string & key, const std::string & value)
 {
-    m_headers[key] = value;
+    headers_[key] = value;
 }
 
-void Response::setData(const rest::Buffer & data)
+void response::set_data(const rest::buffer & data)
 {
-    m_data = data;
+    data_ = data;
 }
 
-void Response::deliverVersion(std::ostream & os, const Version & version)
+void response::deliver_version(std::ostream & os, const rest::http::version & version)
 {
-    if (version == Version::HTTP_1_0) {
+    if (version == rest::http::version::HTTP_1_0) {
         os << "HTTP/1.0 ";
-    } else if (version == Version::HTTP_1_1) {
+    } else if (version == rest::http::version::HTTP_1_1) {
         os << "HTTP/1.1 ";
     } else {
         os << "HTTP/?.?";
     }
 }
 
-void Response::deliverStatusCodeText(std::ostream & os, const StatusCode & statusCode)
+void response::deliver_status_code_text(std::ostream & os, const status_code & code)
 {
-    static const std::map<StatusCode, std::string> statusCodeText = {
-        {StatusCode::Continue, "100 Continue"},
-        {StatusCode::SwitchingProtocols, "101 Switching Protocols"},
-        {StatusCode::Processing, "102 Processing"},
+    static const std::map<rest::http::status_code, std::string> status_code_text = {
+        {status_code::CONTINUE, "100 Continue"},
+        {status_code::SWITCHING_PROTOCOLS, "101 Switching Protocols"},
+        {status_code::PROCESSING, "102 Processing"},
 
-        {StatusCode::Ok, "200 Ok"},
-        {StatusCode::Created, "201 Continue"},
-        {StatusCode::Accepted, "202 Accepted"},
-        {StatusCode::NonAuthorativeInformation, "203 Non Authorative Information"},
-        {StatusCode::NoContent, "204 No Content"},
-        {StatusCode::ResetContent, "205 Reset Content"},
-        {StatusCode::PartialContent, "206 Partial Content"},
-        {StatusCode::MultiStatus, "207 Multi Status"},
+        {status_code::OK, "200 Ok"},
+        {status_code::CREATED, "201 Continue"},
+        {status_code::ACCEPTED, "202 Accepted"},
+        {status_code::NON_AUTHORATIVE_INFORMATION, "203 Non Authorative Information"},
+        {status_code::NO_CONTENT, "204 No Content"},
+        {status_code::RESET_CONTENT, "205 Reset Content"},
+        {status_code::PARTIAL_CONTENT, "206 Partial Content"},
+        {status_code::MULTI_STATUS, "207 Multi Status"},
 
-        {StatusCode::MultipleChoices, "300 Multiple Choices"},
-        {StatusCode::MovedPermanently, "301 Moved Permanently"},
-        {StatusCode::Found, "302 Found"},
-        {StatusCode::SeeOther, "303 See Other"},
-        {StatusCode::NotModified, "304 Not Modified"},
-        {StatusCode::UseProxy, "305 Use Proxy"},
-        {StatusCode::SwitchProxy, "306 Switch Proxy"},
-        {StatusCode::TemporaryRedirect, "307 Temporary Redirect"},
+        {status_code::MULTIPLE_CHOICES, "300 Multiple Choices"},
+        {status_code::MOVED_PERMANENTLY, "301 Moved Permanently"},
+        {status_code::FOUND, "302 Found"},
+        {status_code::SEE_OTHER, "303 See Other"},
+        {status_code::NOT_MODIFIED, "304 Not Modified"},
+        {status_code::USE_PROXY, "305 Use Proxy"},
+        {status_code::SWITCH_PROXY, "306 Switch Proxy"},
+        {status_code::TEMPORARY_REDIRECT, "307 Temporary Redirect"},
 
-        {StatusCode::BadRequest, "400 Bad Request"},
-        {StatusCode::Unauthorized, "401 Unauthorized"},
-        {StatusCode::PaymentRequired, "402 Payment Required"},
-        {StatusCode::Forbidden, "403 Forbidden"},
-        {StatusCode::NotFound, "404 Not Found"},
-        {StatusCode::MethodNotAllowed, "405 Method Not Allowed"},
-        {StatusCode::MethodNotAcceptable, "406 Method Not Acceptable"},
-        {StatusCode::ProxyAuthentificationRequired, "407 Proxy Authentification Required"},
-        {StatusCode::RequestTimeout, "408 Request Timeout"},
-        {StatusCode::Conflict, "409 Conflict"},
-        {StatusCode::Gone, "410 Gone"},
-        {StatusCode::LengthRequired, "411 Length Required"},
-        {StatusCode::PreconditionFailed, "412 Precondition Failed"},
-        {StatusCode::RequestEntityTooLarge, "413 Request Entity Too Large"},
-        {StatusCode::RequestUriTooLong, "414 Request Uri Too Long"},
-        {StatusCode::UnsupportedMediaType, "415 Unsupported Media Type"},
-        {StatusCode::RequestedRangeNotSatisfiable, "416 Requested Range Not Satisfiable"},
-        {StatusCode::ExpectationFailed, "417 Expectation Failed"},
-        {StatusCode::UnprocessableEntity, "422 Unprocessable Entity"},
-        {StatusCode::Locked, "423 Locked"},
-        {StatusCode::FailedDependency, "424 Failed Dependency"},
-        {StatusCode::UpgradeRequired, "426 Upgrade Required"},
+        {status_code::BAD_REQUEST, "400 Bad Request"},
+        {status_code::UNAUTHORIZED, "401 Unauthorized"},
+        {status_code::PAYMENT_REQUIRED, "402 Payment Required"},
+        {status_code::FORBIDDEN, "403 Forbidden"},
+        {status_code::NOT_FOUND, "404 Not Found"},
+        {status_code::METHOD_NOT_ALLOWED, "405 Method Not Allowed"},
+        {status_code::METHOD_NOT_ACCEPTABLE, "406 Method Not Acceptable"},
+        {status_code::PROXY_AUTHENTIFICATION_REQUIRED, "407 Proxy Authentification Required"},
+        {status_code::REQUEST_TIMEOUT, "408 Request Timeout"},
+        {status_code::CONFLICT, "409 Conflict"},
+        {status_code::GONE, "410 Gone"},
+        {status_code::LENGTH_REQUIRED, "411 Length Required"},
+        {status_code::PRECONDITION_FAILED, "412 Precondition Failed"},
+        {status_code::REQUEST_ENTITY_TOO_LARGE, "413 Request Entity Too Large"},
+        {status_code::REQUEST_URI_TOO_LONG, "414 Request Uri Too Long"},
+        {status_code::UNSUPPORTED_MEDIA_TYPE, "415 Unsupported Media Type"},
+        {status_code::REQUESTED_RANGE_NOT_SATISFIABLE, "416 Requested Range Not Satisfiable"},
+        {status_code::EXPECTATION_FAILED, "417 Expectation Failed"},
+        {status_code::UNPROCESSABLE_ENTITY, "422 Unprocessable Entity"},
+        {status_code::LOCKED, "423 Locked"},
+        {status_code::FAILED_DEPENDENCY, "424 Failed Dependency"},
+        {status_code::UPGRADE_REQUIRED, "426 Upgrade Required"},
 
-        {StatusCode::InternalServerError, "500 Internal Server Error"},
-        {StatusCode::NotImplemented, "501 Not Implemented"},
-        {StatusCode::BadGateway, "502 Bad Gateway"},
-        {StatusCode::ServiceUnavailable, "503 Service Unavailable"},
-        {StatusCode::GatewayTimeout, "504 Gateway Timeout"},
-        {StatusCode::HttpVersionNotSupported, "505 Http Version Not Supported"}
+        {status_code::INTERNAL_SERVER_ERROR, "500 Internal Server Error"},
+        {status_code::NOT_IMPLEMENTED, "501 Not Implemented"},
+        {status_code::BAD_GATEWAY, "502 Bad Gateway"},
+        {status_code::SERVICE_UNAVAILABLE, "503 Service Unavailable"},
+        {status_code::GATEWAY_TIMEOUT, "504 Gateway Timeout"},
+        {status_code::HTTP_VERSION_NOT_SUPPORTED, "505 Http Version Not Supported"}
     };
-    auto it = statusCodeText.find(statusCode);
-    if (it != statusCodeText.end()) {
+    auto it = status_code_text.find(code);
+    if (it != status_code_text.end()) {
         os << it->second;
     }
 }

@@ -24,16 +24,16 @@
 
 #include <socket/utility.hpp>
 
-TEST(SocketUtility, FillAddressOk)
+TEST(socket_utility, fill_address_ok)
 {
-    ::sockaddr_in addr = rest::socket::fillAddress("127.0.0.1", 0x8000);
-    EXPECT_EQ(addr.sin_family, AF_INET);
-    EXPECT_EQ(addr.sin_port, ntohs(0x8000));
-    EXPECT_EQ(addr.sin_addr.s_addr, ntohl(0x7F000001));
+    ::sockaddr_in address = rest::socket::fill_address("127.0.0.1", 0x8000);
+    EXPECT_EQ(address.sin_family, AF_INET);
+    EXPECT_EQ(address.sin_port, ntohs(0x8000));
+    EXPECT_EQ(address.sin_addr.s_addr, ntohl(0x7F000001));
 }
 
-TEST(SocketUtility, FillAddressThrow)
+TEST(socket_utility, fill_address_error)
 {
-    ::sockaddr_in addr = rest::socket::fillAddress("127:0:0:1", 0x8000);
-    EXPECT_EQ(addr.sin_family, AF_UNSPEC);
+    ::sockaddr_in address = rest::socket::fill_address("127:0:0:1", 0x8000);
+    EXPECT_EQ(address.sin_family, AF_UNSPEC);
 }

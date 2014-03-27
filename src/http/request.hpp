@@ -33,28 +33,28 @@ namespace rest
 namespace http
 {
 
-class Request: public RequestInterface
+class request: public request_interface
 {
 public:
-    explicit Request(const rest::socket::ConnectionPtr & connection);
+    explicit request(const rest::socket::connection_pointer & connection);
     void parse();
 
-    virtual Method method() const;
+    virtual rest::http::method method() const;
     virtual std::string url() const;
-    virtual Version version() const;
+    virtual rest::http::version version() const;
     virtual const std::string & header(const std::string & key) const;
-    virtual rest::Buffer data() const;
+    virtual rest::buffer data() const;
 
 private:
     int get();
     int peek();
 
-    rest::socket::ConnectionPtr m_connection;
-    rest::Buffer m_buffer;
-    rest::http::HttpParser m_httpParser;
-    rest::Buffer m_data;
-    size_t m_index;
-    std::string m_empty;
+    rest::socket::connection_pointer connection_;
+    rest::buffer buffer_;
+    rest::http::http_parser http_parser_;
+    rest::buffer data_;
+    size_t index_;
+    std::string empty_;
 };
 
 } // namespace http

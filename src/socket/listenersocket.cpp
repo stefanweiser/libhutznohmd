@@ -31,77 +31,75 @@ namespace rest
 namespace socket
 {
 
-ListenerPtr listen(const std::string & host, const uint16_t & port)
+listener_pointer listen(const std::string & host, const uint16_t & port)
 {
-    return ListenerSocket::create(host, port);
+    return listener_socket::create(host, port);
 }
 
 namespace
 {
 
-union Addr {
+union address_union {
     ::sockaddr base;
     ::sockaddr_in in;
 };
 
 }
 
-std::shared_ptr<ListenerSocket> ListenerSocket::create(
-    const std::string & host,
-    const uint16_t & port)
+std::shared_ptr<listener_socket> listener_socket::create(const std::string & host,
+        const uint16_t & port)
 {
     const int socket = ::socket(PF_INET, SOCK_STREAM, 0);
     if (socket == -1) {
-        return std::shared_ptr<ListenerSocket>();
+        return std::shared_ptr<listener_socket>();
     }
 
-    std::shared_ptr<ListenerSocket> result;
-    result = std::make_shared<ListenerSocket>(socket);
+    std::shared_ptr<listener_socket> result = std::make_shared<listener_socket>(socket);
 
-    Addr addr;
-    addr.in = fillAddress(host, port);
-    int res1 = ::bind(result->m_socket, &(addr.base), sizeof(addr));
-    int res2 = ::listen(result->m_socket, 4);
-    if ((res1 == -1) || (res2 == -1)) {
-        return std::shared_ptr<ListenerSocket>();
+    address_union address;
+    address.in = fill_address(host, port);
+    int result1 = ::bind(result->socket_, &(address.base), sizeof(address));
+    int result2 = ::listen(result->socket_, 4);
+    if ((result1 == -1) || (result2 == -1)) {
+        return std::shared_ptr<listener_socket>();
     }
 
     return result;
 }
 
-ListenerSocket::ListenerSocket(const int & socket)
-    : m_isListening(true)
-    , m_socket(socket)
+listener_socket::listener_socket(const int & socket)
+    : is_listening_(true)
+    , socket_(socket)
 {}
 
-ListenerSocket::~ListenerSocket()
+listener_socket::~listener_socket()
 {
     stop();
-    closeSignalSafe(m_socket);
+    close_signal_safe(socket_);
 }
 
-ConnectionPtr ListenerSocket::accept()
+connection_pointer listener_socket::accept()
 {
-    Addr addr;
-    ::socklen_t len = sizeof(addr);
+    address_union address;
+    ::socklen_t size = sizeof(address);
 
-    const int client = acceptSignalSafe(m_socket, &(addr.base), &len);
+    const int client = accept_signal_safe(socket_, &(address.base), &size);
     if (client == -1) {
-        return ConnectionPtr();
+        return connection_pointer();
     }
 
-    return std::make_shared<ConnectionSocket>(client);
+    return std::make_shared<connection_socket>(client);
 }
 
-bool ListenerSocket::listening() const
+bool listener_socket::listening() const
 {
-    return m_isListening;
+    return is_listening_;
 }
 
-void ListenerSocket::stop()
+void listener_socket::stop()
 {
-    m_isListening = false;
-    ::shutdown(m_socket, SHUT_RDWR);
+    is_listening_ = false;
+    ::shutdown(socket_, SHUT_RDWR);
 }
 
 } // namespace socket

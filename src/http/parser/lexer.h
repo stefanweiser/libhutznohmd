@@ -28,8 +28,8 @@ extern "C"
 #endif
 
 int httplex(int * httplval, httpscan_t * scanner);
-void httperror(httpscan_t * scanner, const char * s);
-void httpFinish(httpscan_t * scanner);
+void httperror(httpscan_t * scanner, const char * string);
+void http_finish(httpscan_t * scanner);
 
 #ifdef __cplusplus
 }
@@ -40,20 +40,21 @@ namespace rest
 namespace http
 {
 
-class Lexer
+class lexer
 {
 public:
-    explicit Lexer(const std::function<int()> & getFn, const std::function<int()> & peekFn);
+    explicit lexer(const std::function<int()> & get_functor,
+                   const std::function<int()> & peek_functor);
     void finish();
     bool finished() const;
-    void error(const char * s);
+    void error(const char * error_string);
     int get();
 
 private:
-    std::function<int()> m_getFn;
-    std::function<int()> m_peekFn;
-    char m_lastChar;
-    bool m_finished;
+    std::function<int()> get_functor_;
+    std::function<int()> peek_functor_;
+    char last_character_;
+    bool finished_;
 };
 
 } // namespace http

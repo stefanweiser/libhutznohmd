@@ -28,77 +28,77 @@ namespace rest
 namespace http
 {
 
-Request::Request(const rest::socket::ConnectionPtr & connection)
-    : m_connection(connection)
-    , m_buffer()
-    , m_httpParser(std::bind(&Request::get, this), std::bind(&Request::peek, this))
-    , m_data()
-    , m_index(0)
-    , m_empty()
+request::request(const rest::socket::connection_pointer & connection)
+    : connection_(connection)
+    , buffer_()
+    , http_parser_(std::bind(&request::get, this), std::bind(&request::peek, this))
+    , data_()
+    , index_(0)
+    , empty_()
 {}
 
-void Request::parse()
+void request::parse()
 {
-    m_httpParser.parse();
-    ssize_t contentLength = m_httpParser.contentLength();
-    while (contentLength > 0) {
+    http_parser_.parse();
+    ssize_t content_length = http_parser_.content_length();
+    while (content_length > 0) {
         peek();
-        size_t oldSize = m_data.size();
-        m_data.insert(m_data.end(), m_buffer.begin() + m_index, m_buffer.end());
-        m_index = m_buffer.size();
-        contentLength -= (m_data.size() - oldSize);
+        size_t old_size = data_.size();
+        data_.insert(data_.end(), buffer_.begin() + index_, buffer_.end());
+        index_ = buffer_.size();
+        content_length -= (data_.size() - old_size);
     }
 }
 
-Method Request::method() const
+rest::http::method request::method() const
 {
-    return static_cast<Method>(m_httpParser.method());
+    return static_cast<rest::http::method>(http_parser_.method());
 }
 
-std::string Request::url() const
+std::string request::url() const
 {
-    return m_httpParser.url();
+    return http_parser_.url();
 }
 
-Version Request::version() const
+rest::http::version request::version() const
 {
-    return static_cast<Version>(m_httpParser.version());
+    return static_cast<rest::http::version>(http_parser_.version());
 }
 
-const std::string & Request::header(const std::string & key) const
+const std::string & request::header(const std::string & key) const
 {
-    auto it = m_httpParser.headers().find(key);
-    if (it != m_httpParser.headers().end()) {
+    auto it = http_parser_.headers().find(key);
+    if (it != http_parser_.headers().end()) {
         return it->second;
     }
-    return m_empty;
+    return empty_;
 }
 
-rest::Buffer Request::data() const
+rest::buffer request::data() const
 {
-    return m_data;
+    return data_;
 }
 
-int Request::get()
+int request::get()
 {
-    if (m_index >= m_buffer.size()) {
-        if (false == m_connection->receive(m_buffer, 4000)) {
+    if (index_ >= buffer_.size()) {
+        if (false == connection_->receive(buffer_, 4000)) {
             return '\0';
         }
     }
 
-    return m_buffer[m_index++];
+    return buffer_[index_++];
 }
 
-int Request::peek()
+int request::peek()
 {
-    if (m_index >= m_buffer.size()) {
-        if (false == m_connection->receive(m_buffer, 4000)) {
+    if (index_ >= buffer_.size()) {
+        if (false == connection_->receive(buffer_, 4000)) {
             return '\0';
         }
     }
 
-    return m_buffer[m_index];
+    return buffer_[index_];
 }
 
 } // namespace http

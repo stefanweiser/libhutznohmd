@@ -34,17 +34,17 @@ namespace rest
 namespace socket
 {
 
-void closeSignalSafe(int fd);
+void close_signal_safe(int file_descriptor);
 
-int acceptSignalSafe(int fd, ::sockaddr * addr, socklen_t * len);
+int accept_signal_safe(int file_descriptor, ::sockaddr * address, socklen_t * size);
 
-int connectSignalSafe(int sockfd, const ::sockaddr * addr, socklen_t len);
+int connect_signal_safe(int socket_file_descriptor, const ::sockaddr * address, socklen_t size);
 
-ssize_t sendSignalSafe(int fd, const void * buf, size_t n, int flags);
+ssize_t send_signal_safe(int file_descriptor, const void * buffer, size_t size, int flags);
 
-ssize_t recvSignalSafe(int fd, void * buf, size_t n, int flags);
+ssize_t receive_signal_safe(int file_descriptor, void * buffer, size_t size, int flags);
 
-::sockaddr_in fillAddress(const std::string & host, const uint16_t & port);
+::sockaddr_in fill_address(const std::string & host, const uint16_t & port);
 
 } // namespace socket
 

@@ -22,19 +22,19 @@
 
 #include <socket/socketinterface.hpp>
 
-rest::Buffer data = { 0, 1, 2, 3 };
+rest::buffer data = { 0, 1, 2, 3 };
 
 void client()
 {
     std::cout << "  connecting" << std::endl;
-    rest::socket::ConnectionPtr c = rest::socket::connect("localhost", 30000);
+    rest::socket::connection_pointer c = rest::socket::connect("localhost", 30000);
     if (false == c->connect()) {
         std::cout << "  client not connected" << std::endl;
         abort();
     }
 
     std::cout << "  client receiving" << std::endl;
-    rest::Buffer data2;
+    rest::buffer data2;
     if (false == c->receive(data2, 8)) {
         std::cout << "  client aborts on receive" << std::endl;
         abort();
@@ -58,20 +58,20 @@ int main()
     std::cout << "example_socket" << std::endl;
 
     std::cout << "  listening" << std::endl;
-    rest::socket::ListenerPtr l = rest::socket::listen("localhost", 30000);
-    std::thread t(&client);
+    rest::socket::listener_pointer listener = rest::socket::listen("localhost", 30000);
+    std::thread thread(&client);
 
     std::cout << "  accepting" << std::endl;
-    rest::socket::ConnectionPtr c = l->accept();
+    rest::socket::connection_pointer connection = listener->accept();
 
     std::cout << "  server sending" << std::endl;
-    if (false == c->send(data)) {
+    if (false == connection->send(data)) {
         std::cout << "  server aborts on send" << std::endl;
     }
 
     std::cout << "  server receiving" << std::endl;
-    rest::Buffer data2;
-    if (false == c->receive(data2, 8)) {
+    rest::buffer data2;
+    if (false == connection->receive(data2, 8)) {
         std::cout << "  server aborts on receive" << std::endl;
     }
 
@@ -81,7 +81,7 @@ int main()
     }
 
     std::cout << "  joining" << std::endl;
-    t.join();
+    thread.join();
 
     std::cout << "  server terminating" << std::endl;
     return 0;

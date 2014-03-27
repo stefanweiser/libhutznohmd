@@ -27,16 +27,16 @@ namespace rest
 namespace http
 {
 
-class Lexer;
-class Data;
+class lexer;
+class data;
 
 }
 
 }
 
 typedef struct httpscan {
-    rest::http::Lexer * m_lexer;
-    rest::http::Data * m_data;
+    rest::http::lexer * lexer;
+    rest::http::data * data;
 } httpscan_t;
 
 namespace rest
@@ -45,50 +45,49 @@ namespace rest
 namespace http
 {
 
-Lexer::Lexer(const std::function<int()> & getFn, const std::function<int()> & peekFn)
-    : m_getFn(getFn)
-    , m_peekFn(peekFn)
-    , m_lastChar(0)
-    , m_finished(false)
+lexer::lexer(const std::function<int()> & get_functor, const std::function<int()> & peek_functor)
+    : get_functor_(get_functor)
+    , peek_functor_(peek_functor)
+    , last_character_(0)
+    , finished_(false)
 {}
 
-void Lexer::finish()
+void lexer::finish()
 {
-    m_finished = true;
+    finished_ = true;
 }
 
-bool Lexer::finished() const
+bool lexer::finished() const
 {
-    return m_finished;
+    return finished_;
 }
 
-void Lexer::error(const char * /*s*/)
-{
-}
+void lexer::error(const char * /*error_string*/)
+{}
 
-int Lexer::get()
+int lexer::get()
 {
-    if (true == m_finished) {
+    if (true == finished_) {
         return -1;
     }
 
-    int c = m_getFn();
-    if (c == '\r') {
-        if (m_peekFn() == '\n') {
-            m_getFn();
+    int result = get_functor_();
+    if (result == '\r') {
+        if (peek_functor_() == '\n') {
+            get_functor_();
         }
-        c = '\n';
+        result = '\n';
     }
 
-    if ((c == '\n') && (m_lastChar != '\n')) {
-        if ((m_peekFn() == ' ') || (m_peekFn() == '\t')) {
-            m_getFn();
-            c = ' ';
+    if ((result == '\n') && (last_character_ != '\n')) {
+        if ((peek_functor_() == ' ') || (peek_functor_() == '\t')) {
+            get_functor_();
+            result = ' ';
         }
     }
 
-    m_lastChar = static_cast<char>(c);
-    return c;
+    last_character_ = static_cast<char>(result);
+    return result;
 }
 
 } // namespace http
@@ -99,18 +98,18 @@ int Lexer::get()
 
 int httplex(int * lval, httpscan_t * scanner)
 {
-    int result = scanner->m_lexer->get();
+    int result = scanner->lexer->get();
     *lval = result;
     return result;
 }
 
-void httperror(httpscan_t * scanner, const char * s)
+void httperror(httpscan_t * scanner, const char * string)
 {
-    scanner->m_lexer->error(s);
+    scanner->lexer->error(string);
 }
 
-void httpFinish(httpscan_t * scanner)
+void http_finish(httpscan_t * scanner)
 {
-    scanner->m_lexer->finish();
+    scanner->lexer->finish();
 }
 

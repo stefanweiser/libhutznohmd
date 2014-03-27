@@ -28,28 +28,29 @@ namespace rest
 namespace http
 {
 
-class HttpParser
+class http_parser
 {
 public:
-    explicit HttpParser(const std::function<int()> & getFn, const std::function<int()> & peekFn);
-    ~HttpParser();
+    explicit http_parser(const std::function<int()> & get_functor,
+                         const std::function<int()> & peek_functor);
+    ~http_parser();
     void parse();
     bool valid() const;
-    const HttpMethod & method() const;
-    const HttpVersion & version() const;
+    const http_method & method() const;
+    const http_version & version() const;
     const std::string url() const;
-    const uint16_t & statusCode() const;
-    const std::string reasonPhrase() const;
+    const uint16_t & status_code() const;
+    const std::string reason_phrase() const;
     const std::map<std::string, std::string> & headers() const;
-    const size_t & contentLength() const;
+    const size_t & content_length() const;
 
 private:
-    HttpParser(const HttpParser & parser) = delete;
-    HttpParser & operator=(const HttpParser & parser) = delete;
+    http_parser(const http_parser & parser) = delete;
+    http_parser & operator=(const http_parser & parser) = delete;
 
-    Lexer m_lexer;
-    Data m_data;
-    httpscan_t * m_httpscan;
+    lexer lexer_;
+    data data_;
+    httpscan_t * httpscan_;
 };
 
 } // namespace http

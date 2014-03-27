@@ -27,29 +27,27 @@
 
 using namespace testing;
 
-TEST(Response, ConstructionDestruction)
+TEST(response, construction_destruction)
 {
-    std::shared_ptr<rest::http::Response> response;
-    response = std::make_shared<rest::http::Response>(rest::socket::ConnectionPtr());
-    EXPECT_EQ(response->m_connection, rest::socket::ConnectionPtr());
-    EXPECT_EQ(response->m_statusCode, rest::http::StatusCode::InternalServerError);
-    EXPECT_EQ(response->m_version, rest::http::Version::HTTP_1_1);
-    EXPECT_EQ(response->m_headers.size(), 0);
-    EXPECT_EQ(response->m_data.size(), 0);
+    auto response = std::make_shared<rest::http::response>(rest::socket::connection_pointer());
+    EXPECT_EQ(response->connection_, rest::socket::connection_pointer());
+    EXPECT_EQ(response->status_code_, rest::http::status_code::INTERNAL_SERVER_ERROR);
+    EXPECT_EQ(response->version_, rest::http::version::HTTP_1_1);
+    EXPECT_EQ(response->headers_.size(), 0);
+    EXPECT_EQ(response->data_.size(), 0);
 }
 
-TEST(Response, SetAndDeliver)
+TEST(response, set_and_deliver)
 {
-    rest::socket::MockConnectionPtr socket;
-    socket = std::make_shared<rest::socket::MockConnectionSocket>();
-    rest::http::Response response(socket);
+    auto socket = std::make_shared<rest::socket::connection_socket_mock>();
+    rest::http::response response(socket);
 
-    response.setData({ '0' });
-    response.setHeader("Content-Length", "1");
-    response.setStatusCode(rest::http::StatusCode::Ok);
-    response.setVersion(rest::http::Version::HTTP_1_1);
+    response.set_data({ '0' });
+    response.set_header("Content-Length", "1");
+    response.set_status_code(rest::http::status_code::OK);
+    response.set_version(rest::http::version::HTTP_1_1);
 
-    EXPECT_CALL(*socket, send(An<const rest::Buffer &>()))
+    EXPECT_CALL(*socket, send(An<const rest::buffer &>()))
     .Times(1)
     .WillRepeatedly(Return(true));
     EXPECT_CALL(*socket, send(An<const std::string &>()))
@@ -57,8 +55,8 @@ TEST(Response, SetAndDeliver)
     .WillRepeatedly(Return(true));
     response.deliver();
 
-    response.setVersion(rest::http::Version::HTTP_1_0);
-    EXPECT_CALL(*socket, send(An<const rest::Buffer &>()))
+    response.set_version(rest::http::version::HTTP_1_0);
+    EXPECT_CALL(*socket, send(An<const rest::buffer &>()))
     .Times(1)
     .WillRepeatedly(Return(true));
     EXPECT_CALL(*socket, send(An<const std::string &>()))
@@ -66,8 +64,8 @@ TEST(Response, SetAndDeliver)
     .WillRepeatedly(Return(true));
     response.deliver();
 
-    response.setVersion(rest::http::Version::HTTP_UNKNOWN);
-    EXPECT_CALL(*socket, send(An<const rest::Buffer &>()))
+    response.set_version(rest::http::version::HTTP_UNKNOWN);
+    EXPECT_CALL(*socket, send(An<const rest::buffer &>()))
     .Times(1)
     .WillRepeatedly(Return(true));
     EXPECT_CALL(*socket, send(An<const std::string &>()))

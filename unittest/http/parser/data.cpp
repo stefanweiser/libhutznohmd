@@ -25,59 +25,73 @@
 
 using namespace testing;
 
-TEST(Data, StringToHeaderType)
+TEST(data, string_to_header_type)
 {
-    EXPECT_EQ(rest::http::headerStringToEnum("custom"), rest::http::HeaderType::Custom);
-    EXPECT_EQ(rest::http::headerStringToEnum("accept"), rest::http::HeaderType::Accept);
-    EXPECT_EQ(rest::http::headerStringToEnum("accept-charset"), rest::http::HeaderType::AcceptCharset);
-    EXPECT_EQ(rest::http::headerStringToEnum("accept-encoding"),
-              rest::http::HeaderType::AcceptEncoding);
-    EXPECT_EQ(rest::http::headerStringToEnum("accept-language"),
-              rest::http::HeaderType::AcceptLanguage);
-    EXPECT_EQ(rest::http::headerStringToEnum("accept-ranges"), rest::http::HeaderType::AcceptRanges);
-    EXPECT_EQ(rest::http::headerStringToEnum("age"), rest::http::HeaderType::Age);
-    EXPECT_EQ(rest::http::headerStringToEnum("allow"), rest::http::HeaderType::Allow);
-    EXPECT_EQ(rest::http::headerStringToEnum("authorization"), rest::http::HeaderType::Authorization);
-    EXPECT_EQ(rest::http::headerStringToEnum("cache-control"), rest::http::HeaderType::CacheControl);
-    EXPECT_EQ(rest::http::headerStringToEnum("connection"), rest::http::HeaderType::Connection);
-    EXPECT_EQ(rest::http::headerStringToEnum("content-encoding"),
-              rest::http::HeaderType::ContentEncoding);
-    EXPECT_EQ(rest::http::headerStringToEnum("content-language"),
-              rest::http::HeaderType::ContentLanguage);
-    EXPECT_EQ(rest::http::headerStringToEnum("content-length"), rest::http::HeaderType::ContentLength);
-    EXPECT_EQ(rest::http::headerStringToEnum("content-location"),
-              rest::http::HeaderType::ContentLocation);
-    EXPECT_EQ(rest::http::headerStringToEnum("content-md5"), rest::http::HeaderType::ContentMD5);
-    EXPECT_EQ(rest::http::headerStringToEnum("content-range"), rest::http::HeaderType::ContentRange);
-    EXPECT_EQ(rest::http::headerStringToEnum("content-type"), rest::http::HeaderType::ContentType);
-    EXPECT_EQ(rest::http::headerStringToEnum("cookie"), rest::http::HeaderType::Cookie);
-    EXPECT_EQ(rest::http::headerStringToEnum("date"), rest::http::HeaderType::Date);
-    EXPECT_EQ(rest::http::headerStringToEnum("etag"), rest::http::HeaderType::ETag);
-    EXPECT_EQ(rest::http::headerStringToEnum("expect"), rest::http::HeaderType::Expect);
-    EXPECT_EQ(rest::http::headerStringToEnum("expires"), rest::http::HeaderType::Expires);
-    EXPECT_EQ(rest::http::headerStringToEnum("from"), rest::http::HeaderType::From);
-    EXPECT_EQ(rest::http::headerStringToEnum("host"), rest::http::HeaderType::Host);
-    EXPECT_EQ(rest::http::headerStringToEnum("if-match"), rest::http::HeaderType::IfMatch);
-    EXPECT_EQ(rest::http::headerStringToEnum("if-modified-since"),
-              rest::http::HeaderType::IfModifiedSince);
-    EXPECT_EQ(rest::http::headerStringToEnum("if-none-match"), rest::http::HeaderType::IfNoneMatch);
-    EXPECT_EQ(rest::http::headerStringToEnum("if-range"), rest::http::HeaderType::IfRange);
-    EXPECT_EQ(rest::http::headerStringToEnum("if-unmodified-since"),
-              rest::http::HeaderType::IfUnmodifiedSince);
-    EXPECT_EQ(rest::http::headerStringToEnum("last-modified"), rest::http::HeaderType::LastModified);
-    EXPECT_EQ(rest::http::headerStringToEnum("location"), rest::http::HeaderType::Location);
-    EXPECT_EQ(rest::http::headerStringToEnum("max-forwards"), rest::http::HeaderType::MaxForwards);
-    EXPECT_EQ(rest::http::headerStringToEnum("proxy-authenticate"),
-              rest::http::HeaderType::ProxyAuthenticate);
-    EXPECT_EQ(rest::http::headerStringToEnum("proxy-authorization"),
-              rest::http::HeaderType::ProxyAuthorization);
-    EXPECT_EQ(rest::http::headerStringToEnum("range"), rest::http::HeaderType::Range);
-    EXPECT_EQ(rest::http::headerStringToEnum("referer"), rest::http::HeaderType::Referer);
-    EXPECT_EQ(rest::http::headerStringToEnum("retry-after"), rest::http::HeaderType::RetryAfter);
-    EXPECT_EQ(rest::http::headerStringToEnum("server"), rest::http::HeaderType::Server);
-    EXPECT_EQ(rest::http::headerStringToEnum("te"), rest::http::HeaderType::TE);
-    EXPECT_EQ(rest::http::headerStringToEnum("user-agent"), rest::http::HeaderType::UserAgent);
-    EXPECT_EQ(rest::http::headerStringToEnum("vary"), rest::http::HeaderType::Vary);
-    EXPECT_EQ(rest::http::headerStringToEnum("www-authenticate"),
-              rest::http::HeaderType::WWWAuthenticate);
+    EXPECT_EQ(rest::http::header_string_to_enum("custom"), rest::http::header_type::CUSTOM);
+    EXPECT_EQ(rest::http::header_string_to_enum("accept"), rest::http::header_type::ACCEPT);
+    EXPECT_EQ(rest::http::header_string_to_enum("accept-charset"),
+              rest::http::header_type::ACCEPT_CHARSET);
+    EXPECT_EQ(rest::http::header_string_to_enum("accept-encoding"),
+              rest::http::header_type::ACCEPT_ENCODING);
+    EXPECT_EQ(rest::http::header_string_to_enum("accept-language"),
+              rest::http::header_type::ACCEPT_LANGUAGE);
+    EXPECT_EQ(rest::http::header_string_to_enum("accept-ranges"),
+              rest::http::header_type::ACCEPT_RANGES);
+    EXPECT_EQ(rest::http::header_string_to_enum("age"), rest::http::header_type::AGE);
+    EXPECT_EQ(rest::http::header_string_to_enum("allow"), rest::http::header_type::ALLOW);
+    EXPECT_EQ(rest::http::header_string_to_enum("authorization"),
+              rest::http::header_type::AUTHORIZATION);
+    EXPECT_EQ(rest::http::header_string_to_enum("cache-control"),
+              rest::http::header_type::CACHE_CONTROL);
+    EXPECT_EQ(rest::http::header_string_to_enum("connection"),
+              rest::http::header_type::CONNECTION);
+    EXPECT_EQ(rest::http::header_string_to_enum("content-encoding"),
+              rest::http::header_type::CONTENT_ENCODING);
+    EXPECT_EQ(rest::http::header_string_to_enum("content-language"),
+              rest::http::header_type::CONTENT_LANGUAGE);
+    EXPECT_EQ(rest::http::header_string_to_enum("content-length"),
+              rest::http::header_type::CONTENT_LENGTH);
+    EXPECT_EQ(rest::http::header_string_to_enum("content-location"),
+              rest::http::header_type::CONTENT_LOCATION);
+    EXPECT_EQ(rest::http::header_string_to_enum("content-md5"),
+              rest::http::header_type::CONTENT_MD5);
+    EXPECT_EQ(rest::http::header_string_to_enum("content-range"),
+              rest::http::header_type::CONTENT_RANGE);
+    EXPECT_EQ(rest::http::header_string_to_enum("content-type"),
+              rest::http::header_type::CONTENT_TYPE);
+    EXPECT_EQ(rest::http::header_string_to_enum("cookie"), rest::http::header_type::COOKIE);
+    EXPECT_EQ(rest::http::header_string_to_enum("date"), rest::http::header_type::DATE);
+    EXPECT_EQ(rest::http::header_string_to_enum("etag"), rest::http::header_type::ETAG);
+    EXPECT_EQ(rest::http::header_string_to_enum("expect"), rest::http::header_type::EXPECT);
+    EXPECT_EQ(rest::http::header_string_to_enum("expires"), rest::http::header_type::EXPIRES);
+    EXPECT_EQ(rest::http::header_string_to_enum("from"), rest::http::header_type::FROM);
+    EXPECT_EQ(rest::http::header_string_to_enum("host"), rest::http::header_type::HOST);
+    EXPECT_EQ(rest::http::header_string_to_enum("if-match"), rest::http::header_type::IF_MATCH);
+    EXPECT_EQ(rest::http::header_string_to_enum("if-modified-since"),
+              rest::http::header_type::IF_MODIFIED_SINCE);
+    EXPECT_EQ(rest::http::header_string_to_enum("if-none-match"),
+              rest::http::header_type::IF_NONE_MATCH);
+    EXPECT_EQ(rest::http::header_string_to_enum("if-range"), rest::http::header_type::IF_RANGE);
+    EXPECT_EQ(rest::http::header_string_to_enum("if-unmodified-since"),
+              rest::http::header_type::IF_UNMODIFIED_SINCE);
+    EXPECT_EQ(rest::http::header_string_to_enum("last-modified"),
+              rest::http::header_type::LAST_MODIFIED);
+    EXPECT_EQ(rest::http::header_string_to_enum("location"), rest::http::header_type::LOCATION);
+    EXPECT_EQ(rest::http::header_string_to_enum("max-forwards"),
+              rest::http::header_type::MAX_FORWARDS);
+    EXPECT_EQ(rest::http::header_string_to_enum("proxy-authenticate"),
+              rest::http::header_type::PROXY_AUTHENTICATE);
+    EXPECT_EQ(rest::http::header_string_to_enum("proxy-authorization"),
+              rest::http::header_type::PROXY_AUTHORIZATION);
+    EXPECT_EQ(rest::http::header_string_to_enum("range"), rest::http::header_type::RANGE);
+    EXPECT_EQ(rest::http::header_string_to_enum("referer"), rest::http::header_type::REFERER);
+    EXPECT_EQ(rest::http::header_string_to_enum("retry-after"),
+              rest::http::header_type::RETRY_AFTER);
+    EXPECT_EQ(rest::http::header_string_to_enum("server"), rest::http::header_type::SERVER);
+    EXPECT_EQ(rest::http::header_string_to_enum("te"), rest::http::header_type::TE);
+    EXPECT_EQ(rest::http::header_string_to_enum("user-agent"),
+              rest::http::header_type::USER_AGENT);
+    EXPECT_EQ(rest::http::header_string_to_enum("vary"), rest::http::header_type::VARY);
+    EXPECT_EQ(rest::http::header_string_to_enum("www-authenticate"),
+              rest::http::header_type::WWW_AUTHENTICATE);
 }

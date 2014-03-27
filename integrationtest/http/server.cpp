@@ -29,61 +29,59 @@ using namespace testing;
 namespace
 {
 
-void disableTimeWait(int socket)
+void disable_time_wait(int socket)
 {
     ::linger l = ::linger {1, 0};
     ::setsockopt(socket, SOL_SOCKET, SO_LINGER, &l, sizeof(l));
 }
 
-int getSocket(const rest::http::ServerPtr & server)
+int get_socket(const rest::http::server_pointer & server)
 {
-    auto listener = std::dynamic_pointer_cast<rest::http::Server>(server)->m_socket;
-    return std::dynamic_pointer_cast<rest::socket::ListenerSocket>(listener)->m_socket;
+    auto listener = std::dynamic_pointer_cast<rest::http::server>(server)->socket_;
+    return std::dynamic_pointer_cast<rest::socket::listener_socket>(listener)->socket_;
 }
 
-int getSocket(const rest::socket::ConnectionPtr & connection)
+int get_socket(const rest::socket::connection_pointer & connection)
 {
-    return std::dynamic_pointer_cast<rest::socket::ConnectionSocket>(connection)->m_socket;
+    return std::dynamic_pointer_cast<rest::socket::connection_socket>(connection)->socket_;
 }
 
-int getSocket(const rest::socket::ListenerPtr & listener)
+int get_socket(const rest::socket::listener_pointer & listener)
 {
-    return std::dynamic_pointer_cast<rest::socket::ListenerSocket>(listener)->m_socket;
+    return std::dynamic_pointer_cast<rest::socket::listener_socket>(listener)->socket_;
 }
 
 }
 
-TEST(Server, ConstructionDestruction)
+TEST(server, construction_destruction)
 {
-    rest::http::ServerPtr server;
-    server = rest::http::createServer("127.0.0.1", 10000, rest::http::TransactionFn());
-    disableTimeWait(getSocket(server));
+    auto s = rest::http::create_server("127.0.0.1", 10000, rest::http::transaction_function());
+    disable_time_wait(get_socket(s));
 }
 
-TEST(Server, NormalUseCase)
+TEST(server, normal_use_case)
 {
     bool called = false;
-    auto transaction = [&called](const rest::http::RequestInterface & /*request*/,
-    rest::http::ResponseInterface & /*response*/) {
+    auto transaction = [&called](const rest::http::request_interface & /*request*/,
+    rest::http::response_interface & /*response*/) {
         called = true;
     };
 
-    rest::http::ServerPtr server;
-    server = rest::http::createServer("localhost", 10000, transaction);
-    disableTimeWait(getSocket(server));
+    auto server = rest::http::create_server("localhost", 10000, transaction);
+    disable_time_wait(get_socket(server));
 
-    std::thread t(std::bind(&rest::http::ServerInterface::run, server.get()));
+    std::thread thread(std::bind(&rest::http::server_interface::run, server.get()));
 
-    rest::socket::ConnectionPtr connection = rest::socket::connect("localhost", 10000);
+    rest::socket::connection_pointer connection = rest::socket::connect("localhost", 10000);
     EXPECT_TRUE(connection->connect());
-    disableTimeWait(getSocket(connection));
+    disable_time_wait(get_socket(connection));
     std::string request = "GET / HTTP/1.1\r\n\r\n";
     EXPECT_FALSE(called);
     EXPECT_TRUE(connection->send(request));
-    rest::Buffer data;
+    rest::buffer data;
     EXPECT_TRUE(connection->receive(data, 4000));
     EXPECT_TRUE(called);
 
     server->stop();
-    t.join();
+    thread.join();
 }

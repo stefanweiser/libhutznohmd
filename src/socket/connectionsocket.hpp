@@ -32,28 +32,27 @@ namespace rest
 namespace socket
 {
 
-class ConnectionSocket : public ConnectionSocketInterface
+class connection_socket : public connection_socket_interface
 {
 public:
-    static std::shared_ptr<ConnectionSocket> create(
-        const std::string & host,
-        const uint16_t & port);
+    static std::shared_ptr<connection_socket> create(const std::string & host,
+            const uint16_t & port);
 
-    explicit ConnectionSocket(const int & socket);
-    explicit ConnectionSocket(const int & socket, const ::sockaddr_in & addr);
-    virtual ~ConnectionSocket();
+    explicit connection_socket(const int & socket);
+    explicit connection_socket(const int & socket, const ::sockaddr_in & address);
+    virtual ~connection_socket();
     virtual bool connect();
     virtual void close();
-    virtual bool receive(rest::Buffer & data, const size_t & maxSize);
-    virtual bool send(const rest::Buffer & data);
+    virtual bool receive(rest::buffer & data, const size_t & max_size);
+    virtual bool send(const rest::buffer & data);
     virtual bool send(const std::string & data);
 
 private:
-    bool send(const char * p, const size_t & s);
+    bool send(const char * buffer, const size_t & size);
 
-    bool m_isConnected;
-    int m_socket;
-    const ::sockaddr_in m_addr;
+    bool is_connected_;
+    int socket_;
+    const ::sockaddr_in address_;
 };
 
 } // namespace socket

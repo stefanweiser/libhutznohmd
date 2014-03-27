@@ -26,55 +26,53 @@ namespace rest
 namespace http
 {
 
-ServerPtr createServer(
-    const std::string & host,
-    const uint16_t & port,
-    const TransactionFn & transactionFn)
+server_pointer create_server(const std::string & host,
+                             const uint16_t & port,
+                             const transaction_function & transaction_functor)
 {
     auto socket = rest::socket::listen(host, port);
-    return std::make_shared<Server>(socket, transactionFn);
+    return std::make_shared<server>(socket, transaction_functor);
 }
 
-Server::Server(
-    const rest::socket::ListenerPtr & socket,
-    const TransactionFn & transactionFn)
-    : m_threads()
-    , m_socket(socket)
-    , m_transactionFn(transactionFn)
-    , m_shutdown(false)
+server::server(const rest::socket::listener_pointer & socket,
+               const transaction_function & transaction_functor)
+    : threads_()
+    , socket_(socket)
+    , transaction_functor_(transaction_functor)
+    , shutdown_(false)
 {}
 
-void Server::run()
+void server::run()
 {
-    while (false == m_shutdown) {
-        auto connection = m_socket->accept();
+    while (false == shutdown_) {
+        auto connection = socket_->accept();
         if (connection) {
-            m_threads.insert(std::make_shared<std::thread>(&Server::parseRequest,
-                             this,
-                             connection));
+            threads_.insert(std::make_shared<std::thread>(&server::parse_request,
+                            this,
+                            connection));
         }
     }
 
-    for (auto thread : m_threads) {
+    for (auto thread : threads_) {
         thread->join();
     }
-    m_threads.clear();
+    threads_.clear();
 }
 
-void Server::stop()
+void server::stop()
 {
-    m_shutdown = true;
-    m_socket->stop();
+    shutdown_ = true;
+    socket_->stop();
 }
 
-void Server::parseRequest(const rest::socket::ConnectionPtr & connection)
+void server::parse_request(const rest::socket::connection_pointer & connection)
 {
-    Request request(connection);
+    request request(connection);
     request.parse();
 
-    Response response(connection);
-    if (m_transactionFn) {
-        m_transactionFn(request, response);
+    response response(connection);
+    if (transaction_functor_) {
+        transaction_functor_(request, response);
     }
     response.deliver();
 }

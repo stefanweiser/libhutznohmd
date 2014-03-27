@@ -33,23 +33,22 @@ namespace rest
 namespace http
 {
 
-class Server: public ServerInterface
+class server: public server_interface
 {
 public:
-    Server(
-        const rest::socket::ListenerPtr & socket,
-        const TransactionFn & transactionFn);
+    server(const rest::socket::listener_pointer & socket,
+           const transaction_function & transaction_functor);
 
     virtual void run();
     virtual void stop();
 
 private:
-    void parseRequest(const rest::socket::ConnectionPtr & connection);
+    void parse_request(const rest::socket::connection_pointer & connection);
 
-    std::set<std::shared_ptr<std::thread>> m_threads;
-    rest::socket::ListenerPtr m_socket;
-    TransactionFn m_transactionFn;
-    bool m_shutdown;
+    std::set<std::shared_ptr<std::thread>> threads_;
+    rest::socket::listener_pointer socket_;
+    transaction_function transaction_functor_;
+    bool shutdown_;
 };
 
 } // namespace http
