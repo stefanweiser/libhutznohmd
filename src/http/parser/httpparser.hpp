@@ -22,6 +22,11 @@
 #include <http/parser/data.h>
 #include <http/parser/lexer.h>
 
+typedef struct httpscan {
+    rest::http::lexer * m_lexer;
+    rest::http::data * m_data;
+} httpscan_t;
+
 namespace rest
 {
 
@@ -33,7 +38,6 @@ class http_parser
 public:
     explicit http_parser(const std::function<int()> & get_functor,
                          const std::function<int()> & peek_functor);
-    ~http_parser();
     void parse();
     bool valid() const;
     const http_method & method() const;
@@ -45,12 +49,10 @@ public:
     const size_t & content_length() const;
 
 private:
-    http_parser(const http_parser & parser) = delete;
-    http_parser & operator=(const http_parser & parser) = delete;
 
     lexer lexer_;
     data data_;
-    httpscan_t * httpscan_;
+    httpscan_t httpscan_;
 };
 
 } // namespace http

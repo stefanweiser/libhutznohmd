@@ -28,11 +28,6 @@ extern "C"
 
 }
 
-typedef struct httpscan {
-    rest::http::lexer * m_lexer;
-    rest::http::data * m_data;
-} httpscan_t;
-
 namespace rest
 {
 
@@ -43,18 +38,13 @@ http_parser::http_parser(const std::function<int()> & get_functor,
                          const std::function<int()> & peek_functor)
     : lexer_(get_functor, peek_functor)
     , data_()
-    , httpscan_(new httpscan {&lexer_, &data_})
+    , httpscan_({&lexer_, &data_})
 {}
-
-http_parser::~http_parser()
-{
-    delete httpscan_;
-}
 
 void http_parser::parse()
 {
     if (false == lexer_.finished()) {
-        httpparse(httpscan_);
+        httpparse(&httpscan_);
     }
 }
 
