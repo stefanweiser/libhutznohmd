@@ -21,8 +21,9 @@
 #include <sstream>
 
 #include <http/parser/httpparser.hpp>
+#include <http/parser/header/httpdateparser.h>
 
-void test(const std::string & request)
+void test_http_parser(const std::string & request)
 {
     std::stringstream s(request);
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
@@ -37,17 +38,35 @@ void test(const std::string & request)
               << " us for request: \n" << request << "---\n\n" << std::endl;
 }
 
+void test_http_date_parser(const std::string & date_string)
+{
+    std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
+    for (size_t i = 0; i < 1000; i++) {
+        rest::http::http_date_parser parser(date_string);
+    }
+    std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
+    auto diff = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+    std::cout << std::fixed << std::setprecision(3) << (diff.count() * 1000.0)
+              << " us for date string: " << date_string << std::endl;
+}
+
 int main()
 {
     std::cout << "example_performance" << std::endl;
 
-    test("GET / HTTP/1.1\r\n\r\n");
-    test("GET /what/a/long/url HTTP/1.1\r\nContent-Length: 0\r\n\r\n");
-    test("GET /what/a/long/url HTTP/1.1\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
-         "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
-         "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
-         "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
-         "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
-         "Content-Length: 0\r\nContent-Length: 0\r\n\r\n");
+    test_http_parser("GET / HTTP/1.1\r\n\r\n");
+    test_http_parser("GET /what/a/long/url HTTP/1.1\r\nContent-Length: 0\r\n\r\n");
+    test_http_parser("GET /what/a/long/url HTTP/1.1\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
+                     "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
+                     "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
+                     "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
+                     "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
+                     "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
+                     "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n\r\n");
+
+    test_http_date_parser("Sun, 06 Nov 1994 08:49:37 GMT");
+    test_http_date_parser("Sunday, 06-Nov-94 08:49:37 GMT");
+    test_http_date_parser("Sun Nov  6 08:49:37 1994");
+
     return 0;
 }
