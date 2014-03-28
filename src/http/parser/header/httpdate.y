@@ -18,8 +18,8 @@
 %{
 #include <stdint.h>
 
-#include "httpdate.h"
 #include <http/parser/header/httpdateparser.h>
+#include "httpdate.h"
 %}
 
 %pure-parser
@@ -44,8 +44,8 @@ time: digit digit ':' digit digit ':' digit digit
 
 gmt: g m t
 
-wkday = mon | tue | wed | thu | fri | sat | sun
-weekday = monday | tuesday | wednesday | thursday | friday | saturday | sunday
+wkday: mon | tue | wed | thu | fri | sat | sun
+weekday: monday | tuesday | wednesday | thursday | friday | saturday | sunday
 month: jan | feb | mar | apr | may | jun | jul | aug | sep | oct | nov | dec
 
 monday: mon d a y
@@ -89,22 +89,18 @@ g: 'G' | 'g'
 h: 'H' | 'h'
 i: 'I' | 'i'
 j: 'J' | 'j'
-k: 'K' | 'k'
 l: 'L' | 'l'
 m: 'M' | 'm'
 n: 'N' | 'n'
 o: 'O' | 'o'
 p: 'P' | 'p'
-q: 'Q' | 'q'
 r: 'R' | 'r'
 s: 'S' | 's'
 t: 'T' | 't'
 u: 'U' | 'u'
 v: 'V' | 'v'
 w: 'W' | 'w'
-x: 'X' | 'x'
 y: 'Y' | 'y'
-z: 'Z' | 'z'
 
 %%
 

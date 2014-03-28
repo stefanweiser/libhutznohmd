@@ -8,8 +8,9 @@ file(GLOB_RECURSE HEADERS *.hpp)
 
 find_package(BISON REQUIRED)
 bison_target(http ${CMAKE_CURRENT_SOURCE_DIR}/http/parser/http.y ${CMAKE_CURRENT_BINARY_DIR}/http.c)
+bison_target(httpdate ${CMAKE_CURRENT_SOURCE_DIR}/http/parser/header/httpdate.y ${CMAKE_CURRENT_BINARY_DIR}/httpdate.c)
 
-add_library(rest SHARED ${SOURCES} ${HEADERS} ${YACC} ${BISON_http_OUTPUTS})
+add_library(rest SHARED ${SOURCES} ${HEADERS} ${YACC} ${BISON_http_OUTPUTS} ${BISON_httpdate_OUTPUTS})
 
 include_directories("${PROJECT_DIR}/src")
 
