@@ -95,6 +95,7 @@ TEST(request, parse_large_request)
 
     EXPECT_EQ(request.header(rest::http::header_type::CONTENT_LENGTH), " 2000");
     EXPECT_EQ(request.header(rest::http::header_type::CUSTOM), "");
+    EXPECT_EQ(request.custom_header(""), "");
     EXPECT_EQ(request.http_parser_.data_.headers_.size(), 2);
     EXPECT_EQ(request.data().size(), 2000);
     EXPECT_EQ(request.data(), rest::buffer(2000, '0'));

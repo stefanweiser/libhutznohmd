@@ -85,18 +85,20 @@ TEST(http_parser, options_request)
 
 TEST(http_parser, get_request)
 {
-    fixture f("GET / HTTP/1.0\r\n\r\n");
-    f.parser_.parse();
-    EXPECT_EQ(f.parser_.lexer_.finished_, true);
-    EXPECT_EQ(f.parser_.lexer_.last_character_, '\n');
-    EXPECT_EQ(f.parser_.data_.header_key_.empty(), true);
-    EXPECT_EQ(f.parser_.data_.header_value_.empty(), true);
-    EXPECT_EQ(f.parser_.data_.method_, METHOD_GET);
-    EXPECT_EQ(f.parser_.data_.version_, VERSION_HTTP_1_0);
-    EXPECT_EQ(f.parser_.data_.url_, "/");
-    EXPECT_EQ(f.parser_.data_.status_code_, 0);
-    EXPECT_EQ(f.parser_.data_.reason_phrase_.empty(), true);
-    EXPECT_EQ(f.parser_.data_.headers_.empty(), true);
+    fixture f("GET / HTTP/1.0\r\r\n");
+    for (size_t i = 0; i < 2; i++) {
+        f.parser_.parse();
+        EXPECT_EQ(f.parser_.lexer_.finished_, true);
+        EXPECT_EQ(f.parser_.lexer_.last_character_, '\n');
+        EXPECT_EQ(f.parser_.data_.header_key_.empty(), true);
+        EXPECT_EQ(f.parser_.data_.header_value_.empty(), true);
+        EXPECT_EQ(f.parser_.data_.method_, METHOD_GET);
+        EXPECT_EQ(f.parser_.data_.version_, VERSION_HTTP_1_0);
+        EXPECT_EQ(f.parser_.data_.url_, "/");
+        EXPECT_EQ(f.parser_.data_.status_code_, 0);
+        EXPECT_EQ(f.parser_.data_.reason_phrase_.empty(), true);
+        EXPECT_EQ(f.parser_.data_.headers_.empty(), true);
+    }
 }
 
 TEST(http_parser, head_request)
@@ -146,11 +148,12 @@ TEST(http_parser, put_request)
     EXPECT_EQ(f.parser_.data_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.data_.headers_.size(), 1);
     EXPECT_EQ(f.parser_.header(rest::http::header_type::CONTENT_LENGTH), " 0");
+    EXPECT_EQ(f.parser_.custom_header("???"), "");
 }
 
 TEST(http_parser, delete_request)
 {
-    fixture f("DELETE / HTTP/1.1\r\nContent-Length:\n 0\r\n\r\n");
+    fixture f("DELETE / HTTP/1.1\r\nContent-Length:\n 0\r\nABC:\r\nDEF:\r\n\r\n");
     f.parser_.parse();
     EXPECT_EQ(f.parser_.lexer_.finished_, true);
     EXPECT_EQ(f.parser_.lexer_.last_character_, '\n');
@@ -161,8 +164,9 @@ TEST(http_parser, delete_request)
     EXPECT_EQ(f.parser_.data_.url_, "/");
     EXPECT_EQ(f.parser_.data_.status_code_, 0);
     EXPECT_EQ(f.parser_.data_.reason_phrase_.empty(), true);
-    EXPECT_EQ(f.parser_.data_.headers_.size(), 1);
+    EXPECT_EQ(f.parser_.data_.headers_.size(), 2);
     EXPECT_EQ(f.parser_.header(rest::http::header_type::CONTENT_LENGTH), " 0");
+    EXPECT_EQ(f.parser_.custom_header("abc"), "");
 }
 
 TEST(http_parser, trace_request)
