@@ -88,5 +88,5 @@ void httpdateerror(httpdatescan_t * scanner, const char * /*string*/)
 
 void httpdate_set_date(httpdatescan_t * scanner, const int64_t seconds_since_epoch)
 {
-    scanner->parser->set_date(seconds_since_epoch);
+    scanner->parser->set_date(static_cast<time_t>(seconds_since_epoch));
 }

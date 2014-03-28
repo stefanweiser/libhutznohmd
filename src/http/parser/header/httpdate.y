@@ -21,6 +21,9 @@
 #include <http/parser/header/httpdateparser.h>
 #include "httpdate.h"
 
+#undef YYSTYPE
+#define YYSTYPE int64_t
+
 uint16_t day_of_the_year(const uint8_t day,
                          const uint8_t month,
                          const uint16_t year);
@@ -34,7 +37,6 @@ int64_t seconds_since_epoch(const int64_t second_in_day,
 %define api.prefix "httpdate"
 %lex-param {httpdatescan_t * scanner}
 %parse-param {httpdatescan_t * scanner}
-%define api.value.type {int64_t}
 
 %%
 
