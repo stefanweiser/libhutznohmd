@@ -29,18 +29,35 @@
 
 %%
 
-httpdate: rfc1123-date | rfc850-date | asctime-date
+httpdate:       whitespace specific-date whitespace
 
-rfc1123-date: wkday ',' sp date1 sp time sp gmt
-rfc850-date: weekday ',' sp date2 sp time sp gmt
-asctime-date: wkday sp date3 sp time sp digit digit digit digit
+specific-date:  rfc1123-date | rfc850-date | asctime-date
 
-date1: digit digit sp month sp digit digit digit digit
-date2: digit digit '-' month '-' digit digit
-date3: month sp space-or-digit digit
-space-or-digit: digit | sp
+rfc1123-date:   wkday whitespace
+                ',' whitespace
+                integer whitespace
+                month whitespace
+                integer whitespace-char whitespace
+                time whitespace
+                gmt
 
-time: digit digit ':' digit digit ':' digit digit
+rfc850-date:    weekday
+                ',' whitespace
+                integer whitespace
+                '-' whitespace
+                month whitespace
+                '-' whitespace
+                integer whitespace-char whitespace
+                time whitespace
+                gmt
+
+asctime-date:   wkday whitespace-char whitespace
+                month whitespace
+                integer whitespace-char whitespace
+                time whitespace-char whitespace
+                integer
+
+time:           integer ':' integer ':' integer
 
 gmt: g m t
 
@@ -77,8 +94,12 @@ oct: o c t
 nov: n o v
 dec: d e c
 
-sp: ' '
+whitespace: whitespace whitespace-char |
+whitespace-char: '\t' | ' '
+
+integer: integer digit | digit
 digit: '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+
 a: 'A' | 'a'
 b: 'B' | 'b'
 c: 'C' | 'c'
