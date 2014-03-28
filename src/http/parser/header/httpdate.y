@@ -21,8 +21,13 @@
 #include <http/parser/header/httpdateparser.h>
 #include "httpdate.h"
 
-uint16_t day_of_the_year(uint8_t day, uint8_t month, uint16_t year);
-int64_t seconds_since_epoch(int64_t second_in_day, int64_t day, int64_t month, int64_t year);
+uint16_t day_of_the_year(const uint8_t day,
+                         const uint8_t month,
+                         const uint16_t year);
+int64_t seconds_since_epoch(const int64_t second_in_day,
+                            const int64_t day,
+                            const int64_t month,
+                            const int64_t year);
 %}
 
 %pure-parser
@@ -45,7 +50,7 @@ rfc1123-date:   wkday whitespace
                 time whitespace
                 gmt { httpdate_set_date(scanner, seconds_since_epoch($12, $5, $7, $9)); }
 
-rfc850-date:    weekday
+rfc850-date:    weekday whitespace
                 ',' whitespace
                 integer whitespace
                 '-' whitespace
@@ -53,9 +58,9 @@ rfc850-date:    weekday
                 '-' whitespace
                 integer whitespace-char whitespace
                 time whitespace
-                gmt { httpdate_set_date(scanner, seconds_since_epoch($15, $4, $8, $12 + 1900)); }
+                gmt { httpdate_set_date(scanner, seconds_since_epoch($16, $5, $9, $13 + 1900)); }
 
-asctime-date:   wkday whitespace-char whitespace
+asctime-date:   wkday whitespace whitespace-char
                 month whitespace
                 integer whitespace-char whitespace
                 time whitespace-char whitespace
@@ -141,7 +146,9 @@ y: 'Y' | 'y'
 
 %%
 
-uint16_t day_of_the_year(uint8_t day, uint8_t month, uint16_t year)
+uint16_t day_of_the_year(const uint8_t day,
+                         const uint8_t month,
+                         const uint16_t year)
 {
     uint16_t result = day;
     if (month < 3) {
@@ -157,13 +164,15 @@ uint16_t day_of_the_year(uint8_t day, uint8_t month, uint16_t year)
     return result;
 }
 
-int64_t seconds_since_epoch(int64_t second_in_day, int64_t day, int64_t month, int64_t year)
+int64_t seconds_since_epoch(const int64_t second_in_day,
+                            const int64_t day,
+                            const int64_t month,
+                            const int64_t year)
 {
-    int64_t second_of_year = second_in_day;
-    second_of_year += ((day_of_the_year(day, month, year) - 1) * 86400);
-
-    int64_t year_seconds_since_epoch = (year - 1970) * 86400 * 365;
-    year_seconds_since_epoch += ((year - (1972 - 3)) / 4) * 86400;
+    const int64_t second_of_year = second_in_day +
+                                   ((day_of_the_year(day, month, year) - 1) * 86400);
+    const int64_t year_seconds_since_epoch = ((year - 1970) * 86400 * 365) +
+                                             (((year - (1972 - 3)) / 4) * 86400);
 
     return year_seconds_since_epoch + second_of_year;
 }
