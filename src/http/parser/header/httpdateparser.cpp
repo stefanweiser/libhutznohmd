@@ -30,7 +30,7 @@ namespace rest
 namespace http
 {
 
-httpdateparser::httpdateparser(const std::string & buffer)
+http_date_parser::http_date_parser(const std::string & buffer)
     : buffer_(buffer)
     , index_(0)
     , error_(false)
@@ -40,7 +40,7 @@ httpdateparser::httpdateparser(const std::string & buffer)
     httpdateparse(&scan_data_);
 }
 
-int64_t httpdateparser::get()
+int64_t http_date_parser::get()
 {
     if (index_ < buffer_.size()) {
         return buffer_[index_++];
@@ -48,22 +48,22 @@ int64_t httpdateparser::get()
     return -1;
 }
 
-void httpdateparser::set_error()
+void http_date_parser::set_error()
 {
     error_ = true;
 }
 
-void httpdateparser::set_date(const time_t & t)
+void http_date_parser::set_date(const time_t & t)
 {
     timestamp_ = t;
 }
 
-bool httpdateparser::valid() const
+bool http_date_parser::valid() const
 {
     return (false == error_);
 }
 
-time_t httpdateparser::timestamp() const
+time_t http_date_parser::timestamp() const
 {
     return timestamp_;
 }
