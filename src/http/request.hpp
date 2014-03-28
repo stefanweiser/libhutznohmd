@@ -18,6 +18,7 @@
 #ifndef __LIBREST_HTTP_REQUEST_HPP__
 #define __LIBREST_HTTP_REQUEST_HPP__
 
+#include <ctime>
 #include <map>
 #include <memory>
 
@@ -44,6 +45,7 @@ public:
     virtual rest::http::version version() const;
     virtual const std::string & header(const std::string & key) const;
     virtual rest::buffer data() const;
+    virtual time_t date();
 
 private:
     int get();
@@ -55,6 +57,7 @@ private:
     rest::buffer data_;
     size_t index_;
     std::string empty_;
+    time_t date_;
 };
 
 } // namespace http

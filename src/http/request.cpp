@@ -20,6 +20,8 @@
 #include <iterator>
 #include <set>
 
+#include <http/parser/header/httpdateparser.h>
+
 #include "request.hpp"
 
 namespace rest
@@ -35,6 +37,7 @@ request::request(const rest::socket::connection_pointer & connection)
     , data_()
     , index_(0)
     , empty_()
+    , date_(0)
 {}
 
 void request::parse()
@@ -77,6 +80,20 @@ const std::string & request::header(const std::string & key) const
 rest::buffer request::data() const
 {
     return data_;
+}
+
+time_t request::date()
+{
+    if (date_ == 0) {
+        const std::string & date_string = header("date");
+        http_date_parser parser(date_string);
+        if (true == parser.valid()) {
+            date_ = parser.timestamp();
+        } else {
+            date_ = time(NULL);
+        }
+    }
+    return date_;
 }
 
 int request::get()

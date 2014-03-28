@@ -50,6 +50,7 @@ TEST(request, parse)
         stream << "Content-Length: 1\r\n";
         stream << "Accept: text/html,\r\n";
         stream << " text/xml\r\n";
+        stream << "Date: Wed, 01 Mar 2000 00:00:00 GMT\r\n";
         stream << "\r\n";
         stream << "0";
         std::string request_data = stream.str();
@@ -60,8 +61,9 @@ TEST(request, parse)
 
     EXPECT_EQ(request.header("content-length"), " 1");
     EXPECT_EQ(request.header("???"), "");
-    EXPECT_EQ(request.http_parser_.headers().size(), 2);
+    EXPECT_EQ(request.http_parser_.headers().size(), 3);
     EXPECT_EQ(request.data(), rest::buffer({ '0' }));
+    EXPECT_EQ(request.date(), 951868800);
     EXPECT_EQ(request.method(), rest::http::method::GET);
     EXPECT_EQ(request.url(), "/");
     EXPECT_EQ(request.version(), rest::http::version::HTTP_1_1);
@@ -97,6 +99,9 @@ TEST(request, parse_large_request)
     EXPECT_EQ(request.http_parser_.headers().size(), 2);
     EXPECT_EQ(request.data().size(), 2000);
     EXPECT_EQ(request.data(), rest::buffer(2000, '0'));
+    time_t compare_time = time(NULL);
+    EXPECT_LE(request.date(), compare_time);
+    EXPECT_GE(request.date(), compare_time - 2);
     EXPECT_EQ(request.method(), rest::http::method::GET);
     EXPECT_EQ(request.url(), "/");
     EXPECT_EQ(request.version(), rest::http::version::HTTP_1_1);

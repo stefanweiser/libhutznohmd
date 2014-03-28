@@ -19,6 +19,7 @@
 #define __LIBREST_LIBREST_HPP__
 
 #include <cstdint>
+#include <ctime>
 #include <functional>
 #include <memory>
 #include <string>
@@ -296,6 +297,9 @@ public:
 
     //! Returns the data buffer.
     virtual rest::buffer data() const = 0;
+
+    //! Returns the content of the date header or the current timestamp.
+    virtual time_t date() = 0;
 };
 
 //! Represents all data, that get transmitted in the response.
