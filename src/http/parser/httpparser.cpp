@@ -78,9 +78,14 @@ const std::string http_parser::reason_phrase() const
     return data_.reason_phrase();
 }
 
-const std::map<std::string, std::string> & http_parser::headers() const
+const std::string & http_parser::header(const header_type & type) const
 {
-    return data_.headers();
+    return data_.header(type);
+}
+
+const std::string & http_parser::custom_header(const std::string & key) const
+{
+    return data_.custom_header(key);
 }
 
 const size_t & http_parser::content_length() const

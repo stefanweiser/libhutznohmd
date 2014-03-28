@@ -23,6 +23,9 @@
 #ifdef __cplusplus
 #include <string>
 #include <map>
+#include <vector>
+
+#include <librest.hpp>
 
 extern "C"
 {
@@ -65,53 +68,6 @@ namespace rest
 namespace http
 {
 
-enum class header_type
-{
-    CUSTOM,
-    ACCEPT,
-    ACCEPT_CHARSET,
-    ACCEPT_ENCODING,
-    ACCEPT_LANGUAGE,
-    ACCEPT_RANGES,
-    AGE,
-    ALLOW,
-    AUTHORIZATION,
-    CACHE_CONTROL,
-    CONNECTION,
-    CONTENT_ENCODING,
-    CONTENT_LANGUAGE,
-    CONTENT_LENGTH,
-    CONTENT_LOCATION,
-    CONTENT_MD5,
-    CONTENT_RANGE,
-    CONTENT_TYPE,
-    COOKIE,
-    DATE,
-    ETAG,
-    EXPECT,
-    EXPIRES,
-    FROM,
-    HOST,
-    IF_MATCH,
-    IF_MODIFIED_SINCE,
-    IF_NONE_MATCH,
-    IF_RANGE,
-    IF_UNMODIFIED_SINCE,
-    LAST_MODIFIED,
-    LOCATION,
-    MAX_FORWARDS,
-    PROXY_AUTHENTICATE,
-    PROXY_AUTHORIZATION,
-    RANGE,
-    REFERER,
-    RETRY_AFTER,
-    SERVER,
-    TE,
-    USER_AGENT,
-    VARY,
-    WWW_AUTHENTICATE
-};
-
 class data
 {
 public:
@@ -131,10 +87,15 @@ public:
     const std::string & url() const;
     const uint16_t & status_code() const;
     const std::string & reason_phrase() const;
-    const std::map<std::string, std::string> & headers() const;
+    const std::string & header(const header_type & type) const;
+    const std::string & custom_header(const std::string & key) const;
     const size_t & content_length() const;
 
 private:
+    typedef std::pair<std::string, std::string> header_value;
+    typedef std::vector<header_value> header_vector;
+
+    const std::string empty_;
     std::string header_key_;
     std::string header_value_;
 
@@ -143,7 +104,7 @@ private:
     std::string url_;
     uint16_t status_code_;
     std::string reason_phrase_;
-    std::map<std::string, std::string> headers_;
+    std::map<header_type, header_vector> headers_;
 
     size_t content_length_;
 };

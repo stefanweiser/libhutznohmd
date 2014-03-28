@@ -277,6 +277,54 @@ enum class status_code : int32_t
     HTTP_VERSION_NOT_SUPPORTED = 505
 };
 
+//! Every request and response has several header fields. Those fields are of a specific type.
+enum class header_type
+{
+    CUSTOM = 0,
+    ACCEPT = 1,
+    ACCEPT_CHARSET = 2,
+    ACCEPT_ENCODING = 3,
+    ACCEPT_LANGUAGE = 4,
+    ACCEPT_RANGES = 5,
+    AGE = 6,
+    ALLOW = 7,
+    AUTHORIZATION = 8,
+    CACHE_CONTROL = 9,
+    CONNECTION = 10,
+    CONTENT_ENCODING = 11,
+    CONTENT_LANGUAGE = 12,
+    CONTENT_LENGTH = 13,
+    CONTENT_LOCATION = 14,
+    CONTENT_MD5 = 15,
+    CONTENT_RANGE = 16,
+    CONTENT_TYPE = 17,
+    COOKIE = 18,
+    DATE = 19,
+    ETAG = 20,
+    EXPECT = 21,
+    EXPIRES = 22,
+    FROM = 23,
+    HOST = 24,
+    IF_MATCH = 25,
+    IF_MODIFIED_SINCE = 26,
+    IF_NONE_MATCH = 27,
+    IF_RANGE = 28,
+    IF_UNMODIFIED_SINCE = 29,
+    LAST_MODIFIED = 30,
+    LOCATION = 31,
+    MAX_FORWARDS = 32,
+    PROXY_AUTHENTICATE = 33,
+    PROXY_AUTHORIZATION = 34,
+    RANGE = 35,
+    REFERER = 36,
+    RETRY_AFTER = 37,
+    SERVER = 38,
+    TE = 39,
+    USER_AGENT = 40,
+    VARY = 41,
+    WWW_AUTHENTICATE = 42
+};
+
 //! Represents all data, that depend on the request.
 class request_interface
 {
@@ -292,8 +340,11 @@ public:
     //! Requested HTTP version.
     virtual rest::http::version version() const = 0;
 
-    //! Returns the header "key" of the request.
-    virtual const std::string & header(const std::string & key) const = 0;
+    //! Returns the header of the specified type.
+    virtual const std::string & header(const header_type & type) const = 0;
+
+    //! Returns the custom header of the specified key.
+    virtual const std::string & custom_header(const std::string & key) const = 0;
 
     //! Returns the data buffer.
     virtual rest::buffer data() const = 0;

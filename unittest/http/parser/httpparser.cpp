@@ -50,7 +50,6 @@ fixture::~fixture()
     EXPECT_EQ(parser_.url(), parser_.data_.url_);
     EXPECT_EQ(parser_.status_code(), parser_.data_.status_code_);
     EXPECT_EQ(parser_.reason_phrase(), parser_.data_.reason_phrase_);
-    EXPECT_EQ(parser_.headers(), parser_.data_.headers_);
 }
 
 TEST(http_parser, construction_destruction)
@@ -146,8 +145,7 @@ TEST(http_parser, put_request)
     EXPECT_EQ(f.parser_.data_.status_code_, 0);
     EXPECT_EQ(f.parser_.data_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.data_.headers_.size(), 1);
-    EXPECT_EQ(f.parser_.data_.headers_.begin()->first, "content-length");
-    EXPECT_EQ(f.parser_.data_.headers_.begin()->second, " 0");
+    EXPECT_EQ(f.parser_.header(rest::http::header_type::CONTENT_LENGTH), " 0");
 }
 
 TEST(http_parser, delete_request)
@@ -164,8 +162,7 @@ TEST(http_parser, delete_request)
     EXPECT_EQ(f.parser_.data_.status_code_, 0);
     EXPECT_EQ(f.parser_.data_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.data_.headers_.size(), 1);
-    EXPECT_EQ(f.parser_.data_.headers_.begin()->first, "content-length");
-    EXPECT_EQ(f.parser_.data_.headers_.begin()->second, " 0");
+    EXPECT_EQ(f.parser_.header(rest::http::header_type::CONTENT_LENGTH), " 0");
 }
 
 TEST(http_parser, trace_request)

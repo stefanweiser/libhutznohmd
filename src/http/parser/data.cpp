@@ -70,7 +70,8 @@ T lexical_cast(const std::string & s)
 } // namespace
 
 data::data()
-    : header_key_()
+    : empty_()
+    , header_key_()
     , header_value_()
     , method_(METHOD_UNKNOWN)
     , version_(VERSION_UNKNOWN)
@@ -124,7 +125,7 @@ void data::take_header()
         content_length_ = lexical_cast<size_t>(header_value_);
     }
 
-    headers_[header_key_] = header_value_;
+    headers_[type].push_back(std::make_pair(header_key_, header_value_));
     header_key_.clear();
     header_value_.clear();
 }
@@ -154,9 +155,29 @@ const std::string & data::reason_phrase() const
     return reason_phrase_;
 }
 
-const std::map<std::string, std::string> & data::headers() const
+const std::string & data::header(const header_type & type) const
 {
-    return headers_;
+    auto it = headers_.find(type);
+    if (it != headers_.end()) {
+        const header_vector & v = it->second;
+        if (false == v.empty()) {
+            return v.front().second;
+        }
+    }
+    return empty_;
+}
+
+const std::string & data::custom_header(const std::string & key) const
+{
+    auto it = headers_.find(header_type::CUSTOM);
+    if (it != headers_.end()) {
+        for (const auto & pair : it->second) {
+            if (pair.first == key) {
+                return pair.second;
+            }
+        }
+    }
+    return empty_;
 }
 
 const size_t & data::content_length() const

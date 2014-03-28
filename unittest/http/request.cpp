@@ -34,7 +34,6 @@ TEST(request, construction_destruction)
     EXPECT_EQ(request->buffer_.size(), 0);
     EXPECT_EQ(request->data_.size(), 0);
     EXPECT_EQ(request->index_, 0);
-    EXPECT_EQ(request->empty_, "");
 }
 
 TEST(request, parse)
@@ -59,9 +58,9 @@ TEST(request, parse)
     }));
     request.parse();
 
-    EXPECT_EQ(request.header("content-length"), " 1");
-    EXPECT_EQ(request.header("???"), "");
-    EXPECT_EQ(request.http_parser_.headers().size(), 3);
+    EXPECT_EQ(request.header(rest::http::header_type::CONTENT_LENGTH), " 1");
+    EXPECT_EQ(request.header(rest::http::header_type::CUSTOM), "");
+    EXPECT_EQ(request.http_parser_.data_.headers_.size(), 3);
     EXPECT_EQ(request.data(), rest::buffer({ '0' }));
     EXPECT_EQ(request.date(), 951868800);
     EXPECT_EQ(request.method(), rest::http::method::GET);
@@ -94,9 +93,9 @@ TEST(request, parse_large_request)
     }));
     request.parse();
 
-    EXPECT_EQ(request.header("content-length"), " 2000");
-    EXPECT_EQ(request.header("???"), "");
-    EXPECT_EQ(request.http_parser_.headers().size(), 2);
+    EXPECT_EQ(request.header(rest::http::header_type::CONTENT_LENGTH), " 2000");
+    EXPECT_EQ(request.header(rest::http::header_type::CUSTOM), "");
+    EXPECT_EQ(request.http_parser_.data_.headers_.size(), 2);
     EXPECT_EQ(request.data().size(), 2000);
     EXPECT_EQ(request.data(), rest::buffer(2000, '0'));
     time_t compare_time = time(NULL);

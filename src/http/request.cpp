@@ -36,7 +36,6 @@ request::request(const rest::socket::connection_pointer & connection)
     , http_parser_(std::bind(&request::get, this), std::bind(&request::peek, this))
     , data_()
     , index_(0)
-    , empty_()
     , date_(0)
 {}
 
@@ -68,13 +67,14 @@ rest::http::version request::version() const
     return static_cast<rest::http::version>(http_parser_.version());
 }
 
-const std::string & request::header(const std::string & key) const
+const std::string & request::header(const header_type & type) const
 {
-    auto it = http_parser_.headers().find(key);
-    if (it != http_parser_.headers().end()) {
-        return it->second;
-    }
-    return empty_;
+    return http_parser_.header(type);
+}
+
+const std::string & request::custom_header(const std::string & key) const
+{
+    return http_parser_.custom_header(key);
 }
 
 rest::buffer request::data() const
@@ -85,7 +85,7 @@ rest::buffer request::data() const
 time_t request::date()
 {
     if (date_ == 0) {
-        const std::string & date_string = header("date");
+        const std::string & date_string = header(header_type::DATE);
         http_date_parser parser(date_string);
         if (true == parser.valid()) {
             date_ = parser.timestamp();
