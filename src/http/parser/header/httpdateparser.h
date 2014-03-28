@@ -19,8 +19,9 @@
 #define __LIBREST_HTTP_PARSER_HEADER_HTTPDATEPARSER_H__
 
 #ifdef __cplusplus
-#include <string>
+#include <ctime>
 #include <map>
+#include <string>
 
 extern "C"
 {
@@ -28,8 +29,9 @@ extern "C"
 
 typedef struct httpdatescan httpdatescan_t;
 
-int httpdatelex(int * httpdatelval, httpdatescan_t * scanner);
+int64_t httpdatelex(int64_t * httpdatelval, httpdatescan_t * scanner);
 void httpdateerror(httpdatescan_t * scanner, const char * string);
+void httpdate_set_date(httpdatescan_t * scanner, const int64_t seconds_since_epoch);
 
 #ifdef __cplusplus
 }
@@ -61,18 +63,18 @@ class httpdateparser
 public:
     explicit httpdateparser(const std::string & buffer);
 
-    void parse();
-
-    int get();
+    int64_t get();
     void set_error();
+    void set_date(const time_t & t);
 
     bool valid() const;
+    time_t timestamp() const;
 
 private:
     const std::string & buffer_;
     size_t index_;
-    bool finished_;
     bool error_;
+    time_t timestamp_;
 
     httpdatescan_t scan_data_;
 };

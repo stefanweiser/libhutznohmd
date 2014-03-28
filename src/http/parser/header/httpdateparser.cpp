@@ -33,20 +33,14 @@ namespace http
 httpdateparser::httpdateparser(const std::string & buffer)
     : buffer_(buffer)
     , index_(0)
-    , finished_(false)
     , error_(false)
+    , timestamp_(-1)
     , scan_data_({this})
-{}
-
-void httpdateparser::parse()
 {
-    if (false == finished_) {
-        httpdateparse(&scan_data_);
-        finished_ = true;
-    }
+    httpdateparse(&scan_data_);
 }
 
-int httpdateparser::get()
+int64_t httpdateparser::get()
 {
     if (index_ < buffer_.size()) {
         return buffer_[index_++];
@@ -59,9 +53,19 @@ void httpdateparser::set_error()
     error_ = true;
 }
 
+void httpdateparser::set_date(const time_t & t)
+{
+    timestamp_ = t;
+}
+
 bool httpdateparser::valid() const
 {
     return (false == error_);
+}
+
+time_t httpdateparser::timestamp() const
+{
+    return timestamp_;
 }
 
 } // namespace http
@@ -70,9 +74,9 @@ bool httpdateparser::valid() const
 
 
 
-int httpdatelex(int * httpdatelval, httpdatescan_t * scanner)
+int64_t httpdatelex(int64_t * httpdatelval, httpdatescan_t * scanner)
 {
-    int result = scanner->parser->get();
+    int64_t result = scanner->parser->get();
     *httpdatelval = result;
     return result;
 }
@@ -80,4 +84,9 @@ int httpdatelex(int * httpdatelval, httpdatescan_t * scanner)
 void httpdateerror(httpdatescan_t * scanner, const char * /*string*/)
 {
     scanner->parser->set_error();
+}
+
+void httpdate_set_date(httpdatescan_t * scanner, const int64_t seconds_since_epoch)
+{
+    scanner->parser->set_date(seconds_since_epoch);
 }
