@@ -155,7 +155,7 @@ uint16_t day_of_the_year(const uint8_t day,
         result += (306 * month - 301) / 10;
     } else {
         result += (306 * month - 913) / 10;
-        if (((year % 4) == 0) && (((year % 100) != 0) || ((year % 400) == 0))) {
+        if ((year % 4) == 0) {
             result += 60;
         } else {
             result += 59;
