@@ -17,9 +17,12 @@
 
 #include "httpdateparser.h"
 
-typedef struct httpdatescan {
-    rest::http::httpdateparser * parser;
-} httpdatescan_t;
+extern "C"
+{
+
+    int httpdateparse(httpdatescan_t * scanner);
+
+}
 
 namespace rest
 {
@@ -30,14 +33,35 @@ namespace http
 httpdateparser::httpdateparser(const std::string & buffer)
     : buffer_(buffer)
     , index_(0)
+    , finished_(false)
+    , error_(false)
+    , scan_data_({this})
 {}
+
+void httpdateparser::parse()
+{
+    if (false == finished_) {
+        httpdateparse(&scan_data_);
+        finished_ = true;
+    }
+}
 
 int httpdateparser::get()
 {
     if (index_ < buffer_.size()) {
         return buffer_[index_++];
     }
-    return '\0';
+    return -1;
+}
+
+void httpdateparser::set_error()
+{
+    error_ = true;
+}
+
+bool httpdateparser::valid() const
+{
+    return (false == error_);
 }
 
 } // namespace http
@@ -46,11 +70,14 @@ int httpdateparser::get()
 
 
 
-int httpdatelex(int * httpdatelval, httpdatescan_t * /*scanner*/)
+int httpdatelex(int * httpdatelval, httpdatescan_t * scanner)
 {
-    *httpdatelval = '\n';
-    return '\n';
+    int result = scanner->parser->get();
+    *httpdatelval = result;
+    return result;
 }
 
-void httpdateerror(httpdatescan_t * /*scanner*/, const char * /*string*/)
-{}
+void httpdateerror(httpdatescan_t * scanner, const char * /*string*/)
+{
+    scanner->parser->set_error();
+}

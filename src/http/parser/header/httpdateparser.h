@@ -40,16 +40,41 @@ namespace rest
 namespace http
 {
 
+class httpdateparser;
+
+} // namespace http
+
+} // namespace rest
+
+typedef struct httpdatescan {
+    rest::http::httpdateparser * parser;
+} httpdatescan_t;
+
+namespace rest
+{
+
+namespace http
+{
+
 class httpdateparser
 {
 public:
     explicit httpdateparser(const std::string & buffer);
 
+    void parse();
+
     int get();
+    void set_error();
+
+    bool valid() const;
 
 private:
     const std::string & buffer_;
     size_t index_;
+    bool finished_;
+    bool error_;
+
+    httpdatescan_t scan_data_;
 };
 
 } // namespace http
