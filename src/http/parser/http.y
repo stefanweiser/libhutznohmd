@@ -17,6 +17,7 @@
 
 %{
 #include <stdint.h>
+#include <stdio.h>
 
 #include <http/parser/httpscan.h>
 #include "http.h"
@@ -75,9 +76,9 @@ url-char: letter | digit | '-' | '.' | '_' | '~' | ':' | '/' | '?' | '#' | '[' |
 version: h t t p '/' '1' '.' '0' { set_http_version(scanner, VERSION_HTTP_1_0); }
          | h t t p '/' '1' '.' '1' { set_http_version(scanner, VERSION_HTTP_1_1); }
 
-status-code: digit { set_status_code(scanner, 100, yylval); }
-             digit { set_status_code(scanner, 10, yylval); }
-             digit { set_status_code(scanner, 1, yylval); }
+status-code: digit
+             digit 
+             digit { set_status_code(scanner, (100 * ($1 - 0x30)) + (10 * ($2 - 0x30)) + ($3 - 0x30)); }
 
 reason-phrase: letter { append_to_reason_phrase(scanner, yylval); }
                reason-phrase-next

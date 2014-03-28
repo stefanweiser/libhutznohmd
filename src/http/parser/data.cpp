@@ -92,10 +92,9 @@ void data::set_http_version(const http_version & v)
     version_ = v;
 }
 
-void data::set_status_code(uint16_t factor, char token)
+void data::set_status_code(uint16_t code)
 {
-    uint16_t n = static_cast<uint16_t>((token - '0') * factor);
-    status_code_ = static_cast<uint16_t>(status_code_ + n);
+    status_code_ = code;
 }
 
 void data::append_to_url(char token)
@@ -235,9 +234,9 @@ void set_http_version(httpscan_t * scanner, http_version version)
     scanner->data->set_http_version(version);
 }
 
-void set_status_code(httpscan_t * scanner, uint16_t factor, char token)
+void set_status_code(httpscan_t * scanner, uint16_t code)
 {
-    scanner->data->set_status_code(factor, token);
+    scanner->data->set_status_code(code);
 }
 
 void append_to_url(httpscan_t * scanner, char token)
