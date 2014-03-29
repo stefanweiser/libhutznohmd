@@ -280,27 +280,70 @@ enum class status_code : int32_t
 //! Every request and response has several header fields. Those fields are of a specific type.
 enum class header_type
 {
+    //! A header, that is not part of the implementation.
     CUSTOM = 0,
+
+    //! A list of accepted mime types. Normally part of the request.
     ACCEPT = 1,
+
+    //! A list of accepted character. Normally part of the request.
     ACCEPT_CHARSET = 2,
+
+    //! A list of accepted encodings. Normally part of the request.
     ACCEPT_ENCODING = 3,
+
+    //! A list of accepted languages. Normally part of the request.
     ACCEPT_LANGUAGE = 4,
+
+    //! If set, the sender supports byte serving for bandwidth optimization. Normally this is only
+    //! capable for constant data.
     ACCEPT_RANGES = 5,
+
+    //! The age in seconds, since the original response was generated. Is limited to a signed 32-bit
+    //! integer. In case of an overflow, the maximum 2^31 is transmitted.
     AGE = 6,
+
+    //! List of allowed methods for the requested resource. Part of the response.
     ALLOW = 7,
+
+    //! Contains authorization credentials
     AUTHORIZATION = 8,
+
+    //! Contains the type of the cache. Controls how the cache works.
     CACHE_CONTROL = 9,
+
+    //! Contains information about what to do after the request is completed.
     CONNECTION = 10,
+
+    //! Contains the encoding of the content.
     CONTENT_ENCODING = 11,
+
+    //! Contains the language of the content.
     CONTENT_LANGUAGE = 12,
+
+    //! Contains the length of the content.
     CONTENT_LENGTH = 13,
+
+    //! Contains the location where the content originally can be found.
     CONTENT_LOCATION = 14,
+
+    //! Contains the md5 sum for the content.
     CONTENT_MD5 = 15,
+
+    //! Contains the range of the content.
     CONTENT_RANGE = 16,
+
+    //! Contains the mime type of the content.
     CONTENT_TYPE = 17,
+
+    //! Refers to a cookie.
     COOKIE = 18,
+
+    //! The timestamp, when the message was sent.
     DATE = 19,
+
     ETAG = 20,
+
     EXPECT = 21,
     EXPIRES = 22,
     FROM = 23,
