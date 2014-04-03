@@ -103,7 +103,7 @@ TEST(http_date_parser, asctime_date)
 
 TEST(http_date_parser, asctime_tolerant_date)
 {
-    std::string asctime_date_string = "fRI Nov     6 08:49:37    1994";
+    std::string asctime_date_string = "fRI\tNov     6 08:49:37    1994";
     rest::http::http_date_parser parser(asctime_date_string);
     EXPECT_EQ(parser.buffer_, asctime_date_string);
     EXPECT_EQ(parser.index_, asctime_date_string.size());
