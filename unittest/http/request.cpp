@@ -69,6 +69,36 @@ TEST(request, parse)
     EXPECT_EQ(request.version(), rest::http::version::HTTP_1_1);
 }
 
+TEST(request, parse_false_return)
+{
+    auto socket = std::make_shared<rest::socket::connection_socket_mock>();
+    rest::http::request request(socket);
+
+    EXPECT_CALL(*socket, receive(_, _))
+    .Times(2)
+    .WillOnce(Invoke([](rest::buffer & data, const size_t & /*max_size*/) -> bool {
+        std::stringstream stream;
+        stream << "GET / HTTP/1.1\r\n";
+        stream << "Content-Length: 1\r\n";
+        stream << "\r\n";
+        std::string request_data = stream.str();
+        data = rest::buffer(request_data.begin(), request_data.end());
+        return true;
+    }))
+    .WillRepeatedly(Invoke([](rest::buffer & /*data*/, const size_t & /*max_size*/) -> bool {
+        return false;
+    }));
+    request.parse();
+
+    EXPECT_EQ(request.header(rest::http::header_type::CONTENT_LENGTH), " 1");
+    EXPECT_EQ(request.http_parser_.data_.headers_.size(), 1);
+    EXPECT_EQ(request.http_parser_.data_.custom_headers_.empty(), true);
+    EXPECT_EQ(request.data().empty(), true);
+    EXPECT_EQ(request.method(), rest::http::method::GET);
+    EXPECT_EQ(request.url(), "/");
+    EXPECT_EQ(request.version(), rest::http::version::HTTP_1_1);
+}
+
 TEST(request, parse_large_request)
 {
     auto socket = std::make_shared<rest::socket::connection_socket_mock>();

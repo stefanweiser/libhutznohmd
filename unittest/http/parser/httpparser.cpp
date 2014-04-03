@@ -210,7 +210,7 @@ TEST(http_parser, connect_request)
     EXPECT_EQ(f.parser_.data_.custom_headers_.empty(), true);
 }
 
-TEST(http_parser, same_head_name_request)
+TEST(http_parser, same_header_name_request)
 {
     fixture f("GET / HTTP/1.0\r\nAllow: HEAD\r\nAllow: GET\r\n\r\n");
     f.parser_.parse();
@@ -226,6 +226,24 @@ TEST(http_parser, same_head_name_request)
     EXPECT_EQ(f.parser_.data_.headers_.size(), 1);
     EXPECT_EQ(f.parser_.header(rest::http::header_type::ALLOW), " HEAD, GET");
     EXPECT_EQ(f.parser_.data_.custom_headers_.empty(), true);
+}
+
+TEST(http_parser, same_custom_header_name_request)
+{
+    fixture f("GET / HTTP/1.0\r\nCheck: HEAD\r\nCheck: GET\r\n\r\n");
+    f.parser_.parse();
+    EXPECT_EQ(f.parser_.lexer_.finished_, true);
+    EXPECT_EQ(f.parser_.lexer_.last_character_, '\n');
+    EXPECT_EQ(f.parser_.data_.header_key_.empty(), true);
+    EXPECT_EQ(f.parser_.data_.header_value_.empty(), true);
+    EXPECT_EQ(f.parser_.data_.method_, METHOD_GET);
+    EXPECT_EQ(f.parser_.data_.version_, VERSION_HTTP_1_0);
+    EXPECT_EQ(f.parser_.data_.url_, "/");
+    EXPECT_EQ(f.parser_.data_.status_code_, 0);
+    EXPECT_EQ(f.parser_.data_.reason_phrase_.empty(), true);
+    EXPECT_EQ(f.parser_.data_.headers_.empty(), true);
+    EXPECT_EQ(f.parser_.data_.custom_headers_.size(), 1);
+    EXPECT_EQ(f.parser_.custom_header("check"), " HEAD, GET");
 }
 
 TEST(http_parser, gone_response)
