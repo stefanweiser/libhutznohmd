@@ -79,6 +79,7 @@ TEST(data, string_to_header_type)
     EXPECT_EQ(rest::http::header_string_to_enum("location"), rest::http::header_type::LOCATION);
     EXPECT_EQ(rest::http::header_string_to_enum("max-forwards"),
               rest::http::header_type::MAX_FORWARDS);
+    EXPECT_EQ(rest::http::header_string_to_enum("pragma"), rest::http::header_type::PRAGMA);
     EXPECT_EQ(rest::http::header_string_to_enum("proxy-authenticate"),
               rest::http::header_type::PROXY_AUTHENTICATE);
     EXPECT_EQ(rest::http::header_string_to_enum("proxy-authorization"),
@@ -88,7 +89,6 @@ TEST(data, string_to_header_type)
     EXPECT_EQ(rest::http::header_string_to_enum("retry-after"),
               rest::http::header_type::RETRY_AFTER);
     EXPECT_EQ(rest::http::header_string_to_enum("server"), rest::http::header_type::SERVER);
-    EXPECT_EQ(rest::http::header_string_to_enum("te"), rest::http::header_type::TE);
     EXPECT_EQ(rest::http::header_string_to_enum("user-agent"),
               rest::http::header_type::USER_AGENT);
     EXPECT_EQ(rest::http::header_string_to_enum("vary"), rest::http::header_type::VARY);

@@ -306,7 +306,7 @@ enum class header_type
     //! List of allowed methods for the requested resource. Part of the response.
     ALLOW = 7,
 
-    //! Contains authorization credentials
+    //! Contains authorization credentials.
     AUTHORIZATION = 8,
 
     //! Contains the type of the cache. Controls how the cache works.
@@ -342,29 +342,76 @@ enum class header_type
     //! The timestamp, when the message was sent.
     DATE = 19,
 
+    //! Defines an tag for the contained entity. Can be used for conditional requests.
     ETAG = 20,
 
+    //! Includes expectations for the server. If those cannot be met, the server must respond 417.
     EXPECT = 21,
+
+    //! A timestamp, when the response considered stale.
     EXPIRES = 22,
+
+    //! Contains a mailbox entry, which defines who controls source of the request.
     FROM = 23,
+
+    //! Specifies an internet host and maybe a port used for the request.
     HOST = 24,
+
+    //! Responds only if the entity tag matches to the current or any past entity of that resource.
     IF_MATCH = 25,
+
+    //! Responds only if the request variant has been modified since that timestamp.
     IF_MODIFIED_SINCE = 26,
+
+    //! Responds only if the entity tag does not match to the current or any past entity of that
+    //! resource.
     IF_NONE_MATCH = 27,
+
+    //! A condition that short circuits a second request, if a conditional request would otherwise
+    //! fail.
     IF_RANGE = 28,
+
+    //! The requested operation will be performed, if the resource has been unmodified since that
+    //! timestamp.
     IF_UNMODIFIED_SINCE = 29,
+
+    //! Indicated when the resource has been modified last time.
     LAST_MODIFIED = 30,
+
+    //! Should redirect the client to the URL set in that header.
     LOCATION = 31,
+
+    //! Limits the number of http proxies and gateways between client and server.
     MAX_FORWARDS = 32,
-    PROXY_AUTHENTICATE = 33,
-    PROXY_AUTHORIZATION = 34,
-    RANGE = 35,
-    REFERER = 36,
-    RETRY_AFTER = 37,
-    SERVER = 38,
-    TE = 39,
+
+    //! Contains application defined parameters.
+    PRAGMA = 33,
+
+    //! Contains a challenge with informations for the client on how to authenticate to the proxy.
+    PROXY_AUTHENTICATE = 34,
+
+    //! Contains authorization credentials for the proxy.
+    PROXY_AUTHORIZATION = 35,
+
+    //! Contains information about a specific range, that shall be responded.
+    RANGE = 36,
+
+    //! Contains an URL, where the client got the requested URL from.
+    REFERER = 37,
+
+    //! Indicates, that request could retried and then may succeed.
+    RETRY_AFTER = 38,
+
+    //! Contains some information about the used server.
+    SERVER = 39,
+
+    //! Contains some information about the used client.
     USER_AGENT = 40,
+
+    //! Contains a set of header fields, that determine the validity of a cached response.
     VARY = 41,
+
+    //! Contains a challenge with informations for the client on how to authenticate to the server.
     WWW_AUTHENTICATE = 42
 };
 
