@@ -79,6 +79,7 @@ data::data()
     , status_code_(0)
     , reason_phrase_()
     , headers_()
+    , custom_headers_()
     , content_length_(0)
 {
 }
@@ -125,7 +126,22 @@ void data::take_header()
         content_length_ = lexical_cast<size_t>(header_value_);
     }
 
-    headers_[type].push_back(std::make_pair(header_key_, header_value_));
+    if (type == header_type::CUSTOM) {
+        auto it = custom_headers_.find(header_key_);
+        if (it == custom_headers_.end()) {
+            custom_headers_[header_key_] = header_value_;
+        } else {
+            it->second += std::string(",") + header_value_;
+        }
+    } else {
+        auto it = headers_.find(type);
+        if (it == headers_.end()) {
+            headers_[type] = header_value_;
+        } else {
+            it->second += std::string(",") + header_value_;
+        }
+    }
+
     header_key_.clear();
     header_value_.clear();
 }
@@ -159,23 +175,16 @@ const std::string & data::header(const header_type & type) const
 {
     auto it = headers_.find(type);
     if (it != headers_.end()) {
-        const header_vector & v = it->second;
-        if (false == v.empty()) {
-            return v.front().second;
-        }
+        return it->second;
     }
     return empty_;
 }
 
 const std::string & data::custom_header(const std::string & key) const
 {
-    auto it = headers_.find(header_type::CUSTOM);
-    if (it != headers_.end()) {
-        for (const auto & pair : it->second) {
-            if (pair.first == key) {
-                return pair.second;
-            }
-        }
+    auto it = custom_headers_.find(key);
+    if (it != custom_headers_.end()) {
+        return it->second;
     }
     return empty_;
 }

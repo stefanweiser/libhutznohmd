@@ -92,9 +92,6 @@ public:
     const size_t & content_length() const;
 
 private:
-    typedef std::pair<std::string, std::string> header_value;
-    typedef std::vector<header_value> header_vector;
-
     const std::string empty_;
     std::string header_key_;
     std::string header_value_;
@@ -104,7 +101,8 @@ private:
     std::string url_;
     uint16_t status_code_;
     std::string reason_phrase_;
-    std::map<header_type, header_vector> headers_;
+    std::map<header_type, std::string> headers_;
+    std::map<std::string, std::string> custom_headers_;
 
     size_t content_length_;
 };

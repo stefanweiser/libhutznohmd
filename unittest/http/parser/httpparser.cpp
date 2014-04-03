@@ -65,6 +65,7 @@ TEST(http_parser, construction_destruction)
     EXPECT_EQ(f.parser_.data_.status_code_, 0);
     EXPECT_EQ(f.parser_.data_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.data_.headers_.empty(), true);
+    EXPECT_EQ(f.parser_.data_.custom_headers_.empty(), true);
 }
 
 TEST(http_parser, options_request)
@@ -81,6 +82,7 @@ TEST(http_parser, options_request)
     EXPECT_EQ(f.parser_.data_.status_code_, 0);
     EXPECT_EQ(f.parser_.data_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.data_.headers_.empty(), true);
+    EXPECT_EQ(f.parser_.data_.custom_headers_.empty(), true);
 }
 
 TEST(http_parser, get_request)
@@ -98,6 +100,7 @@ TEST(http_parser, get_request)
         EXPECT_EQ(f.parser_.data_.status_code_, 0);
         EXPECT_EQ(f.parser_.data_.reason_phrase_.empty(), true);
         EXPECT_EQ(f.parser_.data_.headers_.empty(), true);
+        EXPECT_EQ(f.parser_.data_.custom_headers_.empty(), true);
     }
 }
 
@@ -115,6 +118,7 @@ TEST(http_parser, head_request)
     EXPECT_EQ(f.parser_.data_.status_code_, 0);
     EXPECT_EQ(f.parser_.data_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.data_.headers_.empty(), true);
+    EXPECT_EQ(f.parser_.data_.custom_headers_.empty(), true);
 }
 
 TEST(http_parser, post_request)
@@ -131,6 +135,7 @@ TEST(http_parser, post_request)
     EXPECT_EQ(f.parser_.data_.status_code_, 0);
     EXPECT_EQ(f.parser_.data_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.data_.headers_.empty(), true);
+    EXPECT_EQ(f.parser_.data_.custom_headers_.empty(), true);
 }
 
 TEST(http_parser, put_request)
@@ -147,6 +152,7 @@ TEST(http_parser, put_request)
     EXPECT_EQ(f.parser_.data_.status_code_, 0);
     EXPECT_EQ(f.parser_.data_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.data_.headers_.size(), 1);
+    EXPECT_EQ(f.parser_.data_.custom_headers_.empty(), true);
     EXPECT_EQ(f.parser_.header(rest::http::header_type::CONTENT_LENGTH), " 0");
     EXPECT_EQ(f.parser_.custom_header("???"), "");
 }
@@ -164,7 +170,8 @@ TEST(http_parser, delete_request)
     EXPECT_EQ(f.parser_.data_.url_, "/");
     EXPECT_EQ(f.parser_.data_.status_code_, 0);
     EXPECT_EQ(f.parser_.data_.reason_phrase_.empty(), true);
-    EXPECT_EQ(f.parser_.data_.headers_.size(), 2);
+    EXPECT_EQ(f.parser_.data_.headers_.size(), 1);
+    EXPECT_EQ(f.parser_.data_.custom_headers_.size(), 2);
     EXPECT_EQ(f.parser_.header(rest::http::header_type::CONTENT_LENGTH), " 0");
     EXPECT_EQ(f.parser_.custom_header("abc"), "");
 }
@@ -183,6 +190,7 @@ TEST(http_parser, trace_request)
     EXPECT_EQ(f.parser_.data_.status_code_, 0);
     EXPECT_EQ(f.parser_.data_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.data_.headers_.empty(), true);
+    EXPECT_EQ(f.parser_.data_.custom_headers_.empty(), true);
 }
 
 TEST(http_parser, connect_request)
@@ -199,6 +207,25 @@ TEST(http_parser, connect_request)
     EXPECT_EQ(f.parser_.data_.status_code_, 0);
     EXPECT_EQ(f.parser_.data_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.data_.headers_.empty(), true);
+    EXPECT_EQ(f.parser_.data_.custom_headers_.empty(), true);
+}
+
+TEST(http_parser, same_head_name_request)
+{
+    fixture f("GET / HTTP/1.0\r\nAllow: HEAD\r\nAllow: GET\r\n\r\n");
+    f.parser_.parse();
+    EXPECT_EQ(f.parser_.lexer_.finished_, true);
+    EXPECT_EQ(f.parser_.lexer_.last_character_, '\n');
+    EXPECT_EQ(f.parser_.data_.header_key_.empty(), true);
+    EXPECT_EQ(f.parser_.data_.header_value_.empty(), true);
+    EXPECT_EQ(f.parser_.data_.method_, METHOD_GET);
+    EXPECT_EQ(f.parser_.data_.version_, VERSION_HTTP_1_0);
+    EXPECT_EQ(f.parser_.data_.url_, "/");
+    EXPECT_EQ(f.parser_.data_.status_code_, 0);
+    EXPECT_EQ(f.parser_.data_.reason_phrase_.empty(), true);
+    EXPECT_EQ(f.parser_.data_.headers_.size(), 1);
+    EXPECT_EQ(f.parser_.header(rest::http::header_type::ALLOW), " HEAD, GET");
+    EXPECT_EQ(f.parser_.data_.custom_headers_.empty(), true);
 }
 
 TEST(http_parser, gone_response)
@@ -215,6 +242,7 @@ TEST(http_parser, gone_response)
     EXPECT_EQ(f.parser_.data_.status_code_, 410);
     EXPECT_EQ(f.parser_.data_.reason_phrase_, "Gone");
     EXPECT_EQ(f.parser_.data_.headers_.empty(), true);
+    EXPECT_EQ(f.parser_.data_.custom_headers_.empty(), true);
 }
 
 TEST(http_parser, not_found_response)
@@ -231,6 +259,7 @@ TEST(http_parser, not_found_response)
     EXPECT_EQ(f.parser_.data_.status_code_, 404);
     EXPECT_EQ(f.parser_.data_.reason_phrase_, "Not Found");
     EXPECT_EQ(f.parser_.data_.headers_.empty(), true);
+    EXPECT_EQ(f.parser_.data_.custom_headers_.empty(), true);
 }
 
 TEST(http_parser, custom_response)
@@ -247,6 +276,7 @@ TEST(http_parser, custom_response)
     EXPECT_EQ(f.parser_.data_.status_code_, 555);
     EXPECT_EQ(f.parser_.data_.reason_phrase_, "X0Y1Z2");
     EXPECT_EQ(f.parser_.data_.headers_.empty(), true);
+    EXPECT_EQ(f.parser_.data_.custom_headers_.empty(), true);
 }
 
 TEST(http_parser, another_custom_response)
@@ -263,8 +293,8 @@ TEST(http_parser, another_custom_response)
     EXPECT_EQ(f.parser_.data_.status_code_, 555);
     EXPECT_EQ(f.parser_.data_.reason_phrase_, "9X0Y1Z2");
     EXPECT_EQ(f.parser_.data_.headers_.empty(), true);
+    EXPECT_EQ(f.parser_.data_.custom_headers_.empty(), true);
 }
-
 
 TEST(http_parser, http_error)
 {
@@ -280,4 +310,5 @@ TEST(http_parser, http_error)
     EXPECT_EQ(f.parser_.data_.status_code_, 0);
     EXPECT_EQ(f.parser_.data_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.data_.headers_.empty(), true);
+    EXPECT_EQ(f.parser_.data_.custom_headers_.empty(), true);
 }
