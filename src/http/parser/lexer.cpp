@@ -96,11 +96,10 @@ int lexer::get()
 
 
 
-int httplex(int * lval, httpscan_t * scanner)
+int httplex(int * httplval, httpscan_t * scanner)
 {
-    int result = scanner->lexer->get();
-    *lval = result;
-    return result;
+    *httplval = scanner->lexer->get();
+    return *httplval;
 }
 
 void httperror(httpscan_t * scanner, const char * string)

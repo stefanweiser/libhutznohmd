@@ -76,9 +76,8 @@ time_t http_date_parser::timestamp() const
 
 int64_t httpdatelex(int64_t * httpdatelval, httpdatescan_t * scanner)
 {
-    int64_t result = scanner->parser->get();
-    *httpdatelval = result;
-    return result;
+    *httpdatelval = scanner->parser->get();
+    return *httpdatelval;
 }
 
 void httpdateerror(httpdatescan_t * scanner, const char * /*string*/)
