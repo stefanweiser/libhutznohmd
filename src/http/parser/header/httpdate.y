@@ -40,32 +40,32 @@ int64_t seconds_since_epoch(const int64_t second_in_day,
 
 %%
 
-httpdate:       whitespace specific-date whitespace
+httpdate:       whitespace specific_date whitespace
 
-specific-date:  rfc1123-date | rfc850-date | asctime-date
+specific_date:  rfc1123_date | rfc850_date | asctime_date
 
-rfc1123-date:   wkday whitespace
+rfc1123_date:   wkday whitespace
                 ',' whitespace
                 integer whitespace
                 month whitespace
-                integer whitespace-char whitespace
+                integer whitespace_char whitespace
                 time whitespace
                 gmt { httpdate_set_date(scanner, seconds_since_epoch($12, $5, $7, $9)); }
 
-rfc850-date:    weekday whitespace
+rfc850_date:    weekday whitespace
                 ',' whitespace
                 integer whitespace
                 '-' whitespace
                 month whitespace
                 '-' whitespace
-                integer whitespace-char whitespace
+                integer whitespace_char whitespace
                 time whitespace
                 gmt { httpdate_set_date(scanner, seconds_since_epoch($16, $5, $9, $13 + 1900)); }
 
-asctime-date:   wkday whitespace whitespace-char
+asctime_date:   wkday whitespace whitespace_char
                 month whitespace
-                integer whitespace-char whitespace
-                time whitespace-char whitespace
+                integer whitespace_char whitespace
+                time whitespace_char whitespace
                 integer { httpdate_set_date(scanner, seconds_since_epoch($9, $6, $4, $12)); }
 
 time:           integer ':' integer ':' integer { $$ = (60 * ((60 * $1) + $3)) + $5; }
@@ -116,8 +116,8 @@ oct: o c t
 nov: n o v
 dec: d e c
 
-whitespace: whitespace whitespace-char |
-whitespace-char: '\t' | ' '
+whitespace: whitespace whitespace_char |
+whitespace_char: '\t' | ' '
 
 integer: integer digit { $$ = ($1 * 10) + ($2 - 0x30); }
          | digit { $$ = $1 - 0x30; }
