@@ -43,8 +43,7 @@ void request::parse()
 {
     http_parser_.parse();
     ssize_t content_length = http_parser_.content_length();
-    while (content_length > 0) {
-        peek();
+    while ((content_length > 0) && (peek() >= 0)) {
         size_t old_size = data_.size();
         data_.insert(data_.end(), buffer_.begin() + index_, buffer_.end());
         index_ = buffer_.size();
@@ -100,7 +99,7 @@ int request::get()
 {
     if (index_ >= buffer_.size()) {
         if (false == connection_->receive(buffer_, 4000)) {
-            return '\0';
+            return -1;
         }
     }
 
@@ -111,7 +110,7 @@ int request::peek()
 {
     if (index_ >= buffer_.size()) {
         if (false == connection_->receive(buffer_, 4000)) {
-            return '\0';
+            return -1;
         }
     }
 
