@@ -261,6 +261,7 @@ TEST(http_parser, gone_response)
     EXPECT_EQ(f.parser_.data_.reason_phrase_, "Gone");
     EXPECT_EQ(f.parser_.data_.headers_.empty(), true);
     EXPECT_EQ(f.parser_.data_.custom_headers_.empty(), true);
+    EXPECT_EQ(f.parser_.reason_phrase(), "Gone");
 }
 
 TEST(http_parser, not_found_response)
@@ -278,6 +279,7 @@ TEST(http_parser, not_found_response)
     EXPECT_EQ(f.parser_.data_.reason_phrase_, "Not Found");
     EXPECT_EQ(f.parser_.data_.headers_.empty(), true);
     EXPECT_EQ(f.parser_.data_.custom_headers_.empty(), true);
+    EXPECT_EQ(f.parser_.reason_phrase(), "Not Found");
 }
 
 TEST(http_parser, custom_response)
@@ -295,6 +297,7 @@ TEST(http_parser, custom_response)
     EXPECT_EQ(f.parser_.data_.reason_phrase_, "X0Y1Z2");
     EXPECT_EQ(f.parser_.data_.headers_.empty(), true);
     EXPECT_EQ(f.parser_.data_.custom_headers_.empty(), true);
+    EXPECT_EQ(f.parser_.reason_phrase(), "X0Y1Z2");
 }
 
 TEST(http_parser, another_custom_response)
@@ -312,6 +315,7 @@ TEST(http_parser, another_custom_response)
     EXPECT_EQ(f.parser_.data_.reason_phrase_, "9X0Y1Z2");
     EXPECT_EQ(f.parser_.data_.headers_.empty(), true);
     EXPECT_EQ(f.parser_.data_.custom_headers_.empty(), true);
+    EXPECT_EQ(f.parser_.reason_phrase(), "9X0Y1Z2");
 }
 
 TEST(http_parser, http_error)
