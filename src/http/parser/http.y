@@ -92,13 +92,13 @@ reason_phrase_char:
 
 // Header rules ////////////////////////////////////////////////////////////////////////////////////
 headers:
-  headers header
-| header
+  headers header nl { take_header(scanner); }
+| header nl         { take_header(scanner); }
 ;
 
 header:
-  header_key ':' header_value nl { take_header(scanner); }
-| header_key ':' nl              { take_header(scanner); }
+  header_key ':' header_value
+| header_key ':'
 ;
 
 header_key:
