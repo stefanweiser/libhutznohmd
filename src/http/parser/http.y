@@ -46,7 +46,7 @@ request_line:
 ;
 
 response_line:
-  version ws_1n status_code ws_1n reason_phrase
+  version ws_1n status_code ws reason_phrase
 ;
 
 
@@ -97,6 +97,7 @@ headers:
 
 header:
   header_key ':' header_value nl { take_header(scanner); }
+| header_key ':' nl              { take_header(scanner); }
 ;
 
 header_key:
@@ -106,7 +107,7 @@ header_key:
 
 header_value:
   header_value header_content { append_to_header_value(scanner, $2); }
-|
+| header_content              { append_to_header_value(scanner, $1); }
 ;
 
 
