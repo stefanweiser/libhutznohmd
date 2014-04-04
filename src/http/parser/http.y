@@ -35,6 +35,7 @@
 // HTTP structural rules ///////////////////////////////////////////////////////////////////////////
 http:
   first_line nl headers nl { http_finish(scanner); }
+| first_line nl nl         { http_finish(scanner); }
 ;
 
 first_line:
@@ -92,7 +93,7 @@ reason_phrase_char:
 // Header rules ////////////////////////////////////////////////////////////////////////////////////
 headers:
   headers header
-|
+| header
 ;
 
 header:
