@@ -96,10 +96,10 @@ typedef enum {
 
 typedef struct httpscan httpscan_t;
 
+void _httpparse(httpscan_t * scanner);
 int httplex(int * semantic_value, httpscan_t * scanner);
 void httperror(httpscan_t * scanner, const char * string);
 
-void append_to_header_key(httpscan_t * scanner, char token);
 void append_to_header_value(httpscan_t * scanner, char token);
 void take_header(httpscan_t * scanner);
 void http_finish(httpscan_t * scanner);

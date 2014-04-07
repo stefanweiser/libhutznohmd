@@ -118,6 +118,56 @@ bool is_valid_url_character(uint8_t c)
     return (validity_map[c] != 0);
 }
 
+bool is_valid_header_key_character(uint8_t c)
+{
+    static const std::array<char, 256> validity_map = {
+        {
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        }
+    };
+    return (validity_map[c] != 0);
+}
+
+bool is_valid_header_value_character(uint8_t c)
+{
+    static const std::array<char, 256> validity_map = {
+        {
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+        }
+    };
+    return (validity_map[c] != 0);
+}
+
 int get_normalized_char(httpscan_t * scanner)
 {
     if (lexer_state::FINISHED == scanner->state_) {
@@ -304,8 +354,55 @@ lexer_state lex_response_version(int & result, httpscan_t * scanner)
     return lexer_state::ERROR;
 }
 
-int httplex(int * semantic_value, httpscan_t * scanner)
+lexer_state lex_header_key(int & result, httpscan_t * scanner)
 {
+    if (result == '\n') {
+        return lexer_state::FINISHED;
+    }
+
+    int character = result;
+    do {
+        if ((character < 0) || (false == is_valid_header_key_character(static_cast<uint8_t>(character)))) {
+            return lexer_state::ERROR;
+        }
+        scanner->header_key_ += to_lower(static_cast<char>(character));
+        character = get_normalized_char(scanner);
+    } while (character != ':');
+    result = TOKEN_CUSTOM_HEADER;
+    return lexer_state::HEADER_VALUE;
+}
+
+lexer_state lex_header_value(int & result, httpscan_t * scanner)
+{
+    int character = result;
+    while (character != '\n') {
+        if ((character < 0) ||
+            (false == is_valid_header_value_character(static_cast<uint8_t>(character)))) {
+            return lexer_state::ERROR;
+        }
+        scanner->header_value_ += static_cast<char>(character);
+        character = get_normalized_char(scanner);
+    }
+    result = TOKEN_CUSTOM_HEADER_VALUE;
+    take_header(scanner);
+    return lexer_state::HEADER_KEY;
+}
+
+void _httpparse(httpscan_t * scanner)
+{
+    int result = 0;
+    while (result >= 0) {
+        result = httplex(&result, scanner);
+    }
+}
+
+int httplex(int * /*unused*/, httpscan_t * scanner)
+{
+    if ((scanner->state_ == lexer_state::FINISHED) ||
+        (scanner->state_ == lexer_state::ERROR)) {
+        return -1;
+    }
+
     int result = 0;
     if ((scanner->state_ != lexer_state::HEADER_KEY) &&
         (scanner->state_ != lexer_state::HEADER_VALUE) &&
@@ -319,7 +416,6 @@ int httplex(int * semantic_value, httpscan_t * scanner)
         if (lexer_state::FINISHED != scanner->state_) {
             scanner->state_ = lexer_state::ERROR;
         }
-        *semantic_value = -1;
         return -1;
     }
 
@@ -333,7 +429,6 @@ int httplex(int * semantic_value, httpscan_t * scanner)
         }
     }
 
-    *semantic_value = result;
     switch (scanner->state_) {
     case lexer_state::REQUEST_METHOD:
         scanner->state_ = lex_request_method(result, scanner);
@@ -359,9 +454,15 @@ int httplex(int * semantic_value, httpscan_t * scanner)
         scanner->state_ = lex_reason_phrase(result, scanner);
         break;
 
-    case lexer_state::START:
     case lexer_state::HEADER_KEY:
+        scanner->state_ = lex_header_key(result, scanner);
+        break;
+
     case lexer_state::HEADER_VALUE:
+        scanner->state_ = lex_header_value(result, scanner);
+        break;
+
+    case lexer_state::START:
     case lexer_state::FINISHED:
     case lexer_state::ERROR:
     default:
@@ -373,11 +474,6 @@ int httplex(int * semantic_value, httpscan_t * scanner)
 
 void httperror(httpscan_t * /*scanner*/, const char * /*string*/)
 {}
-
-void append_to_header_key(httpscan_t * scanner, char token)
-{
-    scanner->header_key_ += to_lower(token);
-}
 
 void append_to_header_value(httpscan_t * scanner, char token)
 {
