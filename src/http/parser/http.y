@@ -28,14 +28,17 @@
 %parse-param {httpscan_t * scanner}
 
 %token TOKEN_METHOD
+%token TOKEN_URL
 %token TOKEN_VERSION
+%token TOKEN_STATUS_CODE
+%token TOKEN_REASON_PHRASE
 
 %%
 
 // HTTP structural rules ///////////////////////////////////////////////////////////////////////////
 http:
-  first_line nl headers nl { http_finish(scanner); }
-| first_line nl nl         { http_finish(scanner); }
+  first_line headers nl { http_finish(scanner); }
+| first_line nl         { http_finish(scanner); }
 ;
 
 first_line:
@@ -43,39 +46,12 @@ first_line:
 ;
 
 request_line:
-  TOKEN_METHOD ws_1n url ws_1n version { set_http_verb(scanner, $1); }
+  TOKEN_METHOD TOKEN_URL TOKEN_VERSION nl { set_http_verb(scanner, $1); set_http_version(scanner, $3); }
 ;
 
 response_line:
-  TOKEN_VERSION ws_1n status_code ws reason_phrase { set_http_version(scanner, $1); }
+  TOKEN_VERSION TOKEN_STATUS_CODE TOKEN_REASON_PHRASE { set_http_version(scanner, $1); }
 ;
-
-
-
-// Request header and response header rules ////////////////////////////////////////////////////////
-url:
-  url url_char { append_to_url(scanner, $2); }
-| url_char     { append_to_url(scanner, $1); }
-;
-
-version:
-  http_1_0 { set_http_version(scanner, $1); }
-| http_1_1 { set_http_version(scanner, $1); }
-;
-
-status_code:
-  integer { set_status_code(scanner, $1); }
-;
-
-reason_phrase:
-  reason_phrase reason_phrase_char { append_to_reason_phrase(scanner, $2); }
-| reason_phrase_char               { append_to_reason_phrase(scanner, $1); }
-;
-
-reason_phrase_char:
-  letter { $$ = $1; }
-| digit  { $$ = $1; }
-| ws     { $$ = $1; }
 
 
 
@@ -99,25 +75,6 @@ header_value:
   header_value header_content { append_to_header_value(scanner, $2); }
 | header_content              { append_to_header_value(scanner, $1); }
 ;
-
-
-
-// Simple type section /////////////////////////////////////////////////////////////////////////////
-integer:
-  integer digit { $$ = (10 * $1) + ($2 - 0x30); }
-| digit         { $$ = ($1 - 0x30); }
-;
-
-ws_1n:
-  ws_1n ws
-| ws
-;
-
-
-
-// Words section ///////////////////////////////////////////////////////////////////////////////////
-http_1_0: h t t p '/' '1' '.' '0' { $$ = VERSION_HTTP_1_0; };
-http_1_1: h t t p '/' '1' '.' '1' { $$ = VERSION_HTTP_1_1; };
 
 
 
@@ -158,48 +115,7 @@ token_char:
 | '\x72' | '\x73' | '\x74' | '\x75' | '\x76' | '\x77' | '\x78' | '\x79' | '\x7A' | '\x7C' | '\x7E'
 ;
 
-url_char:
-  letter | digit | '-' | '.' | '_' | '~' | ':' | '/' | '?' | '#' | '[' | ']' | '@' | '!' | '$'
-| '&' | '\'' | '(' | ')' | '*' | '+' | ',' | ';' | '='
-;
-
-letter:
-  a | b | c | d | e | f | g | h | i | j | k | l | m
-| n | o | p | q | r | s | t | u | v | w | x | y | z
-;
-
-digit:
-  '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
-;
-
-ws: '\t' | ' ';
 nl: '\n';
-a: 'A' | 'a';
-b: 'B' | 'b';
-c: 'C' | 'c';
-d: 'D' | 'd';
-e: 'E' | 'e';
-f: 'F' | 'f';
-g: 'G' | 'g';
-h: 'H' | 'h';
-i: 'I' | 'i';
-j: 'J' | 'j';
-k: 'K' | 'k';
-l: 'L' | 'l';
-m: 'M' | 'm';
-n: 'N' | 'n';
-o: 'O' | 'o';
-p: 'P' | 'p';
-q: 'Q' | 'q';
-r: 'R' | 'r';
-s: 'S' | 's';
-t: 'T' | 't';
-u: 'U' | 'u';
-v: 'V' | 'v';
-w: 'W' | 'w';
-x: 'X' | 'x';
-y: 'Y' | 'y';
-z: 'Z' | 'z';
 
 %%
 
