@@ -322,8 +322,8 @@ TEST(http_parser, http_error)
 {
     fixture f("abcdefghijklmnopqrstuvwxyz");
     f.parser_.parse();
-    EXPECT_EQ(f.parser_.httpscan_.state_, lexer_state::REQUEST_METHOD);
-    EXPECT_EQ(f.parser_.httpscan_.last_char_, 'a');
+    EXPECT_EQ(f.parser_.httpscan_.state_, lexer_state::ERROR);
+    EXPECT_EQ(f.parser_.httpscan_.last_char_, 'b');
     EXPECT_EQ(f.parser_.httpscan_.header_key_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.method_, METHOD_UNKNOWN);

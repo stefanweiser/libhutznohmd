@@ -27,6 +27,8 @@
 %lex-param {httpscan_t * scanner}
 %parse-param {httpscan_t * scanner}
 
+%token TOKEN_METHOD
+
 %%
 
 // HTTP structural rules ///////////////////////////////////////////////////////////////////////////
@@ -40,7 +42,7 @@ first_line:
 ;
 
 request_line:
-  http_verb ws_1n url ws_1n version
+  TOKEN_METHOD ws_1n url ws_1n version { set_http_verb(scanner, $1); }
 ;
 
 response_line:
@@ -50,17 +52,6 @@ response_line:
 
 
 // Request header and response header rules ////////////////////////////////////////////////////////
-http_verb:
-  options { set_http_verb(scanner, $1); }
-| get     { set_http_verb(scanner, $1); }
-| head    { set_http_verb(scanner, $1); }
-| post    { set_http_verb(scanner, $1); }
-| put     { set_http_verb(scanner, $1); }
-| delete  { set_http_verb(scanner, $1); }
-| trace   { set_http_verb(scanner, $1); }
-| connect { set_http_verb(scanner, $1); }
-;
-
 url:
   url url_char { append_to_url(scanner, $2); }
 | url_char     { append_to_url(scanner, $1); }
@@ -124,15 +115,6 @@ ws_1n:
 
 
 // Words section ///////////////////////////////////////////////////////////////////////////////////
-options: o p t i o n s { $$ = METHOD_OPTIONS; };
-get:     g e t         { $$ = METHOD_GET; };
-head:    h e a d       { $$ = METHOD_HEAD; };
-post:    p o s t       { $$ = METHOD_POST; };
-put:     p u t         { $$ = METHOD_PUT; };
-delete:  d e l e t e   { $$ = METHOD_DELETE; };
-trace:   t r a c e     { $$ = METHOD_TRACE; };
-connect: c o n n e c t { $$ = METHOD_CONNECT; };
-
 http_1_0: h t t p '/' '1' '.' '0' { $$ = VERSION_HTTP_1_0; };
 http_1_1: h t t p '/' '1' '.' '1' { $$ = VERSION_HTTP_1_1; };
 

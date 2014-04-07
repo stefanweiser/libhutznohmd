@@ -14,6 +14,7 @@ bison_target(httpmediatype ${CMAKE_CURRENT_SOURCE_DIR}/http/parser/header/httpme
 add_library(rest SHARED ${SOURCES} ${HEADERS} ${YACC} ${BISON_http_OUTPUTS} ${BISON_httpdate_OUTPUTS} ${BISON_httpmediatype_OUTPUTS})
 
 include_directories("${PROJECT_DIR}/src")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 install(TARGETS rest DESTINATION lib)
 install(FILES librest.hpp DESTINATION include)

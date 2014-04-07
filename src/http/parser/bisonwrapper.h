@@ -96,7 +96,7 @@ typedef enum {
 
 typedef struct httpscan httpscan_t;
 
-int httplex(int * httplval, httpscan_t * scanner);
+int httplex(int * semantic_value, httpscan_t * scanner);
 void httperror(httpscan_t * scanner, const char * string);
 
 void set_http_verb(httpscan_t * scanner, http_method method);
