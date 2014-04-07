@@ -43,6 +43,7 @@ public:
     const size_t & content_length() const;
 
 private:
+    std::string empty_;
     httpscan_t httpscan_;
 };
 

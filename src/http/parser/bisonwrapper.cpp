@@ -93,7 +93,7 @@ rest::http::header_type header_string_to_enum(const std::string & s)
 
 int httplex(int * httplval, httpscan_t * scanner)
 {
-    if (true == scanner->finished_) {
+    if (lexer_state::FINISHED == scanner->state_) {
         *httplval = -1;
         return -1;
     }
@@ -185,5 +185,5 @@ void take_header(httpscan_t * scanner)
 
 void http_finish(httpscan_t * scanner)
 {
-    scanner->finished_ = true;
+    scanner->state_ = lexer_state::FINISHED;
 }

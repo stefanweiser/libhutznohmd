@@ -112,13 +112,30 @@ void http_finish(httpscan_t * scanner);
 #ifdef __cplusplus
 }
 
+enum class lexer_state
+{
+    START = 0,
+
+    REQUEST_METHOD = 1,
+    REQUEST_URL = 2,
+    REQUEST_VERSION = 3,
+
+    RESPONSE_VERSION = 4,
+    RESPONSE_STATUS_CODE = 5,
+    RESPONSE_REASON_PHRASE = 6,
+
+    HEADER_KEY = 7,
+    HEADER_VALUE = 8,
+
+    FINISHED = 9
+};
+
 typedef struct httpscan {
     std::function<int()> get_functor_;
     std::function<int()> peek_functor_;
     char last_char_;
-    bool finished_;
+    lexer_state state_;
 
-    const std::string empty_;
     std::string header_key_;
     std::string header_value_;
     http_method method_;

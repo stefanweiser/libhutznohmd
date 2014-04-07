@@ -36,22 +36,23 @@ namespace http
 
 http_parser::http_parser(const std::function<int()> & get_functor,
                          const std::function<int()> & peek_functor)
-    : httpscan_({get_functor, peek_functor, 0, false, "", "", "", METHOD_UNKNOWN, VERSION_UNKNOWN,
-    "", 0, "", std::map<rest::http::header_type, std::string>(),
+    : empty_()
+    , httpscan_({get_functor, peek_functor, 0, lexer_state::START, "", "", METHOD_UNKNOWN,
+    VERSION_UNKNOWN, "", 0, "", std::map<rest::http::header_type, std::string>(),
     std::map<std::string, std::string>(), 0
 })
 {}
 
 void http_parser::parse()
 {
-    if (false == httpscan_.finished_) {
+    if (lexer_state::START == httpscan_.state_) {
         httpparse(&httpscan_);
     }
 }
 
 bool http_parser::valid() const
 {
-    return httpscan_.finished_;
+    return (lexer_state::FINISHED == httpscan_.state_);
 }
 
 const http_method & http_parser::method() const
@@ -85,7 +86,7 @@ const std::string & http_parser::header(const header_type & type) const
     if (it != httpscan_.headers_.end()) {
         return it->second;
     }
-    return httpscan_.empty_;
+    return empty_;
 }
 
 const std::string & http_parser::custom_header(const std::string & key) const
@@ -94,7 +95,7 @@ const std::string & http_parser::custom_header(const std::string & key) const
     if (it != httpscan_.custom_headers_.end()) {
         return it->second;
     }
-    return httpscan_.empty_;
+    return empty_;
 }
 
 const size_t & http_parser::content_length() const
