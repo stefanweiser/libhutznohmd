@@ -154,8 +154,7 @@ int get_next_non_whitespace(httpscan_t * scanner)
 
 typedef std::vector<std::pair<char, char>> upcoming_characters;
 
-bool verify_forced_words(const upcoming_characters & characters,
-                         httpscan_t * scanner)
+bool verify_forced_characters(const upcoming_characters & characters, httpscan_t * scanner)
 {
     for (auto it = characters.begin(); it != characters.end(); ++it) {
         const std::pair<char, char> & pair = *it;
@@ -167,44 +166,44 @@ bool verify_forced_words(const upcoming_characters & characters,
     return true;
 }
 
-lexer_state lex_request_method(int & result, int & method, httpscan_t * scanner)
+lexer_state lex_request_method(int & result, httpscan_t * scanner)
 {
     bool succeeded = true;
     if (('h' == result) || ('H' == result)) {
-        method = METHOD_HEAD;
+        scanner->method_ = METHOD_HEAD;
         static const upcoming_characters upcoming = {{'e', 'E'}, {'a', 'A'}, {'d', 'D'}};
-        succeeded = verify_forced_words(upcoming, scanner);
+        succeeded = verify_forced_characters(upcoming, scanner);
     } else if (('g' == result) || ('G' == result)) {
-        method = METHOD_GET;
+        scanner->method_ = METHOD_GET;
         static const upcoming_characters upcoming = {{'e', 'E'}, {'t', 'T'}};
-        succeeded = verify_forced_words(upcoming, scanner);
+        succeeded = verify_forced_characters(upcoming, scanner);
     } else if (('p' == result) || ('P' == result)) {
         result = get_normalized_char(scanner);
         if (('u' == result) || ('U' == result)) {
-            method = METHOD_PUT;
+            scanner->method_ = METHOD_PUT;
             static const upcoming_characters upcoming = {{'t', 'T'}};
-            succeeded = verify_forced_words(upcoming, scanner);
+            succeeded = verify_forced_characters(upcoming, scanner);
         } else if (('o' == result) || ('O' == result)) {
-            method = METHOD_POST;
+            scanner->method_ = METHOD_POST;
             static const upcoming_characters upcoming = {{'s', 'S'}, {'t', 'T'}};
-            succeeded = verify_forced_words(upcoming, scanner);
+            succeeded = verify_forced_characters(upcoming, scanner);
         }
     } else if (('d' == result) || ('D' == result)) {
-        method = METHOD_DELETE;
+        scanner->method_ = METHOD_DELETE;
         static const upcoming_characters upcoming = {{'e', 'E'}, {'l', 'L'}, {'e', 'E'}, {'t', 'T'}, {'e', 'E'}};
-        succeeded = verify_forced_words(upcoming, scanner);
+        succeeded = verify_forced_characters(upcoming, scanner);
     } else if (('o' == result) || ('O' == result)) {
-        method = METHOD_OPTIONS;
+        scanner->method_ = METHOD_OPTIONS;
         static const upcoming_characters upcoming = {{'p', 'P'}, {'t', 'T'}, {'i', 'I'}, {'o', 'O'}, {'n', 'N'}, {'s', 'S'}};
-        succeeded = verify_forced_words(upcoming, scanner);
+        succeeded = verify_forced_characters(upcoming, scanner);
     } else if (('c' == result) || ('C' == result)) {
-        method = METHOD_CONNECT;
+        scanner->method_ = METHOD_CONNECT;
         static const upcoming_characters upcoming = {{'o', 'O'}, {'n', 'N'}, {'n', 'N'}, {'e', 'E'}, {'c', 'C'}, {'t', 'T'}};
-        succeeded = verify_forced_words(upcoming, scanner);
+        succeeded = verify_forced_characters(upcoming, scanner);
     } else if (('t' == result) || ('T' == result)) {
-        method = METHOD_TRACE;
+        scanner->method_ = METHOD_TRACE;
         static const upcoming_characters upcoming = {{'r', 'R'}, {'a', 'A'}, {'c', 'C'}, {'e', 'E'}};
-        succeeded = verify_forced_words(upcoming, scanner);
+        succeeded = verify_forced_characters(upcoming, scanner);
     } else {
         succeeded = false;
     }
@@ -214,7 +213,7 @@ lexer_state lex_request_method(int & result, int & method, httpscan_t * scanner)
     return next_state;
 }
 
-lexer_state lex_request_url(int & result, int & /*unused*/, httpscan_t * scanner)
+lexer_state lex_request_url(int & result, httpscan_t * scanner)
 {
     int character = result;
     do {
@@ -228,12 +227,12 @@ lexer_state lex_request_url(int & result, int & /*unused*/, httpscan_t * scanner
     return lexer_state::REQUEST_VERSION;
 }
 
-bool lex_http_version(int & result, int & version, httpscan_t * scanner)
+bool lex_http_version(int & result, httpscan_t * scanner)
 {
     bool succeeded = true;
     if (('h' == result) || ('H' == result)) {
         static const upcoming_characters upcoming = {{'t', 'T'}, {'t', 'T'}, {'p', 'P'}};
-        succeeded = verify_forced_words(upcoming, scanner);
+        succeeded = verify_forced_characters(upcoming, scanner);
         const int slash = get_normalized_char(scanner);
         const int one = get_normalized_char(scanner);
         const int dot = get_normalized_char(scanner);
@@ -242,9 +241,9 @@ bool lex_http_version(int & result, int & version, httpscan_t * scanner)
         }
         const int version_digit = get_normalized_char(scanner);
         if (version_digit == '0') {
-            version = VERSION_HTTP_1_0;
+            scanner->version_ = VERSION_HTTP_1_0;
         } else if (version_digit == '1') {
-            version = VERSION_HTTP_1_1;
+            scanner->version_ = VERSION_HTTP_1_1;
         } else {
             succeeded = false;
         }
@@ -256,7 +255,7 @@ bool lex_http_version(int & result, int & version, httpscan_t * scanner)
     return succeeded;
 }
 
-lexer_state lex_status_code(int & result, int & /*unused*/, httpscan_t * scanner)
+lexer_state lex_status_code(int & result, httpscan_t * scanner)
 {
     const int digit1 = result;
     const int digit2 = get_normalized_char(scanner);
@@ -271,7 +270,7 @@ lexer_state lex_status_code(int & result, int & /*unused*/, httpscan_t * scanner
     return lexer_state::RESPONSE_REASON_PHRASE;
 }
 
-lexer_state lex_reason_phrase(int & result, int & /*unused*/, httpscan_t * scanner)
+lexer_state lex_reason_phrase(int & result, httpscan_t * scanner)
 {
     int character = result;
     do {
@@ -286,17 +285,20 @@ lexer_state lex_reason_phrase(int & result, int & /*unused*/, httpscan_t * scann
     return lexer_state::HEADER_KEY;
 }
 
-lexer_state lex_request_version(int & result, int & version, httpscan_t * scanner)
+lexer_state lex_request_version(int & result, httpscan_t * scanner)
 {
-    if (true == lex_http_version(result, version, scanner)) {
-        return lexer_state::HEADER_KEY;
+    if (true == lex_http_version(result, scanner)) {
+        const int newline = get_normalized_char(scanner);
+        if (newline == '\n') {
+            return lexer_state::HEADER_KEY;
+        }
     }
     return lexer_state::ERROR;
 }
 
-lexer_state lex_response_version(int & result, int & version, httpscan_t * scanner)
+lexer_state lex_response_version(int & result, httpscan_t * scanner)
 {
-    if (true == lex_http_version(result, version, scanner)) {
+    if (true == lex_http_version(result, scanner)) {
         return lexer_state::RESPONSE_STATUS_CODE;
     }
     return lexer_state::ERROR;
@@ -334,27 +336,27 @@ int httplex(int * semantic_value, httpscan_t * scanner)
     *semantic_value = result;
     switch (scanner->state_) {
     case lexer_state::REQUEST_METHOD:
-        scanner->state_ = lex_request_method(result, *semantic_value, scanner);
+        scanner->state_ = lex_request_method(result, scanner);
         break;
 
     case lexer_state::REQUEST_URL:
-        scanner->state_ = lex_request_url(result, *semantic_value, scanner);
+        scanner->state_ = lex_request_url(result, scanner);
         break;
 
     case lexer_state::REQUEST_VERSION:
-        scanner->state_ = lex_request_version(result, *semantic_value, scanner);
+        scanner->state_ = lex_request_version(result, scanner);
         break;
 
     case lexer_state::RESPONSE_VERSION:
-        scanner->state_ = lex_response_version(result, *semantic_value, scanner);
+        scanner->state_ = lex_response_version(result, scanner);
         break;
 
     case lexer_state::RESPONSE_STATUS_CODE:
-        scanner->state_ = lex_status_code(result, *semantic_value, scanner);
+        scanner->state_ = lex_status_code(result, scanner);
         break;
 
     case lexer_state::RESPONSE_REASON_PHRASE:
-        scanner->state_ = lex_reason_phrase(result, *semantic_value, scanner);
+        scanner->state_ = lex_reason_phrase(result, scanner);
         break;
 
     case lexer_state::START:
@@ -371,31 +373,6 @@ int httplex(int * semantic_value, httpscan_t * scanner)
 
 void httperror(httpscan_t * /*scanner*/, const char * /*string*/)
 {}
-
-void set_http_verb(httpscan_t * scanner, http_method method)
-{
-    scanner->method_ = method;
-}
-
-void set_http_version(httpscan_t * scanner, http_version version)
-{
-    scanner->version_ = version;
-}
-
-void set_status_code(httpscan_t * scanner, uint16_t code)
-{
-    scanner->status_code_ = code;
-}
-
-void append_to_url(httpscan_t * scanner, char token)
-{
-    scanner->url_ += to_lower(token);
-}
-
-void append_to_reason_phrase(httpscan_t * scanner, char token)
-{
-    scanner->reason_phrase_ += token;
-}
 
 void append_to_header_key(httpscan_t * scanner, char token)
 {

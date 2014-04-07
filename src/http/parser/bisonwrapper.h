@@ -99,11 +99,6 @@ typedef struct httpscan httpscan_t;
 int httplex(int * semantic_value, httpscan_t * scanner);
 void httperror(httpscan_t * scanner, const char * string);
 
-void set_http_verb(httpscan_t * scanner, http_method method);
-void set_http_version(httpscan_t * scanner, http_version version);
-void set_status_code(httpscan_t * scanner, uint16_t code);
-void append_to_url(httpscan_t * scanner, char token);
-void append_to_reason_phrase(httpscan_t * scanner, char token);
 void append_to_header_key(httpscan_t * scanner, char token);
 void append_to_header_value(httpscan_t * scanner, char token);
 void take_header(httpscan_t * scanner);

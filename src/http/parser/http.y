@@ -38,7 +38,6 @@
 // HTTP structural rules ///////////////////////////////////////////////////////////////////////////
 http:
   first_line headers nl { http_finish(scanner); }
-| first_line nl         { http_finish(scanner); }
 ;
 
 first_line:
@@ -46,11 +45,11 @@ first_line:
 ;
 
 request_line:
-  TOKEN_METHOD TOKEN_URL TOKEN_VERSION nl { set_http_verb(scanner, $1); set_http_version(scanner, $3); }
+  TOKEN_METHOD TOKEN_URL TOKEN_VERSION
 ;
 
 response_line:
-  TOKEN_VERSION TOKEN_STATUS_CODE TOKEN_REASON_PHRASE { set_http_version(scanner, $1); }
+  TOKEN_VERSION TOKEN_STATUS_CODE TOKEN_REASON_PHRASE
 ;
 
 
@@ -58,12 +57,11 @@ response_line:
 // Header rules ////////////////////////////////////////////////////////////////////////////////////
 headers:
   headers header nl { take_header(scanner); }
-| header nl         { take_header(scanner); }
+| %empty
 ;
 
 header:
   header_key ':' header_value
-| header_key ':'
 ;
 
 header_key:
@@ -73,7 +71,7 @@ header_key:
 
 header_value:
   header_value header_content { append_to_header_value(scanner, $2); }
-| header_content              { append_to_header_value(scanner, $1); }
+| %empty
 ;
 
 
