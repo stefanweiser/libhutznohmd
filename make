@@ -42,7 +42,7 @@ binary_rpmbuild="$(get_command_path rpmbuild)"
 binary_valgrind="$(get_command_path valgrind)"
 
 min_version_cmake="2.8"
-min_version_bison="2.7"
+min_version_bison="3.0"
 min_version_gpp="4.8"
 min_version_gcc="4.8"
 min_version_gcov="4.8"
