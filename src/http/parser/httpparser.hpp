@@ -19,13 +19,7 @@
 #define __LIBREST_HTTP_PARSER_HTTPPARSER_HPP__
 
 #include <http/parser/httpscan.h>
-#include <http/parser/data.h>
-#include <http/parser/lexer.h>
-
-typedef struct httpscan {
-    rest::http::lexer * m_lexer;
-    rest::http::data * m_data;
-} httpscan_t;
+#include <http/parser/bisonwrapper.h>
 
 namespace rest
 {
@@ -50,9 +44,6 @@ public:
     const size_t & content_length() const;
 
 private:
-
-    lexer lexer_;
-    data data_;
     httpscan_t httpscan_;
 };
 

@@ -36,61 +36,70 @@ namespace http
 
 http_parser::http_parser(const std::function<int()> & get_functor,
                          const std::function<int()> & peek_functor)
-    : lexer_(get_functor, peek_functor)
-    , data_()
-    , httpscan_({&lexer_, &data_})
+    : httpscan_({get_functor, peek_functor, 0, false, "", "", "", METHOD_UNKNOWN, VERSION_UNKNOWN,
+    "", 0, "", std::map<rest::http::header_type, std::string>(),
+    std::map<std::string, std::string>(), 0
+})
 {}
 
 void http_parser::parse()
 {
-    if (false == lexer_.finished()) {
+    if (false == httpscan_.finished_) {
         httpparse(&httpscan_);
     }
 }
 
 bool http_parser::valid() const
 {
-    return lexer_.finished();
+    return httpscan_.finished_;
 }
 
 const http_method & http_parser::method() const
 {
-    return data_.method();
+    return httpscan_.method_;
 }
 
 const http_version & http_parser::version() const
 {
-    return data_.version();
+    return httpscan_.version_;
 }
 
 const std::string http_parser::url() const
 {
-    return data_.url();
+    return httpscan_.url_;
 }
 
 const uint16_t & http_parser::status_code() const
 {
-    return data_.status_code();
+    return httpscan_.status_code_;
 }
 
 const std::string http_parser::reason_phrase() const
 {
-    return data_.reason_phrase();
+    return httpscan_.reason_phrase_;
 }
 
 const std::string & http_parser::header(const header_type & type) const
 {
-    return data_.header(type);
+    auto it = httpscan_.headers_.find(type);
+    if (it != httpscan_.headers_.end()) {
+        return it->second;
+    }
+    return httpscan_.empty_;
 }
 
 const std::string & http_parser::custom_header(const std::string & key) const
 {
-    return data_.custom_header(key);
+    auto it = httpscan_.custom_headers_.find(key);
+    if (it != httpscan_.custom_headers_.end()) {
+        return it->second;
+    }
+    return httpscan_.empty_;
 }
 
 const size_t & http_parser::content_length() const
 {
-    return data_.content_length();
+    return httpscan_.content_length_;
 }
 
 } // namespace http

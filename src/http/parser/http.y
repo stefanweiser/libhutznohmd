@@ -21,8 +21,7 @@
 
 #include <http/parser/httpscan.h>
 #include "http.h"
-#include <http/parser/lexer.h>
-#include <http/parser/data.h>
+#include <http/parser/bisonwrapper.h>
 %}
 
 %pure-parser
