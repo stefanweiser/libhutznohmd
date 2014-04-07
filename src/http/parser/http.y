@@ -26,7 +26,7 @@
 %}
 
 %pure-parser
-%define api.prefix "http"
+%define api.prefix {http}
 %lex-param {httpscan_t * scanner}
 %parse-param {httpscan_t * scanner}
 

@@ -23,12 +23,12 @@
 %}
 
 %pure-parser
-%define api.prefix "httpmediatype"
+%define api.prefix {httpmediatype}
 %lex-param {httpmediatypescan_t * scanner}
 %parse-param {httpmediatypescan_t * scanner}
 
 %%
 
-httpmediatype:
+httpmediatype: %empty
 
 %%
