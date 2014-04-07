@@ -28,6 +28,7 @@
 %parse-param {httpscan_t * scanner}
 
 %token TOKEN_METHOD
+%token TOKEN_VERSION
 
 %%
 
@@ -46,7 +47,7 @@ request_line:
 ;
 
 response_line:
-  version ws_1n status_code ws reason_phrase
+  TOKEN_VERSION ws_1n status_code ws reason_phrase { set_http_version(scanner, $1); }
 ;
 
 
