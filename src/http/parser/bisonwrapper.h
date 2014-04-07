@@ -127,7 +127,8 @@ enum class lexer_state
     HEADER_KEY = 7,
     HEADER_VALUE = 8,
 
-    FINISHED = 9
+    FINISHED = 9,
+    ERROR = 10,
 };
 
 typedef struct httpscan {

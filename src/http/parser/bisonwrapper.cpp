@@ -91,10 +91,9 @@ rest::http::header_type header_string_to_enum(const std::string & s)
     return rest::http::header_type::CUSTOM;
 }
 
-int httplex(int * httplval, httpscan_t * scanner)
+int normalize_input(httpscan_t * scanner)
 {
     if (lexer_state::FINISHED == scanner->state_) {
-        *httplval = -1;
         return -1;
     }
 
@@ -114,8 +113,69 @@ int httplex(int * httplval, httpscan_t * scanner)
     }
 
     scanner->last_char_ = static_cast<char>(result);
-    *httplval = result;
     return result;
+}
+
+int httplex(int * httplval, httpscan_t * scanner)
+{
+    int result = normalize_input(scanner);
+    if (result < 0) {
+        if (lexer_state::FINISHED != scanner->state_) {
+            scanner->state_ = lexer_state::ERROR;
+        }
+        *httplval = -1;
+        return -1;
+    }
+
+    switch (scanner->state_) {
+    case lexer_state::START:
+        if ((result == 'h') || (result == 'H')) {
+            scanner->state_ = lexer_state::RESPONSE_VERSION;
+        } else {
+            scanner->state_ = lexer_state::REQUEST_METHOD;
+        }
+        break;
+
+    case lexer_state::REQUEST_METHOD:
+        break;
+
+    case lexer_state::REQUEST_URL:
+        break;
+
+    case lexer_state::REQUEST_VERSION:
+        break;
+
+    case lexer_state::RESPONSE_VERSION:
+        break;
+
+    case lexer_state::RESPONSE_STATUS_CODE:
+        break;
+
+    case lexer_state::RESPONSE_REASON_PHRASE:
+        break;
+
+    case lexer_state::HEADER_KEY:
+        break;
+
+    case lexer_state::HEADER_VALUE:
+        break;
+
+    case lexer_state::FINISHED:
+        break;
+
+    case lexer_state::ERROR:
+        break;
+
+    default:
+        break;
+    }
+
+    if (lexer_state::START == scanner->state_) {
+
+    }
+
+    *httplval = result;
+    return *httplval;
 }
 
 void httperror(httpscan_t * /*scanner*/, const char * /*string*/)
