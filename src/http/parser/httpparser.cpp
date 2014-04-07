@@ -46,7 +46,7 @@ http_parser::http_parser(const std::function<int()> & get_functor,
 void http_parser::parse()
 {
     if (lexer_state::START == httpscan_.state_) {
-        _httpparse(&httpscan_);
+        httpparse(&httpscan_);
     }
 }
 

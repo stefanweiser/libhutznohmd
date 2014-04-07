@@ -388,14 +388,6 @@ lexer_state lex_header_value(int & result, httpscan_t * scanner)
     return lexer_state::HEADER_KEY;
 }
 
-void _httpparse(httpscan_t * scanner)
-{
-    int result = 0;
-    while (result >= 0) {
-        result = httplex(&result, scanner);
-    }
-}
-
 int httplex(int * /*unused*/, httpscan_t * scanner)
 {
     if ((scanner->state_ == lexer_state::FINISHED) ||
