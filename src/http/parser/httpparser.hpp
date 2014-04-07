@@ -18,7 +18,6 @@
 #ifndef __LIBREST_HTTP_PARSER_HTTPPARSER_HPP__
 #define __LIBREST_HTTP_PARSER_HTTPPARSER_HPP__
 
-#include <http/parser/httpscan.h>
 #include <http/parser/bisonwrapper.h>
 
 namespace rest

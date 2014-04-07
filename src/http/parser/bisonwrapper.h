@@ -24,15 +24,9 @@
 #include <string>
 
 #include <librest.hpp>
-#endif
-
-#include <http/parser/httpscan.h>
-
-#ifdef __cplusplus
 
 extern "C"
 {
-
 #endif
 
 typedef enum {
@@ -100,6 +94,8 @@ typedef enum {
     HEADER_WWW_AUTHENTICATE = 42
 } header_type;
 
+typedef struct httpscan httpscan_t;
+
 int httplex(int * httplval, httpscan_t * scanner);
 void httperror(httpscan_t * scanner, const char * string);
 
@@ -136,7 +132,6 @@ typedef struct httpscan {
 } httpscan_t;
 
 rest::http::header_type header_string_to_enum(const std::string & s);
-
 #endif
 
 #endif /* __LIBREST_HTTP_PARSER_BISONWRAPPER_H__ */

@@ -17,11 +17,9 @@
 
 %{
 #include <stdint.h>
-#include <stdio.h>
 
-#include <http/parser/httpscan.h>
-#include "http.h"
 #include <http/parser/bisonwrapper.h>
+#include "http.h"
 %}
 
 %pure-parser
