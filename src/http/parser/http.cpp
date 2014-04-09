@@ -17,9 +17,7 @@
 
 #include <sstream>
 
-#include "bisonwrapper.h"
-
-#include <http.h>
+#include "http.hpp"
 
 char to_lower(const char c)
 {
@@ -259,7 +257,6 @@ lexer_state lex_request_method(int & result, httpscan_t * scanner)
     }
 
     lexer_state next_state = (true == succeeded) ? lexer_state::REQUEST_URL : lexer_state::ERROR;
-    result = TOKEN_METHOD;
     return next_state;
 }
 
@@ -273,7 +270,6 @@ lexer_state lex_request_url(int & result, httpscan_t * scanner)
         scanner->url_ += static_cast<char>(character);
         character = get_normalized_char(scanner);
     } while ((character != ' ') && (character != '\t'));
-    result = TOKEN_URL;
     return lexer_state::REQUEST_VERSION;
 }
 
@@ -301,22 +297,34 @@ bool lex_http_version(int & result, httpscan_t * scanner)
         succeeded = false;
     }
 
-    result = TOKEN_VERSION;
     return succeeded;
+}
+
+int parse_unsigned_integer(int & digit, httpscan_t * scanner)
+{
+    if (0 == isdigit(digit)) {
+        return -1;
+    }
+
+    int result = 0;
+    do {
+        if (digit < 0) {
+            return -1;
+        }
+        result = (result * 10) + (digit - 0x30);
+        digit = get_normalized_char(scanner);
+    } while (0 != isdigit(digit));
+
+    return result;
 }
 
 lexer_state lex_status_code(int & result, httpscan_t * scanner)
 {
-    const int digit1 = result;
-    const int digit2 = get_normalized_char(scanner);
-    const int digit3 = get_normalized_char(scanner);
-    if ((digit1 < 0) || (digit2 < 0) || (digit3 < 0) ||
-        (0 == isdigit(digit1)) || (0 == isdigit(digit2)) || (0 == isdigit(digit3))) {
+    int code = parse_unsigned_integer(result, scanner);
+    if (code < 0) {
         return lexer_state::ERROR;
     }
-    scanner->status_code_ = static_cast<uint16_t>((10 * ((10 * (digit1 - 0x30)) + (digit2 - 0x30))) +
-                            (digit3 - 0x30));
-    result = TOKEN_STATUS_CODE;
+    scanner->status_code_ = static_cast<uint16_t>(code);
     return lexer_state::RESPONSE_REASON_PHRASE;
 }
 
@@ -331,7 +339,6 @@ lexer_state lex_reason_phrase(int & result, httpscan_t * scanner)
         scanner->reason_phrase_ += static_cast<char>(character);
         character = get_normalized_char(scanner);
     } while (character != '\n');
-    result = TOKEN_REASON_PHRASE;
     return lexer_state::HEADER;
 }
 
@@ -354,6 +361,33 @@ lexer_state lex_response_version(int & result, httpscan_t * scanner)
     return lexer_state::ERROR;
 }
 
+void take_header(httpscan_t * scanner)
+{
+    rest::http::header_type type = header_string_to_enum(scanner->header_key_);
+    if (type == rest::http::header_type::CONTENT_LENGTH) {
+        scanner->content_length_ = lexical_cast<size_t>(scanner->header_value_);
+    }
+
+    if (type == rest::http::header_type::CUSTOM) {
+        auto it = scanner->custom_headers_.find(scanner->header_key_);
+        if (it == scanner->custom_headers_.end()) {
+            scanner->custom_headers_[scanner->header_key_] = scanner->header_value_;
+        } else {
+            it->second += std::string(",") + scanner->header_value_;
+        }
+    } else {
+        auto it = scanner->headers_.find(type);
+        if (it == scanner->headers_.end()) {
+            scanner->headers_[type] = scanner->header_value_;
+        } else {
+            it->second += std::string(",") + scanner->header_value_;
+        }
+    }
+
+    scanner->header_key_.clear();
+    scanner->header_value_.clear();
+}
+
 lexer_state lex_header_value(int & result, httpscan_t * scanner)
 {
     int character = result;
@@ -365,7 +399,6 @@ lexer_state lex_header_value(int & result, httpscan_t * scanner)
         scanner->header_value_ += static_cast<char>(character);
         character = get_normalized_char(scanner);
     }
-    result = TOKEN_CUSTOM_HEADER_VALUE;
     take_header(scanner);
     return lexer_state::HEADER;
 }
@@ -388,12 +421,9 @@ lexer_state lex_header(int & result, httpscan_t * scanner)
     return lex_header_value(result, scanner);
 }
 
-void http_parse(httpscan_t * scanner)
+void http_finish(httpscan_t * scanner)
 {
-    int result = 0;
-    while (result >= 0) {
-        result = httplex(&result, scanner);
-    }
+    scanner->state_ = lexer_state::FINISHED;
 }
 
 int httplex(int * /*unused*/, httpscan_t * scanner)
@@ -467,42 +497,10 @@ int httplex(int * /*unused*/, httpscan_t * scanner)
     return result;
 }
 
-void httperror(httpscan_t * /*scanner*/, const char * /*string*/)
-{}
-
-void append_to_header_value(httpscan_t * scanner, char token)
+void http_parse(httpscan_t * scanner)
 {
-    scanner->header_value_ += token;
-}
-
-void take_header(httpscan_t * scanner)
-{
-    rest::http::header_type type = header_string_to_enum(scanner->header_key_);
-    if (type == rest::http::header_type::CONTENT_LENGTH) {
-        scanner->content_length_ = lexical_cast<size_t>(scanner->header_value_);
+    int result = 0;
+    while (result >= 0) {
+        result = httplex(&result, scanner);
     }
-
-    if (type == rest::http::header_type::CUSTOM) {
-        auto it = scanner->custom_headers_.find(scanner->header_key_);
-        if (it == scanner->custom_headers_.end()) {
-            scanner->custom_headers_[scanner->header_key_] = scanner->header_value_;
-        } else {
-            it->second += std::string(",") + scanner->header_value_;
-        }
-    } else {
-        auto it = scanner->headers_.find(type);
-        if (it == scanner->headers_.end()) {
-            scanner->headers_[type] = scanner->header_value_;
-        } else {
-            it->second += std::string(",") + scanner->header_value_;
-        }
-    }
-
-    scanner->header_key_.clear();
-    scanner->header_value_.clear();
-}
-
-void http_finish(httpscan_t * scanner)
-{
-    scanner->state_ = lexer_state::FINISHED;
 }

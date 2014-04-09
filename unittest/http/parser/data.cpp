@@ -21,7 +21,7 @@
 #define private public
 #define protected public
 
-#include <http/parser/bisonwrapper.h>
+#include <http/parser/http.hpp>
 
 using namespace testing;
 

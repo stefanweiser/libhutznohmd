@@ -15,19 +15,14 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_HTTP_PARSER_BISONWRAPPER_H__
-#define __LIBREST_HTTP_PARSER_BISONWRAPPER_H__
+#ifndef __LIBREST_HTTP_PARSER_HTTP_HPP__
+#define __LIBREST_HTTP_PARSER_HTTP_HPP__
 
-#ifdef __cplusplus
 #include <functional>
 #include <map>
 #include <string>
 
 #include <librest.hpp>
-
-extern "C"
-{
-#endif
 
 typedef enum {
     METHOD_UNKNOWN = 0,
@@ -94,19 +89,6 @@ typedef enum {
     HEADER_WWW_AUTHENTICATE = 42
 } header_type;
 
-typedef struct httpscan httpscan_t;
-
-void http_parse(httpscan_t * scanner);
-int httplex(int * semantic_value, httpscan_t * scanner);
-void httperror(httpscan_t * scanner, const char * string);
-
-void append_to_header_value(httpscan_t * scanner, char token);
-void take_header(httpscan_t * scanner);
-void http_finish(httpscan_t * scanner);
-
-#ifdef __cplusplus
-}
-
 enum class lexer_state
 {
     START = 0,
@@ -143,7 +125,7 @@ typedef struct httpscan {
     size_t content_length_;
 } httpscan_t;
 
+void http_parse(httpscan_t * scanner);
 rest::http::header_type header_string_to_enum(const std::string & s);
-#endif
 
-#endif /* __LIBREST_HTTP_PARSER_BISONWRAPPER_H__ */
+#endif // __LIBREST_HTTP_PARSER_HTTP_HPP__
