@@ -364,10 +364,6 @@ lexer_state lex_response_version(int & result, httpscan_t * scanner)
 void take_header(httpscan_t * scanner)
 {
     rest::http::header_type type = header_string_to_enum(scanner->header_key_);
-    if (type == rest::http::header_type::CONTENT_LENGTH) {
-        scanner->content_length_ = lexical_cast<size_t>(scanner->header_value_);
-    }
-
     if (type == rest::http::header_type::CUSTOM) {
         auto it = scanner->custom_headers_.find(scanner->header_key_);
         if (it == scanner->custom_headers_.end()) {
@@ -417,11 +413,24 @@ lexer_state lex_header(int & result, httpscan_t * scanner)
         scanner->header_key_ += to_lower(static_cast<char>(character));
         character = get_normalized_char(scanner);
     } while (character != ':');
-    result = get_normalized_char(scanner);
-    return lex_header_value(result, scanner);
+
+    rest::http::header_type type = header_string_to_enum(scanner->header_key_);
+    if (type == rest::http::header_type::CONTENT_LENGTH) {
+        result = get_next_non_whitespace(scanner);
+        int code = parse_unsigned_integer(result, scanner);
+        if (code < 0) {
+            return lexer_state::ERROR;
+        }
+        scanner->content_length_ = static_cast<size_t>(code);
+        scanner->header_key_.clear();
+        return lexer_state::HEADER;
+    } else {
+        result = get_normalized_char(scanner);
+        return lex_header_value(result, scanner);
+    }
 }
 
-int httplex(int * /*unused*/, httpscan_t * scanner)
+int httplex(httpscan_t * scanner)
 {
     if ((scanner->state_ == lexer_state::FINISHED) ||
         (scanner->state_ == lexer_state::ERROR)) {
@@ -496,6 +505,6 @@ void http_parse(httpscan_t * scanner)
 {
     int result = 0;
     while (result >= 0) {
-        result = httplex(&result, scanner);
+        result = httplex(scanner);
     }
 }

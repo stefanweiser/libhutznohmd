@@ -140,7 +140,7 @@ TEST(http_parser, post_request)
 
 TEST(http_parser, put_request)
 {
-    fixture f("PUT /bla HTTP/1.1\r\nContent-Length:\n\t0\r\n\r\n");
+    fixture f("PUT /bla HTTP/1.1\r\nContent-Length:\n\t1\r\n\r\n");
     f.parser_.parse();
     EXPECT_EQ(f.parser_.httpscan_.state_, lexer_state::FINISHED);
     EXPECT_EQ(f.parser_.httpscan_.last_char_, '\n');
@@ -151,15 +151,15 @@ TEST(http_parser, put_request)
     EXPECT_EQ(f.parser_.httpscan_.url_, "/bla");
     EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
     EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
-    EXPECT_EQ(f.parser_.httpscan_.headers_.size(), 1);
+    EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.custom_headers_.empty(), true);
-    EXPECT_EQ(f.parser_.header(rest::http::header_type::CONTENT_LENGTH), " 0");
+    EXPECT_EQ(f.parser_.content_length(), 1);
     EXPECT_EQ(f.parser_.custom_header("???"), "");
 }
 
 TEST(http_parser, delete_request)
 {
-    fixture f("DELETE / HTTP/1.1\r\nContent-Length:\n 0\r\nABC:\r\nDEF:\r\n\r\n");
+    fixture f("DELETE / HTTP/1.1\r\nContent-Length:\n 1\r\nABC:\r\nDEF:\r\n\r\n");
     f.parser_.parse();
     EXPECT_EQ(f.parser_.httpscan_.state_, lexer_state::FINISHED);
     EXPECT_EQ(f.parser_.httpscan_.last_char_, '\n');
@@ -170,9 +170,9 @@ TEST(http_parser, delete_request)
     EXPECT_EQ(f.parser_.httpscan_.url_, "/");
     EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
     EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
-    EXPECT_EQ(f.parser_.httpscan_.headers_.size(), 1);
+    EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.custom_headers_.size(), 2);
-    EXPECT_EQ(f.parser_.header(rest::http::header_type::CONTENT_LENGTH), " 0");
+    EXPECT_EQ(f.parser_.content_length(), 1);
     EXPECT_EQ(f.parser_.custom_header("abc"), "");
 }
 
