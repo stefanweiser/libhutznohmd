@@ -334,3 +334,29 @@ TEST(http_parser, http_error)
     EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.custom_headers_.empty(), true);
 }
+
+TEST(http_parser, push_back_string)
+{
+    push_back_string<4> s;
+    s.push_back('0');
+    s.push_back('1');
+    s.push_back('2');
+    s.push_back('3');
+    EXPECT_EQ(s.dynamic_buffer_, nullptr);
+    EXPECT_EQ(s.dynamic_size_, 0);
+    EXPECT_EQ(std::string(s.c_str()), "0123");
+    s.push_back('4');
+    EXPECT_NE(s.dynamic_buffer_, nullptr);
+    EXPECT_EQ(s.dynamic_size_, 9);
+    EXPECT_EQ(std::string(s.c_str()), "01234");
+    s.push_back('5');
+    s.push_back('6');
+    s.push_back('7');
+    EXPECT_NE(s.dynamic_buffer_, nullptr);
+    EXPECT_EQ(s.dynamic_size_, 9);
+    EXPECT_EQ(std::string(s.c_str()), "01234567");
+    s.push_back('8');
+    EXPECT_NE(s.dynamic_buffer_, nullptr);
+    EXPECT_EQ(s.dynamic_size_, 13);
+    EXPECT_EQ(std::string(s.c_str()), "012345678");
+}
