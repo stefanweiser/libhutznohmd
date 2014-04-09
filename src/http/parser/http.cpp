@@ -421,11 +421,6 @@ lexer_state lex_header(int & result, httpscan_t * scanner)
     return lex_header_value(result, scanner);
 }
 
-void http_finish(httpscan_t * scanner)
-{
-    scanner->state_ = lexer_state::FINISHED;
-}
-
 int httplex(int * /*unused*/, httpscan_t * scanner)
 {
     if ((scanner->state_ == lexer_state::FINISHED) ||
