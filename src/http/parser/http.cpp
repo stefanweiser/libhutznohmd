@@ -27,7 +27,7 @@ char to_lower(const char c)
     return c;
 }
 
-rest::http::header_type header_string_to_enum(const std::string & s)
+rest::http::header_type header_key_to_header_type(const std::string & s)
 {
     const static std::map<std::string, rest::http::header_type> string_to_enum_map = {
         {"accept", rest::http::header_type::ACCEPT},
@@ -156,7 +156,7 @@ bool is_valid_header_value_character(uint8_t c)
     return (validity_map[c] != 0);
 }
 
-int get_normalized_char(httpscan_t * scanner)
+inline int get_normalized_char(httpscan_t * scanner)
 {
     if (lexer_state::FINISHED == scanner->state_) {
         return -1;
@@ -181,7 +181,7 @@ int get_normalized_char(httpscan_t * scanner)
     return result;
 }
 
-int get_next_non_whitespace(httpscan_t * scanner)
+inline int get_next_non_whitespace(httpscan_t * scanner)
 {
     int result = get_normalized_char(scanner);
     while ((result == ' ') || (result == '\t')) {
@@ -202,6 +202,139 @@ bool verify_forced_characters(const upcoming_characters & characters, httpscan_t
         }
     }
     return true;
+}
+
+bool parse_header_key_to_string(int & character,
+                                const std::string & already_parsed_string,
+                                const std::string & string,
+                                httpscan_t * scanner)
+{
+    size_t i = 0;
+    size_t j = 0;
+    character = get_normalized_char(scanner);
+    while ((character >= 0) &&
+           (true == is_valid_header_key_character(static_cast<char>(character)))) {
+        char c = static_cast<char>(character);
+        if ((i == j) && ((i >= string.size()) || (string[i] == c) || (string[i] == to_lower(c)))) {
+            i++;
+        } else {
+            scanner->header_key_ += c;
+        }
+        j++;
+        character = get_normalized_char(scanner);
+    }
+
+    if (i != j) {
+        scanner->header_key_ = already_parsed_string + scanner->header_key_;
+        return false;
+    }
+
+    return true;
+}
+
+bool parse_custom_header_type(int & result, httpscan_t * scanner)
+{
+    int character = result;
+    do {
+        if ((character < 0) || (false == is_valid_header_key_character(static_cast<uint8_t>(character)))) {
+            result = -1;
+            return false;
+        }
+        scanner->header_key_ += to_lower(static_cast<char>(character));
+        character = get_normalized_char(scanner);
+    } while (character != ':');
+
+    return true;
+}
+
+/*
+        {"accept", rest::http::header_type::ACCEPT},
+        {"accept-charset", rest::http::header_type::ACCEPT_CHARSET},
+        {"accept-encoding", rest::http::header_type::ACCEPT_ENCODING},
+        {"accept-language", rest::http::header_type::ACCEPT_LANGUAGE},
+        {"accept-ranges", rest::http::header_type::ACCEPT_RANGES},
+        {"age", rest::http::header_type::AGE},
+        {"allow", rest::http::header_type::ALLOW},
+        {"authorization", rest::http::header_type::AUTHORIZATION},
+        {"cache-control", rest::http::header_type::CACHE_CONTROL},
+        {"connection", rest::http::header_type::CONNECTION},
+        {"content-encoding", rest::http::header_type::CONTENT_ENCODING},
+        {"content-language", rest::http::header_type::CONTENT_LANGUAGE},
+        {"content-length", rest::http::header_type::CONTENT_LENGTH},
+        {"content-location", rest::http::header_type::CONTENT_LOCATION},
+        {"content-md5", rest::http::header_type::CONTENT_MD5},
+        {"content-range", rest::http::header_type::CONTENT_RANGE},
+        {"content-type", rest::http::header_type::CONTENT_TYPE},
+        {"cookie", rest::http::header_type::COOKIE},
+        {"date", rest::http::header_type::DATE},
+        {"etag", rest::http::header_type::ETAG},
+        {"expect", rest::http::header_type::EXPECT},
+        {"expires", rest::http::header_type::EXPIRES},
+        {"from", rest::http::header_type::FROM},
+        {"host", rest::http::header_type::HOST},
+        {"if-match", rest::http::header_type::IF_MATCH},
+        {"if-modified-since", rest::http::header_type::IF_MODIFIED_SINCE},
+        {"if-none-match", rest::http::header_type::IF_NONE_MATCH},
+        {"if-range", rest::http::header_type::IF_RANGE},
+        {"if-unmodified-since", rest::http::header_type::IF_UNMODIFIED_SINCE},
+        {"last-modified", rest::http::header_type::LAST_MODIFIED},
+        {"location", rest::http::header_type::LOCATION},
+        {"max-forwards", rest::http::header_type::MAX_FORWARDS},
+        {"pragma", rest::http::header_type::PRAGMA},
+        {"proxy-authenticate", rest::http::header_type::PROXY_AUTHENTICATE},
+        {"proxy-authorization", rest::http::header_type::PROXY_AUTHORIZATION},
+        {"range", rest::http::header_type::RANGE},
+        {"referer", rest::http::header_type::REFERER},
+        {"retry-after", rest::http::header_type::RETRY_AFTER},
+        {"server", rest::http::header_type::SERVER},
+        {"user-agent", rest::http::header_type::USER_AGENT},
+        {"vary", rest::http::header_type::VARY},
+        {"www-authenticate", rest::http::header_type::WWW_AUTHENTICATE}
+*/
+
+rest::http::header_type parse_header_type(int & result, httpscan_t * scanner)
+{
+    /*if ((result == 'a') || (result == 'A')) {
+        ;
+    } else if ((result == 'c') || (result == 'C')) {
+        bool equal = parse_header_key_to_string(result, "c", "ontent-length", scanner);
+        if ((true == equal) && (result == ':')) {
+            return rest::http::header_type::CONTENT_LENGTH;
+        }
+    } else if ((result == 'd') || (result == 'D')) {
+        ;
+    } else if ((result == 'e') || (result == 'E')) {
+        ;
+    } else if ((result == 'f') || (result == 'F')) {
+        ;
+    } else if ((result == 'h') || (result == 'H')) {
+        ;
+    } else if ((result == 'i') || (result == 'I')) {
+        ;
+    } else if ((result == 'l') || (result == 'L')) {
+        ;
+    } else if ((result == 'm') || (result == 'M')) {
+        ;
+    } else if ((result == 'p') || (result == 'P')) {
+        ;
+    } else if ((result == 'r') || (result == 'R')) {
+        ;
+    } else if ((result == 's') || (result == 'S')) {
+        ;
+    } else if ((result == 'u') || (result == 'U')) {
+        ;
+    } else if ((result == 'v') || (result == 'V')) {
+        ;
+    } else*/ if ((result == 'w') || (result == 'W')) {
+        bool equal = parse_header_key_to_string(result, "w", "ww-authenticate", scanner);
+        if ((true == equal) && (result == ':')) {
+            return rest::http::header_type::WWW_AUTHENTICATE;
+        }
+    } else {
+        parse_custom_header_type(result, scanner);
+    }
+    return header_key_to_header_type(scanner->header_key_);
+//  return rest::http::header_type::CUSTOM;
 }
 
 lexer_state lex_request_method(int & result, httpscan_t * scanner)
@@ -391,16 +524,11 @@ lexer_state lex_header(int & result, httpscan_t * scanner)
         return lexer_state::FINISHED;
     }
 
-    int character = result;
-    do {
-        if ((character < 0) || (false == is_valid_header_key_character(static_cast<uint8_t>(character)))) {
-            return lexer_state::ERROR;
-        }
-        scanner->header_key_ += to_lower(static_cast<char>(character));
-        character = get_normalized_char(scanner);
-    } while (character != ':');
+    rest::http::header_type type = parse_header_type(result, scanner);
+    if (result < 0) {
+        return lexer_state::ERROR;
+    }
 
-    rest::http::header_type type = header_string_to_enum(scanner->header_key_);
     if (type == rest::http::header_type::CONTENT_LENGTH) {
         result = get_next_non_whitespace(scanner);
         int code = parse_unsigned_integer(result, scanner);

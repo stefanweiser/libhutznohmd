@@ -126,6 +126,6 @@ typedef struct httpscan {
 } httpscan_t;
 
 void http_parse(httpscan_t * scanner);
-rest::http::header_type header_string_to_enum(const std::string & s);
+rest::http::header_type header_key_to_header_type(const std::string & s);
 
 #endif // __LIBREST_HTTP_PARSER_HTTP_HPP__
