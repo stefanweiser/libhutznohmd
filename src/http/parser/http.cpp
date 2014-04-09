@@ -21,20 +21,10 @@
 
 char to_lower(const char c)
 {
-    if (c >= 'A' && c <= 'Z') {
+    if ((c >= 'A') && (c <= 'Z')) {
         return (c | 0x60);
     }
     return c;
-}
-
-template <typename T>
-T lexical_cast(const std::string & s)
-{
-    T result = T();
-    std::istringstream input_stream;
-    input_stream.str(s);
-    input_stream >> result;
-    return result;
 }
 
 rest::http::header_type header_string_to_enum(const std::string & s)
