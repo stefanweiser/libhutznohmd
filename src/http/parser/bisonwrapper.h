@@ -96,6 +96,7 @@ typedef enum {
 
 typedef struct httpscan httpscan_t;
 
+void http_parse(httpscan_t * scanner);
 int httplex(int * semantic_value, httpscan_t * scanner);
 void httperror(httpscan_t * scanner, const char * string);
 
@@ -118,11 +119,10 @@ enum class lexer_state
     RESPONSE_STATUS_CODE = 5,
     RESPONSE_REASON_PHRASE = 6,
 
-    HEADER_KEY = 7,
-    HEADER_VALUE = 8,
+    HEADER = 7,
 
-    FINISHED = 9,
-    ERROR = 10
+    FINISHED = 8,
+    ERROR = 9
 };
 
 typedef struct httpscan {

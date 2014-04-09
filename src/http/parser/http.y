@@ -55,11 +55,11 @@ response_line:
 ;
 
 headers:
-  headers header
+  headers custom_header
 | %empty
 ;
 
-header:
+custom_header:
   TOKEN_CUSTOM_HEADER TOKEN_CUSTOM_HEADER_VALUE
 ;
 

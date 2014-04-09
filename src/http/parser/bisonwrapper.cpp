@@ -332,7 +332,7 @@ lexer_state lex_reason_phrase(int & result, httpscan_t * scanner)
         character = get_normalized_char(scanner);
     } while (character != '\n');
     result = TOKEN_REASON_PHRASE;
-    return lexer_state::HEADER_KEY;
+    return lexer_state::HEADER;
 }
 
 lexer_state lex_request_version(int & result, httpscan_t * scanner)
@@ -340,7 +340,7 @@ lexer_state lex_request_version(int & result, httpscan_t * scanner)
     if (true == lex_http_version(result, scanner)) {
         const int newline = get_normalized_char(scanner);
         if (newline == '\n') {
-            return lexer_state::HEADER_KEY;
+            return lexer_state::HEADER;
         }
     }
     return lexer_state::ERROR;
@@ -352,24 +352,6 @@ lexer_state lex_response_version(int & result, httpscan_t * scanner)
         return lexer_state::RESPONSE_STATUS_CODE;
     }
     return lexer_state::ERROR;
-}
-
-lexer_state lex_header_key(int & result, httpscan_t * scanner)
-{
-    if (result == '\n') {
-        return lexer_state::FINISHED;
-    }
-
-    int character = result;
-    do {
-        if ((character < 0) || (false == is_valid_header_key_character(static_cast<uint8_t>(character)))) {
-            return lexer_state::ERROR;
-        }
-        scanner->header_key_ += to_lower(static_cast<char>(character));
-        character = get_normalized_char(scanner);
-    } while (character != ':');
-    result = TOKEN_CUSTOM_HEADER;
-    return lexer_state::HEADER_VALUE;
 }
 
 lexer_state lex_header_value(int & result, httpscan_t * scanner)
@@ -385,7 +367,33 @@ lexer_state lex_header_value(int & result, httpscan_t * scanner)
     }
     result = TOKEN_CUSTOM_HEADER_VALUE;
     take_header(scanner);
-    return lexer_state::HEADER_KEY;
+    return lexer_state::HEADER;
+}
+
+lexer_state lex_header(int & result, httpscan_t * scanner)
+{
+    if (result == '\n') {
+        return lexer_state::FINISHED;
+    }
+
+    int character = result;
+    do {
+        if ((character < 0) || (false == is_valid_header_key_character(static_cast<uint8_t>(character)))) {
+            return lexer_state::ERROR;
+        }
+        scanner->header_key_ += to_lower(static_cast<char>(character));
+        character = get_normalized_char(scanner);
+    } while (character != ':');
+    result = get_normalized_char(scanner);
+    return lex_header_value(result, scanner);
+}
+
+void http_parse(httpscan_t * scanner)
+{
+    int result = 0;
+    while (result >= 0) {
+        result = httplex(&result, scanner);
+    }
 }
 
 int httplex(int * /*unused*/, httpscan_t * scanner)
@@ -396,8 +404,7 @@ int httplex(int * /*unused*/, httpscan_t * scanner)
     }
 
     int result = 0;
-    if ((scanner->state_ != lexer_state::HEADER_KEY) &&
-        (scanner->state_ != lexer_state::HEADER_VALUE) &&
+    if ((scanner->state_ != lexer_state::HEADER) &&
         (scanner->state_ != lexer_state::FINISHED) &&
         (scanner->state_ != lexer_state::ERROR)) {
         result = get_next_non_whitespace(scanner);
@@ -446,12 +453,8 @@ int httplex(int * /*unused*/, httpscan_t * scanner)
         scanner->state_ = lex_reason_phrase(result, scanner);
         break;
 
-    case lexer_state::HEADER_KEY:
-        scanner->state_ = lex_header_key(result, scanner);
-        break;
-
-    case lexer_state::HEADER_VALUE:
-        scanner->state_ = lex_header_value(result, scanner);
+    case lexer_state::HEADER:
+        scanner->state_ = lex_header(result, scanner);
         break;
 
     case lexer_state::START:
