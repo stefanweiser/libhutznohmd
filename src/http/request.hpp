@@ -43,8 +43,8 @@ public:
     virtual rest::http::method method() const;
     virtual std::string url() const;
     virtual rest::http::version version() const;
-    virtual const std::string & header(const header_type & type) const;
-    virtual const std::string & custom_header(const std::string & key) const;
+    virtual const std::string header(const header_type & type) const;
+    virtual const std::string custom_header(const std::string & key) const;
     virtual rest::buffer data() const;
     virtual time_t date();
 

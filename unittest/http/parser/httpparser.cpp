@@ -47,9 +47,9 @@ fixture::~fixture()
     EXPECT_EQ(parser_.valid(), (lexer_state::FINISHED == parser_.httpscan_.state_));
     EXPECT_EQ(parser_.method(), parser_.httpscan_.method_);
     EXPECT_EQ(parser_.version(), parser_.httpscan_.version_);
-    EXPECT_EQ(parser_.url(), parser_.httpscan_.url_);
+    EXPECT_EQ(parser_.url(), parser_.httpscan_.url_.c_str());
     EXPECT_EQ(parser_.status_code(), parser_.httpscan_.status_code_);
-    EXPECT_EQ(parser_.reason_phrase(), parser_.httpscan_.reason_phrase_);
+    EXPECT_EQ(parser_.reason_phrase(), parser_.httpscan_.reason_phrase_.c_str());
 }
 
 TEST(http_parser, construction_destruction)
@@ -78,7 +78,7 @@ TEST(http_parser, options_request)
     EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.method_, METHOD_OPTIONS);
     EXPECT_EQ(f.parser_.httpscan_.version_, VERSION_HTTP_1_1);
-    EXPECT_EQ(f.parser_.httpscan_.url_, "/");
+    EXPECT_EQ(f.parser_.httpscan_.url_.c_str(), std::string("/"));
     EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
     EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
@@ -96,7 +96,7 @@ TEST(http_parser, get_request)
         EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);
         EXPECT_EQ(f.parser_.httpscan_.method_, METHOD_GET);
         EXPECT_EQ(f.parser_.httpscan_.version_, VERSION_HTTP_1_0);
-        EXPECT_EQ(f.parser_.httpscan_.url_, "/");
+        EXPECT_EQ(f.parser_.httpscan_.url_.c_str(), std::string("/"));
         EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
         EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
         EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
@@ -114,7 +114,7 @@ TEST(http_parser, head_request)
     EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.method_, METHOD_HEAD);
     EXPECT_EQ(f.parser_.httpscan_.version_, VERSION_HTTP_1_1);
-    EXPECT_EQ(f.parser_.httpscan_.url_, "/");
+    EXPECT_EQ(f.parser_.httpscan_.url_.c_str(), std::string("/"));
     EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
     EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
@@ -131,7 +131,7 @@ TEST(http_parser, post_request)
     EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.method_, METHOD_POST);
     EXPECT_EQ(f.parser_.httpscan_.version_, VERSION_HTTP_1_1);
-    EXPECT_EQ(f.parser_.httpscan_.url_, "/");
+    EXPECT_EQ(f.parser_.httpscan_.url_.c_str(), std::string("/"));
     EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
     EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
@@ -148,7 +148,7 @@ TEST(http_parser, put_request)
     EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.method_, METHOD_PUT);
     EXPECT_EQ(f.parser_.httpscan_.version_, VERSION_HTTP_1_1);
-    EXPECT_EQ(f.parser_.httpscan_.url_, "/bla");
+    EXPECT_EQ(f.parser_.httpscan_.url_.c_str(), std::string("/bla"));
     EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
     EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
@@ -167,7 +167,7 @@ TEST(http_parser, delete_request)
     EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.method_, METHOD_DELETE);
     EXPECT_EQ(f.parser_.httpscan_.version_, VERSION_HTTP_1_1);
-    EXPECT_EQ(f.parser_.httpscan_.url_, "/");
+    EXPECT_EQ(f.parser_.httpscan_.url_.c_str(), std::string("/"));
     EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
     EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
@@ -186,7 +186,7 @@ TEST(http_parser, trace_request)
     EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.method_, METHOD_TRACE);
     EXPECT_EQ(f.parser_.httpscan_.version_, VERSION_HTTP_1_1);
-    EXPECT_EQ(f.parser_.httpscan_.url_, "/");
+    EXPECT_EQ(f.parser_.httpscan_.url_.c_str(), std::string("/"));
     EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
     EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
@@ -203,7 +203,7 @@ TEST(http_parser, connect_request)
     EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.method_, METHOD_CONNECT);
     EXPECT_EQ(f.parser_.httpscan_.version_, VERSION_HTTP_1_1);
-    EXPECT_EQ(f.parser_.httpscan_.url_, "/");
+    EXPECT_EQ(f.parser_.httpscan_.url_.c_str(), std::string("/"));
     EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
     EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
@@ -220,7 +220,7 @@ TEST(http_parser, same_header_name_request)
     EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.method_, METHOD_GET);
     EXPECT_EQ(f.parser_.httpscan_.version_, VERSION_HTTP_1_0);
-    EXPECT_EQ(f.parser_.httpscan_.url_, "/");
+    EXPECT_EQ(f.parser_.httpscan_.url_.c_str(), std::string("/"));
     EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
     EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.headers_.size(), 1);
@@ -238,7 +238,7 @@ TEST(http_parser, same_custom_header_name_request)
     EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.method_, METHOD_GET);
     EXPECT_EQ(f.parser_.httpscan_.version_, VERSION_HTTP_1_0);
-    EXPECT_EQ(f.parser_.httpscan_.url_, "/");
+    EXPECT_EQ(f.parser_.httpscan_.url_.c_str(), std::string("/"));
     EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
     EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
@@ -258,7 +258,7 @@ TEST(http_parser, gone_response)
     EXPECT_EQ(f.parser_.httpscan_.version_, VERSION_HTTP_1_1);
     EXPECT_EQ(f.parser_.httpscan_.url_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.status_code_, 410);
-    EXPECT_EQ(f.parser_.httpscan_.reason_phrase_, "Gone");
+    EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.c_str(), std::string("Gone"));
     EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.custom_headers_.empty(), true);
     EXPECT_EQ(f.parser_.reason_phrase(), "Gone");
@@ -276,7 +276,7 @@ TEST(http_parser, not_found_response)
     EXPECT_EQ(f.parser_.httpscan_.version_, VERSION_HTTP_1_1);
     EXPECT_EQ(f.parser_.httpscan_.url_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.status_code_, 404);
-    EXPECT_EQ(f.parser_.httpscan_.reason_phrase_, "Not Found");
+    EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.c_str(), std::string("Not Found"));
     EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.custom_headers_.empty(), true);
     EXPECT_EQ(f.parser_.reason_phrase(), "Not Found");
@@ -294,7 +294,7 @@ TEST(http_parser, custom_response)
     EXPECT_EQ(f.parser_.httpscan_.version_, VERSION_HTTP_1_1);
     EXPECT_EQ(f.parser_.httpscan_.url_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.status_code_, 555);
-    EXPECT_EQ(f.parser_.httpscan_.reason_phrase_, "X0Y1Z2");
+    EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.c_str(), std::string("X0Y1Z2"));
     EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.custom_headers_.empty(), true);
     EXPECT_EQ(f.parser_.reason_phrase(), "X0Y1Z2");
@@ -312,7 +312,7 @@ TEST(http_parser, another_custom_response)
     EXPECT_EQ(f.parser_.httpscan_.version_, VERSION_HTTP_1_1);
     EXPECT_EQ(f.parser_.httpscan_.url_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.status_code_, 555);
-    EXPECT_EQ(f.parser_.httpscan_.reason_phrase_, "9X0Y1Z2");
+    EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.c_str(), std::string("9X0Y1Z2"));
     EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.custom_headers_.empty(), true);
     EXPECT_EQ(f.parser_.reason_phrase(), "9X0Y1Z2");

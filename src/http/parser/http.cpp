@@ -218,18 +218,18 @@ bool parse_header_key_to_string(int & character,
         if ((i == j) && ((i >= string.size()) || (string[i] == c) || (string[i] == to_lower(c)))) {
             i++;
         } else {
-            scanner->header_key_ += c;
+            if (true == scanner->header_key_.empty()) {
+                for (size_t k = 0; k < already_parsed_string.size(); k++) {
+                    scanner->header_key_.push_back(already_parsed_string[k]);
+                }
+            }
+            scanner->header_key_.push_back(c);
         }
         j++;
         character = get_normalized_char(scanner);
     }
 
-    if (i != j) {
-        scanner->header_key_ = already_parsed_string + scanner->header_key_;
-        return false;
-    }
-
-    return true;
+    return (i == j);
 }
 
 bool parse_custom_header_type(int & result, httpscan_t * scanner)
@@ -240,7 +240,7 @@ bool parse_custom_header_type(int & result, httpscan_t * scanner)
             result = -1;
             return false;
         }
-        scanner->header_key_ += to_lower(static_cast<char>(character));
+        scanner->header_key_.push_back(to_lower(static_cast<char>(character)));
         character = get_normalized_char(scanner);
     } while (character != ':');
 
@@ -333,7 +333,7 @@ rest::http::header_type parse_header_type(int & result, httpscan_t * scanner)
     } else {
         parse_custom_header_type(result, scanner);
     }
-    return header_key_to_header_type(scanner->header_key_);
+    return header_key_to_header_type(scanner->header_key_.c_str());
 //  return rest::http::header_type::CUSTOM;
 }
 
@@ -390,7 +390,7 @@ lexer_state lex_request_url(int & result, httpscan_t * scanner)
         if ((character < 0) || (false == is_valid_url_character(static_cast<uint8_t>(character)))) {
             return lexer_state::ERROR;
         }
-        scanner->url_ += static_cast<char>(character);
+        scanner->url_.push_back(static_cast<char>(character));
         character = get_normalized_char(scanner);
     } while ((character != ' ') && (character != '\t'));
     return lexer_state::REQUEST_VERSION;
@@ -459,7 +459,7 @@ lexer_state lex_reason_phrase(int & result, httpscan_t * scanner)
             ((character != ' ') && (character != '\t') && (0 == isalnum(character)))) {
             return lexer_state::ERROR;
         }
-        scanner->reason_phrase_ += static_cast<char>(character);
+        scanner->reason_phrase_.push_back(static_cast<char>(character));
         character = get_normalized_char(scanner);
     } while (character != '\n');
     return lexer_state::HEADER;
@@ -492,23 +492,23 @@ lexer_state lex_header_value(int & result, rest::http::header_type type, httpsca
             (false == is_valid_header_value_character(static_cast<uint8_t>(character)))) {
             return lexer_state::ERROR;
         }
-        scanner->header_value_ += static_cast<char>(character);
+        scanner->header_value_.push_back(static_cast<char>(character));
         character = get_normalized_char(scanner);
     }
 
     if (type == rest::http::header_type::CUSTOM) {
-        auto it = scanner->custom_headers_.find(scanner->header_key_);
+        auto it = scanner->custom_headers_.find(scanner->header_key_.c_str());
         if (it == scanner->custom_headers_.end()) {
-            scanner->custom_headers_[scanner->header_key_] = scanner->header_value_;
+            scanner->custom_headers_[scanner->header_key_.c_str()] = scanner->header_value_.c_str();
         } else {
-            it->second += std::string(",") + scanner->header_value_;
+            it->second += std::string(",") + scanner->header_value_.c_str();
         }
     } else {
         auto it = scanner->headers_.find(type);
         if (it == scanner->headers_.end()) {
-            scanner->headers_[type] = scanner->header_value_;
+            scanner->headers_[type] = scanner->header_value_.c_str();
         } else {
-            it->second += std::string(",") + scanner->header_value_;
+            it->second += std::string(",") + scanner->header_value_.c_str();
         }
     }
 

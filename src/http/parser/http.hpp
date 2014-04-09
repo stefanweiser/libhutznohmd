@@ -122,6 +122,14 @@ public:
         free(dynamic_buffer_);
     }
 
+    push_back_string(const push_back_string &)
+        : current_length_(0)
+        , dynamic_size_(0)
+        , dynamic_buffer_(nullptr) {
+    }
+
+    push_back_string & operator=(const push_back_string &) = delete;
+
     void push_back(const char c) {
         if (current_length_ < size) {
             constant_buffer_[current_length_++] = c;
@@ -140,7 +148,7 @@ public:
         }
     }
 
-    const char * c_str() {
+    const char * c_str() const {
         if (nullptr == dynamic_buffer_) {
             constant_buffer_[current_length_] = '\0';
             return constant_buffer_;
@@ -150,11 +158,23 @@ public:
         }
     }
 
+    bool empty() const {
+        return (current_length_ == 0);
+    }
+
+    void clear() {
+        if (nullptr != dynamic_buffer_) {
+            free(dynamic_buffer_);
+            dynamic_size_ = 0;
+        }
+        current_length_ = 0;
+    }
+
 private:
     size_t current_length_;
     size_t dynamic_size_;
-    char constant_buffer_[size + 1];
-    char * dynamic_buffer_;
+    mutable char constant_buffer_[size + 1];
+    mutable char * dynamic_buffer_;
 };
 
 typedef struct httpscan {
@@ -163,13 +183,13 @@ typedef struct httpscan {
     char last_char_;
     lexer_state state_;
 
-    std::string header_key_;
-    std::string header_value_;
+    push_back_string<40> header_key_;
+    push_back_string<1000> header_value_;
     http_method method_;
     http_version version_;
-    std::string url_;
+    push_back_string<1000> url_;
     uint16_t status_code_;
-    std::string reason_phrase_;
+    push_back_string<100> reason_phrase_;
     std::map<rest::http::header_type, std::string> headers_;
     std::map<std::string, std::string> custom_headers_;
     size_t content_length_;

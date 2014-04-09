@@ -66,12 +66,12 @@ rest::http::version request::version() const
     return static_cast<rest::http::version>(http_parser_.version());
 }
 
-const std::string & request::header(const header_type & type) const
+const std::string request::header(const header_type & type) const
 {
     return http_parser_.header(type);
 }
 
-const std::string & request::custom_header(const std::string & key) const
+const std::string request::custom_header(const std::string & key) const
 {
     return http_parser_.custom_header(key);
 }
