@@ -361,9 +361,18 @@ lexer_state lex_response_version(int & result, httpscan_t * scanner)
     return lexer_state::ERROR;
 }
 
-void take_header(httpscan_t * scanner)
+lexer_state lex_header_value(int & result, rest::http::header_type type, httpscan_t * scanner)
 {
-    rest::http::header_type type = header_string_to_enum(scanner->header_key_);
+    int character = result;
+    while (character != '\n') {
+        if ((character < 0) ||
+            (false == is_valid_header_value_character(static_cast<uint8_t>(character)))) {
+            return lexer_state::ERROR;
+        }
+        scanner->header_value_ += static_cast<char>(character);
+        character = get_normalized_char(scanner);
+    }
+
     if (type == rest::http::header_type::CUSTOM) {
         auto it = scanner->custom_headers_.find(scanner->header_key_);
         if (it == scanner->custom_headers_.end()) {
@@ -382,20 +391,7 @@ void take_header(httpscan_t * scanner)
 
     scanner->header_key_.clear();
     scanner->header_value_.clear();
-}
 
-lexer_state lex_header_value(int & result, httpscan_t * scanner)
-{
-    int character = result;
-    while (character != '\n') {
-        if ((character < 0) ||
-            (false == is_valid_header_value_character(static_cast<uint8_t>(character)))) {
-            return lexer_state::ERROR;
-        }
-        scanner->header_value_ += static_cast<char>(character);
-        character = get_normalized_char(scanner);
-    }
-    take_header(scanner);
     return lexer_state::HEADER;
 }
 
@@ -426,7 +422,7 @@ lexer_state lex_header(int & result, httpscan_t * scanner)
         return lexer_state::HEADER;
     } else {
         result = get_normalized_char(scanner);
-        return lex_header_value(result, scanner);
+        return lex_header_value(result, type, scanner);
     }
 }
 
