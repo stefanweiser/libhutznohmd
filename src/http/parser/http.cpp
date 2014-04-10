@@ -17,6 +17,8 @@
 
 #include <sstream>
 
+#include <http/parser/utility/lower_case_string.hpp>
+
 #include "http.hpp"
 
 char to_lower(const char c)
