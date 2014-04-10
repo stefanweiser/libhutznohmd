@@ -45,7 +45,8 @@ struct is_lower_string<s, 0> {
     struct lower_case_string_##S \
     { \
         static constexpr const char * const value = #S; \
-        static_assert(detail::is_lower_string<lower_case_string_##S, sizeof(#S) - 1>::value::value == true, \
+        static constexpr const size_t size = sizeof(#S) - 1; \
+        static_assert(detail::is_lower_string<lower_case_string_##S, size>::value::value == true, \
                       "String is not lower case."); \
     }
 

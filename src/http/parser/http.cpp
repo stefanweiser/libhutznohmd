@@ -192,14 +192,17 @@ inline int get_next_non_whitespace(httpscan_t * scanner)
     return result;
 }
 
-typedef std::vector<std::pair<char, char>> upcoming_characters;
-
-bool verify_forced_characters(const upcoming_characters & characters, httpscan_t * scanner)
+bool compare_case_insensitive(const char lower_char, const char indetermined_letter)
 {
-    for (auto it = characters.begin(); it != characters.end(); ++it) {
-        const std::pair<char, char> & pair = *it;
+    return ((indetermined_letter | 0x20) == lower_char);
+}
+
+template<typename lower_case_string>
+bool verify_forced_characters(const lower_case_string &, httpscan_t * scanner)
+{
+    for (size_t i = 0; i < lower_case_string::size; i++) {
         const int character = get_normalized_char(scanner);
-        if ((pair.first != character) && (pair.second != character)) {
+        if (false == compare_case_insensitive(lower_case_string::value[i], character)) {
             return false;
         }
     }
@@ -339,44 +342,45 @@ rest::http::header_type parse_header_type(int & result, httpscan_t * scanner)
 //  return rest::http::header_type::CUSTOM;
 }
 
+LOWER_CASE_STRING(ead);
+LOWER_CASE_STRING(et);
+LOWER_CASE_STRING(t);
+LOWER_CASE_STRING(st);
+LOWER_CASE_STRING(elete);
+LOWER_CASE_STRING(ptions);
+LOWER_CASE_STRING(onnect);
+LOWER_CASE_STRING(race);
+
 lexer_state lex_request_method(int & result, httpscan_t * scanner)
 {
     bool succeeded = true;
     if (('h' == result) || ('H' == result)) {
         scanner->method_ = METHOD_HEAD;
-        static const upcoming_characters upcoming = {{'e', 'E'}, {'a', 'A'}, {'d', 'D'}};
-        succeeded = verify_forced_characters(upcoming, scanner);
+        succeeded = verify_forced_characters(lower_case_string_ead(), scanner);
     } else if (('g' == result) || ('G' == result)) {
         scanner->method_ = METHOD_GET;
-        static const upcoming_characters upcoming = {{'e', 'E'}, {'t', 'T'}};
-        succeeded = verify_forced_characters(upcoming, scanner);
+        succeeded = verify_forced_characters(lower_case_string_et(), scanner);
     } else if (('p' == result) || ('P' == result)) {
         result = get_normalized_char(scanner);
         if (('u' == result) || ('U' == result)) {
             scanner->method_ = METHOD_PUT;
-            static const upcoming_characters upcoming = {{'t', 'T'}};
-            succeeded = verify_forced_characters(upcoming, scanner);
+            succeeded = verify_forced_characters(lower_case_string_t(), scanner);
         } else if (('o' == result) || ('O' == result)) {
             scanner->method_ = METHOD_POST;
-            static const upcoming_characters upcoming = {{'s', 'S'}, {'t', 'T'}};
-            succeeded = verify_forced_characters(upcoming, scanner);
+            succeeded = verify_forced_characters(lower_case_string_st(), scanner);
         }
     } else if (('d' == result) || ('D' == result)) {
         scanner->method_ = METHOD_DELETE;
-        static const upcoming_characters upcoming = {{'e', 'E'}, {'l', 'L'}, {'e', 'E'}, {'t', 'T'}, {'e', 'E'}};
-        succeeded = verify_forced_characters(upcoming, scanner);
+        succeeded = verify_forced_characters(lower_case_string_elete(), scanner);
     } else if (('o' == result) || ('O' == result)) {
         scanner->method_ = METHOD_OPTIONS;
-        static const upcoming_characters upcoming = {{'p', 'P'}, {'t', 'T'}, {'i', 'I'}, {'o', 'O'}, {'n', 'N'}, {'s', 'S'}};
-        succeeded = verify_forced_characters(upcoming, scanner);
+        succeeded = verify_forced_characters(lower_case_string_ptions(), scanner);
     } else if (('c' == result) || ('C' == result)) {
         scanner->method_ = METHOD_CONNECT;
-        static const upcoming_characters upcoming = {{'o', 'O'}, {'n', 'N'}, {'n', 'N'}, {'e', 'E'}, {'c', 'C'}, {'t', 'T'}};
-        succeeded = verify_forced_characters(upcoming, scanner);
+        succeeded = verify_forced_characters(lower_case_string_onnect(), scanner);
     } else if (('t' == result) || ('T' == result)) {
         scanner->method_ = METHOD_TRACE;
-        static const upcoming_characters upcoming = {{'r', 'R'}, {'a', 'A'}, {'c', 'C'}, {'e', 'E'}};
-        succeeded = verify_forced_characters(upcoming, scanner);
+        succeeded = verify_forced_characters(lower_case_string_race(), scanner);
     } else {
         succeeded = false;
     }
@@ -398,12 +402,13 @@ lexer_state lex_request_url(int & result, httpscan_t * scanner)
     return lexer_state::REQUEST_VERSION;
 }
 
+LOWER_CASE_STRING(ttp);
+
 bool lex_http_version(int & result, httpscan_t * scanner)
 {
     bool succeeded = true;
     if (('h' == result) || ('H' == result)) {
-        static const upcoming_characters upcoming = {{'t', 'T'}, {'t', 'T'}, {'p', 'P'}};
-        succeeded = verify_forced_characters(upcoming, scanner);
+        succeeded = verify_forced_characters(lower_case_string_ttp(), scanner);
         const int slash = get_normalized_char(scanner);
         const int one = get_normalized_char(scanner);
         const int dot = get_normalized_char(scanner);
