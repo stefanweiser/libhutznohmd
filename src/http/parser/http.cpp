@@ -189,6 +189,24 @@ int get_next_non_whitespace(httpscan_t * scanner)
     return result;
 }
 
+int parse_unsigned_integer(int & digit, httpscan_t * scanner)
+{
+    if (0 == isdigit(digit)) {
+        return -1;
+    }
+
+    int result = 0;
+    do {
+        if (digit < 0) {
+            return -1;
+        }
+        result = (result * 10) + (digit - 0x30);
+        digit = get_normalized_char(scanner);
+    } while (0 != isdigit(digit));
+
+    return result;
+}
+
 bool compare_case_insensitive(const char lower_char, const char indetermined_letter)
 {
     return ((indetermined_letter | 0x20) == lower_char);
@@ -231,35 +249,68 @@ bool parse_header_key_compared_to_string(int & character,
         character = get_normalized_char(scanner);
     }
 
-    return (i == j);
+    return (i == j) && (i == string.size());
 }
 
-bool parse_custom_header_type(int & result, httpscan_t * scanner)
+bool parse_header_type(int & result, httpscan_t * scanner)
 {
-    int character = result;
     do {
-        if ((character < 0) || (false == is_valid_header_key_character(static_cast<uint8_t>(character)))) {
+        if ((result < 0) || (false == is_valid_header_key_character(static_cast<uint8_t>(result)))) {
             result = -1;
             return false;
         }
-        scanner->header_key_.push_back(to_lower(static_cast<char>(character)));
-        character = get_normalized_char(scanner);
-    } while (character != ':');
+        scanner->header_key_.push_back(to_lower(static_cast<char>(result)));
+        result = get_normalized_char(scanner);
+    } while (result != ':');
 
     return true;
 }
 
-rest::http::header_type parse_header_type(int & result, httpscan_t * scanner)
+bool parse_header_value(int & result, httpscan_t * scanner)
+{
+    while (result != '\n') {
+        if ((result < 0) ||
+            (false == is_valid_header_value_character(static_cast<uint8_t>(result)))) {
+            return false;
+        }
+        scanner->header_value_.push_back(static_cast<char>(result));
+        result = get_normalized_char(scanner);
+    }
+
+    auto it = scanner->headers_.find(scanner->header_key_.c_str());
+    if (it == scanner->headers_.end()) {
+        scanner->headers_[scanner->header_key_.c_str()] = scanner->header_value_.c_str();
+    } else {
+        it->second += std::string(",") + scanner->header_value_.c_str();
+    }
+
+    scanner->header_key_.clear();
+    scanner->header_value_.clear();
+
+    return true;
+}
+
+bool parse_header(int & result, httpscan_t * scanner)
 {
     /*if ((result == 'a') || (result == 'A')) {
         ;
-    } else if ((result == 'c') || (result == 'C')) {
-        bool equal = parse_header_key_to_string(result, "c", "ontent-length", scanner);
+    } else */if ((result == 'c') || (result == 'C')) {
+        bool equal = parse_header_key_compared_to_string(result, "c", "ontent-length", scanner);
         if ((true == equal) && (result == ':')) {
-            return rest::http::header_type::CONTENT_LENGTH;
+            result = get_next_non_whitespace(scanner);
+            int code = parse_unsigned_integer(result, scanner);
+            if (code < 0) {
+                return false;
+            }
+
+            scanner->content_length_ = static_cast<size_t>(code);
+            return true;
         }
-    } else if ((result == 'd') || (result == 'D')) {
-        ;
+    }/* else if ((result == 'd') || (result == 'D')) {
+        bool equal = parse_header_key_compared_to_string(result, "d", "ate", scanner);
+        if ((true == equal) && (result == ':')) {
+            return rest::http::header_type::DATE;
+        }
     } else if ((result == 'e') || (result == 'E')) {
         ;
     } else if ((result == 'f') || (result == 'F')) {
@@ -282,16 +333,19 @@ rest::http::header_type parse_header_type(int & result, httpscan_t * scanner)
         ;
     } else if ((result == 'v') || (result == 'V')) {
         ;
-    } else*/ if ((result == 'w') || (result == 'W')) {
+    } else if ((result == 'w') || (result == 'W')) {
         bool equal = parse_header_key_compared_to_string(result, "w", "ww-authenticate", scanner);
         if ((true == equal) && (result == ':')) {
             return rest::http::header_type::WWW_AUTHENTICATE;
         }
-    } else {
-        parse_custom_header_type(result, scanner);
+    }*/
+
+    parse_header_type(result, scanner);
+    result = get_normalized_char(scanner);
+    if (false == parse_header_value(result, scanner)) {
+        return false;
     }
-    return header_key_to_header_type(scanner->header_key_.c_str());
-//  return rest::http::header_type::CUSTOM;
+    return true;
 }
 
 LOWER_CASE_STRING(ead);
@@ -381,24 +435,6 @@ bool lex_http_version(int & result, httpscan_t * scanner)
     return succeeded;
 }
 
-int parse_unsigned_integer(int & digit, httpscan_t * scanner)
-{
-    if (0 == isdigit(digit)) {
-        return -1;
-    }
-
-    int result = 0;
-    do {
-        if (digit < 0) {
-            return -1;
-        }
-        result = (result * 10) + (digit - 0x30);
-        digit = get_normalized_char(scanner);
-    } while (0 != isdigit(digit));
-
-    return result;
-}
-
 bool lex_status_code(int & result, httpscan_t * scanner)
 {
     int code = parse_unsigned_integer(result, scanner);
@@ -423,52 +459,11 @@ bool lex_reason_phrase(int & result, httpscan_t * scanner)
     return true;
 }
 
-bool lex_header_value(int & result, httpscan_t * scanner)
-{
-    int character = result;
-    while (character != '\n') {
-        if ((character < 0) ||
-            (false == is_valid_header_value_character(static_cast<uint8_t>(character)))) {
-            return false;
-        }
-        scanner->header_value_.push_back(static_cast<char>(character));
-        character = get_normalized_char(scanner);
-    }
-
-    auto it = scanner->headers_.find(scanner->header_key_.c_str());
-    if (it == scanner->headers_.end()) {
-        scanner->headers_[scanner->header_key_.c_str()] = scanner->header_value_.c_str();
-    } else {
-        it->second += std::string(",") + scanner->header_value_.c_str();
-    }
-
-    scanner->header_key_.clear();
-    scanner->header_value_.clear();
-
-    return true;
-}
-
-bool lex_header(int & result, httpscan_t * scanner)
+bool parse_headers(int & result, httpscan_t * scanner)
 {
     while (result != '\n') {
-        rest::http::header_type type = parse_header_type(result, scanner);
-        if (result < 0) {
+        if (false == parse_header(result, scanner)) {
             return false;
-        }
-
-        if (type == rest::http::header_type::CONTENT_LENGTH) {
-            result = get_next_non_whitespace(scanner);
-            int code = parse_unsigned_integer(result, scanner);
-            if (code < 0) {
-                return false;
-            }
-            scanner->content_length_ = static_cast<size_t>(code);
-            scanner->header_key_.clear();
-        } else {
-            result = get_normalized_char(scanner);
-            if (false == lex_header_value(result, scanner)) {
-                return false;
-            }
         }
         result = get_normalized_char(scanner);
     }
@@ -515,7 +510,7 @@ lexer_state lex_first_line(httpscan_t * scanner)
         }
     }
     result = get_normalized_char(scanner);
-    if (false == lex_header(result, scanner)) {
+    if (false == parse_headers(result, scanner)) {
         return lexer_state::ERROR;
     }
     return lexer_state::FINISHED;

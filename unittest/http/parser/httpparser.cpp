@@ -197,7 +197,7 @@ TEST(http_parser, trace_request)
 
 TEST(http_parser, connect_request)
 {
-    fixture f("CONNECT / HTTP/1.1\r\n\r\n");
+    fixture f("CONNECT / HTTP/1.1\r\nContent-Length2: 5\r\n\r\n");
     f.parser_.parse();
     EXPECT_EQ(f.parser_.httpscan_.state_, lexer_state::FINISHED);
     EXPECT_EQ(f.parser_.httpscan_.last_char_, '\n');
@@ -208,7 +208,7 @@ TEST(http_parser, connect_request)
     EXPECT_EQ(f.parser_.httpscan_.url_.c_str(), std::string("/"));
     EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
     EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
-    EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.headers_.size(), 1);
 }
 
 TEST(http_parser, same_header_name_request)
