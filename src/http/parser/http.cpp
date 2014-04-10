@@ -355,31 +355,31 @@ lexer_state lex_request_method(int & result, httpscan_t * scanner)
 {
     bool succeeded = true;
     if (('h' == result) || ('H' == result)) {
-        scanner->method_ = METHOD_HEAD;
+        scanner->method_ = rest::http::method::HEAD;
         succeeded = verify_forced_characters(lower_case_string_ead(), scanner);
     } else if (('g' == result) || ('G' == result)) {
-        scanner->method_ = METHOD_GET;
+        scanner->method_ = rest::http::method::GET;
         succeeded = verify_forced_characters(lower_case_string_et(), scanner);
     } else if (('p' == result) || ('P' == result)) {
         result = get_normalized_char(scanner);
         if (('u' == result) || ('U' == result)) {
-            scanner->method_ = METHOD_PUT;
+            scanner->method_ = rest::http::method::PUT;
             succeeded = verify_forced_characters(lower_case_string_t(), scanner);
         } else if (('o' == result) || ('O' == result)) {
-            scanner->method_ = METHOD_POST;
+            scanner->method_ = rest::http::method::POST;
             succeeded = verify_forced_characters(lower_case_string_st(), scanner);
         }
     } else if (('d' == result) || ('D' == result)) {
-        scanner->method_ = METHOD_DELETE;
+        scanner->method_ = rest::http::method::DELETE;
         succeeded = verify_forced_characters(lower_case_string_elete(), scanner);
     } else if (('o' == result) || ('O' == result)) {
-        scanner->method_ = METHOD_OPTIONS;
+        scanner->method_ = rest::http::method::OPTIONS;
         succeeded = verify_forced_characters(lower_case_string_ptions(), scanner);
     } else if (('c' == result) || ('C' == result)) {
-        scanner->method_ = METHOD_CONNECT;
+        scanner->method_ = rest::http::method::CONNECT;
         succeeded = verify_forced_characters(lower_case_string_onnect(), scanner);
     } else if (('t' == result) || ('T' == result)) {
-        scanner->method_ = METHOD_TRACE;
+        scanner->method_ = rest::http::method::TRACE;
         succeeded = verify_forced_characters(lower_case_string_race(), scanner);
     } else {
         succeeded = false;
@@ -417,9 +417,9 @@ bool lex_http_version(int & result, httpscan_t * scanner)
         }
         const int version_digit = get_normalized_char(scanner);
         if (version_digit == '0') {
-            scanner->version_ = VERSION_HTTP_1_0;
+            scanner->version_ = rest::http::version::HTTP_1_0;
         } else if (version_digit == '1') {
-            scanner->version_ = VERSION_HTTP_1_1;
+            scanner->version_ = rest::http::version::HTTP_1_1;
         } else {
             succeeded = false;
         }

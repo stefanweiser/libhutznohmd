@@ -37,9 +37,9 @@ namespace http
 http_parser::http_parser(const anonymous_int_function & get_functor,
                          const anonymous_int_function & peek_functor)
     : httpscan_({get_functor, peek_functor, 0, lexer_state::START, push_back_string<40>(),
-    push_back_string<1000>(), METHOD_UNKNOWN, VERSION_UNKNOWN, push_back_string<1000>(), 0,
-    push_back_string<100>(), std::map<rest::http::header_type, std::string>(),
-    std::map<std::string, std::string>(), 0
+    push_back_string<1000>(), rest::http::method::UNKNOWN, rest::http::version::HTTP_UNKNOWN,
+    push_back_string<1000>(), 0, push_back_string<100>(), std::map < rest::http::header_type,
+    std::string > (), std::map<std::string, std::string>(), 0
 })
 {}
 
@@ -55,12 +55,12 @@ bool http_parser::valid() const
     return (lexer_state::FINISHED == httpscan_.state_);
 }
 
-const http_method & http_parser::method() const
+const rest::http::method & http_parser::method() const
 {
     return httpscan_.method_;
 }
 
-const http_version & http_parser::version() const
+const rest::http::version & http_parser::version() const
 {
     return httpscan_.version_;
 }

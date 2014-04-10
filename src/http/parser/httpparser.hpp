@@ -33,8 +33,8 @@ public:
                          const anonymous_int_function & peek_functor);
     void parse();
     bool valid() const;
-    const http_method & method() const;
-    const http_version & version() const;
+    const rest::http::method & method() const;
+    const rest::http::version & version() const;
     const std::string url() const;
     const uint16_t & status_code() const;
     const std::string reason_phrase() const;
