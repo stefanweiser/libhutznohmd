@@ -177,9 +177,26 @@ private:
     mutable char * dynamic_buffer_;
 };
 
+class anonymous_int_function
+{
+public:
+    explicit anonymous_int_function(int (*functor)(void *), void * handle)
+        : functor_(functor)
+        , handle_(handle) {
+    }
+
+    int operator()() {
+        return functor_(handle_);
+    }
+
+private:
+    int (*functor_)(void *);
+    void * handle_;
+};
+
 typedef struct httpscan {
-    std::function<int()> get_functor_;
-    std::function<int()> peek_functor_;
+    anonymous_int_function get_functor_;
+    anonymous_int_function peek_functor_;
     char last_char_;
     lexer_state state_;
 

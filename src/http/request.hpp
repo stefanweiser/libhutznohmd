@@ -48,10 +48,10 @@ public:
     virtual rest::buffer data() const;
     virtual time_t date();
 
-private:
     int get();
     int peek();
 
+private:
     rest::socket::connection_pointer connection_;
     rest::buffer buffer_;
     rest::http::http_parser http_parser_;

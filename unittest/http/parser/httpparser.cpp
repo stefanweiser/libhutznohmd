@@ -25,6 +25,16 @@
 
 using namespace testing;
 
+int anonymous_get(void * handle)
+{
+    return static_cast<std::istream *>(handle)->get();
+}
+
+int anonymous_peek(void * handle)
+{
+    return static_cast<std::istream *>(handle)->peek();
+}
+
 class fixture
 {
 public:
@@ -37,8 +47,8 @@ public:
 
 fixture::fixture(const std::string & request)
     : str_(request)
-    , parser_(std::bind((int(std::istream::*)()) &std::istream::get, &str_),
-              std::bind(&std::istream::peek, &str_))
+    , parser_(anonymous_int_function(&anonymous_get, &str_),
+              anonymous_int_function(&anonymous_peek, &str_))
 {
 }
 

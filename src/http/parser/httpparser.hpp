@@ -29,8 +29,8 @@ namespace http
 class http_parser
 {
 public:
-    explicit http_parser(const std::function<int()> & get_functor,
-                         const std::function<int()> & peek_functor);
+    explicit http_parser(const anonymous_int_function & get_functor,
+                         const anonymous_int_function & peek_functor);
     void parse();
     bool valid() const;
     const http_method & method() const;

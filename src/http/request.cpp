@@ -30,10 +30,21 @@ namespace rest
 namespace http
 {
 
+int anonymous_get(void * handle)
+{
+    return static_cast<request *>(handle)->get();
+}
+
+int anonymous_peek(void * handle)
+{
+    return static_cast<request *>(handle)->peek();
+}
+
 request::request(const rest::socket::connection_pointer & connection)
     : connection_(connection)
     , buffer_()
-    , http_parser_(std::bind(&request::get, this), std::bind(&request::peek, this))
+    , http_parser_(anonymous_int_function(&anonymous_get, this),
+                   anonymous_int_function(&anonymous_peek, this))
     , data_()
     , index_(0)
     , date_(0)

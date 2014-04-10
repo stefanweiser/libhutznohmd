@@ -23,13 +23,23 @@
 #include <http/parser/httpparser.hpp>
 #include <http/parser/header/httpdateparser.h>
 
+int anonymous_get(void * handle)
+{
+    return static_cast<std::istream *>(handle)->get();
+}
+
+int anonymous_peek(void * handle)
+{
+    return static_cast<std::istream *>(handle)->peek();
+}
+
 void test_http_parser(const std::string & request)
 {
     std::stringstream s(request);
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
     for (size_t i = 0; i < 1000; i++) {
-        rest::http::http_parser parser(std::bind((int(std::istream::*)()) &std::istream::get, &s),
-                                       std::bind(&std::istream::peek, &s));
+        rest::http::http_parser parser(anonymous_int_function(&anonymous_get, &s),
+                                       anonymous_int_function(&anonymous_peek, &s));
         parser.parse();
     }
     std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
