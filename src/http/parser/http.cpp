@@ -160,10 +160,6 @@ bool is_valid_header_value_character(uint8_t c)
 
 int get_normalized_char(httpscan_t * scanner)
 {
-    if (lexer_state::FINISHED == scanner->state_) {
-        return -1;
-    }
-
     int result = scanner->get_functor_();
     if (result == '\r') {
         if (scanner->peek_functor_() == '\n') {
@@ -173,7 +169,8 @@ int get_normalized_char(httpscan_t * scanner)
     }
 
     if ((result == '\n') && (scanner->last_char_ != '\n')) {
-        if ((scanner->peek_functor_() == ' ') || (scanner->peek_functor_() == '\t')) {
+        const int n = scanner->peek_functor_();
+        if ((n == ' ') || (n == '\t')) {
             scanner->get_functor_();
             result = ' ';
         }
@@ -185,10 +182,10 @@ int get_normalized_char(httpscan_t * scanner)
 
 int get_next_non_whitespace(httpscan_t * scanner)
 {
-    int result = get_normalized_char(scanner);
-    while ((result == ' ') || (result == '\t')) {
+    int result = 0;
+    do {
         result = get_normalized_char(scanner);
-    }
+    } while ((result == ' ') || (result == '\t'));
     return result;
 }
 
@@ -209,10 +206,10 @@ bool verify_forced_characters(const lower_case_string &, httpscan_t * scanner)
     return true;
 }
 
-bool parse_header_key_to_string(int & character,
-                                const std::string & already_parsed_string,
-                                const std::string & string,
-                                httpscan_t * scanner)
+bool parse_header_key_compared_to_string(int & character,
+        const std::string & already_parsed_string,
+        const std::string & string,
+        httpscan_t * scanner)
 {
     size_t i = 0;
     size_t j = 0;
@@ -252,51 +249,6 @@ bool parse_custom_header_type(int & result, httpscan_t * scanner)
     return true;
 }
 
-/*
-        {"accept", rest::http::header_type::ACCEPT},
-        {"accept-charset", rest::http::header_type::ACCEPT_CHARSET},
-        {"accept-encoding", rest::http::header_type::ACCEPT_ENCODING},
-        {"accept-language", rest::http::header_type::ACCEPT_LANGUAGE},
-        {"accept-ranges", rest::http::header_type::ACCEPT_RANGES},
-        {"age", rest::http::header_type::AGE},
-        {"allow", rest::http::header_type::ALLOW},
-        {"authorization", rest::http::header_type::AUTHORIZATION},
-        {"cache-control", rest::http::header_type::CACHE_CONTROL},
-        {"connection", rest::http::header_type::CONNECTION},
-        {"content-encoding", rest::http::header_type::CONTENT_ENCODING},
-        {"content-language", rest::http::header_type::CONTENT_LANGUAGE},
-        {"content-length", rest::http::header_type::CONTENT_LENGTH},
-        {"content-location", rest::http::header_type::CONTENT_LOCATION},
-        {"content-md5", rest::http::header_type::CONTENT_MD5},
-        {"content-range", rest::http::header_type::CONTENT_RANGE},
-        {"content-type", rest::http::header_type::CONTENT_TYPE},
-        {"cookie", rest::http::header_type::COOKIE},
-        {"date", rest::http::header_type::DATE},
-        {"etag", rest::http::header_type::ETAG},
-        {"expect", rest::http::header_type::EXPECT},
-        {"expires", rest::http::header_type::EXPIRES},
-        {"from", rest::http::header_type::FROM},
-        {"host", rest::http::header_type::HOST},
-        {"if-match", rest::http::header_type::IF_MATCH},
-        {"if-modified-since", rest::http::header_type::IF_MODIFIED_SINCE},
-        {"if-none-match", rest::http::header_type::IF_NONE_MATCH},
-        {"if-range", rest::http::header_type::IF_RANGE},
-        {"if-unmodified-since", rest::http::header_type::IF_UNMODIFIED_SINCE},
-        {"last-modified", rest::http::header_type::LAST_MODIFIED},
-        {"location", rest::http::header_type::LOCATION},
-        {"max-forwards", rest::http::header_type::MAX_FORWARDS},
-        {"pragma", rest::http::header_type::PRAGMA},
-        {"proxy-authenticate", rest::http::header_type::PROXY_AUTHENTICATE},
-        {"proxy-authorization", rest::http::header_type::PROXY_AUTHORIZATION},
-        {"range", rest::http::header_type::RANGE},
-        {"referer", rest::http::header_type::REFERER},
-        {"retry-after", rest::http::header_type::RETRY_AFTER},
-        {"server", rest::http::header_type::SERVER},
-        {"user-agent", rest::http::header_type::USER_AGENT},
-        {"vary", rest::http::header_type::VARY},
-        {"www-authenticate", rest::http::header_type::WWW_AUTHENTICATE}
-*/
-
 rest::http::header_type parse_header_type(int & result, httpscan_t * scanner)
 {
     /*if ((result == 'a') || (result == 'A')) {
@@ -331,7 +283,7 @@ rest::http::header_type parse_header_type(int & result, httpscan_t * scanner)
     } else if ((result == 'v') || (result == 'V')) {
         ;
     } else*/ if ((result == 'w') || (result == 'W')) {
-        bool equal = parse_header_key_to_string(result, "w", "ww-authenticate", scanner);
+        bool equal = parse_header_key_compared_to_string(result, "w", "ww-authenticate", scanner);
         if ((true == equal) && (result == ':')) {
             return rest::http::header_type::WWW_AUTHENTICATE;
         }
