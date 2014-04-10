@@ -59,7 +59,7 @@ TEST(request, parse)
     request.parse();
 
     EXPECT_EQ(request.http_parser_.content_length(), 1);
-    EXPECT_EQ(request.http_parser_.httpscan_.custom_headers_.size(), 2);
+    EXPECT_EQ(request.http_parser_.httpscan_.headers_.size(), 2);
     EXPECT_EQ(request.data(), rest::buffer({ '0' }));
     EXPECT_EQ(request.date(), 951868800);
     EXPECT_EQ(request.method(), rest::http::method::GET);
@@ -89,7 +89,7 @@ TEST(request, parse_false_return)
     request.parse();
 
     EXPECT_EQ(request.http_parser_.content_length(), 1);
-    EXPECT_EQ(request.http_parser_.httpscan_.custom_headers_.empty(), true);
+    EXPECT_EQ(request.http_parser_.httpscan_.headers_.empty(), true);
     EXPECT_EQ(request.data().empty(), true);
     EXPECT_EQ(request.method(), rest::http::method::GET);
     EXPECT_EQ(request.url(), "/");
@@ -122,8 +122,8 @@ TEST(request, parse_large_request)
     request.parse();
 
     EXPECT_EQ(request.http_parser_.content_length(), 2000);
-    EXPECT_EQ(request.http_parser_.httpscan_.custom_headers_.size(), 1);
-    EXPECT_EQ(request.custom_header("abc"), "");
+    EXPECT_EQ(request.http_parser_.httpscan_.headers_.size(), 1);
+    EXPECT_EQ(request.header("abc"), "");
     EXPECT_EQ(request.data().size(), 2000);
     EXPECT_EQ(request.data(), rest::buffer(2000, '0'));
     time_t compare_time = time(NULL);

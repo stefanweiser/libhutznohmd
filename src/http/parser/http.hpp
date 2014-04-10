@@ -142,7 +142,7 @@ typedef struct httpscan {
     push_back_string<1000> url_;
     uint16_t status_code_;
     push_back_string<100> reason_phrase_;
-    std::map<std::string, std::string> custom_headers_;
+    std::map<std::string, std::string> headers_;
     size_t content_length_;
 } httpscan_t;
 

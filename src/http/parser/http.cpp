@@ -503,9 +503,9 @@ lexer_state lex_header_value(int & result, httpscan_t * scanner)
         character = get_normalized_char(scanner);
     }
 
-    auto it = scanner->custom_headers_.find(scanner->header_key_.c_str());
-    if (it == scanner->custom_headers_.end()) {
-        scanner->custom_headers_[scanner->header_key_.c_str()] = scanner->header_value_.c_str();
+    auto it = scanner->headers_.find(scanner->header_key_.c_str());
+    if (it == scanner->headers_.end()) {
+        scanner->headers_[scanner->header_key_.c_str()] = scanner->header_value_.c_str();
     } else {
         it->second += std::string(",") + scanner->header_value_.c_str();
     }

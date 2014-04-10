@@ -79,10 +79,10 @@ const std::string http_parser::reason_phrase() const
     return std::string(httpscan_.reason_phrase_.c_str());
 }
 
-const std::string http_parser::custom_header(const std::string & key) const
+const std::string http_parser::header(const std::string & key) const
 {
-    auto it = httpscan_.custom_headers_.find(key);
-    if (it != httpscan_.custom_headers_.end()) {
+    auto it = httpscan_.headers_.find(key);
+    if (it != httpscan_.headers_.end()) {
         return it->second;
     }
     return "";
