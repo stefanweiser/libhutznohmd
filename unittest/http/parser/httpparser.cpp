@@ -332,6 +332,7 @@ TEST(http_parser, http_error)
 TEST(http_parser, push_back_string)
 {
     push_back_string<4> s;
+    EXPECT_EQ(s.empty(), true);
     s.push_back('0');
     s.push_back('1');
     s.push_back('2');

@@ -36,63 +36,14 @@ template<size_t size>
 class push_back_string
 {
 public:
-    explicit push_back_string()
-        : current_length_(0)
-        , dynamic_size_(0)
-        , dynamic_buffer_(nullptr) {
-    }
-
-    ~push_back_string() {
-        free(dynamic_buffer_);
-    }
-
-    push_back_string(const push_back_string &)
-        : current_length_(0)
-        , dynamic_size_(0)
-        , dynamic_buffer_(nullptr) {
-    }
-
+    explicit push_back_string();
+    ~push_back_string();
+    push_back_string(const push_back_string &);
     push_back_string & operator=(const push_back_string &) = delete;
-
-    void push_back(const char c) {
-        if (current_length_ < size) {
-            constant_buffer_[current_length_++] = c;
-        } else {
-            if ((current_length_ + 1) >= dynamic_size_) {
-                if (nullptr == dynamic_buffer_) {
-                    dynamic_size_ = (2 * size) + 1;
-                    dynamic_buffer_ = static_cast<char *>(malloc(dynamic_size_));
-                    memcpy(dynamic_buffer_, constant_buffer_, size);
-                } else {
-                    dynamic_size_ += size;
-                    dynamic_buffer_ = static_cast<char *>(realloc(dynamic_buffer_, dynamic_size_));
-                }
-            }
-            dynamic_buffer_[current_length_++] = c;
-        }
-    }
-
-    const char * c_str() const {
-        if (nullptr == dynamic_buffer_) {
-            constant_buffer_[current_length_] = '\0';
-            return constant_buffer_;
-        } else {
-            dynamic_buffer_[current_length_] = '\0';
-            return dynamic_buffer_;
-        }
-    }
-
-    bool empty() const {
-        return (current_length_ == 0);
-    }
-
-    void clear() {
-        if (nullptr != dynamic_buffer_) {
-            free(dynamic_buffer_);
-            dynamic_size_ = 0;
-        }
-        current_length_ = 0;
-    }
+    void push_back(const char c);
+    const char * c_str() const;
+    bool empty() const;
+    void clear();
 
 private:
     size_t current_length_;
@@ -101,22 +52,97 @@ private:
     mutable char * dynamic_buffer_;
 };
 
+template<size_t size>
+push_back_string<size>::push_back_string()
+    : current_length_(0)
+    , dynamic_size_(0)
+    , dynamic_buffer_(nullptr)
+{
+}
+
+template<size_t size>
+push_back_string<size>::~push_back_string()
+{
+    free(dynamic_buffer_);
+}
+
+template<size_t size>
+push_back_string<size>::push_back_string(const push_back_string &)
+    : current_length_(0)
+    , dynamic_size_(0)
+    , dynamic_buffer_(nullptr)
+{
+}
+
+template<size_t size>
+void push_back_string<size>::push_back(const char c)
+{
+    if (current_length_ < size) {
+        constant_buffer_[current_length_++] = c;
+    } else {
+        if ((current_length_ + 1) >= dynamic_size_) {
+            if (nullptr == dynamic_buffer_) {
+                dynamic_size_ = (2 * size) + 1;
+                dynamic_buffer_ = static_cast<char *>(malloc(dynamic_size_));
+                memcpy(dynamic_buffer_, constant_buffer_, size);
+            } else {
+                dynamic_size_ += size;
+                dynamic_buffer_ = static_cast<char *>(realloc(dynamic_buffer_, dynamic_size_));
+            }
+        }
+        dynamic_buffer_[current_length_++] = c;
+    }
+}
+
+template<size_t size>
+const char * push_back_string<size>::c_str() const
+{
+    if (nullptr == dynamic_buffer_) {
+        constant_buffer_[current_length_] = '\0';
+        return constant_buffer_;
+    } else {
+        dynamic_buffer_[current_length_] = '\0';
+        return dynamic_buffer_;
+    }
+}
+
+template<size_t size>
+bool push_back_string<size>::empty() const
+{
+    return (current_length_ == 0);
+}
+
+template<size_t size>
+void push_back_string<size>::clear()
+{
+    if (nullptr != dynamic_buffer_) {
+        free(dynamic_buffer_);
+        dynamic_size_ = 0;
+    }
+    current_length_ = 0;
+}
+
 class anonymous_int_function
 {
 public:
-    explicit anonymous_int_function(int (*functor)(void *), void * handle)
-        : functor_(functor)
-        , handle_(handle) {
-    }
-
-    int operator()() {
-        return functor_(handle_);
-    }
+    explicit anonymous_int_function(int (*functor)(void *), void * handle);
+    int operator()();
 
 private:
     int (*functor_)(void *);
     void * handle_;
 };
+
+inline anonymous_int_function::anonymous_int_function(int (*functor)(void *), void * handle)
+    : functor_(functor)
+    , handle_(handle)
+{
+}
+
+inline int anonymous_int_function::operator()()
+{
+    return functor_(handle_);
+}
 
 typedef struct httpscan {
     anonymous_int_function get_functor_;
