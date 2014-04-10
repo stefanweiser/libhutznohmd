@@ -77,11 +77,6 @@ rest::http::version request::version() const
     return static_cast<rest::http::version>(http_parser_.version());
 }
 
-const std::string request::header(const header_type & type) const
-{
-    return http_parser_.header(type);
-}
-
 const std::string request::custom_header(const std::string & key) const
 {
     return http_parser_.custom_header(key);
@@ -95,7 +90,7 @@ rest::buffer request::data() const
 time_t request::date()
 {
     if (date_ == 0) {
-        const std::string & date_string = header(header_type::DATE);
+        const std::string & date_string = custom_header("date");
         http_date_parser parser(date_string);
         if (true == parser.valid()) {
             date_ = parser.timestamp();

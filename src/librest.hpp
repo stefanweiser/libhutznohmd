@@ -430,9 +430,6 @@ public:
     //! Requested HTTP version.
     virtual rest::http::version version() const = 0;
 
-    //! Returns the header of the specified type.
-    virtual const std::string header(const header_type & type) const = 0;
-
     //! Returns the custom header of the specified key.
     virtual const std::string custom_header(const std::string & key) const = 0;
 

@@ -491,7 +491,7 @@ lexer_state lex_response_version(int & result, httpscan_t * scanner)
     return lexer_state::ERROR;
 }
 
-lexer_state lex_header_value(int & result, rest::http::header_type type, httpscan_t * scanner)
+lexer_state lex_header_value(int & result, httpscan_t * scanner)
 {
     int character = result;
     while (character != '\n') {
@@ -503,20 +503,11 @@ lexer_state lex_header_value(int & result, rest::http::header_type type, httpsca
         character = get_normalized_char(scanner);
     }
 
-    if (type == rest::http::header_type::CUSTOM) {
-        auto it = scanner->custom_headers_.find(scanner->header_key_.c_str());
-        if (it == scanner->custom_headers_.end()) {
-            scanner->custom_headers_[scanner->header_key_.c_str()] = scanner->header_value_.c_str();
-        } else {
-            it->second += std::string(",") + scanner->header_value_.c_str();
-        }
+    auto it = scanner->custom_headers_.find(scanner->header_key_.c_str());
+    if (it == scanner->custom_headers_.end()) {
+        scanner->custom_headers_[scanner->header_key_.c_str()] = scanner->header_value_.c_str();
     } else {
-        auto it = scanner->headers_.find(type);
-        if (it == scanner->headers_.end()) {
-            scanner->headers_[type] = scanner->header_value_.c_str();
-        } else {
-            it->second += std::string(",") + scanner->header_value_.c_str();
-        }
+        it->second += std::string(",") + scanner->header_value_.c_str();
     }
 
     scanner->header_key_.clear();
@@ -547,7 +538,7 @@ lexer_state lex_header(int & result, httpscan_t * scanner)
         return lexer_state::HEADER;
     } else {
         result = get_normalized_char(scanner);
-        return lex_header_value(result, type, scanner);
+        return lex_header_value(result, scanner);
     }
 }
 

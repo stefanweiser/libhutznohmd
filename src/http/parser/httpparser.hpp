@@ -38,7 +38,6 @@ public:
     const std::string url() const;
     const uint16_t & status_code() const;
     const std::string reason_phrase() const;
-    const std::string header(const header_type & type) const;
     const std::string custom_header(const std::string & key) const;
     const size_t & content_length() const;
 
