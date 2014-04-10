@@ -65,7 +65,7 @@ fixture::~fixture()
 TEST(http_parser, construction_destruction)
 {
     fixture f("");
-    EXPECT_EQ(f.parser_.httpscan_.state_, lexer_state::FIRST_LINE);
+    EXPECT_EQ(f.parser_.httpscan_.state_, lexer_state::UNFINISHED);
     EXPECT_EQ(f.parser_.httpscan_.last_char_, 0);
     EXPECT_EQ(f.parser_.httpscan_.header_key_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);

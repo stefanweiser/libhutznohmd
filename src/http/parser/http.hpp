@@ -27,10 +27,9 @@
 
 enum class lexer_state
 {
-    FIRST_LINE = 0,
-    HEADER = 1,
-    FINISHED = 2,
-    ERROR = 3
+    UNFINISHED = 0,
+    FINISHED = 1,
+    ERROR = 2
 };
 
 template<size_t size>

@@ -158,7 +158,7 @@ bool is_valid_header_value_character(uint8_t c)
     return (validity_map[c] != 0);
 }
 
-inline int get_normalized_char(httpscan_t * scanner)
+int get_normalized_char(httpscan_t * scanner)
 {
     if (lexer_state::FINISHED == scanner->state_) {
         return -1;
@@ -183,7 +183,7 @@ inline int get_normalized_char(httpscan_t * scanner)
     return result;
 }
 
-inline int get_next_non_whitespace(httpscan_t * scanner)
+int get_next_non_whitespace(httpscan_t * scanner)
 {
     int result = get_normalized_char(scanner);
     while ((result == ' ') || (result == '\t')) {
@@ -471,13 +471,13 @@ bool lex_reason_phrase(int & result, httpscan_t * scanner)
     return true;
 }
 
-lexer_state lex_header_value(int & result, httpscan_t * scanner)
+bool lex_header_value(int & result, httpscan_t * scanner)
 {
     int character = result;
     while (character != '\n') {
         if ((character < 0) ||
             (false == is_valid_header_value_character(static_cast<uint8_t>(character)))) {
-            return lexer_state::ERROR;
+            return false;
         }
         scanner->header_value_.push_back(static_cast<char>(character));
         character = get_normalized_char(scanner);
@@ -493,38 +493,45 @@ lexer_state lex_header_value(int & result, httpscan_t * scanner)
     scanner->header_key_.clear();
     scanner->header_value_.clear();
 
-    return lexer_state::HEADER;
+    return true;
 }
 
-lexer_state lex_header(int & result, httpscan_t * scanner)
+bool lex_header(int & result, httpscan_t * scanner)
 {
-    if (result == '\n') {
-        return lexer_state::FINISHED;
+    while (result != '\n') {
+        rest::http::header_type type = parse_header_type(result, scanner);
+        if (result < 0) {
+            return false;
+        }
+
+        if (type == rest::http::header_type::CONTENT_LENGTH) {
+            result = get_next_non_whitespace(scanner);
+            int code = parse_unsigned_integer(result, scanner);
+            if (code < 0) {
+                return false;
+            }
+            scanner->content_length_ = static_cast<size_t>(code);
+            scanner->header_key_.clear();
+        } else {
+            result = get_normalized_char(scanner);
+            if (false == lex_header_value(result, scanner)) {
+                return false;
+            }
+        }
+        result = get_normalized_char(scanner);
     }
 
-    rest::http::header_type type = parse_header_type(result, scanner);
+    return true;
+}
+
+lexer_state lex_first_line(httpscan_t * scanner)
+{
+    int result = get_next_non_whitespace(scanner);
     if (result < 0) {
         return lexer_state::ERROR;
     }
-
-    if (type == rest::http::header_type::CONTENT_LENGTH) {
-        result = get_next_non_whitespace(scanner);
-        int code = parse_unsigned_integer(result, scanner);
-        if (code < 0) {
-            return lexer_state::ERROR;
-        }
-        scanner->content_length_ = static_cast<size_t>(code);
-        scanner->header_key_.clear();
-        return lexer_state::HEADER;
-    } else {
-        result = get_normalized_char(scanner);
-        return lex_header_value(result, scanner);
-    }
-}
-
-lexer_state lex_first_line(int & result, httpscan_t * scanner)
-{
     int peek_result = scanner->peek_functor_();
+
     if (((result == 'h') || (result == 'H')) &&
         ((peek_result == 't') || (peek_result == 'T'))) {
         if (false == lex_http_version(result, scanner)) {
@@ -555,54 +562,17 @@ lexer_state lex_first_line(int & result, httpscan_t * scanner)
             return lexer_state::ERROR;
         }
     }
-    return lexer_state::HEADER;
-}
-
-int httplex(httpscan_t * scanner)
-{
-    if ((scanner->state_ == lexer_state::FINISHED) ||
-        (scanner->state_ == lexer_state::ERROR)) {
-        return -1;
+    result = get_normalized_char(scanner);
+    if (false == lex_header(result, scanner)) {
+        return lexer_state::ERROR;
     }
-
-    int result = 0;
-    if ((scanner->state_ != lexer_state::HEADER) &&
-        (scanner->state_ != lexer_state::FINISHED) &&
-        (scanner->state_ != lexer_state::ERROR)) {
-        result = get_next_non_whitespace(scanner);
-    } else {
-        result = get_normalized_char(scanner);
-    }
-
-    if (result < 0) {
-        if (lexer_state::FINISHED != scanner->state_) {
-            scanner->state_ = lexer_state::ERROR;
-        }
-        return -1;
-    }
-
-    switch (scanner->state_) {
-    case lexer_state::FIRST_LINE:
-        scanner->state_ = lex_first_line(result, scanner);
-        break;
-
-    case lexer_state::HEADER:
-        scanner->state_ = lex_header(result, scanner);
-        break;
-
-    case lexer_state::FINISHED:
-    case lexer_state::ERROR:
-    default:
-        break;
-    }
-
-    return result;
+    return lexer_state::FINISHED;
 }
 
 void http_parse(httpscan_t * scanner)
 {
-    int result = 0;
-    while (result >= 0) {
-        result = httplex(scanner);
+    if ((scanner->state_ != lexer_state::FINISHED) &&
+        (scanner->state_ != lexer_state::ERROR)) {
+        scanner->state_ = lex_first_line(scanner);
     }
 }
