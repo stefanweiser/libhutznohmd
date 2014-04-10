@@ -27,20 +27,10 @@
 
 enum class lexer_state
 {
-    START = 0,
-
-    REQUEST_METHOD = 1,
-    REQUEST_URL = 2,
-    REQUEST_VERSION = 3,
-
-    RESPONSE_VERSION = 4,
-    RESPONSE_STATUS_CODE = 5,
-    RESPONSE_REASON_PHRASE = 6,
-
-    HEADER = 7,
-
-    FINISHED = 8,
-    ERROR = 9
+    FIRST_LINE = 0,
+    HEADER = 1,
+    FINISHED = 2,
+    ERROR = 3
 };
 
 template<size_t size>

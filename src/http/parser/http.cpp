@@ -351,7 +351,7 @@ LOWER_CASE_STRING(ptions);
 LOWER_CASE_STRING(onnect);
 LOWER_CASE_STRING(race);
 
-lexer_state lex_request_method(int & result, httpscan_t * scanner)
+bool lex_request_method(int & result, httpscan_t * scanner)
 {
     bool succeeded = true;
     if (('h' == result) || ('H' == result)) {
@@ -385,21 +385,20 @@ lexer_state lex_request_method(int & result, httpscan_t * scanner)
         succeeded = false;
     }
 
-    lexer_state next_state = (true == succeeded) ? lexer_state::REQUEST_URL : lexer_state::ERROR;
-    return next_state;
+    return succeeded;
 }
 
-lexer_state lex_request_url(int & result, httpscan_t * scanner)
+bool lex_request_url(int & result, httpscan_t * scanner)
 {
     int character = result;
     do {
         if ((character < 0) || (false == is_valid_url_character(static_cast<uint8_t>(character)))) {
-            return lexer_state::ERROR;
+            return false;
         }
         scanner->url_.push_back(static_cast<char>(character));
         character = get_normalized_char(scanner);
     } while ((character != ' ') && (character != '\t'));
-    return lexer_state::REQUEST_VERSION;
+    return true;
 }
 
 LOWER_CASE_STRING(ttp);
@@ -448,47 +447,28 @@ int parse_unsigned_integer(int & digit, httpscan_t * scanner)
     return result;
 }
 
-lexer_state lex_status_code(int & result, httpscan_t * scanner)
+bool lex_status_code(int & result, httpscan_t * scanner)
 {
     int code = parse_unsigned_integer(result, scanner);
     if (code < 0) {
-        return lexer_state::ERROR;
+        return false;
     }
     scanner->status_code_ = static_cast<uint16_t>(code);
-    return lexer_state::RESPONSE_REASON_PHRASE;
+    return true;
 }
 
-lexer_state lex_reason_phrase(int & result, httpscan_t * scanner)
+bool lex_reason_phrase(int & result, httpscan_t * scanner)
 {
     int character = result;
     do {
         if ((character < 0) ||
             ((character != ' ') && (character != '\t') && (0 == isalnum(character)))) {
-            return lexer_state::ERROR;
+            return false;
         }
         scanner->reason_phrase_.push_back(static_cast<char>(character));
         character = get_normalized_char(scanner);
     } while (character != '\n');
-    return lexer_state::HEADER;
-}
-
-lexer_state lex_request_version(int & result, httpscan_t * scanner)
-{
-    if (true == lex_http_version(result, scanner)) {
-        const int newline = get_normalized_char(scanner);
-        if (newline == '\n') {
-            return lexer_state::HEADER;
-        }
-    }
-    return lexer_state::ERROR;
-}
-
-lexer_state lex_response_version(int & result, httpscan_t * scanner)
-{
-    if (true == lex_http_version(result, scanner)) {
-        return lexer_state::RESPONSE_STATUS_CODE;
-    }
-    return lexer_state::ERROR;
+    return true;
 }
 
 lexer_state lex_header_value(int & result, httpscan_t * scanner)
@@ -542,6 +522,42 @@ lexer_state lex_header(int & result, httpscan_t * scanner)
     }
 }
 
+lexer_state lex_first_line(int & result, httpscan_t * scanner)
+{
+    int peek_result = scanner->peek_functor_();
+    if (((result == 'h') || (result == 'H')) &&
+        ((peek_result == 't') || (peek_result == 'T'))) {
+        if (false == lex_http_version(result, scanner)) {
+            return lexer_state::ERROR;
+        }
+        result = get_next_non_whitespace(scanner);
+        if (false == lex_status_code(result, scanner)) {
+            return lexer_state::ERROR;
+        }
+        result = get_next_non_whitespace(scanner);
+        if (false == lex_reason_phrase(result, scanner)) {
+            return lexer_state::ERROR;
+        }
+    } else {
+        if (false == lex_request_method(result, scanner)) {
+            return lexer_state::ERROR;
+        }
+        result = get_next_non_whitespace(scanner);
+        if (false == lex_request_url(result, scanner)) {
+            return lexer_state::ERROR;
+        }
+        result = get_next_non_whitespace(scanner);
+        if (false == lex_http_version(result, scanner)) {
+            return lexer_state::ERROR;
+        }
+        const int newline = get_next_non_whitespace(scanner);
+        if (newline != '\n') {
+            return lexer_state::ERROR;
+        }
+    }
+    return lexer_state::HEADER;
+}
+
 int httplex(httpscan_t * scanner)
 {
     if ((scanner->state_ == lexer_state::FINISHED) ||
@@ -557,6 +573,7 @@ int httplex(httpscan_t * scanner)
     } else {
         result = get_normalized_char(scanner);
     }
+
     if (result < 0) {
         if (lexer_state::FINISHED != scanner->state_) {
             scanner->state_ = lexer_state::ERROR;
@@ -564,46 +581,15 @@ int httplex(httpscan_t * scanner)
         return -1;
     }
 
-    if (lexer_state::START == scanner->state_) {
-        int peek_result = scanner->peek_functor_();
-        if (((result == 'h') || (result == 'H')) &&
-            ((peek_result == 't') || (peek_result == 'T'))) {
-            scanner->state_ = lexer_state::RESPONSE_VERSION;
-        } else {
-            scanner->state_ = lexer_state::REQUEST_METHOD;
-        }
-    }
-
     switch (scanner->state_) {
-    case lexer_state::REQUEST_METHOD:
-        scanner->state_ = lex_request_method(result, scanner);
-        break;
-
-    case lexer_state::REQUEST_URL:
-        scanner->state_ = lex_request_url(result, scanner);
-        break;
-
-    case lexer_state::REQUEST_VERSION:
-        scanner->state_ = lex_request_version(result, scanner);
-        break;
-
-    case lexer_state::RESPONSE_VERSION:
-        scanner->state_ = lex_response_version(result, scanner);
-        break;
-
-    case lexer_state::RESPONSE_STATUS_CODE:
-        scanner->state_ = lex_status_code(result, scanner);
-        break;
-
-    case lexer_state::RESPONSE_REASON_PHRASE:
-        scanner->state_ = lex_reason_phrase(result, scanner);
+    case lexer_state::FIRST_LINE:
+        scanner->state_ = lex_first_line(result, scanner);
         break;
 
     case lexer_state::HEADER:
         scanner->state_ = lex_header(result, scanner);
         break;
 
-    case lexer_state::START:
     case lexer_state::FINISHED:
     case lexer_state::ERROR:
     default:
