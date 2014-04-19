@@ -167,6 +167,9 @@ time_t parse_rfc1123_date_time(int32_t & character, const lexer & l)
         character = l.get_non_whitespace();
     }
     const int32_t second_of_day = parse_time(character, l);
+    if (second_of_day < 0) {
+        return -1;
+    }
 
     if ((character == ' ') || (character == '\n')) {
         character = l.get_non_whitespace();
@@ -356,7 +359,6 @@ time_t parse_timestamp(int32_t & character, const lexer & l)
             return -1;
         }
 
-        character = l.get_non_whitespace();
         return parse_rfc850_date_time(character, l);
     }
     return -1;
