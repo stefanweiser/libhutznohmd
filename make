@@ -253,12 +253,12 @@ function exec_coverage()
 	exec_clean
 	exec_bootstrap coverage
 	exec_build
-	${binary_lcov} --zerocounters --directory "${target_path}" --output-file "${tracefile}"
+	${binary_lcov} -c -i -d "${target_path}" -o "${tracefile}.base"
 	exec_unittest
 	exec_integrationtest
-	${binary_lcov} --capture --directory "${target_path}" --output-file "${tracefile}"
-	${binary_lcov} --remove "${tracefile}" "/usr/include/*" --output-file "${tracefile}"
-	rm -rf "${lcov_output_path}"
+	${binary_lcov} -c -d "${target_path}" -o "${tracefile}.test"
+	${binary_lcov} -a "${tracefile}.base" -a "${tracefile}.test" -o "${tracefile}"
+	${binary_lcov} -r "${tracefile}" "/usr/include/*" -o "${tracefile}"
 	${binary_genhtml} "${tracefile}" --output-directory "${lcov_output_path}"
 }
 
