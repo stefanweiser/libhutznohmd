@@ -265,6 +265,108 @@ TEST(http_parser, same_custom_header_name_request)
     EXPECT_EQ(f.parser_.header("check"), " HEAD, GET");
 }
 
+TEST(http_parser, unknown_content_length_in_request)
+{
+    fixture f("DELETE / HTTP/1.1\r\nContent-Length:\n a\r\nABC:\r\nDEF:\r\n\r\n");
+    f.parser_.parse();
+    EXPECT_EQ(f.parser_.httpscan_.state_, parser_state::ERROR);
+    EXPECT_EQ(f.parser_.httpscan_.lexer_.last_char_, 'a');
+    EXPECT_EQ(f.parser_.httpscan_.header_key_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.method_, method::DELETE);
+    EXPECT_EQ(f.parser_.httpscan_.version_, version::HTTP_1_1);
+    EXPECT_EQ(f.parser_.httpscan_.url_.c_str(), std::string("/"));
+    EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
+    EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.headers_.size(), 0);
+    EXPECT_EQ(f.parser_.content_length(), 0);
+}
+
+TEST(http_parser, unknown_date_in_request)
+{
+    fixture f("DELETE / HTTP/1.1\r\nDate:\n a\r\nABC:\r\nDEF:\r\n\r\n");
+    f.parser_.parse();
+    EXPECT_EQ(f.parser_.httpscan_.state_, parser_state::ERROR);
+    EXPECT_EQ(f.parser_.httpscan_.lexer_.last_char_, 'B');
+    EXPECT_EQ(f.parser_.httpscan_.header_key_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.method_, method::DELETE);
+    EXPECT_EQ(f.parser_.httpscan_.version_, version::HTTP_1_1);
+    EXPECT_EQ(f.parser_.httpscan_.url_.c_str(), std::string("/"));
+    EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
+    EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.headers_.size(), 0);
+    EXPECT_EQ(f.parser_.content_length(), 0);
+}
+
+TEST(http_parser, unknown_method_in_request)
+{
+    fixture f("DELTETE / HTTP/1.1\r\n\r\n");
+    f.parser_.parse();
+    EXPECT_EQ(f.parser_.httpscan_.state_, parser_state::ERROR);
+    EXPECT_EQ(f.parser_.httpscan_.lexer_.last_char_, 'T');
+    EXPECT_EQ(f.parser_.httpscan_.header_key_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.method_, method::UNKNOWN);
+    EXPECT_EQ(f.parser_.httpscan_.version_, version::HTTP_UNKNOWN);
+    EXPECT_EQ(f.parser_.httpscan_.url_.c_str(), std::string(""));
+    EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
+    EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.headers_.size(), 0);
+    EXPECT_EQ(f.parser_.content_length(), 0);
+}
+
+TEST(http_parser, unknown_url_in_request)
+{
+    fixture f("DELETE \\ HTTP/1.1\r\n\r\n");
+    f.parser_.parse();
+    EXPECT_EQ(f.parser_.httpscan_.state_, parser_state::ERROR);
+    EXPECT_EQ(f.parser_.httpscan_.lexer_.last_char_, '\\');
+    EXPECT_EQ(f.parser_.httpscan_.header_key_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.method_, method::DELETE);
+    EXPECT_EQ(f.parser_.httpscan_.version_, version::HTTP_UNKNOWN);
+    EXPECT_EQ(f.parser_.httpscan_.url_.c_str(), std::string(""));
+    EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
+    EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.headers_.size(), 0);
+    EXPECT_EQ(f.parser_.content_length(), 0);
+}
+
+TEST(http_parser, unknown_version_in_request)
+{
+    fixture f("DELETE / HTTP/0.0\r\n\r\n");
+    f.parser_.parse();
+    EXPECT_EQ(f.parser_.httpscan_.state_, parser_state::ERROR);
+    EXPECT_EQ(f.parser_.httpscan_.lexer_.last_char_, '.');
+    EXPECT_EQ(f.parser_.httpscan_.header_key_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.method_, method::DELETE);
+    EXPECT_EQ(f.parser_.httpscan_.version_, version::HTTP_UNKNOWN);
+    EXPECT_EQ(f.parser_.httpscan_.url_.c_str(), std::string("/"));
+    EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
+    EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.headers_.size(), 0);
+    EXPECT_EQ(f.parser_.content_length(), 0);
+}
+
+TEST(http_parser, unknown_first_line_end_in_request)
+{
+    fixture f("DELETE / HTTP/1.1 bla\r\n\r\n");
+    f.parser_.parse();
+    EXPECT_EQ(f.parser_.httpscan_.state_, parser_state::ERROR);
+    EXPECT_EQ(f.parser_.httpscan_.lexer_.last_char_, 'b');
+    EXPECT_EQ(f.parser_.httpscan_.header_key_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.method_, method::DELETE);
+    EXPECT_EQ(f.parser_.httpscan_.version_, version::HTTP_1_1);
+    EXPECT_EQ(f.parser_.httpscan_.url_.c_str(), std::string("/"));
+    EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
+    EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.headers_.size(), 0);
+    EXPECT_EQ(f.parser_.content_length(), 0);
+}
+
 TEST(http_parser, gone_response)
 {
     fixture f("HTTP/1.1 410 Gone\r\n\r\n");
@@ -331,6 +433,54 @@ TEST(http_parser, another_custom_response)
     EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.c_str(), std::string("9X0Y1Z2"));
     EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
     EXPECT_EQ(f.parser_.reason_phrase(), "9X0Y1Z2");
+}
+
+TEST(http_parser, unknown_http_version_in_response)
+{
+    fixture f("HTTP/0.0 200 OK\r\n\r\n");
+    f.parser_.parse();
+    EXPECT_EQ(f.parser_.httpscan_.state_, parser_state::ERROR);
+    EXPECT_EQ(f.parser_.httpscan_.lexer_.last_char_, '.');
+    EXPECT_EQ(f.parser_.httpscan_.header_key_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.method_, method::UNKNOWN);
+    EXPECT_EQ(f.parser_.httpscan_.version_, version::HTTP_UNKNOWN);
+    EXPECT_EQ(f.parser_.httpscan_.url_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
+    EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.c_str(), std::string(""));
+    EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
+}
+
+TEST(http_parser, unknown_status_code_in_response)
+{
+    fixture f("HTTP/1.1 x11 OK\r\n\r\n");
+    f.parser_.parse();
+    EXPECT_EQ(f.parser_.httpscan_.state_, parser_state::ERROR);
+    EXPECT_EQ(f.parser_.httpscan_.lexer_.last_char_, 'x');
+    EXPECT_EQ(f.parser_.httpscan_.header_key_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.method_, method::UNKNOWN);
+    EXPECT_EQ(f.parser_.httpscan_.version_, version::HTTP_1_1);
+    EXPECT_EQ(f.parser_.httpscan_.url_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
+    EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.c_str(), std::string(""));
+    EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
+}
+
+TEST(http_parser, unknown_reason_phrase_in_response)
+{
+    fixture f("HTTP/1.1 200 ~OK\r\n\r\n");
+    f.parser_.parse();
+    EXPECT_EQ(f.parser_.httpscan_.state_, parser_state::ERROR);
+    EXPECT_EQ(f.parser_.httpscan_.lexer_.last_char_, '~');
+    EXPECT_EQ(f.parser_.httpscan_.header_key_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.header_value_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.method_, method::UNKNOWN);
+    EXPECT_EQ(f.parser_.httpscan_.version_, version::HTTP_1_1);
+    EXPECT_EQ(f.parser_.httpscan_.url_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.status_code_, 200);
+    EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.c_str(), std::string(""));
+    EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
 }
 
 TEST(http_parser, http_error)
