@@ -54,12 +54,13 @@ void request::parse()
 
     while ((content_length > 0) && (peek() >= 0)) {
         ssize_t old_size = data_.size();
-        if ((old_size - static_cast<ssize_t>(index_)) >= content_length) {
+        ssize_t old_buffer_size = static_cast<ssize_t>(buffer_.size());
+        if ((old_buffer_size - static_cast<ssize_t>(index_)) >= content_length) {
             data_.insert(data_.end(),
                          buffer_.begin() + index_,
                          buffer_.begin() + index_ + content_length);
             index_ += content_length;
-            content_length -= 0;
+            content_length = 0;
         } else {
             data_.insert(data_.end(), buffer_.begin() + index_, buffer_.end());
             index_ = buffer_.size();

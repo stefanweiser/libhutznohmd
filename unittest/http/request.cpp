@@ -57,7 +57,7 @@ TEST(request, parse)
         stream << " text/xml\r\n";
         stream << "Date: Wed, 01 Mar 2000 00:00:00 GMT\r\n";
         stream << "\r\n";
-        stream << "0";
+        stream << "00";
         std::string request_data = stream.str();
         data = rest::buffer(request_data.begin(), request_data.end());
         return true;
