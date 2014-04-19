@@ -140,7 +140,7 @@ TEST(request, no_needed_httpscan_available)
     rest::http::request request(socket);
 
     EXPECT_CALL(*socket, receive(_, _))
-    .Times(1)
-    .WillOnce(Return(false));
+    .Times(2)
+    .WillRepeatedly(Return(false));
     request.parse();
 }
