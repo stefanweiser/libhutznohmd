@@ -168,46 +168,52 @@ LOWER_CASE_STRING(tions);
 LOWER_CASE_STRING(nnect);
 LOWER_CASE_STRING(ace);
 
-bool lex_request_method(const int32_t & last, int32_t & result, httpscan * scanner)
+method lex_request_method(const int32_t & last, int32_t & character, const lexer & l)
 {
-    bool succeeded = true;
+    method result = method::UNKNOWN;
     if ((true == compare_case_insensitive('h', last)) &&
-        (true == compare_case_insensitive('e', result))) {
-        scanner->method_ = rest::http::method::HEAD;
-        succeeded = verify_forced_characters(lower_case_string_ad(), scanner->lexer_);
+        (true == compare_case_insensitive('e', character))) {
+        if (true == verify_forced_characters(lower_case_string_ad(), l)) {
+            result = method::HEAD;
+        }
     } else if ((true == compare_case_insensitive('g', last)) &&
-               (true == compare_case_insensitive('e', result))) {
-        scanner->method_ = rest::http::method::GET;
-        succeeded = verify_forced_characters(lower_case_string_t(), scanner->lexer_);
+               (true == compare_case_insensitive('e', character))) {
+        if (true == verify_forced_characters(lower_case_string_t(), l)) {
+            result = rest::http::method::GET;
+        }
     } else if ((true == compare_case_insensitive('p', last))) {
-        if (true == compare_case_insensitive('u', result)) {
-            scanner->method_ = rest::http::method::PUT;
-            succeeded = verify_forced_characters(lower_case_string_t(), scanner->lexer_);
-        } else if (true == compare_case_insensitive('o', result)) {
-            scanner->method_ = rest::http::method::POST;
-            succeeded = verify_forced_characters(lower_case_string_st(), scanner->lexer_);
+        if (true == compare_case_insensitive('u', character)) {
+            if (true == verify_forced_characters(lower_case_string_t(), l)) {
+                result = rest::http::method::PUT;
+            }
+        } else if (true == compare_case_insensitive('o', character)) {
+            if (true == verify_forced_characters(lower_case_string_st(), l)) {
+                result = rest::http::method::POST;
+            }
         }
     } else if ((true == compare_case_insensitive('d', last)) &&
-               (true == compare_case_insensitive('e', result))) {
-        scanner->method_ = rest::http::method::DELETE;
-        succeeded = verify_forced_characters(lower_case_string_lete(), scanner->lexer_);
+               (true == compare_case_insensitive('e', character))) {
+        if (true == verify_forced_characters(lower_case_string_lete(), l)) {
+            result = rest::http::method::DELETE;
+        }
     } else if ((true == compare_case_insensitive('o', last)) &&
-               (true == compare_case_insensitive('p', result))) {
-        scanner->method_ = rest::http::method::OPTIONS;
-        succeeded = verify_forced_characters(lower_case_string_tions(), scanner->lexer_);
+               (true == compare_case_insensitive('p', character))) {
+        if (true == verify_forced_characters(lower_case_string_tions(), l)) {
+            result = rest::http::method::OPTIONS;
+        }
     } else if ((true == compare_case_insensitive('c', last)) &&
-               (true == compare_case_insensitive('o', result))) {
-        scanner->method_ = rest::http::method::CONNECT;
-        succeeded = verify_forced_characters(lower_case_string_nnect(), scanner->lexer_);
+               (true == compare_case_insensitive('o', character))) {
+        if (true == verify_forced_characters(lower_case_string_nnect(), l)) {
+            result = rest::http::method::CONNECT;
+        }
     } else if ((true == compare_case_insensitive('t', last)) &&
-               (true == compare_case_insensitive('r', result))) {
-        scanner->method_ = rest::http::method::TRACE;
-        succeeded = verify_forced_characters(lower_case_string_ace(), scanner->lexer_);
-    } else {
-        succeeded = false;
+               (true == compare_case_insensitive('r', character))) {
+        if (true == verify_forced_characters(lower_case_string_ace(), l)) {
+            result = rest::http::method::TRACE;
+        }
     }
 
-    return succeeded;
+    return result;
 }
 
 bool lex_request_url(int32_t & result, httpscan * scanner)
@@ -310,7 +316,8 @@ parser_state lex_first_line(httpscan * scanner)
             return parser_state::ERROR;
         }
     } else {
-        if (false == lex_request_method(last, result, scanner)) {
+        scanner->method_ = lex_request_method(last, result, scanner->lexer_);
+        if (method::UNKNOWN == scanner->method_) {
             return parser_state::ERROR;
         }
         result = scanner->lexer_.get_non_whitespace();
