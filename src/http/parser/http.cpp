@@ -216,15 +216,15 @@ method lex_request_method(const int32_t & last, int32_t & character, const lexer
     return result;
 }
 
-bool lex_request_url(int32_t & result, httpscan * scanner)
+bool lex_request_url(int32_t & result, push_back_string<1000> & url, const lexer & l)
 {
     int32_t character = result;
     do {
         if ((character < 0) || (false == is_valid_url_character(static_cast<uint8_t>(character)))) {
             return false;
         }
-        scanner->url_.push_back(static_cast<char>(character));
-        character = scanner->lexer_.get();
+        url.push_back(static_cast<char>(character));
+        character = l.get();
     } while ((character != ' ') && (character != '\t'));
     return true;
 }
@@ -321,7 +321,7 @@ parser_state lex_first_line(httpscan * scanner)
             return parser_state::ERROR;
         }
         result = scanner->lexer_.get_non_whitespace();
-        if (false == lex_request_url(result, scanner)) {
+        if (false == lex_request_url(result, scanner->url_, scanner->lexer_)) {
             return parser_state::ERROR;
         }
         last = scanner->lexer_.get_non_whitespace();
