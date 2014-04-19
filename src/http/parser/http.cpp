@@ -98,9 +98,7 @@ bool parse_header_value(int32_t & result, httpscan * scanner)
 
 bool parse_header(int32_t & result, httpscan * scanner)
 {
-    /*if ((result == 'a') || (result == 'A')) {
-        ;
-    } else */if ((result == 'c') || (result == 'C')) {
+    if ((result == 'c') || (result == 'C')) {
         bool equal = parse_header_key_compared_to_string(result, "c", "ontent-length", scanner);
         if ((true == equal) && (result == ':')) {
             result = scanner->lexer_.get_non_whitespace();
@@ -124,34 +122,7 @@ bool parse_header(int32_t & result, httpscan * scanner)
             scanner->date_ = date;
             return true;
         }
-    }/* else if ((result == 'e') || (result == 'E')) {
-        ;
-    } else if ((result == 'f') || (result == 'F')) {
-        ;
-    } else if ((result == 'h') || (result == 'H')) {
-        ;
-    } else if ((result == 'i') || (result == 'I')) {
-        ;
-    } else if ((result == 'l') || (result == 'L')) {
-        ;
-    } else if ((result == 'm') || (result == 'M')) {
-        ;
-    } else if ((result == 'p') || (result == 'P')) {
-        ;
-    } else if ((result == 'r') || (result == 'R')) {
-        ;
-    } else if ((result == 's') || (result == 'S')) {
-        ;
-    } else if ((result == 'u') || (result == 'U')) {
-        ;
-    } else if ((result == 'v') || (result == 'V')) {
-        ;
-    } else if ((result == 'w') || (result == 'W')) {
-        bool equal = parse_header_key_compared_to_string(result, "w", "ww-authenticate", scanner);
-        if ((true == equal) && (result == ':')) {
-            return rest::http::header_type::WWW_AUTHENTICATE;
-        }
-    }*/
+    }
 
     parse_header_type(result, scanner);
     result = scanner->lexer_.get();
