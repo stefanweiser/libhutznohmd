@@ -18,26 +18,7 @@
 #ifndef __LIBREST_HTTP_PARSER_UTILITY_LEXER_HPP__
 #define __LIBREST_HTTP_PARSER_UTILITY_LEXER_HPP__
 
-class anonymous_int_function
-{
-public:
-    explicit anonymous_int_function(int (*functor)(void *), void * handle);
-    int operator()();
-
-private:
-    int (*functor_)(void *);
-    void * handle_;
-};
-
-inline anonymous_int_function::anonymous_int_function(int (*functor)(void *), void * handle)
-    : functor_(functor)
-    , handle_(handle)
-{}
-
-inline int anonymous_int_function::operator()()
-{
-    return functor_(handle_);
-}
+#include <http/parser/utility/anonymousintfunction.hpp>
 
 class lexer
 {

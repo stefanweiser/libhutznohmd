@@ -25,6 +25,9 @@
 
 using namespace testing;
 
+namespace
+{
+
 int get_char(void * handle)
 {
     return static_cast<std::istream *>(handle)->get();
@@ -35,15 +38,15 @@ int peek_char(void * handle)
     return static_cast<std::istream *>(handle)->peek();
 }
 
+} // namespace
+
 class fixture
 {
 public:
     explicit fixture(const std::string & str)
         : str_(str)
-        , lexer_(anonymous_int_function(&get_char, &str_),
-                 anonymous_int_function(&peek_char, &str_))
-        , httpscan_({lexer_, lexer_state::UNFINISHED, push_back_string<40>(),
-        push_back_string<1000>(), rest::http::method::UNKNOWN,
+        , httpscan_({lexer(anonymous_int_function(&get_char, &str_), anonymous_int_function(&peek_char, &str_)),
+        lexer_state::UNFINISHED, push_back_string<40>(), push_back_string<1000>(), rest::http::method::UNKNOWN,
         rest::http::version::HTTP_UNKNOWN, push_back_string<1000>(), 0,
         push_back_string<100>(), std::map<std::string, std::string>(), 0, time(NULL)
     }) {
@@ -55,7 +58,6 @@ public:
     }
 
     std::stringstream str_;
-    lexer lexer_;
     httpscan_t httpscan_;
 };
 

@@ -51,7 +51,7 @@ struct is_lower_string<s, 0> {
                       "String is not lower case."); \
     }
 
-char to_lower(const char c)
+inline char to_lower(const char c)
 {
     if ((c >= 'A') && (c <= 'Z')) {
         return (c | 0x60);
@@ -59,7 +59,7 @@ char to_lower(const char c)
     return c;
 }
 
-bool is_valid_url_character(uint8_t c)
+inline bool is_valid_url_character(uint8_t c)
 {
     static const std::array<char, 256> validity_map = {
         {
@@ -84,7 +84,7 @@ bool is_valid_url_character(uint8_t c)
     return (validity_map[c] != 0);
 }
 
-bool is_valid_header_key_character(uint8_t c)
+inline bool is_valid_header_key_character(uint8_t c)
 {
     static const std::array<char, 256> validity_map = {
         {
@@ -109,7 +109,7 @@ bool is_valid_header_key_character(uint8_t c)
     return (validity_map[c] != 0);
 }
 
-bool is_valid_header_value_character(uint8_t c)
+inline bool is_valid_header_value_character(uint8_t c)
 {
     static const std::array<char, 256> validity_map = {
         {
@@ -134,7 +134,7 @@ bool is_valid_header_value_character(uint8_t c)
     return (validity_map[c] != 0);
 }
 
-bool compare_case_insensitive(const int lower_char, const int indetermined_letter)
+inline bool compare_case_insensitive(const int lower_char, const int indetermined_letter)
 {
     return ((indetermined_letter | 0x20) == lower_char);
 }
