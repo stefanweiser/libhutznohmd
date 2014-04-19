@@ -46,7 +46,6 @@ TEST(lexer, empty)
     lexer l(anonymous_int_function(&anonymous_get, &s),
             anonymous_int_function(&anonymous_peek, &s));
     EXPECT_EQ(l.get(), -1);
-    EXPECT_EQ(l.peek(), -1);
 }
 
 TEST(lexer, string)
@@ -55,9 +54,7 @@ TEST(lexer, string)
     lexer l(anonymous_int_function(&anonymous_get, &s),
             anonymous_int_function(&anonymous_peek, &s));
     EXPECT_EQ(l.get(), 'a');
-    EXPECT_EQ(l.peek(), 'b');
     EXPECT_EQ(l.get(), 'b');
-    EXPECT_EQ(l.peek(), -1);
 }
 
 TEST(lexer, newline)
@@ -66,9 +63,7 @@ TEST(lexer, newline)
     lexer l(anonymous_int_function(&anonymous_get, &s),
             anonymous_int_function(&anonymous_peek, &s));
     EXPECT_EQ(l.get(), 'a');
-    EXPECT_EQ(l.peek(), '\n');
     EXPECT_EQ(l.get(), '\n');
-    EXPECT_EQ(l.peek(), 'b');
 }
 
 TEST(lexer, carriage_return_newline)
@@ -77,9 +72,7 @@ TEST(lexer, carriage_return_newline)
     lexer l(anonymous_int_function(&anonymous_get, &s),
             anonymous_int_function(&anonymous_peek, &s));
     EXPECT_EQ(l.get(), 'a');
-    EXPECT_EQ(l.peek(), '\r');
     EXPECT_EQ(l.get(), '\n');
-    EXPECT_EQ(l.peek(), 'b');
 }
 
 TEST(lexer, carriage_return)
@@ -88,9 +81,7 @@ TEST(lexer, carriage_return)
     lexer l(anonymous_int_function(&anonymous_get, &s),
             anonymous_int_function(&anonymous_peek, &s));
     EXPECT_EQ(l.get(), 'a');
-    EXPECT_EQ(l.peek(), '\r');
     EXPECT_EQ(l.get(), '\n');
-    EXPECT_EQ(l.peek(), 'b');
 }
 
 TEST(lexer, space)
@@ -99,9 +90,7 @@ TEST(lexer, space)
     lexer l(anonymous_int_function(&anonymous_get, &s),
             anonymous_int_function(&anonymous_peek, &s));
     EXPECT_EQ(l.get(), 'a');
-    EXPECT_EQ(l.peek(), ' ');
     EXPECT_EQ(l.get(), ' ');
-    EXPECT_EQ(l.peek(), 'b');
 }
 
 TEST(lexer, tabulator)
@@ -110,9 +99,7 @@ TEST(lexer, tabulator)
     lexer l(anonymous_int_function(&anonymous_get, &s),
             anonymous_int_function(&anonymous_peek, &s));
     EXPECT_EQ(l.get(), 'a');
-    EXPECT_EQ(l.peek(), '\t');
     EXPECT_EQ(l.get(), '\t');
-    EXPECT_EQ(l.peek(), 'b');
 }
 
 TEST(lexer, newline_whitespace)
@@ -121,9 +108,7 @@ TEST(lexer, newline_whitespace)
     lexer l(anonymous_int_function(&anonymous_get, &s),
             anonymous_int_function(&anonymous_peek, &s));
     EXPECT_EQ(l.get(), 'a');
-    EXPECT_EQ(l.peek(), '\n');
     EXPECT_EQ(l.get(), ' ');
-    EXPECT_EQ(l.peek(), 'b');
 }
 
 TEST(lexer, next_non_whitespace)

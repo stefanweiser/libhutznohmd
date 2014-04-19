@@ -47,7 +47,6 @@ public:
 
     int get();
     int get_non_whitespace();
-    int peek();
     int get_unsigned_integer(int & character);
 
 private:

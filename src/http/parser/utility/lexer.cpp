@@ -72,8 +72,3 @@ int lexer::get_unsigned_integer(int & character)
 
     return result;
 }
-
-int lexer::peek()
-{
-    return peek_functor_();
-}
