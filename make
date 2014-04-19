@@ -28,7 +28,6 @@ function check_version()
 }
 
 binary_cmake="$(get_command_path cmake)"
-binary_bison="$(get_command_path bison)"
 binary_gpp="$(get_command_path g++)"
 binary_gcc="$(get_command_path gcc)"
 binary_gcov="$(get_command_path gcov)"
@@ -42,7 +41,6 @@ binary_rpmbuild="$(get_command_path rpmbuild)"
 binary_valgrind="$(get_command_path valgrind)"
 
 min_version_cmake="2.8"
-min_version_bison="3.0"
 min_version_gpp="4.8"
 min_version_gcc="4.8"
 min_version_gcov="4.8"
@@ -64,12 +62,6 @@ function check_cmake()
 {
 	local cmake_version=$(${binary_cmake} --version | tr ' ' '\n' | tail -n 1)
 	check_version "${binary_cmake}" "${cmake_version}" "${min_version_cmake}"
-}
-
-function check_bison()
-{
-	local bison_version=$(${binary_bison} --version | head -n 1 | tr ' ' '\n' | tail -n 1)
-	check_version "${binary_bison}" "${bison_version}" "${min_version_bison}"
 }
 
 function check_compiler()
@@ -212,7 +204,6 @@ function exec_doc()
 
 function exec_build()
 {
-	check_bison
 	check_compiler
 
 	cd "${build_path}"
