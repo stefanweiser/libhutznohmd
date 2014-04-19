@@ -27,25 +27,31 @@
 
 using namespace testing;
 
+namespace rest
+{
+
+namespace http
+{
+
 TEST(response, construction_destruction)
 {
-    auto response = std::make_shared<rest::http::response>(rest::socket::connection_pointer());
-    EXPECT_EQ(response->connection_, rest::socket::connection_pointer());
-    EXPECT_EQ(response->status_code_, rest::http::status_code::INTERNAL_SERVER_ERROR);
-    EXPECT_EQ(response->version_, rest::http::version::HTTP_1_1);
-    EXPECT_EQ(response->headers_.size(), 0);
-    EXPECT_EQ(response->data_.size(), 0);
+    auto r = std::make_shared<response>(rest::socket::connection_pointer());
+    EXPECT_EQ(r->connection_, rest::socket::connection_pointer());
+    EXPECT_EQ(r->status_code_, status_code::INTERNAL_SERVER_ERROR);
+    EXPECT_EQ(r->version_, version::HTTP_1_1);
+    EXPECT_EQ(r->headers_.size(), 0);
+    EXPECT_EQ(r->data_.size(), 0);
 }
 
 TEST(response, set_and_deliver)
 {
     auto socket = std::make_shared<rest::socket::connection_socket_mock>();
-    rest::http::response response(socket);
+    response response(socket);
 
     response.set_data({ '0' });
     response.set_header("Content-Length", "1");
-    response.set_status_code(rest::http::status_code::OK);
-    response.set_version(rest::http::version::HTTP_1_1);
+    response.set_status_code(status_code::OK);
+    response.set_version(version::HTTP_1_1);
 
     EXPECT_CALL(*socket, send(An<const rest::buffer &>()))
     .Times(1)
@@ -55,7 +61,7 @@ TEST(response, set_and_deliver)
     .WillRepeatedly(Return(true));
     response.deliver();
 
-    response.set_version(rest::http::version::HTTP_1_0);
+    response.set_version(version::HTTP_1_0);
     EXPECT_CALL(*socket, send(An<const rest::buffer &>()))
     .Times(1)
     .WillRepeatedly(Return(true));
@@ -64,7 +70,7 @@ TEST(response, set_and_deliver)
     .WillRepeatedly(Return(true));
     response.deliver();
 
-    response.set_version(rest::http::version::HTTP_UNKNOWN);
+    response.set_version(version::HTTP_UNKNOWN);
     EXPECT_CALL(*socket, send(An<const rest::buffer &>()))
     .Times(1)
     .WillRepeatedly(Return(true));
@@ -73,3 +79,7 @@ TEST(response, set_and_deliver)
     .WillRepeatedly(Return(true));
     response.deliver();
 }
+
+} // namespace http
+
+} // namespace rest

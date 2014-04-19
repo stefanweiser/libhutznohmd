@@ -27,14 +27,20 @@
 
 using namespace testing;
 
+namespace rest
+{
+
+namespace http
+{
+
 TEST(server, parsing_request)
 {
     bool called = false;
-    auto transaction = [&called](const rest::http::request_interface & /*request*/,
-    rest::http::response_interface & /*response*/) {
+    auto transaction = [&called](const request_interface & /*request*/,
+    response_interface & /*response*/) {
         called = true;
     };
-    rest::http::server server(rest::socket::listener_pointer(), transaction);
+    server server(rest::socket::listener_pointer(), transaction);
 
     auto socket = std::make_shared<rest::socket::connection_socket_mock>();
     EXPECT_CALL(*socket, receive(_, _))
@@ -60,3 +66,7 @@ TEST(server, parsing_request)
     server.parse_request(socket);
     EXPECT_EQ(called, true);
 }
+
+} // namespace http
+
+} // namespace rest

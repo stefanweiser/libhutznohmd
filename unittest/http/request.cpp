@@ -27,19 +27,25 @@
 
 using namespace testing;
 
+namespace rest
+{
+
+namespace http
+{
+
 TEST(request, construction_destruction)
 {
-    auto request = std::make_shared<rest::http::request>(rest::socket::connection_pointer());
-    EXPECT_EQ(request->connection_, rest::socket::connection_pointer());
-    EXPECT_EQ(request->buffer_.size(), 0);
-    EXPECT_EQ(request->data_.size(), 0);
-    EXPECT_EQ(request->index_, 0);
+    auto r = std::make_shared<request>(rest::socket::connection_pointer());
+    EXPECT_EQ(r->connection_, rest::socket::connection_pointer());
+    EXPECT_EQ(r->buffer_.size(), 0);
+    EXPECT_EQ(r->data_.size(), 0);
+    EXPECT_EQ(r->index_, 0);
 }
 
 TEST(request, parse)
 {
     auto socket = std::make_shared<rest::socket::connection_socket_mock>();
-    rest::http::request request(socket);
+    request request(socket);
 
     EXPECT_CALL(*socket, receive(_, _))
     .Times(1)
@@ -62,15 +68,15 @@ TEST(request, parse)
     EXPECT_EQ(request.http_parser_.httpscan_.headers_.size(), 1);
     EXPECT_EQ(request.data(), rest::buffer({ '0' }));
     EXPECT_EQ(request.date(), 951868800);
-    EXPECT_EQ(request.method(), rest::http::method::GET);
+    EXPECT_EQ(request.method(), method::GET);
     EXPECT_EQ(request.url(), "/");
-    EXPECT_EQ(request.version(), rest::http::version::HTTP_1_1);
+    EXPECT_EQ(request.version(), version::HTTP_1_1);
 }
 
 TEST(request, parse_false_return)
 {
     auto socket = std::make_shared<rest::socket::connection_socket_mock>();
-    rest::http::request request(socket);
+    request request(socket);
 
     EXPECT_CALL(*socket, receive(_, _))
     .Times(2)
@@ -91,15 +97,15 @@ TEST(request, parse_false_return)
     EXPECT_EQ(request.http_parser_.content_length(), 1);
     EXPECT_EQ(request.http_parser_.httpscan_.headers_.empty(), true);
     EXPECT_EQ(request.data().empty(), true);
-    EXPECT_EQ(request.method(), rest::http::method::GET);
+    EXPECT_EQ(request.method(), method::GET);
     EXPECT_EQ(request.url(), "/");
-    EXPECT_EQ(request.version(), rest::http::version::HTTP_1_1);
+    EXPECT_EQ(request.version(), version::HTTP_1_1);
 }
 
 TEST(request, parse_large_request)
 {
     auto socket = std::make_shared<rest::socket::connection_socket_mock>();
-    rest::http::request request(socket);
+    request request(socket);
 
     EXPECT_CALL(*socket, receive(_, _))
     .Times(3)
@@ -129,18 +135,22 @@ TEST(request, parse_large_request)
     time_t compare_time = time(NULL);
     EXPECT_LE(request.date(), compare_time);
     EXPECT_GE(request.date(), compare_time - 2);
-    EXPECT_EQ(request.method(), rest::http::method::GET);
+    EXPECT_EQ(request.method(), method::GET);
     EXPECT_EQ(request.url(), "/");
-    EXPECT_EQ(request.version(), rest::http::version::HTTP_1_1);
+    EXPECT_EQ(request.version(), version::HTTP_1_1);
 }
 
 TEST(request, no_needed_httpscan_available)
 {
     auto socket = std::make_shared<rest::socket::connection_socket_mock>();
-    rest::http::request request(socket);
+    request request(socket);
 
     EXPECT_CALL(*socket, receive(_, _))
     .Times(2)
     .WillRepeatedly(Return(false));
     request.parse();
 }
+
+} // namespace http
+
+} // namespace rest

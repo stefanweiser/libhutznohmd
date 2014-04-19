@@ -25,6 +25,12 @@
 
 using namespace testing;
 
+namespace rest
+{
+
+namespace http
+{
+
 TEST(charactercompare, to_lower)
 {
     static const std::array<uint8_t, 256> validity_map = {
@@ -49,6 +55,10 @@ TEST(charactercompare, to_lower)
     };
 
     for (size_t i = 0; i < validity_map.size(); i++) {
-        EXPECT_EQ(static_cast<uint8_t>(rest::http::to_lower(static_cast<char>(i))), validity_map[i]);
+        EXPECT_EQ(static_cast<uint8_t>(to_lower(static_cast<char>(i))), validity_map[i]);
     }
 }
+
+} // namespace http
+
+} // namespace rest

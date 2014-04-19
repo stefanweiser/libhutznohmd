@@ -26,6 +26,9 @@
 
 using namespace testing;
 
+namespace rest
+{
+
 namespace
 {
 
@@ -35,53 +38,55 @@ void disable_time_wait(int socket)
     ::setsockopt(socket, SOL_SOCKET, SO_LINGER, &l, sizeof(l));
 }
 
-int get_socket(const rest::http::server_pointer & server)
+int get_socket(const http::server_pointer & server)
 {
-    auto listener = std::dynamic_pointer_cast<rest::http::server>(server)->socket_;
-    return std::dynamic_pointer_cast<rest::socket::listener_socket>(listener)->socket_;
+    auto listener = std::dynamic_pointer_cast<http::server>(server)->socket_;
+    return std::dynamic_pointer_cast<socket::listener_socket>(listener)->socket_;
 }
 
-int get_socket(const rest::socket::connection_pointer & connection)
+int get_socket(const socket::connection_pointer & connection)
 {
-    return std::dynamic_pointer_cast<rest::socket::connection_socket>(connection)->socket_;
+    return std::dynamic_pointer_cast<socket::connection_socket>(connection)->socket_;
 }
 
-int get_socket(const rest::socket::listener_pointer & listener)
+int get_socket(const socket::listener_pointer & listener)
 {
-    return std::dynamic_pointer_cast<rest::socket::listener_socket>(listener)->socket_;
+    return std::dynamic_pointer_cast<socket::listener_socket>(listener)->socket_;
 }
 
 }
 
 TEST(server, construction_destruction)
 {
-    auto s = rest::http::create_server("127.0.0.1", 10000, rest::http::transaction_function());
+    auto s = http::create_server("127.0.0.1", 10000, http::transaction_function());
     disable_time_wait(get_socket(s));
 }
 
 TEST(server, normal_use_case)
 {
     bool called = false;
-    auto transaction = [&called](const rest::http::request_interface & /*request*/,
-    rest::http::response_interface & /*response*/) {
+    auto transaction = [&called](const http::request_interface & /*request*/,
+    http::response_interface & /*response*/) {
         called = true;
     };
 
-    auto server = rest::http::create_server("localhost", 10000, transaction);
+    auto server = http::create_server("localhost", 10000, transaction);
     disable_time_wait(get_socket(server));
 
-    std::thread thread(std::bind(&rest::http::server_interface::run, server.get()));
+    std::thread thread(std::bind(&http::server_interface::run, server.get()));
 
-    rest::socket::connection_pointer connection = rest::socket::connect("localhost", 10000);
+    socket::connection_pointer connection = socket::connect("localhost", 10000);
     EXPECT_TRUE(connection->connect());
     disable_time_wait(get_socket(connection));
     std::string request = "GET / HTTP/1.1\r\n\r\n";
     EXPECT_FALSE(called);
     EXPECT_TRUE(connection->send(request));
-    rest::buffer data;
+    buffer data;
     EXPECT_TRUE(connection->receive(data, 4000));
     EXPECT_TRUE(called);
 
     server->stop();
     thread.join();
 }
+
+} // namespace rest
