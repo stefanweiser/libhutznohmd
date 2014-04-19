@@ -39,13 +39,13 @@ class fixture
 {
 public:
     explicit fixture(const std::string & str)
-        : httpscan_({anonymous_int_function(&get_char, &str_),
+        : str_(str)
+        , httpscan_({anonymous_int_function(&get_char, &str_),
         anonymous_int_function(&peek_char, &str_), 0, lexer_state::UNFINISHED,
         push_back_string<40>(), push_back_string<1000>(), rest::http::method::UNKNOWN,
         rest::http::version::HTTP_UNKNOWN, push_back_string<1000>(), 0, push_back_string<100>(),
         std::map<std::string, std::string>(), 0, time(NULL)
-    }),
-    str_(str) {
+    }) {
     }
 
     time_t parse() {
@@ -53,8 +53,8 @@ public:
         return parse_timestamp(result, &httpscan_);
     }
 
-    httpscan_t httpscan_;
     std::stringstream str_;
+    httpscan_t httpscan_;
 };
 
 TEST(http_date_parser, rfc1123_date)
