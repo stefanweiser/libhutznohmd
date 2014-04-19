@@ -47,8 +47,8 @@ public:
     virtual rest::buffer data() const;
     virtual time_t date();
 
-    int get();
-    int peek();
+    int32_t get();
+    int32_t peek();
 
 private:
     rest::socket::connection_pointer connection_;

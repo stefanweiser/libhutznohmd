@@ -28,12 +28,12 @@ namespace rest
 namespace http
 {
 
-int anonymous_get(void * handle)
+int32_t anonymous_get(void * handle)
 {
     return static_cast<request *>(handle)->get();
 }
 
-int anonymous_peek(void * handle)
+int32_t anonymous_peek(void * handle)
 {
     return static_cast<request *>(handle)->peek();
 }
@@ -98,7 +98,7 @@ time_t request::date()
     return http_parser_.date();
 }
 
-int request::get()
+int32_t request::get()
 {
     if (index_ >= buffer_.size()) {
         if (false == connection_->receive(buffer_, 4000)) {
@@ -109,7 +109,7 @@ int request::get()
     return buffer_[index_++];
 }
 
-int request::peek()
+int32_t request::peek()
 {
     if (index_ >= buffer_.size()) {
         if (false == connection_->receive(buffer_, 4000)) {

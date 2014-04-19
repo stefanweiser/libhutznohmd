@@ -25,7 +25,7 @@
 extern "C"
 {
 
-    int httpparse(httpscan_t * scanner);
+    int32_t httpparse(httpscan_t * scanner);
 
 }
 

@@ -18,25 +18,27 @@
 #ifndef __LIBREST_HTTP_PARSER_UTILITY_ANONYMOUSINTFUNCTION_HPP__
 #define __LIBREST_HTTP_PARSER_UTILITY_ANONYMOUSINTFUNCTION_HPP__
 
+#include <cstdint>
+
 class anonymous_int_function
 {
 public:
-    explicit anonymous_int_function(int (*functor)(void *), void * handle);
-    int operator()() const;
+    explicit anonymous_int_function(int32_t (*functor)(void *), void * handle);
+    int32_t operator()() const;
     anonymous_int_function(const anonymous_int_function & rhs);
     anonymous_int_function & operator=(const anonymous_int_function & rhs);
 
 private:
-    int (*functor_)(void *);
+    int32_t (*functor_)(void *);
     void * handle_;
 };
 
-inline anonymous_int_function::anonymous_int_function(int (*functor)(void *), void * handle)
+inline anonymous_int_function::anonymous_int_function(int32_t (*functor)(void *), void * handle)
     : functor_(functor)
     , handle_(handle)
 {}
 
-inline int anonymous_int_function::operator()() const
+inline int32_t anonymous_int_function::operator()() const
 {
     return functor_(handle_);
 }

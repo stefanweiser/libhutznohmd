@@ -24,9 +24,9 @@ lexer::lexer(const anonymous_int_function & get_functor,
     , last_char_(0)
 {}
 
-int lexer::get() const
+int32_t lexer::get() const
 {
-    int result = get_functor_();
+    int32_t result = get_functor_();
     if (result == '\r') {
         if (peek_functor_() == '\n') {
             get_functor_();
@@ -35,7 +35,7 @@ int lexer::get() const
     }
 
     if ((result == '\n') && (last_char_ != '\n')) {
-        const int n = peek_functor_();
+        const int32_t n = peek_functor_();
         if ((n == ' ') || (n == '\t')) {
             get_functor_();
             result = ' ';
@@ -46,22 +46,22 @@ int lexer::get() const
     return result;
 }
 
-int lexer::get_non_whitespace() const
+int32_t lexer::get_non_whitespace() const
 {
-    int result = 0;
+    int32_t result = 0;
     do {
         result = get();
     } while ((result == ' ') || (result == '\t'));
     return result;
 }
 
-int lexer::get_unsigned_integer(int & character) const
+int32_t lexer::get_unsigned_integer(int32_t & character) const
 {
     if ((character < '0') || (character > '9')) {
         return -1;
     }
 
-    int result = 0;
+    int32_t result = 0;
     do {
         if (character < 0) {
             return -1;

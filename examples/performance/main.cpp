@@ -21,13 +21,14 @@
 #include <sstream>
 
 #include <http/parser/httpparser.hpp>
+#include <http/parser/utility/httpdate.hpp>
 
-int anonymous_get(void * handle)
+int32_t anonymous_get(void * handle)
 {
     return static_cast<std::istream *>(handle)->get();
 }
 
-int anonymous_peek(void * handle)
+int32_t anonymous_peek(void * handle)
 {
     return static_cast<std::istream *>(handle)->peek();
 }
@@ -59,8 +60,8 @@ void test_http_date_parser(const std::string & date_string)
                              rest::http::version::HTTP_UNKNOWN, push_back_string<1000>(), 0,
                              push_back_string<100>(), std::map<std::string, std::string>(), 0, time(NULL)
                             };
-        int result = httpscan.lexer_.get();
-        parse_timestamp(result, &httpscan);
+        int32_t result = httpscan.lexer_.get();
+        parse_timestamp(result, httpscan.lexer_);
     }
     std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
     auto diff = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);

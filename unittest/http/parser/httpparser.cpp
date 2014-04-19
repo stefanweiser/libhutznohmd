@@ -28,12 +28,12 @@ using namespace testing;
 namespace
 {
 
-int anonymous_get(void * handle)
+int32_t anonymous_get(void * handle)
 {
     return static_cast<std::istream *>(handle)->get();
 }
 
-int anonymous_peek(void * handle)
+int32_t anonymous_peek(void * handle)
 {
     return static_cast<std::istream *>(handle)->peek();
 }

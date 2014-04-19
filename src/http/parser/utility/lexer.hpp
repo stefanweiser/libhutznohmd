@@ -28,9 +28,9 @@ public:
     explicit lexer(const anonymous_int_function & get_functor,
                    const anonymous_int_function & peek_functor);
 
-    int get() const;
-    int get_non_whitespace() const;
-    int get_unsigned_integer(int & character) const;
+    int32_t get() const;
+    int32_t get_non_whitespace() const;
+    int32_t get_unsigned_integer(int32_t & character) const;
 
 private:
     const anonymous_int_function get_functor_;
@@ -42,7 +42,7 @@ template<typename lower_case_string>
 bool verify_forced_characters(const lower_case_string &, const lexer & l)
 {
     for (size_t i = 0; i < lower_case_string::size; i++) {
-        const int character = l.get();
+        const int32_t character = l.get();
         if (false == compare_case_insensitive(lower_case_string::value[i], character)) {
             return false;
         }

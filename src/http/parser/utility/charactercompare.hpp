@@ -134,7 +134,7 @@ inline bool is_valid_header_value_character(uint8_t c)
     return (validity_map[c] != 0);
 }
 
-inline bool compare_case_insensitive(const int lower_char, const int indetermined_letter)
+inline bool compare_case_insensitive(const int32_t lower_char, const int32_t indetermined_letter)
 {
     return ((indetermined_letter | 0x20) == lower_char);
 }

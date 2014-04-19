@@ -28,12 +28,12 @@ using namespace testing;
 namespace
 {
 
-int anonymous_get(void * handle)
+int32_t anonymous_get(void * handle)
 {
     return static_cast<std::istream *>(handle)->get();
 }
 
-int anonymous_peek(void * handle)
+int32_t anonymous_peek(void * handle)
 {
     return static_cast<std::istream *>(handle)->peek();
 }
@@ -140,7 +140,7 @@ TEST(lexer, unsigned_integer)
     std::stringstream s("0123");
     lexer l(anonymous_int_function(&anonymous_get, &s),
             anonymous_int_function(&anonymous_peek, &s));
-    int character = l.get();
+    int32_t character = l.get();
     EXPECT_EQ(l.get_unsigned_integer(character), 123);
 }
 
@@ -149,6 +149,6 @@ TEST(lexer, wrong_unsigned_integer)
     std::stringstream s("a");
     lexer l(anonymous_int_function(&anonymous_get, &s),
             anonymous_int_function(&anonymous_peek, &s));
-    int character = l.get();
+    int32_t character = l.get();
     EXPECT_EQ(l.get_unsigned_integer(character), -1);
 }
