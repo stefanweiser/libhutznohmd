@@ -43,7 +43,7 @@ TEST(charactercompare, lower_case_string)
 
 TEST(charactercompare, to_lower)
 {
-    static const std::array<uint8_t, 256> validity_map = {
+    const std::array<uint8_t, 256> validity_map = {
         {
             0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
             0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
@@ -66,6 +66,48 @@ TEST(charactercompare, to_lower)
 
     for (size_t i = 0; i < validity_map.size(); i++) {
         EXPECT_EQ(static_cast<uint8_t>(to_lower(static_cast<char>(i))), validity_map[i]);
+    }
+}
+
+TEST(charactercompare, url_characters)
+{
+    std::array<bool, 256> validity_map;
+    std::fill(validity_map.begin(), validity_map.end(), false);
+    for (char c = 'A'; c <= 'Z'; c++) {
+        validity_map[c] = true;
+    }
+    for (char c = 'a'; c <= 'z'; c++) {
+        validity_map[c] = true;
+    }
+    for (char c = '0'; c <= '9'; c++) {
+        validity_map[c] = true;
+    }
+    validity_map['-'] = true;
+    validity_map['_'] = true;
+    validity_map['.'] = true;
+    validity_map['~'] = true;
+    validity_map['!'] = true;
+    validity_map['*'] = true;
+    validity_map['\''] = true;
+    validity_map['('] = true;
+    validity_map[')'] = true;
+    validity_map[';'] = true;
+    validity_map[':'] = true;
+    validity_map['@'] = true;
+    validity_map['&'] = true;
+    validity_map['='] = true;
+    validity_map['+'] = true;
+    validity_map['$'] = true;
+    validity_map[','] = true;
+    validity_map['/'] = true;
+    validity_map['?'] = true;
+    validity_map['%'] = true;
+    validity_map['#'] = true;
+    validity_map['['] = true;
+    validity_map[']'] = true;
+
+    for (size_t i = 0; i < validity_map.size(); i++) {
+        EXPECT_EQ(is_valid_url_character(static_cast<uint8_t>(i)), validity_map[i]);
     }
 }
 
