@@ -21,6 +21,8 @@
 #include <array>
 #include <type_traits>
 
+#include <common.hpp>
+
 namespace rest
 {
 
