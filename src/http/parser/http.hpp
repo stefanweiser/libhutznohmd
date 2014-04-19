@@ -76,7 +76,6 @@ inline httpscan::httpscan(const lexer & l)
 {}
 
 void http_parse(httpscan * scanner);
-rest::http::header_type header_key_to_header_type(const std::string & s);
 
 } // namespace http
 
