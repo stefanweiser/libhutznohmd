@@ -392,52 +392,55 @@ int parse_weekday(int & character, httpscan_t * scanner)
     return -1;
 }
 
+LOWER_CASE_STRING(ay);
 LOWER_CASE_STRING(day);
+LOWER_CASE_STRING(esday);
 LOWER_CASE_STRING(sday);
-LOWER_CASE_STRING(nesday);
-LOWER_CASE_STRING(rsday);
-LOWER_CASE_STRING(urday);
+LOWER_CASE_STRING(rday);
 
 time_t parse_timestamp(int & character, httpscan_t * scanner)
 {
     const int weekday = parse_weekday(character, scanner);
-    character = scanner->lexer_.peek();
+    character = scanner->lexer_.get();
     if (character == ' ') {
-        character = scanner->lexer_.get();
         return parse_asctime_date_time(character, scanner);
     } else if (character == ',') {
-        character = scanner->lexer_.get();
         return parse_rfc1123_date_time(character, scanner);
     } else {
         switch (weekday) {
         case 0:
         case 1:
         case 5:
-            if (false == verify_forced_characters(lower_case_string_day(), scanner)) {
+            if ((false == compare_case_insensitive('d', character)) ||
+                (false == verify_forced_characters(lower_case_string_ay(), scanner))) {
                 return -1;
             }
             break;
 
         case 2:
-            if (false == verify_forced_characters(lower_case_string_sday(), scanner)) {
+            if ((false == compare_case_insensitive('s', character)) ||
+                (false == verify_forced_characters(lower_case_string_day(), scanner))) {
                 return -1;
             }
             break;
 
         case 3:
-            if (false == verify_forced_characters(lower_case_string_nesday(), scanner)) {
+            if ((false == compare_case_insensitive('n', character)) ||
+                (false == verify_forced_characters(lower_case_string_esday(), scanner))) {
                 return -1;
             }
             break;
 
         case 4:
-            if (false == verify_forced_characters(lower_case_string_rsday(), scanner)) {
+            if ((false == compare_case_insensitive('r', character)) ||
+                (false == verify_forced_characters(lower_case_string_sday(), scanner))) {
                 return -1;
             }
             break;
 
         case 6:
-            if (false == verify_forced_characters(lower_case_string_urday(), scanner)) {
+            if ((false == compare_case_insensitive('u', character)) ||
+                (false == verify_forced_characters(lower_case_string_rday(), scanner))) {
                 return -1;
             }
             break;
