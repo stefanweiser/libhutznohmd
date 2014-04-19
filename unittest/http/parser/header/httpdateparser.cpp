@@ -21,263 +21,179 @@
 #define private public
 #define protected public
 
-#include <http/parser/header/httpdateparser.h>
+#include <http/parser/http.hpp>
 
 using namespace testing;
 
-TEST(http_date_parser, empty_date)
+int get_char(void * handle)
 {
-    rest::http::http_date_parser parser("");
-    EXPECT_EQ(parser.buffer_, "");
-    EXPECT_EQ(parser.index_, 0);
-    EXPECT_EQ(parser.error_, true);
-    EXPECT_EQ(parser.timestamp_, -1);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    return static_cast<std::istream *>(handle)->get();
 }
+
+int peek_char(void * handle)
+{
+    return static_cast<std::istream *>(handle)->peek();
+}
+
+class fixture
+{
+public:
+    explicit fixture(const std::string & str)
+        : httpscan_({anonymous_int_function(&get_char, &str_),
+        anonymous_int_function(&peek_char, &str_), 0, lexer_state::UNFINISHED,
+        push_back_string<40>(), push_back_string<1000>(), rest::http::method::UNKNOWN,
+        rest::http::version::HTTP_UNKNOWN, push_back_string<1000>(), 0, push_back_string<100>(),
+        std::map<std::string, std::string>(), 0, time(NULL)
+    }),
+    str_(str) {
+    }
+
+    time_t parse() {
+        int result = httpscan_.get_functor_();
+        return parse_timestamp(result, &httpscan_);
+    }
+
+    httpscan_t httpscan_;
+    std::stringstream str_;
+};
 
 TEST(http_date_parser, rfc1123_date)
 {
-    std::string rfc1123_date_string = "Sun, 06 Nov 1994 08:49:37 GMT";
-    rest::http::http_date_parser parser(rfc1123_date_string);
-    EXPECT_EQ(parser.buffer_, rfc1123_date_string);
-    EXPECT_EQ(parser.index_, rfc1123_date_string.size());
-    EXPECT_EQ(parser.error_, false);
-    EXPECT_EQ(parser.timestamp_, 784111777);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    fixture f("Sun, 06 Nov 1994 08:49:37 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, 784111777);
 }
 
 TEST(http_date_parser, rfc1123_tolerant_date)
 {
-    std::string rfc1123_date_string = "Sun  ,06Nov1994   08:49:37GMT";
-    rest::http::http_date_parser parser(rfc1123_date_string);
-    EXPECT_EQ(parser.buffer_, rfc1123_date_string);
-    EXPECT_EQ(parser.index_, rfc1123_date_string.size());
-    EXPECT_EQ(parser.error_, false);
-    EXPECT_EQ(parser.timestamp_, 784111777);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    fixture f("Sun,06Nov1994   08:49:37GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, 784111777);
 }
 
 TEST(http_date_parser, rfc850_date)
 {
-    std::string rfc850_date_string = "Sunday, 06-Nov-94 08:49:37 GMT";
-    rest::http::http_date_parser parser(rfc850_date_string);
-    EXPECT_EQ(parser.buffer_, rfc850_date_string);
-    EXPECT_EQ(parser.index_, rfc850_date_string.size());
-    EXPECT_EQ(parser.error_, false);
-    EXPECT_EQ(parser.timestamp_, 784111777);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    fixture f("Sunday, 06-Nov-94 08:49:37 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, 784111777);
 }
 
 TEST(http_date_parser, rfc850_tolerant_date)
 {
-    std::string rfc850_date_string = "Friday  ,06 -  Nov   -   94  08:49:37GMT";
-    rest::http::http_date_parser parser(rfc850_date_string);
-    EXPECT_EQ(parser.buffer_, rfc850_date_string);
-    EXPECT_EQ(parser.index_, rfc850_date_string.size());
-    EXPECT_EQ(parser.error_, false);
-    EXPECT_EQ(parser.timestamp_, 784111777);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    fixture f("Friday  ,06-Nov-94  08:49:37GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, 784111777);
 }
 
 TEST(http_date_parser, rfc850_erroneous_date)
 {
-    std::string rfc850_date_string = "Sunnyday,06 -  Nov   -   94  08:49:37GMT";
-    rest::http::http_date_parser parser(rfc850_date_string);
-    EXPECT_EQ(parser.buffer_, rfc850_date_string);
-    EXPECT_EQ(parser.index_, 4);
-    EXPECT_EQ(parser.error_, true);
-    EXPECT_EQ(parser.timestamp_, -1);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    fixture f("Sunnyday,06 -  Nov   -   94  08:49:37GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, -1);
 }
 
 TEST(http_date_parser, asctime_date)
 {
-    std::string asctime_date_string = "Sun Nov  6 08:49:37 1994";
-    rest::http::http_date_parser parser(asctime_date_string);
-    EXPECT_EQ(parser.buffer_, asctime_date_string);
-    EXPECT_EQ(parser.index_, asctime_date_string.size());
-    EXPECT_EQ(parser.error_, false);
-    EXPECT_EQ(parser.timestamp_, 784111777);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    fixture f("Sun Nov  6 08:49:37 1994");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, 784111777);
 }
 
 TEST(http_date_parser, asctime_tolerant_date)
 {
-    std::string asctime_date_string = "fRI\tNov     6 08:49:37    1994";
-    rest::http::http_date_parser parser(asctime_date_string);
-    EXPECT_EQ(parser.buffer_, asctime_date_string);
-    EXPECT_EQ(parser.index_, asctime_date_string.size());
-    EXPECT_EQ(parser.error_, false);
-    EXPECT_EQ(parser.timestamp_, 784111777);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    fixture f("fRI Nov     6 08:49:37    1994");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, 784111777);
 }
 
 TEST(http_date_parser, jan_date)
 {
-    std::string rfc1123_date_string = "Thu, 01 Jan 1970 00:00:00 GMT";
-    rest::http::http_date_parser parser(rfc1123_date_string);
-    EXPECT_EQ(parser.buffer_, rfc1123_date_string);
-    EXPECT_EQ(parser.index_, rfc1123_date_string.size());
-    EXPECT_EQ(parser.error_, false);
-    EXPECT_EQ(parser.valid(), true);
-    EXPECT_EQ(parser.timestamp_, 0);
-    EXPECT_EQ(parser.timestamp(), parser.timestamp_);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    fixture f("Thu, 01 Jan 1970 00:00:00 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, 0);
 }
 
 TEST(http_date_parser, feb_date)
 {
-    std::string rfc1123_date_string = "Sun, 01 Feb 1970 00:00:00 GMT";
-    rest::http::http_date_parser parser(rfc1123_date_string);
-    EXPECT_EQ(parser.buffer_, rfc1123_date_string);
-    EXPECT_EQ(parser.index_, rfc1123_date_string.size());
-    EXPECT_EQ(parser.error_, false);
-    EXPECT_EQ(parser.valid(), true);
-    EXPECT_EQ(parser.timestamp_, 2678400);
-    EXPECT_EQ(parser.timestamp(), parser.timestamp_);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    fixture f("Sun, 01 Feb 1970 00:00:00 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, 2678400);
 }
 
 TEST(http_date_parser, mar_date)
 {
-    std::string rfc1123_date_string = "Sun, 01 Mar 1970 00:00:00 GMT";
-    rest::http::http_date_parser parser(rfc1123_date_string);
-    EXPECT_EQ(parser.buffer_, rfc1123_date_string);
-    EXPECT_EQ(parser.index_, rfc1123_date_string.size());
-    EXPECT_EQ(parser.error_, false);
-    EXPECT_EQ(parser.valid(), true);
-    EXPECT_EQ(parser.timestamp_, 5097600);
-    EXPECT_EQ(parser.timestamp(), parser.timestamp_);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    fixture f("Sun, 01 Mar 1970 00:00:00 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, 5097600);
 }
 
 TEST(http_date_parser, apr_date)
 {
-    std::string rfc1123_date_string = "Wed, 01 Apr 1970 00:00:00 GMT";
-    rest::http::http_date_parser parser(rfc1123_date_string);
-    EXPECT_EQ(parser.buffer_, rfc1123_date_string);
-    EXPECT_EQ(parser.index_, rfc1123_date_string.size());
-    EXPECT_EQ(parser.error_, false);
-    EXPECT_EQ(parser.valid(), true);
-    EXPECT_EQ(parser.timestamp_, 7776000);
-    EXPECT_EQ(parser.timestamp(), parser.timestamp_);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    fixture f("Wed, 01 Apr 1970 00:00:00 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, 7776000);
 }
 
 TEST(http_date_parser, may_date)
 {
-    std::string rfc1123_date_string = "Fri, 01 May 1970 00:00:00 GMT";
-    rest::http::http_date_parser parser(rfc1123_date_string);
-    EXPECT_EQ(parser.buffer_, rfc1123_date_string);
-    EXPECT_EQ(parser.index_, rfc1123_date_string.size());
-    EXPECT_EQ(parser.error_, false);
-    EXPECT_EQ(parser.valid(), true);
-    EXPECT_EQ(parser.timestamp_, 10368000);
-    EXPECT_EQ(parser.timestamp(), parser.timestamp_);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    fixture f("Fri, 01 May 1970 00:00:00 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, 10368000);
 }
 
 TEST(http_date_parser, jun_date)
 {
-    std::string rfc1123_date_string = "Mon, 01 Jun 1970 00:00:00 GMT";
-    rest::http::http_date_parser parser(rfc1123_date_string);
-    EXPECT_EQ(parser.buffer_, rfc1123_date_string);
-    EXPECT_EQ(parser.index_, rfc1123_date_string.size());
-    EXPECT_EQ(parser.error_, false);
-    EXPECT_EQ(parser.valid(), true);
-    EXPECT_EQ(parser.timestamp_, 13046400);
-    EXPECT_EQ(parser.timestamp(), parser.timestamp_);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    fixture f("Mon, 01 Jun 1970 00:00:00 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, 13046400);
 }
 
 TEST(http_date_parser, jul_date)
 {
-    std::string rfc1123_date_string = "Wed, 01 Jul 1970 00:00:00 GMT";
-    rest::http::http_date_parser parser(rfc1123_date_string);
-    EXPECT_EQ(parser.buffer_, rfc1123_date_string);
-    EXPECT_EQ(parser.index_, rfc1123_date_string.size());
-    EXPECT_EQ(parser.error_, false);
-    EXPECT_EQ(parser.valid(), true);
-    EXPECT_EQ(parser.timestamp_, 15638400);
-    EXPECT_EQ(parser.timestamp(), parser.timestamp_);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    fixture f("Wed, 01 Jul 1970 00:00:00 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, 15638400);
 }
 
 TEST(http_date_parser, aug_date)
 {
-    std::string rfc1123_date_string = "Sat, 01 Aug 1970 00:00:00 GMT";
-    rest::http::http_date_parser parser(rfc1123_date_string);
-    EXPECT_EQ(parser.buffer_, rfc1123_date_string);
-    EXPECT_EQ(parser.index_, rfc1123_date_string.size());
-    EXPECT_EQ(parser.error_, false);
-    EXPECT_EQ(parser.valid(), true);
-    EXPECT_EQ(parser.timestamp_, 18316800);
-    EXPECT_EQ(parser.timestamp(), parser.timestamp_);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    fixture f("Sat, 01 Aug 1970 00:00:00 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, 18316800);
 }
 
 TEST(http_date_parser, sep_date)
 {
-    std::string rfc1123_date_string = "Tue, 01 Sep 1970 00:00:00 GMT";
-    rest::http::http_date_parser parser(rfc1123_date_string);
-    EXPECT_EQ(parser.buffer_, rfc1123_date_string);
-    EXPECT_EQ(parser.index_, rfc1123_date_string.size());
-    EXPECT_EQ(parser.error_, false);
-    EXPECT_EQ(parser.valid(), true);
-    EXPECT_EQ(parser.timestamp_, 20995200);
-    EXPECT_EQ(parser.timestamp(), parser.timestamp_);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    fixture f("Tue, 01 Sep 1970 00:00:00 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, 20995200);
 }
 
 TEST(http_date_parser, oct_date)
 {
-    std::string rfc1123_date_string = "Thu, 01 Oct 1970 00:00:00 GMT";
-    rest::http::http_date_parser parser(rfc1123_date_string);
-    EXPECT_EQ(parser.buffer_, rfc1123_date_string);
-    EXPECT_EQ(parser.index_, rfc1123_date_string.size());
-    EXPECT_EQ(parser.error_, false);
-    EXPECT_EQ(parser.valid(), true);
-    EXPECT_EQ(parser.timestamp_, 23587200);
-    EXPECT_EQ(parser.timestamp(), parser.timestamp_);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    fixture f("Thu, 01 Oct 1970 00:00:00 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, 23587200);
 }
 
 TEST(http_date_parser, nov_date)
 {
-    std::string rfc1123_date_string = "Sun, 01 Nov 1970 00:00:00 GMT";
-    rest::http::http_date_parser parser(rfc1123_date_string);
-    EXPECT_EQ(parser.buffer_, rfc1123_date_string);
-    EXPECT_EQ(parser.index_, rfc1123_date_string.size());
-    EXPECT_EQ(parser.error_, false);
-    EXPECT_EQ(parser.valid(), true);
-    EXPECT_EQ(parser.timestamp_, 26265600);
-    EXPECT_EQ(parser.timestamp(), parser.timestamp_);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    fixture f("Sun, 01 Nov 1970 00:00:00 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, 26265600);
 }
 
 TEST(http_date_parser, dec_date)
 {
-    std::string rfc1123_date_string = "Thu, 01 Dec 1970 00:00:00 GMT";
-    rest::http::http_date_parser parser(rfc1123_date_string);
-    EXPECT_EQ(parser.buffer_, rfc1123_date_string);
-    EXPECT_EQ(parser.index_, rfc1123_date_string.size());
-    EXPECT_EQ(parser.error_, false);
-    EXPECT_EQ(parser.valid(), true);
-    EXPECT_EQ(parser.timestamp_, 28857600);
-    EXPECT_EQ(parser.timestamp(), parser.timestamp_);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    fixture f("Thu, 01 Dec 1970 00:00:00 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, 28857600);
 }
 
 TEST(http_date_parser, year2000_date)
 {
-    std::string rfc1123_date_string = "Wed, 01 Mar 2000 00:00:00 GMT";
-    rest::http::http_date_parser parser(rfc1123_date_string);
-    EXPECT_EQ(parser.buffer_, rfc1123_date_string);
-    EXPECT_EQ(parser.index_, rfc1123_date_string.size());
-    EXPECT_EQ(parser.error_, false);
-    EXPECT_EQ(parser.valid(), true);
-    EXPECT_EQ(parser.timestamp_, 951868800);
-    EXPECT_EQ(parser.timestamp(), parser.timestamp_);
-    EXPECT_EQ(parser.scan_data_.parser, &parser);
+    fixture f("Wed, 01 Mar 2000 00:00:00 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, 951868800);
 }
 

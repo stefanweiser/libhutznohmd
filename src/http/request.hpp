@@ -56,7 +56,6 @@ private:
     rest::http::http_parser http_parser_;
     rest::buffer data_;
     size_t index_;
-    time_t date_;
 };
 
 } // namespace http

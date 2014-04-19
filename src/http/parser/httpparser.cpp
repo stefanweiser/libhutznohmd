@@ -17,6 +17,7 @@
 
 #include <cmath>
 #include <cstdint>
+#include <limits>
 #include <map>
 
 #include "httpparser.hpp"
@@ -38,7 +39,8 @@ http_parser::http_parser(const anonymous_int_function & get_functor,
                          const anonymous_int_function & peek_functor)
     : httpscan_({get_functor, peek_functor, 0, lexer_state::UNFINISHED, push_back_string<40>(),
     push_back_string<1000>(), rest::http::method::UNKNOWN, rest::http::version::HTTP_UNKNOWN,
-    push_back_string<1000>(), 0, push_back_string<100>(), std::map<std::string, std::string>(), 0
+    push_back_string<1000>(), 0, push_back_string<100>(), std::map<std::string, std::string>(), 0,
+    time(NULL)
 })
 {}
 
@@ -91,6 +93,11 @@ const std::string http_parser::header(const std::string & key) const
 const size_t & http_parser::content_length() const
 {
     return httpscan_.content_length_;
+}
+
+const time_t & http_parser::date() const
+{
+    return httpscan_.date_;
 }
 
 } // namespace http

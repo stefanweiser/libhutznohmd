@@ -59,7 +59,7 @@ TEST(request, parse)
     request.parse();
 
     EXPECT_EQ(request.http_parser_.content_length(), 1);
-    EXPECT_EQ(request.http_parser_.httpscan_.headers_.size(), 2);
+    EXPECT_EQ(request.http_parser_.httpscan_.headers_.size(), 1);
     EXPECT_EQ(request.data(), rest::buffer({ '0' }));
     EXPECT_EQ(request.date(), 951868800);
     EXPECT_EQ(request.method(), rest::http::method::GET);

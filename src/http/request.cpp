@@ -47,18 +47,26 @@ request::request(const rest::socket::connection_pointer & connection)
                    anonymous_int_function(&anonymous_peek, this))
     , data_()
     , index_(0)
-    , date_(0)
 {}
 
 void request::parse()
 {
     http_parser_.parse();
     ssize_t content_length = http_parser_.content_length();
+
     while ((content_length > 0) && (peek() >= 0)) {
-        size_t old_size = data_.size();
-        data_.insert(data_.end(), buffer_.begin() + index_, buffer_.end());
-        index_ = buffer_.size();
-        content_length -= (data_.size() - old_size);
+        ssize_t old_size = data_.size();
+        if ((old_size - static_cast<ssize_t>(index_)) >= content_length) {
+            data_.insert(data_.end(),
+                         buffer_.begin() + index_,
+                         buffer_.begin() + index_ + content_length);
+            index_ += content_length;
+            content_length -= 0;
+        } else {
+            data_.insert(data_.end(), buffer_.begin() + index_, buffer_.end());
+            index_ = buffer_.size();
+            content_length -= (data_.size() - old_size);
+        }
     }
 }
 
@@ -89,16 +97,7 @@ rest::buffer request::data() const
 
 time_t request::date()
 {
-    if (date_ == 0) {
-        const std::string & date_string = header("date");
-        http_date_parser parser(date_string);
-        if (true == parser.valid()) {
-            date_ = parser.timestamp();
-        } else {
-            date_ = time(NULL);
-        }
-    }
-    return date_;
+    return http_parser_.date();
 }
 
 int request::get()

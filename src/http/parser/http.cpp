@@ -15,6 +15,8 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <limits>
+#include <iostream>
 #include <sstream>
 
 #include <http/parser/utility/lower_case_string.hpp>
@@ -224,6 +226,340 @@ bool verify_forced_characters(const lower_case_string &, httpscan_t * scanner)
     return true;
 }
 
+int parse_time(int & character, httpscan_t * scanner)
+{
+    int hour = parse_unsigned_integer(character, scanner);
+    if ((hour < 0) || (hour > 23) || (character != ':')) {
+        return -1;
+    }
+    character = get_next_non_whitespace(scanner);
+    int minute = parse_unsigned_integer(character, scanner);
+    if ((minute < 0) || (minute > 59) || (character != ':')) {
+        return -1;
+    }
+    character = get_next_non_whitespace(scanner);
+    int second = parse_unsigned_integer(character, scanner);
+    if ((second < 0) || (second > 59)) {
+        return -1;
+    }
+    return (60 * ((60 * hour) + minute)) + second;
+}
+
+int parse_month(const char c1, const char c2, const char c3)
+{
+    if (true == compare_case_insensitive('j', c1)) {
+        if ((true == compare_case_insensitive('a', c2)) &&
+            (true == compare_case_insensitive('n', c3))) {
+            return 1;
+        } else if (true == compare_case_insensitive('u', c2)) {
+            if (true == compare_case_insensitive('n', c3)) {
+                return 6;
+            } else if (true == compare_case_insensitive('l', c3)) {
+                return 7;
+            }
+        }
+    } else if ((true == compare_case_insensitive('f', c1)) &&
+               (true == compare_case_insensitive('e', c2)) &&
+               (true == compare_case_insensitive('b', c3))) {
+        return 2;
+    } else if ((true == compare_case_insensitive('m', c1)) &&
+               (true == compare_case_insensitive('a', c2))) {
+        if (true == compare_case_insensitive('r', c3)) {
+            return 3;
+        } else if (true == compare_case_insensitive('y', c3)) {
+            return 5;
+        }
+    } else if ((true == compare_case_insensitive('a', c1))) {
+        if ((true == compare_case_insensitive('p', c2)) &&
+            (true == compare_case_insensitive('r', c3))) {
+            return 4;
+        } else if ((true == compare_case_insensitive('u', c2)) &&
+                   (true == compare_case_insensitive('g', c3))) {
+            return 8;
+        }
+    } else if ((true == compare_case_insensitive('s', c1)) &&
+               (true == compare_case_insensitive('e', c2)) &&
+               (true == compare_case_insensitive('p', c3))) {
+        return 9;
+    } else if ((true == compare_case_insensitive('o', c1)) &&
+               (true == compare_case_insensitive('c', c2)) &&
+               (true == compare_case_insensitive('t', c3))) {
+        return 10;
+    } else if ((true == compare_case_insensitive('n', c1)) &&
+               (true == compare_case_insensitive('o', c2)) &&
+               (true == compare_case_insensitive('v', c3))) {
+        return 11;
+    } else if ((true == compare_case_insensitive('d', c1)) &&
+               (true == compare_case_insensitive('e', c2)) &&
+               (true == compare_case_insensitive('c', c3))) {
+        return 12;
+    }
+    return -1;
+}
+
+time_t day_of_the_year(const time_t day,
+                       const time_t month,
+                       const time_t year)
+{
+    time_t result = day;
+    if (month < 3) {
+        result += (306 * month - 301) / 10;
+    } else {
+        result += (306 * month - 913) / 10;
+        if ((year % 4) == 0) {
+            result += 60;
+        } else {
+            result += 59;
+        }
+    }
+    return result;
+}
+
+time_t seconds_since_epoch(const time_t second_of_day,
+                           const time_t day,
+                           const time_t month,
+                           const time_t year)
+{
+    const time_t second_of_year = second_of_day +
+                                  ((day_of_the_year(day, month, year) - 1) * 86400);
+    const time_t year_seconds_since_epoch = ((year - 1970) * 86400 * 365) +
+                                            (((year - (1972 - 3)) / 4) * 86400);
+
+    return year_seconds_since_epoch + second_of_year;
+}
+
+LOWER_CASE_STRING(mt);
+
+bool is_valid_epoch_date(const time_t day, const time_t month, const time_t year)
+{
+    if ((year < 1970) ||
+        (month < 1) ||
+        (month > 12) ||
+        (day < 1) ||
+        ((month < 8) && ((month % 2) == 1) && (day > 31)) ||
+        ((month < 8) && ((month % 2) == 0) && (day > 30)) ||
+        ((month > 7) && ((month % 2) == 0) && (day > 31)) ||
+        ((month > 7) && ((month % 2) == 1) && (day > 30)) ||
+        ((month == 2) && ((year % 4) != 0) && (day > 28)) ||
+        ((month == 2) && ((year % 4) == 0) && (day > 29))) {
+
+        return false;
+    }
+    return true;
+}
+
+time_t parse_rfc1123_date_time(int & character, httpscan_t * scanner)
+{
+    character = get_next_non_whitespace(scanner);
+    const int day = parse_unsigned_integer(character, scanner);
+
+    if ((character == ' ') || (character == '\n')) {
+        character = get_next_non_whitespace(scanner);
+    }
+    const char c1 = static_cast<char>(character);
+    const char c2 = static_cast<char>(get_normalized_char(scanner));
+    const char c3 = static_cast<char>(get_normalized_char(scanner));
+    const int month = parse_month(c1, c2, c3);
+
+    character = get_next_non_whitespace(scanner);
+    const int year = parse_unsigned_integer(character, scanner);
+
+    if ((character == ' ') || (character == '\n')) {
+        character = get_next_non_whitespace(scanner);
+    }
+    const int second_of_day = parse_time(character, scanner);
+
+    if ((character == ' ') || (character == '\n')) {
+        character = get_next_non_whitespace(scanner);
+    }
+    if ((false == compare_case_insensitive('g', static_cast<char>(character))) ||
+        (false == verify_forced_characters(lower_case_string_mt(), scanner))) {
+        return -1;
+    }
+    character = get_next_non_whitespace(scanner);
+
+    if (false == is_valid_epoch_date(day, month, year)) {
+        return -1;
+    }
+    return seconds_since_epoch(second_of_day, day, month, year);
+}
+
+time_t parse_rfc850_date_time(int & character, httpscan_t * scanner)
+{
+    character = get_next_non_whitespace(scanner);
+    const int day = parse_unsigned_integer(character, scanner);
+
+    if (character != '-') {
+        return -1;
+    }
+    character = get_normalized_char(scanner);
+    const char c1 = static_cast<char>(character);
+    const char c2 = static_cast<char>(get_normalized_char(scanner));
+    const char c3 = static_cast<char>(get_normalized_char(scanner));
+    const int month = parse_month(c1, c2, c3);
+
+    character = get_normalized_char(scanner);
+    if (character != '-') {
+        return -1;
+    }
+    character = get_normalized_char(scanner);
+    const int year = 1900 + parse_unsigned_integer(character, scanner);
+    if ((year < 1900) || (year > 1999)) {
+        return -1;
+    }
+
+    if ((character == ' ') || (character == '\n')) {
+        character = get_next_non_whitespace(scanner);
+    }
+    const int second_of_day = parse_time(character, scanner);
+
+    if ((character == ' ') || (character == '\n')) {
+        character = get_next_non_whitespace(scanner);
+    }
+    if ((false == compare_case_insensitive('g', static_cast<char>(character))) ||
+        (false == verify_forced_characters(lower_case_string_mt(), scanner))) {
+        return -1;
+    }
+    character = get_next_non_whitespace(scanner);
+
+    if (false == is_valid_epoch_date(day, month, year)) {
+        return -1;
+    }
+    return seconds_since_epoch(second_of_day, day, month, year);
+}
+
+time_t parse_asctime_date_time(int & character, httpscan_t * scanner)
+{
+    if ((character == ' ') || (character == '\n')) {
+        character = get_next_non_whitespace(scanner);
+    }
+    const char c1 = static_cast<char>(character);
+    const char c2 = static_cast<char>(get_normalized_char(scanner));
+    const char c3 = static_cast<char>(get_normalized_char(scanner));
+    const int month = parse_month(c1, c2, c3);
+
+    character = get_next_non_whitespace(scanner);
+    const int day = parse_unsigned_integer(character, scanner);
+
+    character = get_next_non_whitespace(scanner);
+    const int second_of_day = parse_time(character, scanner);
+
+    character = get_next_non_whitespace(scanner);
+    const int year = parse_unsigned_integer(character, scanner);
+
+    if (character == ' ') {
+        character = get_next_non_whitespace(scanner);
+    }
+
+    if (false == is_valid_epoch_date(day, month, year)) {
+        return -1;
+    }
+    return seconds_since_epoch(second_of_day, day, month, year);
+}
+
+int parse_weekday(int & character, httpscan_t * scanner)
+{
+    const char c1 = static_cast<char>(character);
+    const char c2 = static_cast<char>(get_normalized_char(scanner));
+    const char c3 = static_cast<char>(get_normalized_char(scanner));
+
+    if ((true == compare_case_insensitive('s', c1))) {
+        if ((true == compare_case_insensitive('a', c2)) &&
+            (true == compare_case_insensitive('t', c3))) {
+            return 6;
+        } else if ((true == compare_case_insensitive('u', c2)) &&
+                   (true == compare_case_insensitive('n', c3))) {
+            return 0;
+        }
+    } else if ((true == compare_case_insensitive('t', c1))) {
+        if ((true == compare_case_insensitive('u', c2)) &&
+            (true == compare_case_insensitive('e', c3))) {
+            return 2;
+        } else if ((true == compare_case_insensitive('h', c2)) &&
+                   (true == compare_case_insensitive('u', c3))) {
+            return 4;
+        }
+    } else if ((true == compare_case_insensitive('f', c1)) &&
+               (true == compare_case_insensitive('r', c2)) &&
+               (true == compare_case_insensitive('i', c3))) {
+        return 5;
+    } else if ((true == compare_case_insensitive('m', c1)) &&
+               (true == compare_case_insensitive('o', c2)) &&
+               (true == compare_case_insensitive('n', c3))) {
+        return 1;
+    } else if ((true == compare_case_insensitive('w', c1)) &&
+               (true == compare_case_insensitive('e', c2)) &&
+               (true == compare_case_insensitive('d', c3))) {
+        return 3;
+    }
+    return -1;
+}
+
+LOWER_CASE_STRING(day);
+LOWER_CASE_STRING(sday);
+LOWER_CASE_STRING(nesday);
+LOWER_CASE_STRING(rsday);
+LOWER_CASE_STRING(urday);
+
+time_t parse_timestamp(int & character, httpscan_t * scanner)
+{
+    const int weekday = parse_weekday(character, scanner);
+    character = scanner->peek_functor_();
+    if (character == ' ') {
+        character = get_normalized_char(scanner);
+        return parse_asctime_date_time(character, scanner);
+    } else if (character == ',') {
+        character = get_normalized_char(scanner);
+        return parse_rfc1123_date_time(character, scanner);
+    } else {
+        switch (weekday) {
+        case 0:
+        case 1:
+        case 5:
+            if (false == verify_forced_characters(lower_case_string_day(), scanner)) {
+                return -1;
+            }
+            break;
+
+        case 2:
+            if (false == verify_forced_characters(lower_case_string_sday(), scanner)) {
+                return -1;
+            }
+            break;
+
+        case 3:
+            if (false == verify_forced_characters(lower_case_string_nesday(), scanner)) {
+                return -1;
+            }
+            break;
+
+        case 4:
+            if (false == verify_forced_characters(lower_case_string_rsday(), scanner)) {
+                return -1;
+            }
+            break;
+
+        case 6:
+            if (false == verify_forced_characters(lower_case_string_urday(), scanner)) {
+                return -1;
+            }
+            break;
+
+        default:
+            return -1;
+        }
+
+        character = get_next_non_whitespace(scanner);
+        if (character != ',') {
+            return -1;
+        }
+
+        character = get_next_non_whitespace(scanner);
+        return parse_rfc850_date_time(character, scanner);
+    }
+    return -1;
+}
+
 bool parse_header_key_compared_to_string(int & character,
         const std::string & already_parsed_string,
         const std::string & string,
@@ -306,12 +642,19 @@ bool parse_header(int & result, httpscan_t * scanner)
             scanner->content_length_ = static_cast<size_t>(code);
             return true;
         }
-    }/* else if ((result == 'd') || (result == 'D')) {
+    } else if ((result == 'd') || (result == 'D')) {
         bool equal = parse_header_key_compared_to_string(result, "d", "ate", scanner);
         if ((true == equal) && (result == ':')) {
-            return rest::http::header_type::DATE;
+            result = get_next_non_whitespace(scanner);
+            time_t date = parse_timestamp(result, scanner);
+            if (date == std::numeric_limits<time_t>::min()) {
+                return false;
+            }
+
+            scanner->date_ = date;
+            return true;
         }
-    } else if ((result == 'e') || (result == 'E')) {
+    }/* else if ((result == 'e') || (result == 'E')) {
         ;
     } else if ((result == 'f') || (result == 'F')) {
         ;

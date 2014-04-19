@@ -40,6 +40,7 @@ public:
     const std::string reason_phrase() const;
     const std::string header(const std::string & key) const;
     const size_t & content_length() const;
+    const time_t & date() const;
 
 private:
     httpscan_t httpscan_;
