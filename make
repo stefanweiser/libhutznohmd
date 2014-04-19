@@ -151,6 +151,8 @@ function usage()
 	echo "  Options:"
 	echo "   -h"
 	echo "   --help        : Displays this help information"
+	echo "   -s"
+	echo "   --summary     : Prints only important informations and skips other"
 	echo ""
 	echo "  Example (clean, bootstrap, check, astyle, doc, build, test, install, package):"
 	echo "    ${script_name} all debug"
@@ -213,13 +215,21 @@ function exec_build()
 function exec_unittest()
 {
 	cd "${build_path}"
-	LD_LIBRARY_PATH="${build_path}/src" "${build_path}/unittest/unittest_rest"
+	if [ "${opts_summary}" -ne 0 ]; then
+		LD_LIBRARY_PATH="${build_path}/src" "${build_path}/unittest/unittest_rest" | grep -E "\[==========\]|\[\ \ PASSED\ \ \]"
+	else
+		LD_LIBRARY_PATH="${build_path}/src" "${build_path}/unittest/unittest_rest"
+	fi
 }
 
 function exec_integrationtest()
 {
 	cd "${build_path}"
-	LD_LIBRARY_PATH="${build_path}/src" "${build_path}/integrationtest/integrationtest_rest"
+	if [ "${opts_summary}" -ne 0 ]; then
+		LD_LIBRARY_PATH="${build_path}/src" "${build_path}/integrationtest/integrationtest_rest" | grep -E "\[==========\]|\[\ \ PASSED\ \ \]"
+	else
+		LD_LIBRARY_PATH="${build_path}/src" "${build_path}/integrationtest/integrationtest_rest"
+	fi
 }
 
 function exec_install()
@@ -277,10 +287,12 @@ opts_package=0
 opts_coverage=0
 opts_valgrind=0
 opts_build_type="debug"
+opts_summary=0
 
 args=$(getopt \
 	--options "h" \
 	--longopt "help" \
+	--longopt "summary" \
 	-- "$@")
 if [ $? != 0 ]; then
 	usage
@@ -298,6 +310,9 @@ while [ $# -ne 0 ]; do
 			usage
 			exit 1
 			;;
+		--summary)
+                        opts_summary=1
+                        ;;
 		*)
 			if [ $# -gt 1 ] ; then
 				opts_words[${#opts_words[*]}]=$2
