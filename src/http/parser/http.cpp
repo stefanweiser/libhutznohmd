@@ -685,56 +685,56 @@ bool parse_headers(int & result, httpscan_t * scanner)
     return true;
 }
 
-lexer_state lex_first_line(httpscan_t * scanner)
+parser_state lex_first_line(httpscan_t * scanner)
 {
     int last = scanner->lexer_.get_non_whitespace();
     int result = scanner->lexer_.get();
     if ((last < 0) || (result < 0)) {
-        return lexer_state::ERROR;
+        return parser_state::ERROR;
     }
 
     if ((true == compare_case_insensitive('h', last)) &&
         ((true == compare_case_insensitive('t', result)))) {
         if (false == lex_http_version(last, result, scanner)) {
-            return lexer_state::ERROR;
+            return parser_state::ERROR;
         }
         result = scanner->lexer_.get_non_whitespace();
         if (false == lex_status_code(result, scanner)) {
-            return lexer_state::ERROR;
+            return parser_state::ERROR;
         }
         result = scanner->lexer_.get_non_whitespace();
         if (false == lex_reason_phrase(result, scanner)) {
-            return lexer_state::ERROR;
+            return parser_state::ERROR;
         }
     } else {
         if (false == lex_request_method(last, result, scanner)) {
-            return lexer_state::ERROR;
+            return parser_state::ERROR;
         }
         result = scanner->lexer_.get_non_whitespace();
         if (false == lex_request_url(result, scanner)) {
-            return lexer_state::ERROR;
+            return parser_state::ERROR;
         }
         last = scanner->lexer_.get_non_whitespace();
         result = scanner->lexer_.get();
         if (false == lex_http_version(last, result, scanner)) {
-            return lexer_state::ERROR;
+            return parser_state::ERROR;
         }
         const int newline = scanner->lexer_.get_non_whitespace();
         if (newline != '\n') {
-            return lexer_state::ERROR;
+            return parser_state::ERROR;
         }
     }
     result = scanner->lexer_.get();
     if (false == parse_headers(result, scanner)) {
-        return lexer_state::ERROR;
+        return parser_state::ERROR;
     }
-    return lexer_state::FINISHED;
+    return parser_state::SUCCEEDED;
 }
 
 void http_parse(httpscan_t * scanner)
 {
-    if ((scanner->state_ != lexer_state::FINISHED) &&
-        (scanner->state_ != lexer_state::ERROR)) {
+    if ((scanner->state_ != parser_state::SUCCEEDED) &&
+        (scanner->state_ != parser_state::ERROR)) {
         scanner->state_ = lex_first_line(scanner);
     }
 }
