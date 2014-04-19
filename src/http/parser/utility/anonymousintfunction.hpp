@@ -26,13 +26,17 @@ namespace rest
 namespace http
 {
 
+//! Needed by the lexer for requesting a symbol. Hides a handle that is used to call back into an
+//! object.
 class anonymous_int_function
 {
 public:
+    //! First it needs a function pointer that takes a handle and returns a symbol. Second it
+    //! needs the handle that is transmitted with any call.
     explicit anonymous_int_function(int32_t (*functor)(void *), void * handle);
+
+    //! Calls the function pointer and returns a symbol.
     int32_t operator()() const;
-    anonymous_int_function(const anonymous_int_function & rhs);
-    anonymous_int_function & operator=(const anonymous_int_function & rhs);
 
 private:
     int32_t (*functor_)(void *);
@@ -47,19 +51,6 @@ inline anonymous_int_function::anonymous_int_function(int32_t (*functor)(void *)
 inline int32_t anonymous_int_function::operator()() const
 {
     return functor_(handle_);
-}
-
-inline anonymous_int_function::anonymous_int_function(const anonymous_int_function & rhs)
-    : functor_(rhs.functor_)
-    , handle_(rhs.handle_)
-{}
-
-inline anonymous_int_function & anonymous_int_function::operator=(const anonymous_int_function &
-        rhs)
-{
-    functor_ = rhs.functor_;
-    handle_ = rhs.handle_;
-    return *this;
 }
 
 } // namespace http

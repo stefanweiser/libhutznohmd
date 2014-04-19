@@ -30,17 +30,22 @@ namespace http
 namespace detail
 {
 
+//! Provides an integral constant for a given character, that describes whether the character is a
+//! lower letter or not.
 template<char c>
 struct is_lower_char {
     using value = std::integral_constant < bool, (c >= 'a') && (c <= 'z') >;
 };
 
+//! Provides an integral constant for a given string, that describes whether the string consists
+//! only of lower letters or not.
 template<typename s, size_t n>
 struct is_lower_string {
     using value = std::integral_constant < bool, is_lower_string < s, n - 1 >::value::value &&
                   std::integral_constant < bool, (s::value[n - 1] >= 'a') && (s::value[n - 1] <= 'z') >::value >;
 };
 
+//! Terminates the template recursion.
 template <typename s>
 struct is_lower_string<s, 0> {
     using value = std::true_type;
@@ -48,6 +53,10 @@ struct is_lower_string<s, 0> {
 
 } // namespace detail
 
+//! Defines a string and asserts statically if, the string consists of something else, than lower
+//! case letters.
+//! @example LOWER_CASE_STRING(abc); will work fine.
+//! @example LOWER_CASE_STRING(abC); will raise an assertion during compilation.
 #define LOWER_CASE_STRING(S) \
     struct lower_case_string_##S \
     { \
@@ -57,6 +66,7 @@ struct is_lower_string<s, 0> {
                       "String is not lower case."); \
     }
 
+//! Converts a letter into the corresponding lower case letter.
 inline char to_lower(const char c)
 {
     if ((c >= 'A') && (c <= 'Z')) {
@@ -65,6 +75,7 @@ inline char to_lower(const char c)
     return c;
 }
 
+//! Returns true, if the given character is a valid character for an URL.
 inline bool is_valid_url_character(uint8_t c)
 {
     static const std::array<char, 256> validity_map = {
@@ -90,6 +101,7 @@ inline bool is_valid_url_character(uint8_t c)
     return (validity_map[c] != 0);
 }
 
+//! Returns true, if the given character is a valid character for a header key.
 inline bool is_valid_header_key_character(uint8_t c)
 {
     static const std::array<char, 256> validity_map = {
@@ -115,6 +127,7 @@ inline bool is_valid_header_key_character(uint8_t c)
     return (validity_map[c] != 0);
 }
 
+//! Returns true, if the given character is a valid character for a custom header value.
 inline bool is_valid_header_value_character(uint8_t c)
 {
     static const std::array<char, 256> validity_map = {
@@ -140,9 +153,16 @@ inline bool is_valid_header_value_character(uint8_t c)
     return (validity_map[c] != 0);
 }
 
-inline bool compare_case_insensitive(const int32_t lower_char, const int32_t indetermined_letter)
+//! Returns true, if the given indetermined letter is equal to the lower case character or its
+//! upper case equivalent. The first parameter must be a lower letter, although this is not
+//! checked for performance.
+//! @example compare_case_insensitive('a', 'A') will return true.
+//! @example compare_case_insensitive('a', 'a') will return true.
+//! @example compare_case_insensitive('a', 'B') will return false.
+//! @example compare_case_insensitive('a', 'b') will return false.
+inline bool compare_case_insensitive(const int32_t lower_letter, const int32_t indetermined_letter)
 {
-    return ((indetermined_letter | 0x20) == lower_char);
+    return ((indetermined_letter | 0x20) == lower_letter);
 }
 
 } // namespace http
