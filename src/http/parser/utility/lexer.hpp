@@ -32,8 +32,7 @@ private:
 inline anonymous_int_function::anonymous_int_function(int (*functor)(void *), void * handle)
     : functor_(functor)
     , handle_(handle)
-{
-}
+{}
 
 inline int anonymous_int_function::operator()()
 {
