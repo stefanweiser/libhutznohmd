@@ -231,31 +231,27 @@ bool lex_request_url(int32_t & result, push_back_string<1000> & url, const lexer
 
 LOWER_CASE_STRING(tp);
 
-bool lex_http_version(const int32_t & last, int32_t & result, httpscan * scanner)
+version lex_http_version(const int32_t & last, int32_t & character, const lexer & l)
 {
-    bool succeeded = true;
     if ((true == compare_case_insensitive('h', last)) &&
-        (true == compare_case_insensitive('t', result))) {
-        succeeded = verify_forced_characters(lower_case_string_tp(), scanner->lexer_);
-        const int32_t slash = scanner->lexer_.get();
-        const int32_t one = scanner->lexer_.get();
-        const int32_t dot = scanner->lexer_.get();
+        (true == compare_case_insensitive('t', character))) {
+        if (false == verify_forced_characters(lower_case_string_tp(), l)) {
+            return version::HTTP_UNKNOWN;
+        }
+        const int32_t slash = l.get();
+        const int32_t one = l.get();
+        const int32_t dot = l.get();
         if ((slash != '/') || (one != '1') || (dot != '.')) {
-            succeeded = false;
+            return version::HTTP_UNKNOWN;
         }
-        const int32_t version_digit = scanner->lexer_.get();
+        const int32_t version_digit = l.get();
         if (version_digit == '0') {
-            scanner->version_ = rest::http::version::HTTP_1_0;
+            return rest::http::version::HTTP_1_0;
         } else if (version_digit == '1') {
-            scanner->version_ = rest::http::version::HTTP_1_1;
-        } else {
-            succeeded = false;
+            return rest::http::version::HTTP_1_1;
         }
-    } else {
-        succeeded = false;
     }
-
-    return succeeded;
+    return version::HTTP_UNKNOWN;
 }
 
 bool lex_status_code(int32_t & result, httpscan * scanner)
@@ -304,7 +300,8 @@ parser_state lex_first_line(httpscan * scanner)
 
     if ((true == compare_case_insensitive('h', last)) &&
         ((true == compare_case_insensitive('t', result)))) {
-        if (false == lex_http_version(last, result, scanner)) {
+        scanner->version_ = lex_http_version(last, result, scanner->lexer_);
+        if (version::HTTP_UNKNOWN == scanner->version_) {
             return parser_state::ERROR;
         }
         result = scanner->lexer_.get_non_whitespace();
@@ -326,7 +323,8 @@ parser_state lex_first_line(httpscan * scanner)
         }
         last = scanner->lexer_.get_non_whitespace();
         result = scanner->lexer_.get();
-        if (false == lex_http_version(last, result, scanner)) {
+        scanner->version_ = lex_http_version(last, result, scanner->lexer_);
+        if (version::HTTP_UNKNOWN == scanner->version_) {
             return parser_state::ERROR;
         }
         const int32_t newline = scanner->lexer_.get_non_whitespace();
