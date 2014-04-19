@@ -18,6 +18,8 @@
 #ifndef __LIBREST_HTTP_PARSER_UTILITY_LEXER_HPP__
 #define __LIBREST_HTTP_PARSER_UTILITY_LEXER_HPP__
 
+#include <cstddef>
+
 #include <http/parser/utility/anonymousintfunction.hpp>
 
 class lexer
@@ -26,14 +28,26 @@ public:
     explicit lexer(const anonymous_int_function & get_functor,
                    const anonymous_int_function & peek_functor);
 
-    int get();
-    int get_non_whitespace();
-    int get_unsigned_integer(int & character);
+    int get() const;
+    int get_non_whitespace() const;
+    int get_unsigned_integer(int & character) const;
 
 private:
-    anonymous_int_function get_functor_;
-    anonymous_int_function peek_functor_;
-    char last_char_;
+    const anonymous_int_function get_functor_;
+    const anonymous_int_function peek_functor_;
+    mutable char last_char_;
 };
+
+template<typename lower_case_string>
+bool verify_forced_characters(const lower_case_string &, const lexer & l)
+{
+    for (size_t i = 0; i < lower_case_string::size; i++) {
+        const int character = l.get();
+        if (false == compare_case_insensitive(lower_case_string::value[i], character)) {
+            return false;
+        }
+    }
+    return true;
+}
 
 #endif // __LIBREST_HTTP_PARSER_UTILITY_LEXER_HPP__

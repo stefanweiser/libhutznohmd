@@ -23,18 +23,6 @@
 
 #include "http.hpp"
 
-template<typename lower_case_string>
-bool verify_forced_characters(const lower_case_string &, httpscan_t * scanner)
-{
-    for (size_t i = 0; i < lower_case_string::size; i++) {
-        const int character = scanner->lexer_.get();
-        if (false == compare_case_insensitive(lower_case_string::value[i], character)) {
-            return false;
-        }
-    }
-    return true;
-}
-
 int parse_time(int & character, httpscan_t * scanner)
 {
     int hour = scanner->lexer_.get_unsigned_integer(character);
@@ -182,7 +170,7 @@ time_t parse_rfc1123_date_time(int & character, httpscan_t * scanner)
         character = scanner->lexer_.get_non_whitespace();
     }
     if ((false == compare_case_insensitive('g', character)) ||
-        (false == verify_forced_characters(lower_case_string_mt(), scanner))) {
+        (false == verify_forced_characters(lower_case_string_mt(), scanner->lexer_))) {
         return -1;
     }
     character = scanner->lexer_.get_non_whitespace();
@@ -226,7 +214,7 @@ time_t parse_rfc850_date_time(int & character, httpscan_t * scanner)
         character = scanner->lexer_.get_non_whitespace();
     }
     if ((false == compare_case_insensitive('g', character)) ||
-        (false == verify_forced_characters(lower_case_string_mt(), scanner))) {
+        (false == verify_forced_characters(lower_case_string_mt(), scanner->lexer_))) {
         return -1;
     }
     character = scanner->lexer_.get_non_whitespace();
@@ -324,35 +312,35 @@ time_t parse_timestamp(int & character, httpscan_t * scanner)
         case 1:
         case 5:
             if ((false == compare_case_insensitive('d', character)) ||
-                (false == verify_forced_characters(lower_case_string_ay(), scanner))) {
+                (false == verify_forced_characters(lower_case_string_ay(), scanner->lexer_))) {
                 return -1;
             }
             break;
 
         case 2:
             if ((false == compare_case_insensitive('s', character)) ||
-                (false == verify_forced_characters(lower_case_string_day(), scanner))) {
+                (false == verify_forced_characters(lower_case_string_day(), scanner->lexer_))) {
                 return -1;
             }
             break;
 
         case 3:
             if ((false == compare_case_insensitive('n', character)) ||
-                (false == verify_forced_characters(lower_case_string_esday(), scanner))) {
+                (false == verify_forced_characters(lower_case_string_esday(), scanner->lexer_))) {
                 return -1;
             }
             break;
 
         case 4:
             if ((false == compare_case_insensitive('r', character)) ||
-                (false == verify_forced_characters(lower_case_string_sday(), scanner))) {
+                (false == verify_forced_characters(lower_case_string_sday(), scanner->lexer_))) {
                 return -1;
             }
             break;
 
         case 6:
             if ((false == compare_case_insensitive('u', character)) ||
-                (false == verify_forced_characters(lower_case_string_rday(), scanner))) {
+                (false == verify_forced_characters(lower_case_string_rday(), scanner->lexer_))) {
                 return -1;
             }
             break;
@@ -571,35 +559,35 @@ bool lex_request_method(const int & last, int & result, httpscan_t * scanner)
     if ((true == compare_case_insensitive('h', last)) &&
         (true == compare_case_insensitive('e', result))) {
         scanner->method_ = rest::http::method::HEAD;
-        succeeded = verify_forced_characters(lower_case_string_ad(), scanner);
+        succeeded = verify_forced_characters(lower_case_string_ad(), scanner->lexer_);
     } else if ((true == compare_case_insensitive('g', last)) &&
                (true == compare_case_insensitive('e', result))) {
         scanner->method_ = rest::http::method::GET;
-        succeeded = verify_forced_characters(lower_case_string_t(), scanner);
+        succeeded = verify_forced_characters(lower_case_string_t(), scanner->lexer_);
     } else if ((true == compare_case_insensitive('p', last))) {
         if (true == compare_case_insensitive('u', result)) {
             scanner->method_ = rest::http::method::PUT;
-            succeeded = verify_forced_characters(lower_case_string_t(), scanner);
+            succeeded = verify_forced_characters(lower_case_string_t(), scanner->lexer_);
         } else if (true == compare_case_insensitive('o', result)) {
             scanner->method_ = rest::http::method::POST;
-            succeeded = verify_forced_characters(lower_case_string_st(), scanner);
+            succeeded = verify_forced_characters(lower_case_string_st(), scanner->lexer_);
         }
     } else if ((true == compare_case_insensitive('d', last)) &&
                (true == compare_case_insensitive('e', result))) {
         scanner->method_ = rest::http::method::DELETE;
-        succeeded = verify_forced_characters(lower_case_string_lete(), scanner);
+        succeeded = verify_forced_characters(lower_case_string_lete(), scanner->lexer_);
     } else if ((true == compare_case_insensitive('o', last)) &&
                (true == compare_case_insensitive('p', result))) {
         scanner->method_ = rest::http::method::OPTIONS;
-        succeeded = verify_forced_characters(lower_case_string_tions(), scanner);
+        succeeded = verify_forced_characters(lower_case_string_tions(), scanner->lexer_);
     } else if ((true == compare_case_insensitive('c', last)) &&
                (true == compare_case_insensitive('o', result))) {
         scanner->method_ = rest::http::method::CONNECT;
-        succeeded = verify_forced_characters(lower_case_string_nnect(), scanner);
+        succeeded = verify_forced_characters(lower_case_string_nnect(), scanner->lexer_);
     } else if ((true == compare_case_insensitive('t', last)) &&
                (true == compare_case_insensitive('r', result))) {
         scanner->method_ = rest::http::method::TRACE;
-        succeeded = verify_forced_characters(lower_case_string_ace(), scanner);
+        succeeded = verify_forced_characters(lower_case_string_ace(), scanner->lexer_);
     } else {
         succeeded = false;
     }
@@ -627,7 +615,7 @@ bool lex_http_version(const int & last, int & result, httpscan_t * scanner)
     bool succeeded = true;
     if ((true == compare_case_insensitive('h', last)) &&
         (true == compare_case_insensitive('t', result))) {
-        succeeded = verify_forced_characters(lower_case_string_tp(), scanner);
+        succeeded = verify_forced_characters(lower_case_string_tp(), scanner->lexer_);
         const int slash = scanner->lexer_.get();
         const int one = scanner->lexer_.get();
         const int dot = scanner->lexer_.get();

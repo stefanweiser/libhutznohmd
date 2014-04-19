@@ -24,7 +24,7 @@ lexer::lexer(const anonymous_int_function & get_functor,
     , last_char_(0)
 {}
 
-int lexer::get()
+int lexer::get() const
 {
     int result = get_functor_();
     if (result == '\r') {
@@ -46,7 +46,7 @@ int lexer::get()
     return result;
 }
 
-int lexer::get_non_whitespace()
+int lexer::get_non_whitespace() const
 {
     int result = 0;
     do {
@@ -55,7 +55,7 @@ int lexer::get_non_whitespace()
     return result;
 }
 
-int lexer::get_unsigned_integer(int & character)
+int lexer::get_unsigned_integer(int & character) const
 {
     if ((character < '0') || (character > '9')) {
         return -1;

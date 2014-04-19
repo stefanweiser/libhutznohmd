@@ -22,7 +22,7 @@ class anonymous_int_function
 {
 public:
     explicit anonymous_int_function(int (*functor)(void *), void * handle);
-    int operator()();
+    int operator()() const;
     anonymous_int_function(const anonymous_int_function & rhs);
     anonymous_int_function & operator=(const anonymous_int_function & rhs);
 
@@ -36,7 +36,7 @@ inline anonymous_int_function::anonymous_int_function(int (*functor)(void *), vo
     , handle_(handle)
 {}
 
-inline int anonymous_int_function::operator()()
+inline int anonymous_int_function::operator()() const
 {
     return functor_(handle_);
 }
