@@ -69,7 +69,7 @@ struct is_lower_string<s, 0> {
     constexpr const size_t lower_case_string_##S::size
 
 //! Converts a letter into the corresponding lower case letter.
-inline char to_lower(const char c)
+static char UNUSED to_lower(const char c)
 {
     if ((c >= 'A') && (c <= 'Z')) {
         return (c | 0x60);
@@ -78,7 +78,7 @@ inline char to_lower(const char c)
 }
 
 //! Returns true, if the given character is a valid character for an URL.
-inline bool is_valid_url_character(uint8_t c)
+static bool UNUSED is_valid_url_character(uint8_t c)
 {
     static const std::array<char, 256> validity_map = {
         {
@@ -104,7 +104,7 @@ inline bool is_valid_url_character(uint8_t c)
 }
 
 //! Returns true, if the given character is a valid character for a header key.
-inline bool is_valid_header_key_character(uint8_t c)
+static bool UNUSED is_valid_header_key_character(uint8_t c)
 {
     static const std::array<char, 256> validity_map = {
         {
@@ -130,7 +130,7 @@ inline bool is_valid_header_key_character(uint8_t c)
 }
 
 //! Returns true, if the given character is a valid character for a custom header value.
-inline bool is_valid_header_value_character(uint8_t c)
+static bool UNUSED is_valid_header_value_character(uint8_t c)
 {
     static const std::array<char, 256> validity_map = {
         {
@@ -162,7 +162,8 @@ inline bool is_valid_header_value_character(uint8_t c)
 //! @example compare_case_insensitive('a', 'a') will return true.
 //! @example compare_case_insensitive('a', 'B') will return false.
 //! @example compare_case_insensitive('a', 'b') will return false.
-inline bool compare_case_insensitive(const int32_t lower_letter, const int32_t indetermined_letter)
+static bool UNUSED compare_case_insensitive(const int32_t lower_letter,
+        const int32_t indetermined_letter)
 {
     return ((indetermined_letter | 0x20) == lower_letter);
 }
