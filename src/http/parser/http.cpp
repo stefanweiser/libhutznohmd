@@ -30,60 +30,6 @@ char to_lower(const char c)
     return c;
 }
 
-rest::http::header_type header_key_to_header_type(const std::string & s)
-{
-    const static std::map<std::string, rest::http::header_type> string_to_enum_map = {
-        {"accept", rest::http::header_type::ACCEPT},
-        {"accept-charset", rest::http::header_type::ACCEPT_CHARSET},
-        {"accept-encoding", rest::http::header_type::ACCEPT_ENCODING},
-        {"accept-language", rest::http::header_type::ACCEPT_LANGUAGE},
-        {"accept-ranges", rest::http::header_type::ACCEPT_RANGES},
-        {"age", rest::http::header_type::AGE},
-        {"allow", rest::http::header_type::ALLOW},
-        {"authorization", rest::http::header_type::AUTHORIZATION},
-        {"cache-control", rest::http::header_type::CACHE_CONTROL},
-        {"connection", rest::http::header_type::CONNECTION},
-        {"content-encoding", rest::http::header_type::CONTENT_ENCODING},
-        {"content-language", rest::http::header_type::CONTENT_LANGUAGE},
-        {"content-length", rest::http::header_type::CONTENT_LENGTH},
-        {"content-location", rest::http::header_type::CONTENT_LOCATION},
-        {"content-md5", rest::http::header_type::CONTENT_MD5},
-        {"content-range", rest::http::header_type::CONTENT_RANGE},
-        {"content-type", rest::http::header_type::CONTENT_TYPE},
-        {"cookie", rest::http::header_type::COOKIE},
-        {"date", rest::http::header_type::DATE},
-        {"etag", rest::http::header_type::ETAG},
-        {"expect", rest::http::header_type::EXPECT},
-        {"expires", rest::http::header_type::EXPIRES},
-        {"from", rest::http::header_type::FROM},
-        {"host", rest::http::header_type::HOST},
-        {"if-match", rest::http::header_type::IF_MATCH},
-        {"if-modified-since", rest::http::header_type::IF_MODIFIED_SINCE},
-        {"if-none-match", rest::http::header_type::IF_NONE_MATCH},
-        {"if-range", rest::http::header_type::IF_RANGE},
-        {"if-unmodified-since", rest::http::header_type::IF_UNMODIFIED_SINCE},
-        {"last-modified", rest::http::header_type::LAST_MODIFIED},
-        {"location", rest::http::header_type::LOCATION},
-        {"max-forwards", rest::http::header_type::MAX_FORWARDS},
-        {"pragma", rest::http::header_type::PRAGMA},
-        {"proxy-authenticate", rest::http::header_type::PROXY_AUTHENTICATE},
-        {"proxy-authorization", rest::http::header_type::PROXY_AUTHORIZATION},
-        {"range", rest::http::header_type::RANGE},
-        {"referer", rest::http::header_type::REFERER},
-        {"retry-after", rest::http::header_type::RETRY_AFTER},
-        {"server", rest::http::header_type::SERVER},
-        {"user-agent", rest::http::header_type::USER_AGENT},
-        {"vary", rest::http::header_type::VARY},
-        {"www-authenticate", rest::http::header_type::WWW_AUTHENTICATE}
-    };
-
-    auto it = string_to_enum_map.find(s);
-    if (it != string_to_enum_map.end()) {
-        return it->second;
-    }
-    return rest::http::header_type::CUSTOM;
-}
-
 bool is_valid_url_character(uint8_t c)
 {
     static const std::array<char, 256> validity_map = {
@@ -159,40 +105,52 @@ bool is_valid_header_value_character(uint8_t c)
     return (validity_map[c] != 0);
 }
 
-int get_normalized_char(httpscan_t * scanner)
+lexer::lexer(const anonymous_int_function & get_functor,
+             const anonymous_int_function & peek_functor)
+    : get_functor_(get_functor)
+    , peek_functor_(peek_functor)
+    , last_char_(0)
+{}
+
+int lexer::get()
 {
-    int result = scanner->get_functor_();
+    int result = get_functor_();
     if (result == '\r') {
-        if (scanner->peek_functor_() == '\n') {
-            scanner->get_functor_();
+        if (peek_functor_() == '\n') {
+            get_functor_();
         }
         result = '\n';
     }
 
-    if ((result == '\n') && (scanner->last_char_ != '\n')) {
-        const int n = scanner->peek_functor_();
+    if ((result == '\n') && (last_char_ != '\n')) {
+        const int n = peek_functor_();
         if ((n == ' ') || (n == '\t')) {
-            scanner->get_functor_();
+            get_functor_();
             result = ' ';
         }
     }
 
-    scanner->last_char_ = static_cast<char>(result);
+    last_char_ = static_cast<char>(result);
     return result;
 }
 
-int get_next_non_whitespace(httpscan_t * scanner)
+int lexer::get_non_whitespace()
 {
     int result = 0;
     do {
-        result = get_normalized_char(scanner);
+        result = get();
     } while ((result == ' ') || (result == '\t'));
     return result;
 }
 
+int lexer::peek()
+{
+    return peek_functor_();
+}
+
 int parse_unsigned_integer(int & digit, httpscan_t * scanner)
 {
-    if (0 == isdigit(digit)) {
+    if ((digit < '0') || (digit > '9')) {
         return -1;
     }
 
@@ -202,8 +160,8 @@ int parse_unsigned_integer(int & digit, httpscan_t * scanner)
             return -1;
         }
         result = (result * 10) + (digit - 0x30);
-        digit = get_normalized_char(scanner);
-    } while (0 != isdigit(digit));
+        digit = scanner->lexer_.get();
+    } while ((digit >= '0') && (digit <= '9'));
 
     return result;
 }
@@ -217,7 +175,7 @@ template<typename lower_case_string>
 bool verify_forced_characters(const lower_case_string &, httpscan_t * scanner)
 {
     for (size_t i = 0; i < lower_case_string::size; i++) {
-        const int character = get_normalized_char(scanner);
+        const int character = scanner->lexer_.get();
         if (false == compare_case_insensitive(lower_case_string::value[i], character)) {
             return false;
         }
@@ -231,12 +189,12 @@ int parse_time(int & character, httpscan_t * scanner)
     if ((hour < 0) || (hour > 23) || (character != ':')) {
         return -1;
     }
-    character = get_next_non_whitespace(scanner);
+    character = scanner->lexer_.get_non_whitespace();
     int minute = parse_unsigned_integer(character, scanner);
     if ((minute < 0) || (minute > 59) || (character != ':')) {
         return -1;
     }
-    character = get_next_non_whitespace(scanner);
+    character = scanner->lexer_.get_non_whitespace();
     int second = parse_unsigned_integer(character, scanner);
     if ((second < 0) || (second > 59)) {
         return -1;
@@ -327,8 +285,6 @@ time_t seconds_since_epoch(const time_t second_of_day,
     return year_seconds_since_epoch + second_of_year;
 }
 
-LOWER_CASE_STRING(mt);
-
 bool is_valid_epoch_date(const time_t day, const time_t month, const time_t year)
 {
     if ((year < 1970) ||
@@ -347,35 +303,37 @@ bool is_valid_epoch_date(const time_t day, const time_t month, const time_t year
     return true;
 }
 
+LOWER_CASE_STRING(mt);
+
 time_t parse_rfc1123_date_time(int & character, httpscan_t * scanner)
 {
-    character = get_next_non_whitespace(scanner);
+    character = scanner->lexer_.get_non_whitespace();
     const int day = parse_unsigned_integer(character, scanner);
 
     if ((character == ' ') || (character == '\n')) {
-        character = get_next_non_whitespace(scanner);
+        character = scanner->lexer_.get_non_whitespace();
     }
     const char c1 = static_cast<char>(character);
-    const char c2 = static_cast<char>(get_normalized_char(scanner));
-    const char c3 = static_cast<char>(get_normalized_char(scanner));
+    const char c2 = static_cast<char>(scanner->lexer_.get());
+    const char c3 = static_cast<char>(scanner->lexer_.get());
     const int month = parse_month(c1, c2, c3);
 
-    character = get_next_non_whitespace(scanner);
+    character = scanner->lexer_.get_non_whitespace();
     const int year = parse_unsigned_integer(character, scanner);
 
     if ((character == ' ') || (character == '\n')) {
-        character = get_next_non_whitespace(scanner);
+        character = scanner->lexer_.get_non_whitespace();
     }
     const int second_of_day = parse_time(character, scanner);
 
     if ((character == ' ') || (character == '\n')) {
-        character = get_next_non_whitespace(scanner);
+        character = scanner->lexer_.get_non_whitespace();
     }
     if ((false == compare_case_insensitive('g', static_cast<char>(character))) ||
         (false == verify_forced_characters(lower_case_string_mt(), scanner))) {
         return -1;
     }
-    character = get_next_non_whitespace(scanner);
+    character = scanner->lexer_.get_non_whitespace();
 
     if (false == is_valid_epoch_date(day, month, year)) {
         return -1;
@@ -385,41 +343,41 @@ time_t parse_rfc1123_date_time(int & character, httpscan_t * scanner)
 
 time_t parse_rfc850_date_time(int & character, httpscan_t * scanner)
 {
-    character = get_next_non_whitespace(scanner);
+    character = scanner->lexer_.get_non_whitespace();
     const int day = parse_unsigned_integer(character, scanner);
 
     if (character != '-') {
         return -1;
     }
-    character = get_normalized_char(scanner);
+    character = scanner->lexer_.get();
     const char c1 = static_cast<char>(character);
-    const char c2 = static_cast<char>(get_normalized_char(scanner));
-    const char c3 = static_cast<char>(get_normalized_char(scanner));
+    const char c2 = static_cast<char>(scanner->lexer_.get());
+    const char c3 = static_cast<char>(scanner->lexer_.get());
     const int month = parse_month(c1, c2, c3);
 
-    character = get_normalized_char(scanner);
+    character = scanner->lexer_.get();
     if (character != '-') {
         return -1;
     }
-    character = get_normalized_char(scanner);
+    character = scanner->lexer_.get();
     const int year = 1900 + parse_unsigned_integer(character, scanner);
     if ((year < 1900) || (year > 1999)) {
         return -1;
     }
 
     if ((character == ' ') || (character == '\n')) {
-        character = get_next_non_whitespace(scanner);
+        character = scanner->lexer_.get_non_whitespace();
     }
     const int second_of_day = parse_time(character, scanner);
 
     if ((character == ' ') || (character == '\n')) {
-        character = get_next_non_whitespace(scanner);
+        character = scanner->lexer_.get_non_whitespace();
     }
     if ((false == compare_case_insensitive('g', static_cast<char>(character))) ||
         (false == verify_forced_characters(lower_case_string_mt(), scanner))) {
         return -1;
     }
-    character = get_next_non_whitespace(scanner);
+    character = scanner->lexer_.get_non_whitespace();
 
     if (false == is_valid_epoch_date(day, month, year)) {
         return -1;
@@ -430,24 +388,24 @@ time_t parse_rfc850_date_time(int & character, httpscan_t * scanner)
 time_t parse_asctime_date_time(int & character, httpscan_t * scanner)
 {
     if ((character == ' ') || (character == '\n')) {
-        character = get_next_non_whitespace(scanner);
+        character = scanner->lexer_.get_non_whitespace();
     }
     const char c1 = static_cast<char>(character);
-    const char c2 = static_cast<char>(get_normalized_char(scanner));
-    const char c3 = static_cast<char>(get_normalized_char(scanner));
+    const char c2 = static_cast<char>(scanner->lexer_.get());
+    const char c3 = static_cast<char>(scanner->lexer_.get());
     const int month = parse_month(c1, c2, c3);
 
-    character = get_next_non_whitespace(scanner);
+    character = scanner->lexer_.get_non_whitespace();
     const int day = parse_unsigned_integer(character, scanner);
 
-    character = get_next_non_whitespace(scanner);
+    character = scanner->lexer_.get_non_whitespace();
     const int second_of_day = parse_time(character, scanner);
 
-    character = get_next_non_whitespace(scanner);
+    character = scanner->lexer_.get_non_whitespace();
     const int year = parse_unsigned_integer(character, scanner);
 
     if (character == ' ') {
-        character = get_next_non_whitespace(scanner);
+        character = scanner->lexer_.get_non_whitespace();
     }
 
     if (false == is_valid_epoch_date(day, month, year)) {
@@ -459,8 +417,8 @@ time_t parse_asctime_date_time(int & character, httpscan_t * scanner)
 int parse_weekday(int & character, httpscan_t * scanner)
 {
     const char c1 = static_cast<char>(character);
-    const char c2 = static_cast<char>(get_normalized_char(scanner));
-    const char c3 = static_cast<char>(get_normalized_char(scanner));
+    const char c2 = static_cast<char>(scanner->lexer_.get());
+    const char c3 = static_cast<char>(scanner->lexer_.get());
 
     if ((true == compare_case_insensitive('s', c1))) {
         if ((true == compare_case_insensitive('a', c2)) &&
@@ -503,12 +461,12 @@ LOWER_CASE_STRING(urday);
 time_t parse_timestamp(int & character, httpscan_t * scanner)
 {
     const int weekday = parse_weekday(character, scanner);
-    character = scanner->peek_functor_();
+    character = scanner->lexer_.peek();
     if (character == ' ') {
-        character = get_normalized_char(scanner);
+        character = scanner->lexer_.get();
         return parse_asctime_date_time(character, scanner);
     } else if (character == ',') {
-        character = get_normalized_char(scanner);
+        character = scanner->lexer_.get();
         return parse_rfc1123_date_time(character, scanner);
     } else {
         switch (weekday) {
@@ -548,12 +506,12 @@ time_t parse_timestamp(int & character, httpscan_t * scanner)
             return -1;
         }
 
-        character = get_next_non_whitespace(scanner);
+        character = scanner->lexer_.get_non_whitespace();
         if (character != ',') {
             return -1;
         }
 
-        character = get_next_non_whitespace(scanner);
+        character = scanner->lexer_.get_non_whitespace();
         return parse_rfc850_date_time(character, scanner);
     }
     return -1;
@@ -566,7 +524,7 @@ bool parse_header_key_compared_to_string(int & character,
 {
     size_t i = 0;
     size_t j = 0;
-    character = get_normalized_char(scanner);
+    character = scanner->lexer_.get();
     while ((character >= 0) &&
            (true == is_valid_header_key_character(static_cast<char>(character)))) {
         char c = static_cast<char>(character);
@@ -581,7 +539,7 @@ bool parse_header_key_compared_to_string(int & character,
             scanner->header_key_.push_back(c);
         }
         j++;
-        character = get_normalized_char(scanner);
+        character = scanner->lexer_.get();
     }
 
     return (i == j) && (i == string.size());
@@ -595,7 +553,7 @@ bool parse_header_type(int & result, httpscan_t * scanner)
             return false;
         }
         scanner->header_key_.push_back(to_lower(static_cast<char>(result)));
-        result = get_normalized_char(scanner);
+        result = scanner->lexer_.get();
     } while (result != ':');
 
     return true;
@@ -609,7 +567,7 @@ bool parse_header_value(int & result, httpscan_t * scanner)
             return false;
         }
         scanner->header_value_.push_back(static_cast<char>(result));
-        result = get_normalized_char(scanner);
+        result = scanner->lexer_.get();
     }
 
     auto it = scanner->headers_.find(scanner->header_key_.c_str());
@@ -625,6 +583,60 @@ bool parse_header_value(int & result, httpscan_t * scanner)
     return true;
 }
 
+rest::http::header_type header_key_to_header_type(const std::string & s)
+{
+    const static std::map<std::string, rest::http::header_type> string_to_enum_map = {
+        {"accept", rest::http::header_type::ACCEPT},
+        {"accept-charset", rest::http::header_type::ACCEPT_CHARSET},
+        {"accept-encoding", rest::http::header_type::ACCEPT_ENCODING},
+        {"accept-language", rest::http::header_type::ACCEPT_LANGUAGE},
+        {"accept-ranges", rest::http::header_type::ACCEPT_RANGES},
+        {"age", rest::http::header_type::AGE},
+        {"allow", rest::http::header_type::ALLOW},
+        {"authorization", rest::http::header_type::AUTHORIZATION},
+        {"cache-control", rest::http::header_type::CACHE_CONTROL},
+        {"connection", rest::http::header_type::CONNECTION},
+        {"content-encoding", rest::http::header_type::CONTENT_ENCODING},
+        {"content-language", rest::http::header_type::CONTENT_LANGUAGE},
+        {"content-length", rest::http::header_type::CONTENT_LENGTH},
+        {"content-location", rest::http::header_type::CONTENT_LOCATION},
+        {"content-md5", rest::http::header_type::CONTENT_MD5},
+        {"content-range", rest::http::header_type::CONTENT_RANGE},
+        {"content-type", rest::http::header_type::CONTENT_TYPE},
+        {"cookie", rest::http::header_type::COOKIE},
+        {"date", rest::http::header_type::DATE},
+        {"etag", rest::http::header_type::ETAG},
+        {"expect", rest::http::header_type::EXPECT},
+        {"expires", rest::http::header_type::EXPIRES},
+        {"from", rest::http::header_type::FROM},
+        {"host", rest::http::header_type::HOST},
+        {"if-match", rest::http::header_type::IF_MATCH},
+        {"if-modified-since", rest::http::header_type::IF_MODIFIED_SINCE},
+        {"if-none-match", rest::http::header_type::IF_NONE_MATCH},
+        {"if-range", rest::http::header_type::IF_RANGE},
+        {"if-unmodified-since", rest::http::header_type::IF_UNMODIFIED_SINCE},
+        {"last-modified", rest::http::header_type::LAST_MODIFIED},
+        {"location", rest::http::header_type::LOCATION},
+        {"max-forwards", rest::http::header_type::MAX_FORWARDS},
+        {"pragma", rest::http::header_type::PRAGMA},
+        {"proxy-authenticate", rest::http::header_type::PROXY_AUTHENTICATE},
+        {"proxy-authorization", rest::http::header_type::PROXY_AUTHORIZATION},
+        {"range", rest::http::header_type::RANGE},
+        {"referer", rest::http::header_type::REFERER},
+        {"retry-after", rest::http::header_type::RETRY_AFTER},
+        {"server", rest::http::header_type::SERVER},
+        {"user-agent", rest::http::header_type::USER_AGENT},
+        {"vary", rest::http::header_type::VARY},
+        {"www-authenticate", rest::http::header_type::WWW_AUTHENTICATE}
+    };
+
+    auto it = string_to_enum_map.find(s);
+    if (it != string_to_enum_map.end()) {
+        return it->second;
+    }
+    return rest::http::header_type::CUSTOM;
+}
+
 bool parse_header(int & result, httpscan_t * scanner)
 {
     /*if ((result == 'a') || (result == 'A')) {
@@ -632,7 +644,7 @@ bool parse_header(int & result, httpscan_t * scanner)
     } else */if ((result == 'c') || (result == 'C')) {
         bool equal = parse_header_key_compared_to_string(result, "c", "ontent-length", scanner);
         if ((true == equal) && (result == ':')) {
-            result = get_next_non_whitespace(scanner);
+            result = scanner->lexer_.get_non_whitespace();
             int code = parse_unsigned_integer(result, scanner);
             if (code < 0) {
                 return false;
@@ -644,7 +656,7 @@ bool parse_header(int & result, httpscan_t * scanner)
     } else if ((result == 'd') || (result == 'D')) {
         bool equal = parse_header_key_compared_to_string(result, "d", "ate", scanner);
         if ((true == equal) && (result == ':')) {
-            result = get_next_non_whitespace(scanner);
+            result = scanner->lexer_.get_non_whitespace();
             time_t date = parse_timestamp(result, scanner);
             if (date == std::numeric_limits<time_t>::min()) {
                 return false;
@@ -683,7 +695,7 @@ bool parse_header(int & result, httpscan_t * scanner)
     }*/
 
     parse_header_type(result, scanner);
-    result = get_normalized_char(scanner);
+    result = scanner->lexer_.get();
     if (false == parse_header_value(result, scanner)) {
         return false;
     }
@@ -709,7 +721,7 @@ bool lex_request_method(int & result, httpscan_t * scanner)
         scanner->method_ = rest::http::method::GET;
         succeeded = verify_forced_characters(lower_case_string_et(), scanner);
     } else if (('p' == result) || ('P' == result)) {
-        result = get_normalized_char(scanner);
+        result = scanner->lexer_.get();
         if (('u' == result) || ('U' == result)) {
             scanner->method_ = rest::http::method::PUT;
             succeeded = verify_forced_characters(lower_case_string_t(), scanner);
@@ -744,7 +756,7 @@ bool lex_request_url(int & result, httpscan_t * scanner)
             return false;
         }
         scanner->url_.push_back(static_cast<char>(character));
-        character = get_normalized_char(scanner);
+        character = scanner->lexer_.get();
     } while ((character != ' ') && (character != '\t'));
     return true;
 }
@@ -756,13 +768,13 @@ bool lex_http_version(int & result, httpscan_t * scanner)
     bool succeeded = true;
     if (('h' == result) || ('H' == result)) {
         succeeded = verify_forced_characters(lower_case_string_ttp(), scanner);
-        const int slash = get_normalized_char(scanner);
-        const int one = get_normalized_char(scanner);
-        const int dot = get_normalized_char(scanner);
+        const int slash = scanner->lexer_.get();
+        const int one = scanner->lexer_.get();
+        const int dot = scanner->lexer_.get();
         if ((slash != '/') || (one != '1') || (dot != '.')) {
             succeeded = false;
         }
-        const int version_digit = get_normalized_char(scanner);
+        const int version_digit = scanner->lexer_.get();
         if (version_digit == '0') {
             scanner->version_ = rest::http::version::HTTP_1_0;
         } else if (version_digit == '1') {
@@ -796,7 +808,7 @@ bool lex_reason_phrase(int & result, httpscan_t * scanner)
             return false;
         }
         scanner->reason_phrase_.push_back(static_cast<char>(character));
-        character = get_normalized_char(scanner);
+        character = scanner->lexer_.get();
     } while (character != '\n');
     return true;
 }
@@ -807,7 +819,7 @@ bool parse_headers(int & result, httpscan_t * scanner)
         if (false == parse_header(result, scanner)) {
             return false;
         }
-        result = get_normalized_char(scanner);
+        result = scanner->lexer_.get();
     }
 
     return true;
@@ -815,22 +827,22 @@ bool parse_headers(int & result, httpscan_t * scanner)
 
 lexer_state lex_first_line(httpscan_t * scanner)
 {
-    int result = get_next_non_whitespace(scanner);
+    int result = scanner->lexer_.get_non_whitespace();
     if (result < 0) {
         return lexer_state::ERROR;
     }
-    int peek_result = scanner->peek_functor_();
+    int peek_result = scanner->lexer_.peek();
 
     if (((result == 'h') || (result == 'H')) &&
         ((peek_result == 't') || (peek_result == 'T'))) {
         if (false == lex_http_version(result, scanner)) {
             return lexer_state::ERROR;
         }
-        result = get_next_non_whitespace(scanner);
+        result = scanner->lexer_.get_non_whitespace();
         if (false == lex_status_code(result, scanner)) {
             return lexer_state::ERROR;
         }
-        result = get_next_non_whitespace(scanner);
+        result = scanner->lexer_.get_non_whitespace();
         if (false == lex_reason_phrase(result, scanner)) {
             return lexer_state::ERROR;
         }
@@ -838,20 +850,20 @@ lexer_state lex_first_line(httpscan_t * scanner)
         if (false == lex_request_method(result, scanner)) {
             return lexer_state::ERROR;
         }
-        result = get_next_non_whitespace(scanner);
+        result = scanner->lexer_.get_non_whitespace();
         if (false == lex_request_url(result, scanner)) {
             return lexer_state::ERROR;
         }
-        result = get_next_non_whitespace(scanner);
+        result = scanner->lexer_.get_non_whitespace();
         if (false == lex_http_version(result, scanner)) {
             return lexer_state::ERROR;
         }
-        const int newline = get_next_non_whitespace(scanner);
+        const int newline = scanner->lexer_.get_non_whitespace();
         if (newline != '\n') {
             return lexer_state::ERROR;
         }
     }
-    result = get_normalized_char(scanner);
+    result = scanner->lexer_.get();
     if (false == parse_headers(result, scanner)) {
         return lexer_state::ERROR;
     }

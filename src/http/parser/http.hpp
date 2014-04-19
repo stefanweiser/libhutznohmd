@@ -150,10 +150,24 @@ inline int anonymous_int_function::operator()()
     return functor_(handle_);
 }
 
-typedef struct httpscan {
+class lexer
+{
+public:
+    explicit lexer(const anonymous_int_function & get_functor,
+                   const anonymous_int_function & peek_functor);
+
+    int get();
+    int get_non_whitespace();
+    int peek();
+
+private:
     anonymous_int_function get_functor_;
     anonymous_int_function peek_functor_;
     char last_char_;
+};
+
+typedef struct httpscan {
+    lexer lexer_;
     lexer_state state_;
 
     push_back_string<40> header_key_;

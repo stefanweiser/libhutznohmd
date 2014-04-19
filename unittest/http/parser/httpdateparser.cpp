@@ -40,16 +40,16 @@ class fixture
 public:
     explicit fixture(const std::string & str)
         : str_(str)
-        , httpscan_({anonymous_int_function(&get_char, &str_),
-        anonymous_int_function(&peek_char, &str_), 0, lexer_state::UNFINISHED,
-        push_back_string<40>(), push_back_string<1000>(), rest::http::method::UNKNOWN,
-        rest::http::version::HTTP_UNKNOWN, push_back_string<1000>(), 0, push_back_string<100>(),
-        std::map<std::string, std::string>(), 0, time(NULL)
+        , httpscan_({lexer(anonymous_int_function(&get_char, &str_),
+                           anonymous_int_function(&peek_char, &str_)), lexer_state::UNFINISHED,
+                                                  push_back_string<40>(), push_back_string<1000>(), rest::http::method::UNKNOWN,
+                                                  rest::http::version::HTTP_UNKNOWN, push_back_string<1000>(), 0, push_back_string<100>(),
+                                                  std::map<std::string, std::string>(), 0, time(NULL)
     }) {
     }
 
     time_t parse() {
-        int result = httpscan_.get_functor_();
+        int result = httpscan_.lexer_.get();
         return parse_timestamp(result, &httpscan_);
     }
 
