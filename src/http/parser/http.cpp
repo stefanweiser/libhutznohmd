@@ -105,49 +105,6 @@ bool is_valid_header_value_character(uint8_t c)
     return (validity_map[c] != 0);
 }
 
-lexer::lexer(const anonymous_int_function & get_functor,
-             const anonymous_int_function & peek_functor)
-    : get_functor_(get_functor)
-    , peek_functor_(peek_functor)
-    , last_char_(0)
-{}
-
-int lexer::get()
-{
-    int result = get_functor_();
-    if (result == '\r') {
-        if (peek_functor_() == '\n') {
-            get_functor_();
-        }
-        result = '\n';
-    }
-
-    if ((result == '\n') && (last_char_ != '\n')) {
-        const int n = peek_functor_();
-        if ((n == ' ') || (n == '\t')) {
-            get_functor_();
-            result = ' ';
-        }
-    }
-
-    last_char_ = static_cast<char>(result);
-    return result;
-}
-
-int lexer::get_non_whitespace()
-{
-    int result = 0;
-    do {
-        result = get();
-    } while ((result == ' ') || (result == '\t'));
-    return result;
-}
-
-int lexer::peek()
-{
-    return peek_functor_();
-}
-
 int parse_unsigned_integer(int & digit, httpscan_t * scanner)
 {
     if ((digit < '0') || (digit > '9')) {

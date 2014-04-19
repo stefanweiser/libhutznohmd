@@ -25,6 +25,8 @@
 
 #include <librest.hpp>
 
+#include <http/parser/utility/lexer.hpp>
+
 enum class lexer_state
 {
     UNFINISHED = 0,
@@ -127,44 +129,6 @@ void push_back_string<size>::clear()
     }
     current_length_ = 0;
 }
-
-class anonymous_int_function
-{
-public:
-    explicit anonymous_int_function(int (*functor)(void *), void * handle);
-    int operator()();
-
-private:
-    int (*functor_)(void *);
-    void * handle_;
-};
-
-inline anonymous_int_function::anonymous_int_function(int (*functor)(void *), void * handle)
-    : functor_(functor)
-    , handle_(handle)
-{
-}
-
-inline int anonymous_int_function::operator()()
-{
-    return functor_(handle_);
-}
-
-class lexer
-{
-public:
-    explicit lexer(const anonymous_int_function & get_functor,
-                   const anonymous_int_function & peek_functor);
-
-    int get();
-    int get_non_whitespace();
-    int peek();
-
-private:
-    anonymous_int_function get_functor_;
-    anonymous_int_function peek_functor_;
-    char last_char_;
-};
 
 typedef struct httpscan {
     lexer lexer_;
