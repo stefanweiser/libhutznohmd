@@ -15,6 +15,8 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cstring>
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
@@ -30,6 +32,14 @@ namespace rest
 
 namespace http
 {
+
+LOWER_CASE_STRING(abcd);
+
+TEST(charactercompare, lower_case_string)
+{
+    EXPECT_EQ(strcmp(lower_case_string_abcd::value, "abcd"), 0);
+    EXPECT_EQ(lower_case_string_abcd::size, strlen("abcd"));
+}
 
 TEST(charactercompare, to_lower)
 {
