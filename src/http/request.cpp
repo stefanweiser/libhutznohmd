@@ -20,8 +20,6 @@
 #include <iterator>
 #include <set>
 
-#include <http/parser/header/httpdateparser.h>
-
 #include "request.hpp"
 
 namespace rest

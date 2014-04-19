@@ -21,7 +21,6 @@
 #include <sstream>
 
 #include <http/parser/httpparser.hpp>
-#include <http/parser/header/httpdateparser.h>
 
 int anonymous_get(void * handle)
 {
