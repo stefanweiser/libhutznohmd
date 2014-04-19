@@ -105,24 +105,6 @@ bool is_valid_header_value_character(uint8_t c)
     return (validity_map[c] != 0);
 }
 
-int parse_unsigned_integer(int & digit, httpscan_t * scanner)
-{
-    if ((digit < '0') || (digit > '9')) {
-        return -1;
-    }
-
-    int result = 0;
-    do {
-        if (digit < 0) {
-            return -1;
-        }
-        result = (result * 10) + (digit - 0x30);
-        digit = scanner->lexer_.get();
-    } while ((digit >= '0') && (digit <= '9'));
-
-    return result;
-}
-
 bool compare_case_insensitive(const char lower_char, const char indetermined_letter)
 {
     return ((indetermined_letter | 0x20) == lower_char);
@@ -142,17 +124,17 @@ bool verify_forced_characters(const lower_case_string &, httpscan_t * scanner)
 
 int parse_time(int & character, httpscan_t * scanner)
 {
-    int hour = parse_unsigned_integer(character, scanner);
+    int hour = scanner->lexer_.get_unsigned_integer(character);
     if ((hour < 0) || (hour > 23) || (character != ':')) {
         return -1;
     }
     character = scanner->lexer_.get_non_whitespace();
-    int minute = parse_unsigned_integer(character, scanner);
+    int minute = scanner->lexer_.get_unsigned_integer(character);
     if ((minute < 0) || (minute > 59) || (character != ':')) {
         return -1;
     }
     character = scanner->lexer_.get_non_whitespace();
-    int second = parse_unsigned_integer(character, scanner);
+    int second = scanner->lexer_.get_unsigned_integer(character);
     if ((second < 0) || (second > 59)) {
         return -1;
     }
@@ -265,7 +247,7 @@ LOWER_CASE_STRING(mt);
 time_t parse_rfc1123_date_time(int & character, httpscan_t * scanner)
 {
     character = scanner->lexer_.get_non_whitespace();
-    const int day = parse_unsigned_integer(character, scanner);
+    const int day = scanner->lexer_.get_unsigned_integer(character);
 
     if ((character == ' ') || (character == '\n')) {
         character = scanner->lexer_.get_non_whitespace();
@@ -276,7 +258,7 @@ time_t parse_rfc1123_date_time(int & character, httpscan_t * scanner)
     const int month = parse_month(c1, c2, c3);
 
     character = scanner->lexer_.get_non_whitespace();
-    const int year = parse_unsigned_integer(character, scanner);
+    const int year = scanner->lexer_.get_unsigned_integer(character);
 
     if ((character == ' ') || (character == '\n')) {
         character = scanner->lexer_.get_non_whitespace();
@@ -301,7 +283,7 @@ time_t parse_rfc1123_date_time(int & character, httpscan_t * scanner)
 time_t parse_rfc850_date_time(int & character, httpscan_t * scanner)
 {
     character = scanner->lexer_.get_non_whitespace();
-    const int day = parse_unsigned_integer(character, scanner);
+    const int day = scanner->lexer_.get_unsigned_integer(character);
 
     if (character != '-') {
         return -1;
@@ -317,7 +299,7 @@ time_t parse_rfc850_date_time(int & character, httpscan_t * scanner)
         return -1;
     }
     character = scanner->lexer_.get();
-    const int year = 1900 + parse_unsigned_integer(character, scanner);
+    const int year = 1900 + scanner->lexer_.get_unsigned_integer(character);
     if ((year < 1900) || (year > 1999)) {
         return -1;
     }
@@ -353,13 +335,13 @@ time_t parse_asctime_date_time(int & character, httpscan_t * scanner)
     const int month = parse_month(c1, c2, c3);
 
     character = scanner->lexer_.get_non_whitespace();
-    const int day = parse_unsigned_integer(character, scanner);
+    const int day = scanner->lexer_.get_unsigned_integer(character);
 
     character = scanner->lexer_.get_non_whitespace();
     const int second_of_day = parse_time(character, scanner);
 
     character = scanner->lexer_.get_non_whitespace();
-    const int year = parse_unsigned_integer(character, scanner);
+    const int year = scanner->lexer_.get_unsigned_integer(character);
 
     if (character == ' ') {
         character = scanner->lexer_.get_non_whitespace();
@@ -602,7 +584,7 @@ bool parse_header(int & result, httpscan_t * scanner)
         bool equal = parse_header_key_compared_to_string(result, "c", "ontent-length", scanner);
         if ((true == equal) && (result == ':')) {
             result = scanner->lexer_.get_non_whitespace();
-            int code = parse_unsigned_integer(result, scanner);
+            int code = scanner->lexer_.get_unsigned_integer(result);
             if (code < 0) {
                 return false;
             }
@@ -748,7 +730,7 @@ bool lex_http_version(int & result, httpscan_t * scanner)
 
 bool lex_status_code(int & result, httpscan_t * scanner)
 {
-    int code = parse_unsigned_integer(result, scanner);
+    int code = scanner->lexer_.get_unsigned_integer(result);
     if (code < 0) {
         return false;
     }

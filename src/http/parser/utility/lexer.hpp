@@ -48,6 +48,7 @@ public:
     int get();
     int get_non_whitespace();
     int peek();
+    int get_unsigned_integer(int & character);
 
 private:
     anonymous_int_function get_functor_;

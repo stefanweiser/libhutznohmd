@@ -125,3 +125,45 @@ TEST(lexer, newline_whitespace)
     EXPECT_EQ(l.get(), ' ');
     EXPECT_EQ(l.peek(), 'b');
 }
+
+TEST(lexer, next_non_whitespace)
+{
+    std::stringstream s(" \ta");
+    lexer l(anonymous_int_function(&anonymous_get, &s),
+            anonymous_int_function(&anonymous_peek, &s));
+    EXPECT_EQ(l.get_non_whitespace(), 'a');
+}
+
+TEST(lexer, newline_is_no_whitespace)
+{
+    std::stringstream s("\na");
+    lexer l(anonymous_int_function(&anonymous_get, &s),
+            anonymous_int_function(&anonymous_peek, &s));
+    EXPECT_EQ(l.get_non_whitespace(), '\n');
+}
+
+TEST(lexer, carriage_return_is_no_whitespace)
+{
+    std::stringstream s("\ra");
+    lexer l(anonymous_int_function(&anonymous_get, &s),
+            anonymous_int_function(&anonymous_peek, &s));
+    EXPECT_EQ(l.get_non_whitespace(), '\n');
+}
+
+TEST(lexer, unsigned_integer)
+{
+    std::stringstream s("0123");
+    lexer l(anonymous_int_function(&anonymous_get, &s),
+            anonymous_int_function(&anonymous_peek, &s));
+    int character = l.get();
+    EXPECT_EQ(l.get_unsigned_integer(character), 123);
+}
+
+TEST(lexer, wrong_unsigned_integer)
+{
+    std::stringstream s("a");
+    lexer l(anonymous_int_function(&anonymous_get, &s),
+            anonymous_int_function(&anonymous_peek, &s));
+    int character = l.get();
+    EXPECT_EQ(l.get_unsigned_integer(character), -1);
+}

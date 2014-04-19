@@ -55,6 +55,24 @@ int lexer::get_non_whitespace()
     return result;
 }
 
+int lexer::get_unsigned_integer(int & character)
+{
+    if ((character < '0') || (character > '9')) {
+        return -1;
+    }
+
+    int result = 0;
+    do {
+        if (character < 0) {
+            return -1;
+        }
+        result = (result * 10) + (character - 0x30);
+        character = get();
+    } while ((character >= '0') && (character <= '9'));
+
+    return result;
+}
+
 int lexer::peek()
 {
     return peek_functor_();
