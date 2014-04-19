@@ -56,6 +56,7 @@ template<size_t size>
 push_back_string<size>::push_back_string()
     : current_length_(0)
     , dynamic_size_(0)
+    , constant_buffer_()
     , dynamic_buffer_(nullptr)
 {
 }
@@ -70,6 +71,7 @@ template<size_t size>
 push_back_string<size>::push_back_string(const push_back_string &)
     : current_length_(0)
     , dynamic_size_(0)
+    , constant_buffer_()
     , dynamic_buffer_(nullptr)
 {
 }
@@ -87,7 +89,11 @@ void push_back_string<size>::push_back(const char c)
                 memcpy(dynamic_buffer_, constant_buffer_, size);
             } else {
                 dynamic_size_ += size;
-                dynamic_buffer_ = static_cast<char *>(realloc(dynamic_buffer_, dynamic_size_));
+                char * new_buffer = static_cast<char *>(realloc(dynamic_buffer_, dynamic_size_));
+                if (nullptr == new_buffer) {
+                    free(dynamic_buffer_);
+                }
+                dynamic_buffer_ = new_buffer;
             }
         }
         dynamic_buffer_[current_length_++] = c;
