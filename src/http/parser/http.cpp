@@ -115,7 +115,7 @@ bool parse_header(int32_t & result, httpscan * scanner)
         if ((true == equal) && (result == ':')) {
             result = scanner->lexer_.get_non_whitespace();
             time_t date = parse_timestamp(result, scanner->lexer_);
-            if (date == std::numeric_limits<time_t>::min()) {
+            if (date < 0) {
                 return false;
             }
 
