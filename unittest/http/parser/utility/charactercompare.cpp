@@ -111,6 +111,50 @@ TEST(charactercompare, url_characters)
     }
 }
 
+TEST(charactercompare, header_key_characters)
+{
+    std::array<bool, 256> validity_map;
+    // Any CHAR
+    for (size_t i = 0; i < validity_map.size(); i++) {
+        validity_map[i] = (i < 0x80) ? true : false;
+    }
+    // But no CTLs
+    for (size_t i = 0; i <= 31; i++) {
+        validity_map[i] = false;
+    }
+    validity_map[127] = false;
+
+    // And no seperators
+    std::vector<uint8_t> seperators = {'(', ')', '<', '>', '@', ',', ';', ':', '\\', '\'', '/',
+                                       '[', ']', '?', '=', '{', '}', ' ', '\t'
+                                      };
+    for (const uint8_t & c : seperators) {
+        validity_map[c] = false;
+    }
+
+    for (size_t i = 0; i < validity_map.size(); i++) {
+        EXPECT_EQ(is_valid_header_key_character(static_cast<uint8_t>(i)), validity_map[i]);
+    }
+}
+
+TEST(charactercompare, header_value_characters)
+{
+    std::array<bool, 256> validity_map;
+    // Any CHAR
+    for (size_t i = 0; i < validity_map.size(); i++) {
+        validity_map[i] = true;
+    }
+    // Instead of all CTLs like in the RFC, we are more tolerant and forbid only the line ending
+    // characters. We will not include LWS here like the RFC, because this is already filtered out
+    // by the lexer.
+    validity_map['\r'] = false;
+    validity_map['\n'] = false;
+
+    for (size_t i = 0; i < validity_map.size(); i++) {
+        EXPECT_EQ(is_valid_header_value_character(static_cast<uint8_t>(i)), validity_map[i]);
+    }
+}
+
 } // namespace http
 
 } // namespace rest
