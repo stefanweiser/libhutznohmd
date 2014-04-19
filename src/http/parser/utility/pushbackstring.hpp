@@ -40,9 +40,6 @@ public:
     //! If any dynamic memory was allocated, this memory get freed here.
     ~push_back_string();
 
-    push_back_string(const push_back_string &);
-    push_back_string & operator=(const push_back_string &) = delete;
-
     //! Pushs one character at the end of the string. The string won't get finished by '\0'. It
     //! allocates memory dynamically if the string runs out of memory.
     void push_back(const char c);
@@ -55,6 +52,9 @@ public:
 
     //! Clears the string. Frees the dynamically allocated memory if needed.
     void clear();
+
+    push_back_string(const push_back_string &) = delete;
+    push_back_string & operator=(const push_back_string &) = delete;
 
 private:
     size_t current_length_;
@@ -76,15 +76,6 @@ template<size_t size>
 push_back_string<size>::~push_back_string()
 {
     free(dynamic_buffer_);
-}
-
-template<size_t size>
-push_back_string<size>::push_back_string(const push_back_string &)
-    : current_length_(0)
-    , dynamic_size_(0)
-    , static_buffer_()
-    , dynamic_buffer_(nullptr)
-{
 }
 
 template<size_t size>

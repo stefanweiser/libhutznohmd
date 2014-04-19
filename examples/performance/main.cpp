@@ -61,11 +61,7 @@ void test_http_date_parser(const std::string & date_string)
         std::stringstream s(date_string);
         lexer l(anonymous_int_function(&anonymous_get, &s),
                 anonymous_int_function(&anonymous_peek, &s));
-        httpscan_t httpscan {l, parser_state::UNFINISHED, push_back_string<40>(),
-                             push_back_string<1000>(), method::UNKNOWN, version::HTTP_UNKNOWN,
-                             push_back_string<1000>(), 0, push_back_string<100>(),
-                             std::map<std::string, std::string>(), 0, time(NULL)
-                            };
+        httpscan httpscan(l);
         int32_t result = httpscan.lexer_.get();
         parse_timestamp(result, httpscan.lexer_);
     }

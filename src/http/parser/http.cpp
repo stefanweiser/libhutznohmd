@@ -33,7 +33,7 @@ namespace http
 bool parse_header_key_compared_to_string(int32_t & character,
         const std::string & already_parsed_string,
         const std::string & string,
-        httpscan_t * scanner)
+        httpscan * scanner)
 {
     size_t i = 0;
     size_t j = 0;
@@ -58,7 +58,7 @@ bool parse_header_key_compared_to_string(int32_t & character,
     return (i == j) && (i == string.size());
 }
 
-bool parse_header_type(int32_t & result, httpscan_t * scanner)
+bool parse_header_type(int32_t & result, httpscan * scanner)
 {
     do {
         if ((result < 0) || (false == is_valid_header_key_character(static_cast<uint8_t>(result)))) {
@@ -72,7 +72,7 @@ bool parse_header_type(int32_t & result, httpscan_t * scanner)
     return true;
 }
 
-bool parse_header_value(int32_t & result, httpscan_t * scanner)
+bool parse_header_value(int32_t & result, httpscan * scanner)
 {
     while (result != '\n') {
         if ((result < 0) ||
@@ -150,7 +150,7 @@ rest::http::header_type header_key_to_header_type(const std::string & s)
     return rest::http::header_type::CUSTOM;
 }
 
-bool parse_header(int32_t & result, httpscan_t * scanner)
+bool parse_header(int32_t & result, httpscan * scanner)
 {
     /*if ((result == 'a') || (result == 'A')) {
         ;
@@ -223,7 +223,7 @@ LOWER_CASE_STRING(tions);
 LOWER_CASE_STRING(nnect);
 LOWER_CASE_STRING(ace);
 
-bool lex_request_method(const int32_t & last, int32_t & result, httpscan_t * scanner)
+bool lex_request_method(const int32_t & last, int32_t & result, httpscan * scanner)
 {
     bool succeeded = true;
     if ((true == compare_case_insensitive('h', last)) &&
@@ -265,7 +265,7 @@ bool lex_request_method(const int32_t & last, int32_t & result, httpscan_t * sca
     return succeeded;
 }
 
-bool lex_request_url(int32_t & result, httpscan_t * scanner)
+bool lex_request_url(int32_t & result, httpscan * scanner)
 {
     int32_t character = result;
     do {
@@ -280,7 +280,7 @@ bool lex_request_url(int32_t & result, httpscan_t * scanner)
 
 LOWER_CASE_STRING(tp);
 
-bool lex_http_version(const int32_t & last, int32_t & result, httpscan_t * scanner)
+bool lex_http_version(const int32_t & last, int32_t & result, httpscan * scanner)
 {
     bool succeeded = true;
     if ((true == compare_case_insensitive('h', last)) &&
@@ -307,7 +307,7 @@ bool lex_http_version(const int32_t & last, int32_t & result, httpscan_t * scann
     return succeeded;
 }
 
-bool lex_status_code(int32_t & result, httpscan_t * scanner)
+bool lex_status_code(int32_t & result, httpscan * scanner)
 {
     int32_t code = scanner->lexer_.get_unsigned_integer(result);
     if (code < 0) {
@@ -317,7 +317,7 @@ bool lex_status_code(int32_t & result, httpscan_t * scanner)
     return true;
 }
 
-bool lex_reason_phrase(int32_t & result, httpscan_t * scanner)
+bool lex_reason_phrase(int32_t & result, httpscan * scanner)
 {
     int32_t character = result;
     do {
@@ -331,7 +331,7 @@ bool lex_reason_phrase(int32_t & result, httpscan_t * scanner)
     return true;
 }
 
-bool parse_headers(int32_t & result, httpscan_t * scanner)
+bool parse_headers(int32_t & result, httpscan * scanner)
 {
     while (result != '\n') {
         if (false == parse_header(result, scanner)) {
@@ -343,7 +343,7 @@ bool parse_headers(int32_t & result, httpscan_t * scanner)
     return true;
 }
 
-parser_state lex_first_line(httpscan_t * scanner)
+parser_state lex_first_line(httpscan * scanner)
 {
     int32_t last = scanner->lexer_.get_non_whitespace();
     int32_t result = scanner->lexer_.get();
@@ -389,7 +389,7 @@ parser_state lex_first_line(httpscan_t * scanner)
     return parser_state::SUCCEEDED;
 }
 
-void http_parse(httpscan_t * scanner)
+void http_parse(httpscan * scanner)
 {
     if ((scanner->state_ != parser_state::SUCCEEDED) &&
         (scanner->state_ != parser_state::ERROR)) {

@@ -40,7 +40,11 @@ enum class parser_state
     ERROR = 2
 };
 
-typedef struct httpscan {
+class httpscan
+{
+public:
+    explicit httpscan(const lexer & l);
+
     lexer lexer_;
     parser_state state_;
 
@@ -54,9 +58,24 @@ typedef struct httpscan {
     std::map<std::string, std::string> headers_;
     size_t content_length_;
     time_t date_;
-} httpscan_t;
+};
 
-void http_parse(httpscan_t * scanner);
+inline httpscan::httpscan(const lexer & l)
+    : lexer_(l)
+    , state_(parser_state::UNFINISHED)
+    , header_key_()
+    , header_value_()
+    , method_(rest::http::method::UNKNOWN)
+    , version_(rest::http::version::HTTP_UNKNOWN)
+    , url_()
+    , status_code_(0)
+    , reason_phrase_()
+    , headers_()
+    , content_length_(0)
+    , date_(time(NULL))
+{}
+
+void http_parse(httpscan * scanner);
 rest::http::header_type header_key_to_header_type(const std::string & s);
 
 } // namespace http

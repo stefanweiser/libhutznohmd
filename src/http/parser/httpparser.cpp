@@ -30,11 +30,7 @@ namespace http
 
 http_parser::http_parser(const anonymous_int_function & get_functor,
                          const anonymous_int_function & peek_functor)
-    : httpscan_({lexer(get_functor, peek_functor), parser_state::UNFINISHED, push_back_string<40>(),
-    push_back_string<1000>(), rest::http::method::UNKNOWN, rest::http::version::HTTP_UNKNOWN,
-    push_back_string<1000>(), 0, push_back_string<100>(), std::map<std::string, std::string>(), 0,
-    time(NULL)
-})
+    : httpscan_(lexer(get_functor, peek_functor))
 {}
 
 void http_parser::parse()

@@ -43,7 +43,7 @@ public:
     const time_t & date() const;
 
 private:
-    httpscan_t httpscan_;
+    httpscan httpscan_;
 };
 
 } // namespace http
