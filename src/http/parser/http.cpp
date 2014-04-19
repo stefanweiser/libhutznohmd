@@ -334,11 +334,11 @@ parser_state lex_first_line(httpscan * scanner)
     return parser_state::SUCCEEDED;
 }
 
-void http_parse(httpscan * scanner)
+void httpscan::parse()
 {
-    if ((scanner->state_ != parser_state::SUCCEEDED) &&
-        (scanner->state_ != parser_state::ERROR)) {
-        scanner->state_ = lex_first_line(scanner);
+    if ((state_ != parser_state::SUCCEEDED) &&
+        (state_ != parser_state::ERROR)) {
+        state_ = lex_first_line(this);
     }
 }
 

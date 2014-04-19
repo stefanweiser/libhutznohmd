@@ -44,6 +44,7 @@ class httpscan
 {
 public:
     explicit httpscan(const lexer & l);
+    void parse();
 
     lexer lexer_;
     parser_state state_;
@@ -74,8 +75,6 @@ inline httpscan::httpscan(const lexer & l)
     , content_length_(0)
     , date_(time(NULL))
 {}
-
-void http_parse(httpscan * scanner);
 
 } // namespace http
 

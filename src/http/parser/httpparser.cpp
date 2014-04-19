@@ -36,7 +36,7 @@ http_parser::http_parser(const anonymous_int_function & get_functor,
 void http_parser::parse()
 {
     if (parser_state::UNFINISHED == httpscan_.state_) {
-        http_parse(&httpscan_);
+        httpscan_.parse();
     }
 }
 
