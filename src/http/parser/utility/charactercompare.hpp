@@ -21,6 +21,12 @@
 #include <array>
 #include <type_traits>
 
+namespace rest
+{
+
+namespace http
+{
+
 namespace detail
 {
 
@@ -138,5 +144,9 @@ inline bool compare_case_insensitive(const int32_t lower_char, const int32_t ind
 {
     return ((indetermined_letter | 0x20) == lower_char);
 }
+
+} // namespace http
+
+} // namespace rest
 
 #endif // __LIBREST_HTTP_PARSER_UTILITY_CHARACTERCOMPARE_HPP__

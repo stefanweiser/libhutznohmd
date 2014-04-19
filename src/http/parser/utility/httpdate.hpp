@@ -23,6 +23,16 @@
 
 #include <http/parser/utility/lexer.hpp>
 
+namespace rest
+{
+
+namespace http
+{
+
 time_t parse_timestamp(int32_t & character, const lexer & l);
+
+} // namespace http
+
+} // namespace rest
 
 #endif // __LIBREST_HTTP_PARSER_UTILITY_HTTPDATE_HPP__

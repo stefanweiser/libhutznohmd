@@ -38,8 +38,8 @@ void test_http_parser(const std::string & request)
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
     for (size_t i = 0; i < 1000; i++) {
         std::stringstream s(request);
-        rest::http::http_parser parser(anonymous_int_function(&anonymous_get, &s),
-                                       anonymous_int_function(&anonymous_peek, &s));
+        rest::http::http_parser parser(rest::http::anonymous_int_function(&anonymous_get, &s),
+                                       rest::http::anonymous_int_function(&anonymous_peek, &s));
         parser.parse();
     }
     std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
@@ -53,13 +53,13 @@ void test_http_date_parser(const std::string & date_string)
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
     for (size_t i = 0; i < 1000; i++) {
         std::stringstream s(date_string);
-        lexer l(anonymous_int_function(&anonymous_get, &s),
-                anonymous_int_function(&anonymous_peek, &s));
-        httpscan_t httpscan {l, parser_state::UNFINISHED, push_back_string<40>(),
-                             push_back_string<1000>(), rest::http::method::UNKNOWN,
-                             rest::http::version::HTTP_UNKNOWN, push_back_string<1000>(), 0,
-                             push_back_string<100>(), std::map<std::string, std::string>(), 0, time(NULL)
-                            };
+        rest::http::lexer l(rest::http::anonymous_int_function(&anonymous_get, &s),
+                            rest::http::anonymous_int_function(&anonymous_peek, &s));
+        rest::http::httpscan_t httpscan {l, rest::http::parser_state::UNFINISHED, rest::http::push_back_string<40>(),
+                                         rest::http::push_back_string<1000>(), rest::http::method::UNKNOWN,
+                                         rest::http::version::HTTP_UNKNOWN, rest::http::push_back_string<1000>(), 0,
+                                         rest::http::push_back_string<100>(), std::map<std::string, std::string>(), 0, time(NULL)
+                                        };
         int32_t result = httpscan.lexer_.get();
         parse_timestamp(result, httpscan.lexer_);
     }

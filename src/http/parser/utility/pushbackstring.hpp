@@ -20,6 +20,12 @@
 
 #include <cstring>
 
+namespace rest
+{
+
+namespace http
+{
+
 template<size_t size>
 class push_back_string
 {
@@ -115,5 +121,9 @@ void push_back_string<size>::clear()
     }
     current_length_ = 0;
 }
+
+} // namespace http
+
+} // namespace rest
 
 #endif // __LIBREST_HTTP_PARSER_UTILITY_PUSHBACKSTRING_HPP__

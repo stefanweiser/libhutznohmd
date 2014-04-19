@@ -20,6 +20,12 @@
 
 #include <cstdint>
 
+namespace rest
+{
+
+namespace http
+{
+
 class anonymous_int_function
 {
 public:
@@ -55,5 +61,9 @@ inline anonymous_int_function & anonymous_int_function::operator=(const anonymou
     handle_ = rhs.handle_;
     return *this;
 }
+
+} // namespace http
+
+} // namespace rest
 
 #endif // __LIBREST_HTTP_PARSER_UTILITY_ANONYMOUSINTFUNCTION_HPP__

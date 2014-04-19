@@ -45,7 +45,8 @@ class fixture
 public:
     explicit fixture(const std::string & str)
         : str_(str)
-        , lexer_(anonymous_int_function(&get_char, &str_), anonymous_int_function(&peek_char, &str_)) {
+        , lexer_(rest::http::anonymous_int_function(&get_char, &str_),
+                 rest::http::anonymous_int_function(&peek_char, &str_)) {
     }
 
     time_t parse() {
@@ -54,7 +55,7 @@ public:
     }
 
     std::stringstream str_;
-    lexer lexer_;
+    rest::http::lexer lexer_;
 };
 
 TEST(http_date, rfc1123_date)

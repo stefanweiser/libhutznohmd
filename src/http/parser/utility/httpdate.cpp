@@ -19,6 +19,12 @@
 
 #include "httpdate.hpp"
 
+namespace rest
+{
+
+namespace http
+{
+
 int32_t parse_time(int32_t & character, const lexer & l)
 {
     int32_t hour = l.get_unsigned_integer(character);
@@ -355,3 +361,7 @@ time_t parse_timestamp(int32_t & character, const lexer & l)
     }
     return -1;
 }
+
+} // namespace http
+
+} // namespace rest

@@ -24,6 +24,12 @@
 
 #include "http.hpp"
 
+namespace rest
+{
+
+namespace http
+{
+
 bool parse_header_key_compared_to_string(int32_t & character,
         const std::string & already_parsed_string,
         const std::string & string,
@@ -390,3 +396,7 @@ void http_parse(httpscan_t * scanner)
         scanner->state_ = lex_first_line(scanner);
     }
 }
+
+} // namespace http
+
+} // namespace rest

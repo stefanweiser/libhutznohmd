@@ -22,13 +22,6 @@
 
 #include "httpparser.hpp"
 
-extern "C"
-{
-
-    int32_t httpparse(httpscan_t * scanner);
-
-}
-
 namespace rest
 {
 

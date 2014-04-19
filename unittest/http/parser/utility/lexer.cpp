@@ -43,16 +43,16 @@ int32_t anonymous_peek(void * handle)
 TEST(lexer, empty)
 {
     std::stringstream s("");
-    lexer l(anonymous_int_function(&anonymous_get, &s),
-            anonymous_int_function(&anonymous_peek, &s));
+    rest::http::lexer l(rest::http::anonymous_int_function(&anonymous_get, &s),
+                        rest::http::anonymous_int_function(&anonymous_peek, &s));
     EXPECT_EQ(l.get(), -1);
 }
 
 TEST(lexer, string)
 {
     std::stringstream s("ab");
-    lexer l(anonymous_int_function(&anonymous_get, &s),
-            anonymous_int_function(&anonymous_peek, &s));
+    rest::http::lexer l(rest::http::anonymous_int_function(&anonymous_get, &s),
+                        rest::http::anonymous_int_function(&anonymous_peek, &s));
     EXPECT_EQ(l.get(), 'a');
     EXPECT_EQ(l.get(), 'b');
 }
@@ -60,8 +60,8 @@ TEST(lexer, string)
 TEST(lexer, newline)
 {
     std::stringstream s("a\nb");
-    lexer l(anonymous_int_function(&anonymous_get, &s),
-            anonymous_int_function(&anonymous_peek, &s));
+    rest::http::lexer l(rest::http::anonymous_int_function(&anonymous_get, &s),
+                        rest::http::anonymous_int_function(&anonymous_peek, &s));
     EXPECT_EQ(l.get(), 'a');
     EXPECT_EQ(l.get(), '\n');
 }
@@ -69,8 +69,8 @@ TEST(lexer, newline)
 TEST(lexer, carriage_return_newline)
 {
     std::stringstream s("a\r\nb");
-    lexer l(anonymous_int_function(&anonymous_get, &s),
-            anonymous_int_function(&anonymous_peek, &s));
+    rest::http::lexer l(rest::http::anonymous_int_function(&anonymous_get, &s),
+                        rest::http::anonymous_int_function(&anonymous_peek, &s));
     EXPECT_EQ(l.get(), 'a');
     EXPECT_EQ(l.get(), '\n');
 }
@@ -78,8 +78,8 @@ TEST(lexer, carriage_return_newline)
 TEST(lexer, carriage_return)
 {
     std::stringstream s("a\rb");
-    lexer l(anonymous_int_function(&anonymous_get, &s),
-            anonymous_int_function(&anonymous_peek, &s));
+    rest::http::lexer l(rest::http::anonymous_int_function(&anonymous_get, &s),
+                        rest::http::anonymous_int_function(&anonymous_peek, &s));
     EXPECT_EQ(l.get(), 'a');
     EXPECT_EQ(l.get(), '\n');
 }
@@ -87,8 +87,8 @@ TEST(lexer, carriage_return)
 TEST(lexer, space)
 {
     std::stringstream s("a b");
-    lexer l(anonymous_int_function(&anonymous_get, &s),
-            anonymous_int_function(&anonymous_peek, &s));
+    rest::http::lexer l(rest::http::anonymous_int_function(&anonymous_get, &s),
+                        rest::http::anonymous_int_function(&anonymous_peek, &s));
     EXPECT_EQ(l.get(), 'a');
     EXPECT_EQ(l.get(), ' ');
 }
@@ -96,8 +96,8 @@ TEST(lexer, space)
 TEST(lexer, tabulator)
 {
     std::stringstream s("a\tb");
-    lexer l(anonymous_int_function(&anonymous_get, &s),
-            anonymous_int_function(&anonymous_peek, &s));
+    rest::http::lexer l(rest::http::anonymous_int_function(&anonymous_get, &s),
+                        rest::http::anonymous_int_function(&anonymous_peek, &s));
     EXPECT_EQ(l.get(), 'a');
     EXPECT_EQ(l.get(), '\t');
 }
@@ -105,8 +105,8 @@ TEST(lexer, tabulator)
 TEST(lexer, newline_whitespace)
 {
     std::stringstream s("a\n\tb");
-    lexer l(anonymous_int_function(&anonymous_get, &s),
-            anonymous_int_function(&anonymous_peek, &s));
+    rest::http::lexer l(rest::http::anonymous_int_function(&anonymous_get, &s),
+                        rest::http::anonymous_int_function(&anonymous_peek, &s));
     EXPECT_EQ(l.get(), 'a');
     EXPECT_EQ(l.get(), ' ');
 }
@@ -114,32 +114,32 @@ TEST(lexer, newline_whitespace)
 TEST(lexer, next_non_whitespace)
 {
     std::stringstream s(" \ta");
-    lexer l(anonymous_int_function(&anonymous_get, &s),
-            anonymous_int_function(&anonymous_peek, &s));
+    rest::http::lexer l(rest::http::anonymous_int_function(&anonymous_get, &s),
+                        rest::http::anonymous_int_function(&anonymous_peek, &s));
     EXPECT_EQ(l.get_non_whitespace(), 'a');
 }
 
 TEST(lexer, newline_is_no_whitespace)
 {
     std::stringstream s("\na");
-    lexer l(anonymous_int_function(&anonymous_get, &s),
-            anonymous_int_function(&anonymous_peek, &s));
+    rest::http::lexer l(rest::http::anonymous_int_function(&anonymous_get, &s),
+                        rest::http::anonymous_int_function(&anonymous_peek, &s));
     EXPECT_EQ(l.get_non_whitespace(), '\n');
 }
 
 TEST(lexer, carriage_return_is_no_whitespace)
 {
     std::stringstream s("\ra");
-    lexer l(anonymous_int_function(&anonymous_get, &s),
-            anonymous_int_function(&anonymous_peek, &s));
+    rest::http::lexer l(rest::http::anonymous_int_function(&anonymous_get, &s),
+                        rest::http::anonymous_int_function(&anonymous_peek, &s));
     EXPECT_EQ(l.get_non_whitespace(), '\n');
 }
 
 TEST(lexer, unsigned_integer)
 {
     std::stringstream s("0123");
-    lexer l(anonymous_int_function(&anonymous_get, &s),
-            anonymous_int_function(&anonymous_peek, &s));
+    rest::http::lexer l(rest::http::anonymous_int_function(&anonymous_get, &s),
+                        rest::http::anonymous_int_function(&anonymous_peek, &s));
     int32_t character = l.get();
     EXPECT_EQ(l.get_unsigned_integer(character), 123);
 }
@@ -147,8 +147,8 @@ TEST(lexer, unsigned_integer)
 TEST(lexer, wrong_unsigned_integer)
 {
     std::stringstream s("a");
-    lexer l(anonymous_int_function(&anonymous_get, &s),
-            anonymous_int_function(&anonymous_peek, &s));
+    rest::http::lexer l(rest::http::anonymous_int_function(&anonymous_get, &s),
+                        rest::http::anonymous_int_function(&anonymous_peek, &s));
     int32_t character = l.get();
     EXPECT_EQ(l.get_unsigned_integer(character), -1);
 }

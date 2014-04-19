@@ -22,6 +22,12 @@
 
 #include <http/parser/utility/anonymousintfunction.hpp>
 
+namespace rest
+{
+
+namespace http
+{
+
 class lexer
 {
 public:
@@ -49,5 +55,9 @@ bool verify_forced_characters(const lower_case_string &, const lexer & l)
     }
     return true;
 }
+
+} // namespace http
+
+} // namespace rest
 
 #endif // __LIBREST_HTTP_PARSER_UTILITY_LEXER_HPP__

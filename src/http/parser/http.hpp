@@ -27,6 +27,12 @@
 #include <http/parser/utility/pushbackstring.hpp>
 #include <http/parser/utility/lexer.hpp>
 
+namespace rest
+{
+
+namespace http
+{
+
 enum class parser_state
 {
     UNFINISHED = 0,
@@ -52,5 +58,9 @@ typedef struct httpscan {
 
 void http_parse(httpscan_t * scanner);
 rest::http::header_type header_key_to_header_type(const std::string & s);
+
+} // namespace http
+
+} // namespace rest
 
 #endif // __LIBREST_HTTP_PARSER_HTTP_HPP__

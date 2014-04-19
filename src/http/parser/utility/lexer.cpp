@@ -17,6 +17,12 @@
 
 #include "lexer.hpp"
 
+namespace rest
+{
+
+namespace http
+{
+
 lexer::lexer(const anonymous_int_function & get_functor,
              const anonymous_int_function & peek_functor)
     : get_functor_(get_functor)
@@ -72,3 +78,7 @@ int32_t lexer::get_unsigned_integer(int32_t & character) const
 
     return result;
 }
+
+} // namespace http
+
+} // namespace rest
