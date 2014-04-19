@@ -16,7 +16,6 @@
  */
 
 #include <limits>
-#include <iostream>
 #include <sstream>
 
 #include <http/parser/utility/charactercompare.hpp>

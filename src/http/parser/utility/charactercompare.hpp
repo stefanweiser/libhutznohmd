@@ -64,7 +64,9 @@ struct is_lower_string<s, 0> {
         static constexpr const size_t size = sizeof(#S) - 1; \
         static_assert(detail::is_lower_string<lower_case_string_##S, size>::value::value == true, \
                       "String is not lower case."); \
-    }
+    }; \
+    constexpr const char * const lower_case_string_##S::value; \
+    constexpr const size_t lower_case_string_##S::size
 
 //! Converts a letter into the corresponding lower case letter.
 inline char to_lower(const char c)

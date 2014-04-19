@@ -33,7 +33,12 @@ namespace rest
 namespace http
 {
 
+namespace
+{
+
 LOWER_CASE_STRING(abcd);
+
+} // namespace
 
 TEST(charactercompare, lower_case_string)
 {

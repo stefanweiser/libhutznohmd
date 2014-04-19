@@ -29,23 +29,28 @@ namespace rest
 namespace http
 {
 
-int32_t anonymous_get(void * handle)
+namespace
+{
+
+int32_t get_char(void * handle)
 {
     return static_cast<std::istream *>(handle)->get();
 }
 
-int32_t anonymous_peek(void * handle)
+int32_t peek_char(void * handle)
 {
     return static_cast<std::istream *>(handle)->peek();
 }
+
+} // namespace
 
 void test_http_parser(const std::string & request)
 {
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
     for (size_t i = 0; i < 1000; i++) {
         std::stringstream s(request);
-        http_parser parser(anonymous_int_function(&anonymous_get, &s),
-                           anonymous_int_function(&anonymous_peek, &s));
+        http_parser parser(anonymous_int_function(&get_char, &s),
+                           anonymous_int_function(&peek_char, &s));
         parser.parse();
     }
     std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
@@ -59,8 +64,8 @@ void test_http_date_parser(const std::string & date_string)
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
     for (size_t i = 0; i < 1000; i++) {
         std::stringstream s(date_string);
-        lexer l(anonymous_int_function(&anonymous_get, &s),
-                anonymous_int_function(&anonymous_peek, &s));
+        lexer l(anonymous_int_function(&get_char, &s),
+                anonymous_int_function(&peek_char, &s));
         httpscan httpscan(l);
         int32_t result = httpscan.lexer_.get();
         parse_timestamp(result, httpscan.lexer_);

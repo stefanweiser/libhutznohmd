@@ -28,12 +28,12 @@ namespace rest
 namespace http
 {
 
-int32_t anonymous_get(void * handle)
+int32_t get_char(void * handle)
 {
     return static_cast<request *>(handle)->get();
 }
 
-int32_t anonymous_peek(void * handle)
+int32_t peek_char(void * handle)
 {
     return static_cast<request *>(handle)->peek();
 }
@@ -41,8 +41,8 @@ int32_t anonymous_peek(void * handle)
 request::request(const rest::socket::connection_pointer & connection)
     : connection_(connection)
     , buffer_()
-    , http_parser_(anonymous_int_function(&anonymous_get, this),
-                   anonymous_int_function(&anonymous_peek, this))
+    , http_parser_(anonymous_int_function(&get_char, this),
+                   anonymous_int_function(&peek_char, this))
     , data_()
     , index_(0)
 {}

@@ -34,35 +34,49 @@ namespace http
 namespace
 {
 
+typedef std::pair<std::string, size_t> string_index_pair;
+
 int32_t get_char(void * handle)
 {
-    return static_cast<std::istream *>(handle)->get();
+    string_index_pair * p = static_cast<string_index_pair *>(handle);
+    if (p->second < p->first.size()) {
+        return p->first[p->second++];
+    }
+    return -1;
 }
 
 int32_t peek_char(void * handle)
 {
-    return static_cast<std::istream *>(handle)->peek();
+    string_index_pair * p = static_cast<string_index_pair *>(handle);
+    if (p->second < p->first.size()) {
+        return p->first[p->second];
+    }
+    return -1;
 }
-
-} // namespace
 
 class fixture
 {
 public:
-    explicit fixture(const std::string & str)
-        : str_(str)
-        , lexer_(anonymous_int_function(&get_char, &str_),
-                 anonymous_int_function(&peek_char, &str_)) {
-    }
+    explicit fixture(const std::string & str);
+    time_t parse();
 
-    time_t parse() {
-        int32_t result = lexer_.get();
-        return parse_timestamp(result, lexer_);
-    }
-
-    std::stringstream str_;
-    lexer lexer_;
+    std::string str_;
 };
+
+fixture::fixture(const std::string & str)
+    : str_(str)
+{}
+
+time_t fixture::parse()
+{
+    string_index_pair p(str_, 0);
+    lexer l(anonymous_int_function(&get_char, &p),
+            anonymous_int_function(&peek_char, &p));
+    int32_t result = l.get();
+    return parse_timestamp(result, l);
+}
+
+} // namespace
 
 TEST(http_date, rfc1123_date)
 {

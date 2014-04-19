@@ -34,17 +34,25 @@ namespace http
 namespace
 {
 
-int32_t anonymous_get(void * handle)
+typedef std::pair<std::string, size_t> string_index_pair;
+
+int32_t get_char(void * handle)
 {
-    return static_cast<std::istream *>(handle)->get();
+    string_index_pair * p = static_cast<string_index_pair *>(handle);
+    if (p->second < p->first.size()) {
+        return p->first[p->second++];
+    }
+    return -1;
 }
 
-int32_t anonymous_peek(void * handle)
+int32_t peek_char(void * handle)
 {
-    return static_cast<std::istream *>(handle)->peek();
+    string_index_pair * p = static_cast<string_index_pair *>(handle);
+    if (p->second < p->first.size()) {
+        return p->first[p->second];
+    }
+    return -1;
 }
-
-} // namespace
 
 class fixture
 {
@@ -52,16 +60,15 @@ public:
     explicit fixture(const std::string & request);
     ~fixture();
 
-    std::stringstream str_;
+    string_index_pair str_;
     http_parser parser_;
 };
 
 fixture::fixture(const std::string & request)
-    : str_(request)
-    , parser_(anonymous_int_function(&anonymous_get, &str_),
-              anonymous_int_function(&anonymous_peek, &str_))
-{
-}
+    : str_(std::make_pair(request, 0))
+    , parser_(anonymous_int_function(&get_char, &str_),
+              anonymous_int_function(&peek_char, &str_))
+{}
 
 fixture::~fixture()
 {
@@ -72,6 +79,8 @@ fixture::~fixture()
     EXPECT_EQ(parser_.status_code(), parser_.httpscan_.status_code_);
     EXPECT_EQ(parser_.reason_phrase(), parser_.httpscan_.reason_phrase_.c_str());
 }
+
+} // namespace
 
 TEST(http_parser, construction_destruction)
 {
@@ -338,33 +347,6 @@ TEST(http_parser, http_error)
     EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
     EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
-}
-
-TEST(http_parser, push_back_string)
-{
-    push_back_string<4> s;
-    EXPECT_EQ(s.empty(), true);
-    s.push_back('0');
-    s.push_back('1');
-    s.push_back('2');
-    s.push_back('3');
-    EXPECT_EQ(s.dynamic_buffer_, nullptr);
-    EXPECT_EQ(s.dynamic_size_, 0);
-    EXPECT_EQ(std::string(s.c_str()), "0123");
-    s.push_back('4');
-    EXPECT_NE(s.dynamic_buffer_, nullptr);
-    EXPECT_EQ(s.dynamic_size_, 9);
-    EXPECT_EQ(std::string(s.c_str()), "01234");
-    s.push_back('5');
-    s.push_back('6');
-    s.push_back('7');
-    EXPECT_NE(s.dynamic_buffer_, nullptr);
-    EXPECT_EQ(s.dynamic_size_, 9);
-    EXPECT_EQ(std::string(s.c_str()), "01234567");
-    s.push_back('8');
-    EXPECT_NE(s.dynamic_buffer_, nullptr);
-    EXPECT_EQ(s.dynamic_size_, 13);
-    EXPECT_EQ(std::string(s.c_str()), "012345678");
 }
 
 } // namespace http
