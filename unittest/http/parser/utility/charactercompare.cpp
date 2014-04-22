@@ -130,7 +130,7 @@ TEST(charactercompare, header_key_characters)
     validity_map[127] = false;
 
     // And no seperators
-    std::vector<uint8_t> seperators = {'(', ')', '<', '>', '@', ',', ';', ':', '\\', '\'', '/',
+    std::vector<uint8_t> seperators = {'(', ')', '<', '>', '@', ',', ';', ':', '\\', '"', '/',
                                        '[', ']', '?', '=', '{', '}', ' ', '\t'
                                       };
     for (const uint8_t & c : seperators) {
