@@ -91,17 +91,21 @@ bool parse_string_against_reference(int32_t & character,
         character = lexer.get();
     }
 
-    if ((i == j) && (i < ref.size())) {
-        // There is missing something.
-        for (size_t k = 0; k < already_parsed_string.size(); k++) {
-            result.push_back(already_parsed_string[k]);
-        }
-        for (size_t k = 0; k < i; k++) {
-            result.push_back(ref[k]);
+    if (i == j) {
+        if (i < ref.size()) {
+            // There is missing something.
+            for (size_t k = 0; k < already_parsed_string.size(); k++) {
+                result.push_back(already_parsed_string[k]);
+            }
+            for (size_t k = 0; k < i; k++) {
+                result.push_back(ref[k]);
+            }
+            return false;
+        } else {
+            return (i == ref.size());
         }
     }
-
-    return (i == j) && (i == ref.size());
+    return false;
 }
 
 } // namespace http
