@@ -19,8 +19,11 @@
 #define __LIBREST_HTTP_PARSER_UTILITY_LEXER_HPP__
 
 #include <cstddef>
+#include <string>
 
 #include <http/parser/utility/anonymousintfunction.hpp>
+#include <http/parser/utility/charactercompare.hpp>
+#include <http/parser/utility/pushbackstring.hpp>
 
 namespace rest
 {
@@ -56,6 +59,49 @@ size_t compare_lower_case_string(const lower_case_string &, int32_t & character,
         result--;
     }
     return result;
+}
+
+template<size_t size>
+bool parse_string_against_reference(int32_t & character,
+                                    const std::string & already_parsed_string,
+                                    const std::string & ref,
+                                    push_back_string<size> & result,
+                                    const lexer & lexer)
+{
+    size_t i = 0;
+    size_t j = 0;
+    character = lexer.get();
+    while ((character >= 0) &&
+           (true == is_valid_token_character(static_cast<char>(character)))) {
+        char c = static_cast<char>(character);
+        if ((i == j) && ((i >= ref.size()) || (true == compare_case_insensitive(ref[i], c)))) {
+            i++;
+        } else {
+            if (true == result.empty()) {
+                for (size_t k = 0; k < already_parsed_string.size(); k++) {
+                    result.push_back(already_parsed_string[k]);
+                }
+                for (size_t k = 0; k < i; k++) {
+                    result.push_back(ref[k]);
+                }
+            }
+            result.push_back(c);
+        }
+        j++;
+        character = lexer.get();
+    }
+
+    if ((i == j) && (i < ref.size())) {
+        // There is missing something.
+        for (size_t k = 0; k < already_parsed_string.size(); k++) {
+            result.push_back(already_parsed_string[k]);
+        }
+        for (size_t k = 0; k < i; k++) {
+            result.push_back(ref[k]);
+        }
+    }
+
+    return (i == j) && (i == ref.size());
 }
 
 } // namespace http

@@ -30,34 +30,6 @@ namespace rest
 namespace http
 {
 
-bool parse_header_key_compared_to_string(int32_t & character,
-        const std::string & already_parsed_string,
-        const std::string & string,
-        httpscan * scanner)
-{
-    size_t i = 0;
-    size_t j = 0;
-    character = scanner->lexer_.get();
-    while ((character >= 0) &&
-           (true == is_valid_token_character(static_cast<char>(character)))) {
-        char c = static_cast<char>(character);
-        if ((i == j) && ((i >= string.size()) || (true == compare_case_insensitive(string[i], c)))) {
-            i++;
-        } else {
-            if (true == scanner->header_key_.empty()) {
-                for (size_t k = 0; k < already_parsed_string.size(); k++) {
-                    scanner->header_key_.push_back(already_parsed_string[k]);
-                }
-            }
-            scanner->header_key_.push_back(c);
-        }
-        j++;
-        character = scanner->lexer_.get();
-    }
-
-    return (i == j) && (i == string.size());
-}
-
 bool parse_header_type(int32_t & result, httpscan * scanner)
 {
     do {
@@ -99,7 +71,8 @@ bool parse_header_value(int32_t & result, httpscan * scanner)
 bool parse_header(int32_t & result, httpscan * scanner)
 {
     if ((result == 'c') || (result == 'C')) {
-        bool equal = parse_header_key_compared_to_string(result, "c", "ontent-length", scanner);
+        bool equal = parse_string_against_reference(result, "c", "ontent-length",
+                     scanner->header_key_, scanner->lexer_);
         if ((true == equal) && (result == ':')) {
             result = scanner->lexer_.get_non_whitespace();
             int32_t code = scanner->lexer_.get_unsigned_integer(result);
@@ -111,7 +84,8 @@ bool parse_header(int32_t & result, httpscan * scanner)
             return true;
         }
     } else if ((result == 'd') || (result == 'D')) {
-        bool equal = parse_header_key_compared_to_string(result, "d", "ate", scanner);
+        bool equal = parse_string_against_reference(result, "d", "ate", scanner->header_key_,
+                     scanner->lexer_);
         if ((true == equal) && (result == ':')) {
             result = scanner->lexer_.get_non_whitespace();
             time_t date = parse_timestamp(result, scanner->lexer_);
