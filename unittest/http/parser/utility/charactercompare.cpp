@@ -116,7 +116,7 @@ TEST(charactercompare, url_characters)
     }
 }
 
-TEST(charactercompare, header_key_characters)
+TEST(charactercompare, token_characters)
 {
     std::array<bool, 256> validity_map;
     // Any CHAR
@@ -138,7 +138,7 @@ TEST(charactercompare, header_key_characters)
     }
 
     for (size_t i = 0; i < validity_map.size(); i++) {
-        EXPECT_EQ(is_valid_header_key_character(static_cast<uint8_t>(i)), validity_map[i]);
+        EXPECT_EQ(is_valid_token_character(static_cast<uint8_t>(i)), validity_map[i]);
     }
 }
 

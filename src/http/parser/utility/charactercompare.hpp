@@ -105,8 +105,8 @@ static bool UNUSED is_valid_url_character(uint8_t c)
     return (validity_map[c] != 0);
 }
 
-//! Returns true, if the given character is a valid character for a header key.
-static bool UNUSED is_valid_header_key_character(uint8_t c)
+//! Returns true, if the given character is a valid token character.
+static bool UNUSED is_valid_token_character(uint8_t c)
 {
     static const std::array<char, 256> validity_map = {
         {

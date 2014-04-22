@@ -39,7 +39,7 @@ bool parse_header_key_compared_to_string(int32_t & character,
     size_t j = 0;
     character = scanner->lexer_.get();
     while ((character >= 0) &&
-           (true == is_valid_header_key_character(static_cast<char>(character)))) {
+           (true == is_valid_token_character(static_cast<char>(character)))) {
         char c = static_cast<char>(character);
         if ((i == j) && ((i >= string.size()) || (true == compare_case_insensitive(string[i], c)))) {
             i++;
@@ -61,7 +61,7 @@ bool parse_header_key_compared_to_string(int32_t & character,
 bool parse_header_type(int32_t & result, httpscan * scanner)
 {
     do {
-        if ((result < 0) || (false == is_valid_header_key_character(static_cast<uint8_t>(result)))) {
+        if ((result < 0) || (false == is_valid_token_character(static_cast<uint8_t>(result)))) {
             result = -1;
             return false;
         }
