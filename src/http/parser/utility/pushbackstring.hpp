@@ -19,6 +19,7 @@
 #define __LIBREST_HTTP_PARSER_UTILITY_PUSHBACKSTRING_HPP__
 
 #include <cstring>
+#include <cstdlib>
 
 namespace rest
 {
