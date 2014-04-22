@@ -45,15 +45,17 @@ private:
 };
 
 template<typename lower_case_string>
-bool verify_forced_characters(const lower_case_string &, const lexer & l)
+size_t compare_lower_case_string(const lower_case_string &, int32_t & character, const lexer & l)
 {
+    size_t result = lower_case_string::size;
     for (size_t i = 0; i < lower_case_string::size; i++) {
-        const int32_t character = l.get();
+        character = l.get();
         if (false == compare_case_insensitive(lower_case_string::value[i], character)) {
-            return false;
+            break;
         }
+        result--;
     }
-    return true;
+    return result;
 }
 
 } // namespace http

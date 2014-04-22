@@ -38,42 +38,42 @@ method lex_request_method(const int32_t & last, int32_t & character, const lexer
     method result = method::UNKNOWN;
     if ((true == compare_case_insensitive('h', last)) &&
         (true == compare_case_insensitive('e', character))) {
-        if (true == verify_forced_characters(lower_case_string_ad(), l)) {
+        if (0 == compare_lower_case_string(lower_case_string_ad(), character, l)) {
             result = method::HEAD;
         }
     } else if ((true == compare_case_insensitive('g', last)) &&
                (true == compare_case_insensitive('e', character))) {
-        if (true == verify_forced_characters(lower_case_string_t(), l)) {
+        if (0 == compare_lower_case_string(lower_case_string_t(), character, l)) {
             result = rest::http::method::GET;
         }
     } else if ((true == compare_case_insensitive('p', last))) {
         if (true == compare_case_insensitive('u', character)) {
-            if (true == verify_forced_characters(lower_case_string_t(), l)) {
+            if (0 == compare_lower_case_string(lower_case_string_t(), character, l)) {
                 result = rest::http::method::PUT;
             }
         } else if (true == compare_case_insensitive('o', character)) {
-            if (true == verify_forced_characters(lower_case_string_st(), l)) {
+            if (0 == compare_lower_case_string(lower_case_string_st(), character, l)) {
                 result = rest::http::method::POST;
             }
         }
     } else if ((true == compare_case_insensitive('d', last)) &&
                (true == compare_case_insensitive('e', character))) {
-        if (true == verify_forced_characters(lower_case_string_lete(), l)) {
+        if (0 == compare_lower_case_string(lower_case_string_lete(), character, l)) {
             result = rest::http::method::DELETE;
         }
     } else if ((true == compare_case_insensitive('o', last)) &&
                (true == compare_case_insensitive('p', character))) {
-        if (true == verify_forced_characters(lower_case_string_tions(), l)) {
+        if (0 == compare_lower_case_string(lower_case_string_tions(), character, l)) {
             result = rest::http::method::OPTIONS;
         }
     } else if ((true == compare_case_insensitive('c', last)) &&
                (true == compare_case_insensitive('o', character))) {
-        if (true == verify_forced_characters(lower_case_string_nnect(), l)) {
+        if (0 == compare_lower_case_string(lower_case_string_nnect(), character, l)) {
             result = rest::http::method::CONNECT;
         }
     } else if ((true == compare_case_insensitive('t', last)) &&
                (true == compare_case_insensitive('r', character))) {
-        if (true == verify_forced_characters(lower_case_string_ace(), l)) {
+        if (0 == compare_lower_case_string(lower_case_string_ace(), character, l)) {
             result = rest::http::method::TRACE;
         }
     }
@@ -99,7 +99,7 @@ version lex_http_version(const int32_t & last, int32_t & character, const lexer 
 {
     if ((true == compare_case_insensitive('h', last)) &&
         (true == compare_case_insensitive('t', character))) {
-        if (false == verify_forced_characters(lower_case_string_tp(), l)) {
+        if (0 != compare_lower_case_string(lower_case_string_tp(), character, l)) {
             return version::HTTP_UNKNOWN;
         }
         const int32_t slash = l.get();
