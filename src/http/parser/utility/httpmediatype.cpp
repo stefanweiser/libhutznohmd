@@ -42,7 +42,8 @@ bool media_type::parse(int32_t & character)
         return false;
     }
     character = lexer_.get_non_whitespace();
-    return parse_subtype(character);
+    parse_subtype(character);
+    return true;
 }
 
 media_type_type media_type::type() const
@@ -65,118 +66,90 @@ const char * media_type::custom_subtype() const
     return custom_subtype_.c_str();
 }
 
-using parsing_function_type = bool(media_type::*)(int32_t &);
+using parsing_function_type = void(media_type::*)(int32_t &);
 
-bool media_type::parse_type_end(int32_t & /*character*/)
+void media_type::parse_type_end(int32_t & /*character*/)
+{}
+
+void media_type::parse_type_custom(int32_t & character)
 {
-    return false;
-}
-
-bool media_type::parse_type_custom(int32_t & character)
-{
-    if (false == is_valid_token_character(static_cast<uint8_t>(character))) {
-        return true;
-    }
-
-    do {
+    while (true == is_valid_token_character(static_cast<uint8_t>(character))) {
         custom_type_.push_back(to_lower(static_cast<char>(character)));
         character = lexer_.get();
-    } while (true == is_valid_token_character(static_cast<uint8_t>(character)));
-
-    return true;
+    }
 }
 
-bool media_type::parse_type_wildcard(int32_t & character)
+void media_type::parse_type_wildcard(int32_t & character)
 {
     if (true == parse_string_against_reference(character, "*", "", custom_type_, lexer_)) {
         type_ = media_type_type::WILDCARD;
-        return true;
     }
-    return false;
 }
 
-bool media_type::parse_type_application(int32_t & character)
+void media_type::parse_type_application(int32_t & character)
 {
     if (true == parse_string_against_reference(character, "ap", "plication", custom_type_, lexer_)) {
         type_ = media_type_type::APPLICATION;
-        return true;
     }
-    return false;
 }
 
-bool media_type::parse_type_audio(int32_t & character)
+void media_type::parse_type_audio(int32_t & character)
 {
     if (true == parse_string_against_reference(character, "au", "dio", custom_type_, lexer_)) {
         type_ = media_type_type::AUDIO;
-        return true;
     }
-    return false;
 }
 
-bool media_type::parse_type_example(int32_t & character)
+void media_type::parse_type_example(int32_t & character)
 {
     if (true == parse_string_against_reference(character, "e", "xample", custom_type_, lexer_)) {
         type_ = media_type_type::EXAMPLE;
-        return true;
     }
-    return false;
 }
 
-bool media_type::parse_type_image(int32_t & character)
+void media_type::parse_type_image(int32_t & character)
 {
     if (true == parse_string_against_reference(character, "i", "mage", custom_type_, lexer_)) {
         type_ = media_type_type::IMAGE;
-        return true;
     }
-    return false;
 }
 
-bool media_type::parse_type_message(int32_t & character)
+void media_type::parse_type_message(int32_t & character)
 {
     if (true == parse_string_against_reference(character, "me", "ssage", custom_type_, lexer_)) {
         type_ = media_type_type::MESSAGE;
-        return true;
     }
-    return false;
 }
 
-bool media_type::parse_type_model(int32_t & character)
+void media_type::parse_type_model(int32_t & character)
 {
     if (true == parse_string_against_reference(character, "mo", "del", custom_type_, lexer_)) {
         type_ = media_type_type::MODEL;
-        return true;
     }
-    return false;
 }
 
-bool media_type::parse_type_multipart(int32_t & character)
+void media_type::parse_type_multipart(int32_t & character)
 {
     if (true == parse_string_against_reference(character, "mu", "ltipart", custom_type_, lexer_)) {
         type_ = media_type_type::MULTIPART;
-        return true;
     }
-    return false;
 }
 
-bool media_type::parse_type_text(int32_t & character)
+void media_type::parse_type_text(int32_t & character)
 {
     if (true == parse_string_against_reference(character, "t", "ext", custom_type_, lexer_)) {
         type_ = media_type_type::TEXT;
-        return true;
     }
-    return false;
 }
 
-bool media_type::parse_type_video(int32_t & character)
+void media_type::parse_type_video(int32_t & character)
 {
     if (true == parse_string_against_reference(character, "v", "ideo", custom_type_, lexer_)) {
         type_ = media_type_type::VIDEO;
-        return true;
     }
-    return false;
 }
 
-bool media_type::parse_type_a(int32_t & character)
+void media_type::parse_type_a(int32_t & character)
 {
     using parsing_function_map = std::array<parsing_function_type, 128>;
     static const auto generate_type_character = []() -> std::array<parsing_function_type, 128> {
@@ -198,13 +171,13 @@ bool media_type::parse_type_a(int32_t & character)
     if (((static_cast<uint32_t>(character) & 0xFFFFFF80) != 0) ||
         (false == is_valid_token_character(static_cast<uint8_t>(character)))) {
         custom_type_.push_back('a');
-        return false;
+        return;
     }
     auto pointer = type_character[static_cast<uint8_t>(character)];
-    return (this->*pointer)(character);
+    (this->*pointer)(character);
 }
 
-bool media_type::parse_type_m(int32_t & character)
+void media_type::parse_type_m(int32_t & character)
 {
     using parsing_function_map = std::array<parsing_function_type, 128>;
     static const auto generate_type_character = []() -> std::array<parsing_function_type, 128> {
@@ -228,13 +201,13 @@ bool media_type::parse_type_m(int32_t & character)
     if (((static_cast<uint32_t>(character) & 0xFFFFFF80) != 0) ||
         (false == is_valid_token_character(static_cast<uint8_t>(character)))) {
         custom_type_.push_back('m');
-        return false;
+        return;
     }
     auto pointer = type_character[static_cast<uint8_t>(character)];
-    return (this->*pointer)(character);
+    (this->*pointer)(character);
 }
 
-bool media_type::parse_type(int32_t & character)
+void media_type::parse_type(int32_t & character)
 {
     using parsing_function_map = std::array<parsing_function_type, 128>;
     static const auto generate_type_character = []() -> std::array<parsing_function_type, 128> {
@@ -263,22 +236,20 @@ bool media_type::parse_type(int32_t & character)
 
     if (((static_cast<uint32_t>(character) & 0xFFFFFF80) != 0) ||
         (false == is_valid_token_character(static_cast<uint8_t>(character)))) {
-        return false;
+        return;
     }
     auto pointer = type_character[static_cast<uint8_t>(character)];
-    return (this->*pointer)(character);
+    (this->*pointer)(character);
 }
 
-bool media_type::parse_subtype_wildcard(int32_t & character)
+void media_type::parse_subtype_wildcard(int32_t & character)
 {
     if (true == parse_string_against_reference(character, "*", "", custom_subtype_, lexer_)) {
         subtype_ = media_type_subtype::WILDCARD;
-        return true;
     }
-    return false;
 }
 
-bool media_type::parse_subtype(int32_t & character)
+void media_type::parse_subtype(int32_t & character)
 {
     using parsing_function_map = std::array<parsing_function_type, 128>;
     static const auto generate_type_character = []() -> std::array<parsing_function_type, 128> {
@@ -295,10 +266,10 @@ bool media_type::parse_subtype(int32_t & character)
 
     if (((static_cast<uint32_t>(character) & 0xFFFFFF80) != 0) ||
         (false == is_valid_token_character(static_cast<uint8_t>(character)))) {
-        return false;
+        return;
     }
     auto pointer = type_character[static_cast<uint8_t>(character)];
-    return (this->*pointer)(character);
+    (this->*pointer)(character);
 }
 
 } // namespace http

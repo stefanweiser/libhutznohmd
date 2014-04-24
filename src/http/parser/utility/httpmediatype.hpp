@@ -64,28 +64,25 @@ public:
     const char * custom_subtype() const;
 
 private:
-    template<typename lower_case_string>
-    bool finish_known(lower_case_string, int32_t & character);
+    void parse_type_end(int32_t & character);
+    void parse_type_custom(int32_t & character);
+    void parse_type_wildcard(int32_t & character);
+    void parse_type_application(int32_t & character);
+    void parse_type_audio(int32_t & character);
+    void parse_type_example(int32_t & character);
+    void parse_type_image(int32_t & character);
+    void parse_type_message(int32_t & character);
+    void parse_type_model(int32_t & character);
+    void parse_type_multipart(int32_t & character);
+    void parse_type_text(int32_t & character);
+    void parse_type_video(int32_t & character);
+    void parse_type_a(int32_t & character);
+    void parse_type_m(int32_t & character);
 
-    bool parse_type_end(int32_t & character);
-    bool parse_type_custom(int32_t & character);
-    bool parse_type_wildcard(int32_t & character);
-    bool parse_type_application(int32_t & character);
-    bool parse_type_audio(int32_t & character);
-    bool parse_type_example(int32_t & character);
-    bool parse_type_image(int32_t & character);
-    bool parse_type_message(int32_t & character);
-    bool parse_type_model(int32_t & character);
-    bool parse_type_multipart(int32_t & character);
-    bool parse_type_text(int32_t & character);
-    bool parse_type_video(int32_t & character);
-    bool parse_type_a(int32_t & character);
-    bool parse_type_m(int32_t & character);
+    void parse_subtype_wildcard(int32_t & character);
 
-    bool parse_subtype_wildcard(int32_t & character);
-
-    bool parse_type(int32_t & character);
-    bool parse_subtype(int32_t & character);
+    void parse_type(int32_t & character);
+    void parse_subtype(int32_t & character);
 
     const lexer & lexer_;
     media_type_type type_;
