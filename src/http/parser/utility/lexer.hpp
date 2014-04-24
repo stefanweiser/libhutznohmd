@@ -61,11 +61,15 @@ size_t compare_lower_case_string(const lower_case_string &, int32_t & character,
     return result;
 }
 
+//! Tries to complete a token string using a reference token string and a lexer. If the comparison
+//! completes it returns true and the callee can assume, that the token is equal to the reference.
+//! If the function returns false, the parsed token is stored in the fail safe result. The
+//! function assumes, that no new character has been lexed before entering the function.
 template<size_t size>
 bool parse_string_against_reference(int32_t & character,
                                     const std::string & already_parsed_string,
                                     const std::string & ref,
-                                    push_back_string<size> & result,
+                                    push_back_string<size> & fail_safe_result,
                                     const lexer & lexer)
 {
     size_t i = 0;
@@ -77,15 +81,15 @@ bool parse_string_against_reference(int32_t & character,
         if ((i == j) && (i < ref.size()) && (true == compare_case_insensitive(ref[i], c))) {
             i++;
         } else {
-            if (true == result.empty()) {
+            if (true == fail_safe_result.empty()) {
                 for (size_t k = 0; k < already_parsed_string.size(); k++) {
-                    result.push_back(already_parsed_string[k]);
+                    fail_safe_result.push_back(already_parsed_string[k]);
                 }
                 for (size_t k = 0; k < i; k++) {
-                    result.push_back(ref[k]);
+                    fail_safe_result.push_back(ref[k]);
                 }
             }
-            result.push_back(c);
+            fail_safe_result.push_back(c);
         }
         j++;
         character = lexer.get();
@@ -95,10 +99,10 @@ bool parse_string_against_reference(int32_t & character,
         if (i < ref.size()) {
             // There is missing something.
             for (size_t k = 0; k < already_parsed_string.size(); k++) {
-                result.push_back(already_parsed_string[k]);
+                fail_safe_result.push_back(already_parsed_string[k]);
             }
             for (size_t k = 0; k < i; k++) {
-                result.push_back(ref[k]);
+                fail_safe_result.push_back(ref[k]);
             }
             return false;
         } else {
