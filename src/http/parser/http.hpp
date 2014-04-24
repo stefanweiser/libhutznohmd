@@ -26,6 +26,7 @@
 
 #include <http/parser/utility/pushbackstring.hpp>
 #include <http/parser/utility/lexer.hpp>
+#include <http/parser/utility/httpmediatype.hpp>
 
 namespace rest
 {
@@ -58,6 +59,7 @@ public:
     push_back_string<100> reason_phrase_;
     std::map<std::string, std::string> headers_;
     size_t content_length_;
+    media_type content_type_;
     time_t date_;
 };
 
@@ -73,6 +75,7 @@ inline httpscan::httpscan(const lexer & l)
     , reason_phrase_()
     , headers_()
     , content_length_(0)
+    , content_type_(l)
     , date_(time(NULL))
 {}
 
