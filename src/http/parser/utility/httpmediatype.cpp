@@ -271,10 +271,11 @@ bool media_type::parse_type(int32_t & character)
 
 bool media_type::parse_subtype_wildcard(int32_t & character)
 {
-    subtype_ = media_type_subtype::WILDCARD;
-    custom_subtype_.clear();
-    character = lexer_.get();
-    return true;
+    if (true == parse_string_against_reference(character, "*", "", custom_subtype_, lexer_)) {
+        subtype_ = media_type_subtype::WILDCARD;
+        return true;
+    }
+    return false;
 }
 
 bool media_type::parse_subtype(int32_t & character)
