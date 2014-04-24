@@ -108,6 +108,8 @@ bool compare_to_reference(int32_t & character,
     return false;
 }
 
+//! Parses a word utilizing a transformations functor and stopping if the continue condition gets
+//! wrong.
 template<size_t size, typename transformation_function, typename continue_function>
 void parse_word(int32_t & character,
                 push_back_string<size> & result,
