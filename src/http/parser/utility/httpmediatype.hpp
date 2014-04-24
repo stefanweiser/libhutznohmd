@@ -20,6 +20,7 @@
 
 #include <cstddef>
 #include <cstring>
+#include <map>
 
 #include <http/parser/utility/lexer.hpp>
 #include <http/parser/utility/pushbackstring.hpp>
@@ -48,7 +49,8 @@ enum class media_type_type : int32_t
 enum class media_type_subtype : int32_t
 {
     CUSTOM = -1,
-    WILDCARD = 0
+    WILDCARD = 0,
+    PLAIN
 };
 
 class media_type
@@ -62,6 +64,7 @@ public:
     media_type_subtype subtype() const;
     const char * custom_type() const;
     const char * custom_subtype() const;
+    const char * parameter(const char * key) const;
 
 private:
     void parse_type_end(int32_t & character);
@@ -80,6 +83,7 @@ private:
     void parse_type_m(int32_t & character);
 
     void parse_subtype_wildcard(int32_t & character);
+    void parse_subtype_plain(int32_t & character);
 
     void parse_type(int32_t & character);
     void parse_subtype(int32_t & character);
@@ -90,6 +94,7 @@ private:
     media_type_subtype subtype_;
     push_back_string<32> custom_type_;
     push_back_string<64> custom_subtype_;
+    std::map<std::string, std::string> parameters_;
 };
 
 } // namespace http

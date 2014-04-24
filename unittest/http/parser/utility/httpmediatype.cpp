@@ -192,6 +192,17 @@ TEST(http_media_type, video_wildcard)
     EXPECT_EQ(m->custom_subtype(), std::string(""));
 }
 
+TEST(http_media_type, text_plain_parameter)
+{
+    fixture f("text/plain;q=0.1");
+    const std::unique_ptr<media_type> m = f.parse();
+    EXPECT_EQ(m->type(), media_type_type::TEXT);
+    EXPECT_EQ(m->subtype(), media_type_subtype::PLAIN);
+    EXPECT_EQ(m->custom_type(), std::string(""));
+    EXPECT_EQ(m->custom_subtype(), std::string(""));
+    EXPECT_EQ(m->parameter("q"), std::string("0.1"));
+}
+
 TEST(http_media_type, applucation_wildcard)
 {
     fixture f("applucation/*");

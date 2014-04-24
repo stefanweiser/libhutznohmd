@@ -33,6 +33,7 @@ media_type::media_type(const lexer & l)
     , subtype_(media_type_subtype::CUSTOM)
     , custom_type_()
     , custom_subtype_()
+    , parameters_()
 {}
 
 bool media_type::parse(int32_t & character)
@@ -67,6 +68,15 @@ const char * media_type::custom_type() const
 const char * media_type::custom_subtype() const
 {
     return custom_subtype_.c_str();
+}
+
+const char * media_type::parameter(const char * key) const
+{
+    auto it = parameters_.find(key);
+    if (it != parameters_.end()) {
+        return it->second.c_str();
+    }
+    return "";
 }
 
 using parsing_function_type = void(media_type::*)(int32_t &);
@@ -263,6 +273,14 @@ void media_type::parse_subtype_wildcard(int32_t & character)
     }
 }
 
+void media_type::parse_subtype_plain(int32_t & character)
+{
+    if (true == compare_to_reference(character, "plain", 1, custom_subtype_, &is_valid_token_character,
+                                     lexer_)) {
+        subtype_ = media_type_subtype::PLAIN;
+    }
+}
+
 void media_type::parse_subtype(int32_t & character)
 {
     using parsing_function_map = std::array<parsing_function_type, 128>;
@@ -273,6 +291,8 @@ void media_type::parse_subtype(int32_t & character)
             result[i] = valid ? &media_type::parse_type_custom : &media_type::parse_type_end;
         }
 
+        result['P'] = &media_type::parse_subtype_plain;
+        result['p'] = &media_type::parse_subtype_plain;
         result['*'] = &media_type::parse_subtype_wildcard;
         return result;
     };
@@ -288,7 +308,22 @@ void media_type::parse_subtype(int32_t & character)
 
 void media_type::parse_parameter(int32_t & character)
 {
+    push_back_string<16> key;
+    push_back_string<16> value;
+
+    character = lexer_.get_non_whitespace();
+    auto nothing = [](const char & c) {
+        return c;
+    };
+
+    parse_word(character, key, nothing, &is_valid_token_character, lexer_);
+    if ('=' != character) {
+        return;
+    }
     character = lexer_.get();
+    parse_word(character, value, nothing, &is_valid_token_character, lexer_);
+    character = lexer_.get();
+    parameters_[key.c_str()] = value.c_str();
 }
 
 } // namespace http
