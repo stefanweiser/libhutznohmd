@@ -92,82 +92,84 @@ void media_type::parse_type_custom(int32_t & character)
     }
 }
 
+bool media_type::compare_type(int32_t & character,
+                              const char * ref,
+                              const size_t & already_parsed)
+{
+    return compare_to_reference(character,
+                                ref,
+                                already_parsed,
+                                custom_type_,
+                                &is_valid_token_character,
+                                lexer_);
+}
+
 void media_type::parse_type_wildcard(int32_t & character)
 {
-    if (true == compare_to_reference(character, "*", 1, custom_type_, &is_valid_token_character,
-                                     lexer_)) {
+    if (true == compare_type(character, "*", 1)) {
         type_ = media_type_type::WILDCARD;
     }
 }
 
 void media_type::parse_type_application(int32_t & character)
 {
-    if (true == compare_to_reference(character, "application", 2, custom_type_,
-                                     &is_valid_token_character, lexer_)) {
+    if (true == compare_type(character, "application", 2)) {
         type_ = media_type_type::APPLICATION;
     }
 }
 
 void media_type::parse_type_audio(int32_t & character)
 {
-    if (true == compare_to_reference(character, "audio", 2, custom_type_, &is_valid_token_character,
-                                     lexer_)) {
+    if (true == compare_type(character, "audio", 2)) {
         type_ = media_type_type::AUDIO;
     }
 }
 
 void media_type::parse_type_example(int32_t & character)
 {
-    if (true == compare_to_reference(character, "example", 1, custom_type_, &is_valid_token_character,
-                                     lexer_)) {
+    if (true == compare_type(character, "example", 1)) {
         type_ = media_type_type::EXAMPLE;
     }
 }
 
 void media_type::parse_type_image(int32_t & character)
 {
-    if (true == compare_to_reference(character, "image", 1, custom_type_, &is_valid_token_character,
-                                     lexer_)) {
+    if (true == compare_type(character, "image", 1)) {
         type_ = media_type_type::IMAGE;
     }
 }
 
 void media_type::parse_type_message(int32_t & character)
 {
-    if (true == compare_to_reference(character, "message", 2, custom_type_, &is_valid_token_character,
-                                     lexer_)) {
+    if (true == compare_type(character, "message", 2)) {
         type_ = media_type_type::MESSAGE;
     }
 }
 
 void media_type::parse_type_model(int32_t & character)
 {
-    if (true == compare_to_reference(character, "model", 2, custom_type_, &is_valid_token_character,
-                                     lexer_)) {
+    if (true == compare_type(character, "model", 2)) {
         type_ = media_type_type::MODEL;
     }
 }
 
 void media_type::parse_type_multipart(int32_t & character)
 {
-    if (true == compare_to_reference(character, "multipart", 2, custom_type_, &is_valid_token_character,
-                                     lexer_)) {
+    if (true == compare_type(character, "multipart", 2)) {
         type_ = media_type_type::MULTIPART;
     }
 }
 
 void media_type::parse_type_text(int32_t & character)
 {
-    if (true == compare_to_reference(character, "text", 1, custom_type_, &is_valid_token_character,
-                                     lexer_)) {
+    if (true == compare_type(character, "text", 1)) {
         type_ = media_type_type::TEXT;
     }
 }
 
 void media_type::parse_type_video(int32_t & character)
 {
-    if (true == compare_to_reference(character, "video", 1, custom_type_, &is_valid_token_character,
-                                     lexer_)) {
+    if (true == compare_type(character, "video", 1)) {
         type_ = media_type_type::VIDEO;
     }
 }
@@ -265,18 +267,28 @@ void media_type::parse_type(int32_t & character)
     (this->*pointer)(character);
 }
 
+bool media_type::compare_subtype(int32_t & character,
+                                 const char * ref,
+                                 const size_t & already_parsed)
+{
+    return compare_to_reference(character,
+                                ref,
+                                already_parsed,
+                                custom_subtype_,
+                                &is_valid_token_character,
+                                lexer_);
+}
+
 void media_type::parse_subtype_wildcard(int32_t & character)
 {
-    if (true == compare_to_reference(character, "*", 1, custom_subtype_, &is_valid_token_character,
-                                     lexer_)) {
+    if (true == compare_subtype(character, "*", 1)) {
         subtype_ = media_type_subtype::WILDCARD;
     }
 }
 
 void media_type::parse_subtype_plain(int32_t & character)
 {
-    if (true == compare_to_reference(character, "plain", 1, custom_subtype_, &is_valid_token_character,
-                                     lexer_)) {
+    if (true == compare_subtype(character, "plain", 1)) {
         subtype_ = media_type_subtype::PLAIN;
     }
 }

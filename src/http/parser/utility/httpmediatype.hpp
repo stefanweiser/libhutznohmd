@@ -67,6 +67,7 @@ public:
     const char * parameter(const char * key) const;
 
 private:
+    bool compare_type(int32_t & character, const char * ref, const size_t & already_parsed);
     void parse_type_end(int32_t & character);
     void parse_type_custom(int32_t & character);
     void parse_type_wildcard(int32_t & character);
@@ -82,6 +83,7 @@ private:
     void parse_type_a(int32_t & character);
     void parse_type_m(int32_t & character);
 
+    bool compare_subtype(int32_t & character, const char * ref, const size_t & already_parsed);
     void parse_subtype_wildcard(int32_t & character);
     void parse_subtype_plain(int32_t & character);
 
