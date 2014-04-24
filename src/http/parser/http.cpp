@@ -30,44 +30,6 @@ namespace rest
 namespace http
 {
 
-bool parse_header_type(int32_t & result, httpscan * scanner)
-{
-    do {
-        if ((result < 0) || (false == is_valid_token_character(static_cast<uint8_t>(result)))) {
-            result = -1;
-            return false;
-        }
-        scanner->header_key_.push_back(to_lower(static_cast<char>(result)));
-        result = scanner->lexer_.get();
-    } while (result != ':');
-
-    return true;
-}
-
-bool parse_header_value(int32_t & result, httpscan * scanner)
-{
-    while (result != '\n') {
-        if ((result < 0) ||
-            (false == is_valid_header_value_character(static_cast<uint8_t>(result)))) {
-            return false;
-        }
-        scanner->header_value_.push_back(static_cast<char>(result));
-        result = scanner->lexer_.get();
-    }
-
-    auto it = scanner->headers_.find(scanner->header_key_.c_str());
-    if (it == scanner->headers_.end()) {
-        scanner->headers_[scanner->header_key_.c_str()] = scanner->header_value_.c_str();
-    } else {
-        it->second += std::string(",") + scanner->header_value_.c_str();
-    }
-
-    scanner->header_key_.clear();
-    scanner->header_value_.clear();
-
-    return true;
-}
-
 bool parse_header(int32_t & result, httpscan * scanner)
 {
     if ((result == 'c') || (result == 'C')) {
@@ -98,11 +60,27 @@ bool parse_header(int32_t & result, httpscan * scanner)
         }
     }
 
-    parse_header_type(result, scanner);
-    result = scanner->lexer_.get();
-    if (false == parse_header_value(result, scanner)) {
+    parse_word(result, scanner->header_key_, &to_lower, &is_valid_token_character, scanner->lexer_);
+    if (result != ':') {
         return false;
     }
+    result = scanner->lexer_.get();
+    parse_word(result, scanner->header_value_, [](const char & c) {
+        return c;
+    }, &is_valid_header_value_character, scanner->lexer_);
+    if (result != '\n') {
+        return false;
+    }
+
+    auto it = scanner->headers_.find(scanner->header_key_.c_str());
+    if (it == scanner->headers_.end()) {
+        scanner->headers_[scanner->header_key_.c_str()] = scanner->header_value_.c_str();
+    } else {
+        it->second += std::string(",") + scanner->header_value_.c_str();
+    }
+
+    scanner->header_key_.clear();
+    scanner->header_value_.clear();
     return true;
 }
 

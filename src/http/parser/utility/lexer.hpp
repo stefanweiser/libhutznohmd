@@ -61,23 +61,24 @@ size_t compare_lower_case_string(const lower_case_string &, int32_t & character,
     return result;
 }
 
-//! Tries to complete a token string using a reference token string and a lexer. If the comparison
-//! completes it returns true and the callee can assume, that the token is equal to the reference.
-//! If the function returns false, the parsed token is stored in the fail safe result. The
-//! function assumes, that no new character has been lexed before entering the function.
-template<size_t size, typename stop_function>
+//! Tries to complete a string using a reference string and a lexer. If the comparison completes
+//! it returns true and the callee can assume, that the string is equal to the reference.
+//! If the function returns false, the parsed string is stored in the fail safe result. The
+//! function assumes, that no new character has been lexed before entering the function. The
+//! reference string must consist only of lower case letters.
+template<size_t size, typename continue_function>
 bool compare_to_reference(int32_t & character,
                           const std::string & ref,
                           const size_t & already_parsed,
                           push_back_string<size> & fail_safe_result,
-                          const stop_function & stop_functor,
-                          const lexer & lexer)
+                          const continue_function & continue_condition_functor,
+                          const lexer & s)
 {
     size_t i = already_parsed;
     size_t j = already_parsed;
-    character = lexer.get();
+    character = s.get();
     while ((character >= 0) &&
-           (true == stop_functor(static_cast<char>(character)))) {
+           (true == continue_condition_functor(static_cast<char>(character)))) {
         char c = static_cast<char>(character);
         if ((i == j) && (i < ref.size()) && (true == compare_case_insensitive(ref[i], c))) {
             i++;
@@ -90,7 +91,7 @@ bool compare_to_reference(int32_t & character,
             fail_safe_result.push_back(c);
         }
         j++;
-        character = lexer.get();
+        character = s.get();
     }
 
     if (i == j) {
@@ -105,6 +106,20 @@ bool compare_to_reference(int32_t & character,
         }
     }
     return false;
+}
+
+template<size_t size, typename transformation_function, typename continue_function>
+void parse_word(int32_t & character,
+                push_back_string<size> & result,
+                const transformation_function & transformation_functor,
+                const continue_function & continue_condition_functor,
+                const lexer & l)
+{
+    while ((character >= 0) &&
+           (true == continue_condition_functor(static_cast<char>(character)))) {
+        result.push_back(transformation_functor(static_cast<char>(character)));
+        character = l.get();
+    }
 }
 
 } // namespace http
