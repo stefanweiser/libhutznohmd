@@ -67,13 +67,13 @@ size_t compare_lower_case_string(const lower_case_string &, int32_t & character,
 //! function assumes, that no new character has been lexed before entering the function.
 template<size_t size>
 bool parse_string_against_reference(int32_t & character,
-                                    const std::string & already_parsed_string,
                                     const std::string & ref,
+                                    const size_t & already_parsed,
                                     push_back_string<size> & fail_safe_result,
                                     const lexer & lexer)
 {
-    size_t i = 0;
-    size_t j = 0;
+    size_t i = already_parsed;
+    size_t j = already_parsed;
     character = lexer.get();
     while ((character >= 0) &&
            (true == is_valid_token_character(static_cast<char>(character)))) {
@@ -82,9 +82,6 @@ bool parse_string_against_reference(int32_t & character,
             i++;
         } else {
             if (true == fail_safe_result.empty()) {
-                for (size_t k = 0; k < already_parsed_string.size(); k++) {
-                    fail_safe_result.push_back(already_parsed_string[k]);
-                }
                 for (size_t k = 0; k < i; k++) {
                     fail_safe_result.push_back(ref[k]);
                 }
@@ -98,9 +95,6 @@ bool parse_string_against_reference(int32_t & character,
     if (i == j) {
         if (i < ref.size()) {
             // There is missing something.
-            for (size_t k = 0; k < already_parsed_string.size(); k++) {
-                fail_safe_result.push_back(already_parsed_string[k]);
-            }
             for (size_t k = 0; k < i; k++) {
                 fail_safe_result.push_back(ref[k]);
             }
