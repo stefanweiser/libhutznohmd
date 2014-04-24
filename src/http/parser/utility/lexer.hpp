@@ -65,18 +65,19 @@ size_t compare_lower_case_string(const lower_case_string &, int32_t & character,
 //! completes it returns true and the callee can assume, that the token is equal to the reference.
 //! If the function returns false, the parsed token is stored in the fail safe result. The
 //! function assumes, that no new character has been lexed before entering the function.
-template<size_t size>
+template<size_t size, typename stop_function>
 bool compare_to_reference(int32_t & character,
                           const std::string & ref,
                           const size_t & already_parsed,
                           push_back_string<size> & fail_safe_result,
+                          const stop_function & stop_functor,
                           const lexer & lexer)
 {
     size_t i = already_parsed;
     size_t j = already_parsed;
     character = lexer.get();
     while ((character >= 0) &&
-           (true == is_valid_token_character(static_cast<char>(character)))) {
+           (true == stop_functor(static_cast<char>(character)))) {
         char c = static_cast<char>(character);
         if ((i == j) && (i < ref.size()) && (true == compare_case_insensitive(ref[i], c))) {
             i++;
