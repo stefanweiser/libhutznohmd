@@ -71,8 +71,8 @@ bool parse_header_value(int32_t & result, httpscan * scanner)
 bool parse_header(int32_t & result, httpscan * scanner)
 {
     if ((result == 'c') || (result == 'C')) {
-        bool equal = parse_string_against_reference(result, "content-length", 1,
-                     scanner->header_key_, scanner->lexer_);
+        bool equal = compare_to_reference(result, "content-length", 1, scanner->header_key_,
+                                          scanner->lexer_);
         if ((true == equal) && (result == ':')) {
             result = scanner->lexer_.get_non_whitespace();
             int32_t code = scanner->lexer_.get_unsigned_integer(result);
@@ -84,8 +84,7 @@ bool parse_header(int32_t & result, httpscan * scanner)
             return true;
         }
     } else if ((result == 'd') || (result == 'D')) {
-        bool equal = parse_string_against_reference(result, "date", 1, scanner->header_key_,
-                     scanner->lexer_);
+        bool equal = compare_to_reference(result, "date", 1, scanner->header_key_, scanner->lexer_);
         if ((true == equal) && (result == ':')) {
             result = scanner->lexer_.get_non_whitespace();
             time_t date = parse_timestamp(result, scanner->lexer_);

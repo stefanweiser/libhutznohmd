@@ -66,11 +66,11 @@ size_t compare_lower_case_string(const lower_case_string &, int32_t & character,
 //! If the function returns false, the parsed token is stored in the fail safe result. The
 //! function assumes, that no new character has been lexed before entering the function.
 template<size_t size>
-bool parse_string_against_reference(int32_t & character,
-                                    const std::string & ref,
-                                    const size_t & already_parsed,
-                                    push_back_string<size> & fail_safe_result,
-                                    const lexer & lexer)
+bool compare_to_reference(int32_t & character,
+                          const std::string & ref,
+                          const size_t & already_parsed,
+                          push_back_string<size> & fail_safe_result,
+                          const lexer & lexer)
 {
     size_t i = already_parsed;
     size_t j = already_parsed;
