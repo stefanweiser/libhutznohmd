@@ -74,7 +74,7 @@ bool parse_string_against_reference(int32_t & character,
     while ((character >= 0) &&
            (true == is_valid_token_character(static_cast<char>(character)))) {
         char c = static_cast<char>(character);
-        if ((i == j) && ((i >= ref.size()) || (true == compare_case_insensitive(ref[i], c)))) {
+        if ((i == j) && (i < ref.size()) && (true == compare_case_insensitive(ref[i], c))) {
             i++;
         } else {
             if (true == result.empty()) {
