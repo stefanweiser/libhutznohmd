@@ -43,6 +43,9 @@ bool media_type::parse(int32_t & character)
     }
     character = lexer_.get_non_whitespace();
     parse_subtype(character);
+    while (';' == character) {
+        parse_parameter(character);
+    }
     return true;
 }
 
@@ -281,6 +284,11 @@ void media_type::parse_subtype(int32_t & character)
     }
     auto pointer = type_character[static_cast<uint8_t>(character)];
     (this->*pointer)(character);
+}
+
+void media_type::parse_parameter(int32_t & character)
+{
+    character = lexer_.get();
 }
 
 } // namespace http
