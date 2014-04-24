@@ -82,6 +82,16 @@ std::unique_ptr<media_type> fixture::parse()
 
 } // namespace
 
+TEST(http_media_type, empty_wildcard)
+{
+    fixture f("/");
+    const std::unique_ptr<media_type> m = f.parse();
+    EXPECT_EQ(m->type(), media_type_type::CUSTOM);
+    EXPECT_EQ(m->subtype(), media_type_subtype::CUSTOM);
+    EXPECT_EQ(m->custom_type(), std::string(""));
+    EXPECT_EQ(m->custom_subtype(), std::string(""));
+}
+
 TEST(http_media_type, wildcard_wildcard)
 {
     fixture f("*/*");
