@@ -88,6 +88,8 @@ TEST(http_media_type, wildcard_wildcard)
     const std::unique_ptr<media_type> m = f.parse();
     EXPECT_EQ(m->type(), media_type_type::WILDCARD);
     EXPECT_EQ(m->subtype(), media_type_subtype::WILDCARD);
+    EXPECT_EQ(m->custom_type(), std::string(""));
+    EXPECT_EQ(m->custom_subtype(), std::string(""));
 }
 
 TEST(http_media_type, application_wildcard)
@@ -247,6 +249,16 @@ TEST(http_media_type, x_wildcard)
     EXPECT_EQ(m->type(), media_type_type::CUSTOM);
     EXPECT_EQ(m->subtype(), media_type_subtype::WILDCARD);
     EXPECT_EQ(m->custom_type(), std::string("x"));
+    EXPECT_EQ(m->custom_subtype(), std::string(""));
+}
+
+TEST(http_media_type, starm_wildcard)
+{
+    fixture f("*m/*");
+    const std::unique_ptr<media_type> m = f.parse();
+    EXPECT_EQ(m->type(), media_type_type::CUSTOM);
+    EXPECT_EQ(m->subtype(), media_type_subtype::WILDCARD);
+    EXPECT_EQ(m->custom_type(), std::string("*m"));
     EXPECT_EQ(m->custom_subtype(), std::string(""));
 }
 
