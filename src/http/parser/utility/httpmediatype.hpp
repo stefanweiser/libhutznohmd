@@ -89,7 +89,7 @@ private:
 
     void parse_type(int32_t & character);
     void parse_subtype(int32_t & character);
-    void parse_parameter(int32_t & character);
+    bool parse_parameter(int32_t & character);
 
     const lexer & lexer_;
     media_type_type type_;

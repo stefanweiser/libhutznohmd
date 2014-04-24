@@ -45,7 +45,9 @@ bool media_type::parse(int32_t & character)
     character = lexer_.get_non_whitespace();
     parse_subtype(character);
     while (';' == character) {
-        parse_parameter(character);
+        if (false == parse_parameter(character)) {
+            return false;
+        }
     }
     return true;
 }
@@ -318,7 +320,7 @@ void media_type::parse_subtype(int32_t & character)
     (this->*pointer)(character);
 }
 
-void media_type::parse_parameter(int32_t & character)
+bool media_type::parse_parameter(int32_t & character)
 {
     push_back_string<16> key;
     push_back_string<16> value;
@@ -330,12 +332,13 @@ void media_type::parse_parameter(int32_t & character)
 
     parse_word(character, key, nothing, &is_valid_token_character, lexer_);
     if ('=' != character) {
-        return;
+        return false;
     }
     character = lexer_.get();
     parse_word(character, value, nothing, &is_valid_token_character, lexer_);
     character = lexer_.get();
     parameters_[key.c_str()] = value.c_str();
+    return true;
 }
 
 } // namespace http
