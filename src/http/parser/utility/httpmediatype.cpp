@@ -293,7 +293,8 @@ bool media_type::parse_subtype(int32_t & character)
     };
     static const parsing_function_map type_character = generate_type_character();
 
-    if ((static_cast<uint32_t>(character) & 0xFFFFFF80) != 0) {
+    if (((static_cast<uint32_t>(character) & 0xFFFFFF80) != 0) ||
+        (false == is_valid_token_character(static_cast<uint8_t>(character)))) {
         return false;
     }
     auto pointer = type_character[static_cast<uint8_t>(character)];
