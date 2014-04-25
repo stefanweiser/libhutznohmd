@@ -149,7 +149,7 @@ TEST(http_parser, head_request)
 
 TEST(http_parser, post_request)
 {
-    fixture f("POST / HTTP/1.1\r\n\r\n");
+    fixture f("POST / HTTP/1.1\r\nContent-Type: text/*\r\n\r\n");
     f.parser_.parse();
     EXPECT_EQ(f.parser_.httpscan_.state_, parser_state::SUCCEEDED);
     EXPECT_EQ(f.parser_.httpscan_.lexer_.last_char_, '\n');
@@ -161,6 +161,8 @@ TEST(http_parser, post_request)
     EXPECT_EQ(f.parser_.httpscan_.status_code_, 0);
     EXPECT_EQ(f.parser_.httpscan_.reason_phrase_.empty(), true);
     EXPECT_EQ(f.parser_.httpscan_.headers_.empty(), true);
+    EXPECT_EQ(f.parser_.httpscan_.content_type_.type(), media_type_type::TEXT);
+    EXPECT_EQ(f.parser_.httpscan_.content_type_.subtype(), media_type_subtype::WILDCARD);
 }
 
 TEST(http_parser, put_request)
