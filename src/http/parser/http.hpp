@@ -75,7 +75,7 @@ inline httpscan::httpscan(const lexer & l)
     , reason_phrase_()
     , headers_()
     , content_length_(0)
-    , content_type_(l)
+    , content_type_(lexer_)
     , date_(time(NULL))
 {}
 
