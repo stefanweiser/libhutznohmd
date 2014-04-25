@@ -45,6 +45,12 @@ public:
     //! allocates memory dynamically if the string runs out of memory.
     void push_back(const char c);
 
+    //! Pushs some character at the end of the string. The string won't get finished by '\0'. It
+    //! allocates memory dynamically if the string runs out of memory.
+    //! WARNING: This method may never return, if the argument is not finished by '\0'. Do not use
+    //! it for user defined data. This may cause a buffer overflow.
+    void push_back(const char * s);
+
     //! Returns the current string. Before returning it, the data will be terminated by '\0'.
     const char * c_str() const;
 
@@ -105,6 +111,15 @@ void push_back_string<size>::push_back(const char c)
             }
         }
         dynamic_buffer_[current_length_++] = c;
+    }
+}
+
+template<size_t size>
+void push_back_string<size>::push_back(const char * s)
+{
+    while ((*s) != '\0') {
+        push_back(*s);
+        s++;
     }
 }
 
