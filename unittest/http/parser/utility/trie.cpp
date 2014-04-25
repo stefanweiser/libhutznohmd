@@ -1,0 +1,97 @@
+/* This file is part of librest.
+ * Copyright (C) 2013-2014 Stefan Weiser
+
+ * The librest project is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 3.0 of the License, or (at your
+ * option) any later version.
+
+ * The librest project is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+
+#define private public
+#define protected public
+
+#include <http/parser/utility/trie.hpp>
+
+using namespace testing;
+
+namespace rest
+{
+
+namespace http
+{
+
+namespace
+{
+
+typedef std::pair<std::string, size_t> string_index_pair;
+
+int32_t get_char(void * handle)
+{
+    string_index_pair * p = static_cast<string_index_pair *>(handle);
+    if (p->second < p->first.size()) {
+        return p->first[p->second++];
+    }
+    return -1;
+}
+
+int32_t peek_char(void * handle)
+{
+    string_index_pair * p = static_cast<string_index_pair *>(handle);
+    if (p->second < p->first.size()) {
+        return p->first[p->second];
+    }
+    return -1;
+}
+
+class fixture
+{
+public:
+    explicit fixture(const std::string & str);
+
+    template<size_t size>
+    bool parse(const std::vector<const char *> & strings,
+               push_back_string<size> & fail_safe_result);
+
+    std::string str_;
+};
+
+fixture::fixture(const std::string & str)
+    : str_(str)
+{}
+
+template<size_t size>
+bool fixture::parse(const std::vector<const char *> & strings,
+                    push_back_string<size> & fail_safe_result)
+{
+    string_index_pair p(str_, 0);
+    lexer l(anonymous_int_function(&get_char, &p),
+            anonymous_int_function(&peek_char, &p));
+    trie t(strings, "", 0);
+    int32_t character = l.get();
+    return t.parse(character, fail_safe_result, &is_valid_token_character, l);
+}
+
+} // namespace
+
+TEST(trie_parse, basic_function)
+{
+    fixture f("abc");
+    push_back_string<4> fail_safe_result;
+    EXPECT_EQ(f.parse({{"abc", "def", "aef"}}, fail_safe_result), true);
+    EXPECT_EQ(fail_safe_result.c_str(), std::string(""));
+}
+
+} // namespace http
+
+} // namespace rest

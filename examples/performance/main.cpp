@@ -22,6 +22,7 @@
 
 #include <http/parser/httpparser.hpp>
 #include <http/parser/utility/httpdate.hpp>
+#include <http/parser/utility/trie.hpp>
 
 namespace rest
 {
@@ -32,25 +33,54 @@ namespace http
 namespace
 {
 
+typedef std::pair<std::string, size_t> string_index_pair;
+
 int32_t get_char(void * handle)
 {
-    return static_cast<std::istream *>(handle)->get();
+    string_index_pair * p = static_cast<string_index_pair *>(handle);
+    if (p->second < p->first.size()) {
+        return p->first[p->second++];
+    }
+    return -1;
 }
 
 int32_t peek_char(void * handle)
 {
-    return static_cast<std::istream *>(handle)->peek();
+    string_index_pair * p = static_cast<string_index_pair *>(handle);
+    if (p->second < p->first.size()) {
+        return p->first[p->second];
+    }
+    return -1;
 }
 
 } // namespace
+
+void test_trie_parse(const std::string & token)
+{
+    const std::vector<const char *> strings = {{"content-length", "content-type", "date"}};
+    trie t(strings, "", 0);
+    std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
+    for (size_t i = 0; i < 1000000; i++) {
+        string_index_pair p(token, 0);
+        lexer l(anonymous_int_function(&get_char, &p),
+                anonymous_int_function(&peek_char, &p));
+        int32_t character = l.get();
+        push_back_string<4> fail_safe_result;
+        t.parse(character, fail_safe_result, &is_valid_token_character, l);
+    }
+    std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
+    auto diff = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+    std::cout << std::fixed << std::setprecision(3) << (diff.count() * 1000.0)
+              << " ns for token: <" << token << ">" << std::endl;
+}
 
 void test_http_parser(const std::string & request)
 {
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
     for (size_t i = 0; i < 1000; i++) {
-        std::stringstream s(request);
-        http_parser parser(anonymous_int_function(&get_char, &s),
-                           anonymous_int_function(&peek_char, &s));
+        string_index_pair p(request, 0);
+        http_parser parser(anonymous_int_function(&get_char, &p),
+                           anonymous_int_function(&peek_char, &p));
         parser.parse();
     }
     std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
@@ -63,9 +93,9 @@ void test_http_date_parser(const std::string & date_string)
 {
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
     for (size_t i = 0; i < 1000; i++) {
-        std::stringstream s(date_string);
-        lexer l(anonymous_int_function(&get_char, &s),
-                anonymous_int_function(&peek_char, &s));
+        string_index_pair p(date_string, 0);
+        lexer l(anonymous_int_function(&get_char, &p),
+                anonymous_int_function(&peek_char, &p));
         httpscan httpscan(l);
         int32_t result = httpscan.lexer_.get();
         parse_timestamp(result, httpscan.lexer_);
@@ -99,6 +129,13 @@ int main()
     rest::http::test_http_date_parser("Sun, 06 Nov 1994 08:49:37 GMT");
     rest::http::test_http_date_parser("Sunday, 06-Nov-94 08:49:37 GMT");
     rest::http::test_http_date_parser("Sun Nov  6 08:49:37 1994");
+
+    std::cout << std::endl;
+
+    rest::http::test_trie_parse("");
+    rest::http::test_trie_parse("content-length");
+    rest::http::test_trie_parse("content-type");
+    rest::http::test_trie_parse("date");
 
     return 0;
 }

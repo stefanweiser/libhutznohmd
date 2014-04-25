@@ -72,10 +72,10 @@ bool compare_to_reference(int32_t & character,
                           const size_t & already_parsed,
                           push_back_string<size> & fail_safe_result,
                           const continue_function & continue_condition_functor,
-                          const lexer & s)
+                          const lexer & l)
 {
     for (size_t i = already_parsed; i < ref.size(); i++) {
-        character = s.get();
+        character = l.get();
         if ((false == continue_condition_functor(static_cast<char>(character))) ||
             (false == compare_case_insensitive(ref[i], static_cast<char>(character)))) {
             for (size_t k = 0; k < i; k++) {
@@ -84,7 +84,7 @@ bool compare_to_reference(int32_t & character,
             return false;
         }
     }
-    character = s.get();
+    character = l.get();
     return true;
 }
 
