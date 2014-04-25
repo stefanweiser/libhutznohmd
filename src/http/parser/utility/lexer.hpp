@@ -65,7 +65,7 @@ size_t compare_lower_case_string(const lower_case_string &, int32_t & character,
 //! it returns true and the callee can assume, that the string is equal to the reference.
 //! If the function returns false, the parsed string is stored in the fail safe result. The
 //! function assumes, that no new character has been lexed before entering the function. The
-//! reference string must consist only of lower case letters.
+//! reference string must not contain any upper case letters.
 template<size_t size, typename continue_function>
 bool compare_to_reference(int32_t & character,
                           const std::string & ref,
@@ -74,38 +74,18 @@ bool compare_to_reference(int32_t & character,
                           const continue_function & continue_condition_functor,
                           const lexer & s)
 {
-    size_t i = already_parsed;
-    size_t j = already_parsed;
-    character = s.get();
-    while ((character >= 0) &&
-           (true == continue_condition_functor(static_cast<char>(character)))) {
-        char c = static_cast<char>(character);
-        if ((i == j) && (i < ref.size()) && (true == compare_case_insensitive(ref[i], c))) {
-            i++;
-        } else {
-            if (true == fail_safe_result.empty()) {
-                for (size_t k = 0; k < i; k++) {
-                    fail_safe_result.push_back(ref[k]);
-                }
-            }
-            fail_safe_result.push_back(c);
-        }
-        j++;
+    for (size_t i = already_parsed; i < ref.size(); i++) {
         character = s.get();
-    }
-
-    if (i == j) {
-        if (i < ref.size()) {
-            // There is missing something.
+        if ((false == continue_condition_functor(static_cast<char>(character))) ||
+            (false == compare_case_insensitive(ref[i], static_cast<char>(character)))) {
             for (size_t k = 0; k < i; k++) {
                 fail_safe_result.push_back(ref[k]);
             }
             return false;
-        } else {
-            return (i == ref.size());
         }
     }
-    return false;
+    character = s.get();
+    return true;
 }
 
 //! Parses a word utilizing a transformations functor and stopping if the continue condition gets

@@ -33,30 +33,36 @@ namespace http
 bool parse_header(int32_t & result, httpscan * scanner)
 {
     if ((result == 'c') || (result == 'C')) {
-        bool equal = compare_to_reference(result, "content-length", 1, scanner->header_key_,
-                                          &is_valid_token_character, scanner->lexer_);
-        if ((true == equal) && (result == ':')) {
-            result = scanner->lexer_.get_non_whitespace();
-            int32_t code = scanner->lexer_.get_unsigned_integer(result);
-            if (code < 0) {
-                return false;
-            }
+        if (true == compare_to_reference(result, "content-length", 1, scanner->header_key_,
+                                         &is_valid_token_character, scanner->lexer_)) {
+            if (result == ':') {
+                result = scanner->lexer_.get_non_whitespace();
+                int32_t code = scanner->lexer_.get_unsigned_integer(result);
+                if (code < 0) {
+                    return false;
+                }
 
-            scanner->content_length_ = static_cast<size_t>(code);
-            return true;
+                scanner->content_length_ = static_cast<size_t>(code);
+                return true;
+            } else {
+                scanner->header_key_.push_back("content-length");
+            }
         }
     } else if ((result == 'd') || (result == 'D')) {
-        bool equal = compare_to_reference(result, "date", 1, scanner->header_key_,
-                                          &is_valid_token_character, scanner->lexer_);
-        if ((true == equal) && (result == ':')) {
-            result = scanner->lexer_.get_non_whitespace();
-            time_t date = parse_timestamp(result, scanner->lexer_);
-            if (date < 0) {
-                return false;
-            }
+        if (true == compare_to_reference(result, "date", 1, scanner->header_key_,
+                                         &is_valid_token_character, scanner->lexer_)) {
+            if (result == ':') {
+                result = scanner->lexer_.get_non_whitespace();
+                time_t date = parse_timestamp(result, scanner->lexer_);
+                if (date < 0) {
+                    return false;
+                }
 
-            scanner->date_ = date;
-            return true;
+                scanner->date_ = date;
+                return true;
+            } else {
+                scanner->header_key_.push_back("date");
+            }
         }
     }
 

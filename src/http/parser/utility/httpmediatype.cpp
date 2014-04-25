@@ -98,16 +98,20 @@ bool media_type::compare_type(int32_t & character,
                               const char * ref,
                               const size_t & already_parsed)
 {
-    if (false == compare_to_reference(character,
-                                      ref,
-                                      already_parsed,
-                                      custom_type_,
-                                      &is_valid_token_character,
-                                      lexer_)) {
-        parse_word(character, custom_type_, &do_nothing, &is_valid_token_character, lexer_);
-        return false;
+    if (true == compare_to_reference(character,
+                                     ref,
+                                     already_parsed,
+                                     custom_type_,
+                                     &is_valid_token_character,
+                                     lexer_)) {
+        if (false == is_valid_token_character(static_cast<char>(character))) {
+            return true;
+        } else {
+            custom_type_.push_back(ref);
+        }
     }
-    return true;
+    parse_word(character, custom_type_, &do_nothing, &is_valid_token_character, lexer_);
+    return false;
 }
 
 void media_type::parse_type_wildcard(int32_t & character)
@@ -277,16 +281,20 @@ bool media_type::compare_subtype(int32_t & character,
                                  const char * ref,
                                  const size_t & already_parsed)
 {
-    if (false == compare_to_reference(character,
-                                      ref,
-                                      already_parsed,
-                                      custom_subtype_,
-                                      &is_valid_token_character,
-                                      lexer_)) {
-        parse_word(character, custom_subtype_, &do_nothing, &is_valid_token_character, lexer_);
-        return false;
+    if (true == compare_to_reference(character,
+                                     ref,
+                                     already_parsed,
+                                     custom_subtype_,
+                                     &is_valid_token_character,
+                                     lexer_)) {
+        if (false == is_valid_token_character(static_cast<char>(character))) {
+            return true;
+        } else {
+            custom_subtype_.push_back(ref);
+        }
     }
-    return true;
+    parse_word(character, custom_subtype_, &do_nothing, &is_valid_token_character, lexer_);
+    return false;
 }
 
 void media_type::parse_subtype_wildcard(int32_t & character)
