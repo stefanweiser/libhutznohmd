@@ -33,19 +33,37 @@ namespace http
 bool parse_header(int32_t & result, httpscan * scanner)
 {
     if ((result == 'c') || (result == 'C')) {
-        if (true == compare_to_reference(result, "content-length", 1, scanner->header_key_,
+        if (true == compare_to_reference(result, "content-", 1, scanner->header_key_,
                                          &is_valid_token_character, scanner->lexer_)) {
-            if (result == ':') {
-                result = scanner->lexer_.get_non_whitespace();
-                int32_t code = scanner->lexer_.get_unsigned_integer(result);
-                if (code < 0) {
-                    return false;
-                }
+            if ((result == 'l') || (result == 'L')) {
+                if (true == compare_to_reference(result, "content-length", 9, scanner->header_key_,
+                                                 &is_valid_token_character, scanner->lexer_)) {
+                    if (result == ':') {
+                        result = scanner->lexer_.get_non_whitespace();
+                        int32_t code = scanner->lexer_.get_unsigned_integer(result);
+                        if (code < 0) {
+                            return false;
+                        }
 
-                scanner->content_length_ = static_cast<size_t>(code);
-                return true;
-            } else {
-                scanner->header_key_.push_back("content-length");
+                        scanner->content_length_ = static_cast<size_t>(code);
+                        return true;
+                    } else {
+                        scanner->header_key_.push_back("content-length");
+                    }
+                }
+            } else if ((result == 't') || (result == 'T')) {
+                if (true == compare_to_reference(result, "content-type", 9, scanner->header_key_,
+                                                 &is_valid_token_character, scanner->lexer_)) {
+                    if (result == ':') {
+                        result = scanner->lexer_.get_non_whitespace();
+                        if (false == scanner->content_type_.parse(result)) {
+                            return false;
+                        }
+                        return true;
+                    } else {
+                        scanner->header_key_.push_back("content-type");
+                    }
+                }
             }
         }
     } else if ((result == 'd') || (result == 'D')) {
