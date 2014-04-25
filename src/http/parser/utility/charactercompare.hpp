@@ -173,7 +173,10 @@ static bool UNUSED is_valid_header_value_character(uint8_t c)
 static bool UNUSED compare_case_insensitive(const int32_t lower_letter,
         const int32_t indetermined_letter)
 {
-    return ((indetermined_letter | 0x20) == lower_letter);
+    if ((indetermined_letter >= 'A') && (indetermined_letter <= 'Z')) {
+        return ((indetermined_letter | 0x20) == lower_letter);
+    }
+    return (indetermined_letter == lower_letter);
 }
 
 } // namespace http
