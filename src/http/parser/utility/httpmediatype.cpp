@@ -98,12 +98,16 @@ bool media_type::compare_type(int32_t & character,
                               const char * ref,
                               const size_t & already_parsed)
 {
-    return compare_to_reference(character,
-                                ref,
-                                already_parsed,
-                                custom_type_,
-                                &is_valid_token_character,
-                                lexer_);
+    if (false == compare_to_reference(character,
+                                      ref,
+                                      already_parsed,
+                                      custom_type_,
+                                      &is_valid_token_character,
+                                      lexer_)) {
+        parse_word(character, custom_type_, &do_nothing, &is_valid_token_character, lexer_);
+        return false;
+    }
+    return true;
 }
 
 void media_type::parse_type_wildcard(int32_t & character)
@@ -273,12 +277,16 @@ bool media_type::compare_subtype(int32_t & character,
                                  const char * ref,
                                  const size_t & already_parsed)
 {
-    return compare_to_reference(character,
-                                ref,
-                                already_parsed,
-                                custom_subtype_,
-                                &is_valid_token_character,
-                                lexer_);
+    if (false == compare_to_reference(character,
+                                      ref,
+                                      already_parsed,
+                                      custom_subtype_,
+                                      &is_valid_token_character,
+                                      lexer_)) {
+        parse_word(character, custom_subtype_, &do_nothing, &is_valid_token_character, lexer_);
+        return false;
+    }
+    return true;
 }
 
 void media_type::parse_subtype_wildcard(int32_t & character)
@@ -326,16 +334,13 @@ bool media_type::parse_parameter(int32_t & character)
     push_back_string<16> value;
 
     character = lexer_.get_non_whitespace();
-    auto nothing = [](const char & c) {
-        return c;
-    };
 
-    parse_word(character, key, nothing, &is_valid_token_character, lexer_);
+    parse_word(character, key, &do_nothing, &is_valid_token_character, lexer_);
     if ('=' != character) {
         return false;
     }
     character = lexer_.get();
-    parse_word(character, value, nothing, &is_valid_token_character, lexer_);
+    parse_word(character, value, &do_nothing, &is_valid_token_character, lexer_);
     character = lexer_.get();
     parameters_[key.c_str()] = value.c_str();
     return true;

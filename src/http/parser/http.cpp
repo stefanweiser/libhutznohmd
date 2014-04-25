@@ -65,10 +65,7 @@ bool parse_header(int32_t & result, httpscan * scanner)
         return false;
     }
     result = scanner->lexer_.get();
-    auto nothing = [](const char & c) {
-        return c;
-    };
-    parse_word(result, scanner->header_value_, nothing, &is_valid_header_value_character,
+    parse_word(result, scanner->header_value_, &do_nothing, &is_valid_header_value_character,
                scanner->lexer_);
     if (result != '\n') {
         return false;
