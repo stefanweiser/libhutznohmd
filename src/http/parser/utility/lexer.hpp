@@ -61,33 +61,6 @@ size_t compare_lower_case_string(const lower_case_string &, int32_t & character,
     return result;
 }
 
-//! Tries to complete a string using a reference string and a lexer. If the comparison completes
-//! it returns true and the callee can assume, that the string is equal to the reference.
-//! If the function returns false, the parsed string is stored in the fail safe result. The
-//! function assumes, that no new character has been lexed before entering the function. The
-//! reference string must not contain any upper case letters.
-template<size_t size, typename continue_function>
-bool compare_to_reference(int32_t & character,
-                          const std::string & ref,
-                          const size_t & already_parsed,
-                          push_back_string<size> & fail_safe_result,
-                          const continue_function & continue_condition_functor,
-                          const lexer & l)
-{
-    for (size_t i = already_parsed; i < ref.size(); i++) {
-        character = l.get();
-        if ((false == continue_condition_functor(static_cast<char>(character))) ||
-            (false == compare_case_insensitive(ref[i], static_cast<char>(character)))) {
-            for (size_t k = 0; k < i; k++) {
-                fail_safe_result.push_back(ref[k]);
-            }
-            return false;
-        }
-    }
-    character = l.get();
-    return true;
-}
-
 //! Parses a word utilizing a transformations functor and stopping if the continue condition gets
 //! wrong.
 template<size_t size, typename transformation_function, typename continue_function>
