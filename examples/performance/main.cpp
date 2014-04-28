@@ -81,6 +81,13 @@ void test_trie_parse(const std::string & token)
 
 void test_http_parser(const std::string & request)
 {
+    {
+        // This initializes all static variables, that else would sophisticate the results.
+        string_index_pair p(request, 0);
+        http_parser parser(anonymous_int_function(&get_char, &p),
+                           anonymous_int_function(&peek_char, &p));
+        parser.parse();
+    }
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
     for (size_t i = 0; i < 1000; i++) {
         string_index_pair p(request, 0);
@@ -96,6 +103,16 @@ void test_http_parser(const std::string & request)
 
 void test_http_date_parser(const std::string & date_string)
 {
+    {
+        // This initializes all static variables, that else would sophisticate the results.
+        string_index_pair p(date_string, 0);
+        lexer l(anonymous_int_function(&get_char, &p),
+                anonymous_int_function(&peek_char, &p));
+        httpscan httpscan(l);
+        int32_t result = httpscan.lexer_.get();
+        parse_timestamp(result, httpscan.lexer_);
+    }
+
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
     for (size_t i = 0; i < 1000; i++) {
         string_index_pair p(date_string, 0);
