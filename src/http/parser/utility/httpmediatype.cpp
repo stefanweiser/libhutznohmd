@@ -18,6 +18,7 @@
 #include <array>
 
 #include <http/parser/utility/charactercompare.hpp>
+#include <http/parser/utility/trie.hpp>
 
 #include "httpmediatype.hpp"
 
@@ -81,259 +82,62 @@ const char * media_type::parameter(const char * key) const
     return "";
 }
 
-using parsing_function_type = void(media_type::*)(int32_t &);
-
-void media_type::parse_type_end(int32_t & /*character*/)
-{}
-
-void media_type::parse_type_custom(int32_t & character)
-{
-    while (true == is_valid_token_character(static_cast<uint8_t>(character))) {
-        custom_type_.push_back(to_lower(static_cast<char>(character)));
-        character = lexer_.get();
-    }
-}
-
-bool media_type::compare_type(int32_t & character,
-                              const char * ref,
-                              const size_t & already_parsed)
-{
-    if (true == compare_to_reference(character,
-                                     ref,
-                                     already_parsed,
-                                     custom_type_,
-                                     &is_valid_token_character,
-                                     lexer_)) {
-        if (false == is_valid_token_character(static_cast<char>(character))) {
-            return true;
-        } else {
-            custom_type_.push_back(ref);
-        }
-    }
-    parse_word(character, custom_type_, &do_nothing, &is_valid_token_character, lexer_);
-    return false;
-}
-
-void media_type::parse_type_wildcard(int32_t & character)
-{
-    if (true == compare_type(character, "*", 1)) {
-        type_ = media_type_type::WILDCARD;
-    }
-}
-
-void media_type::parse_type_application(int32_t & character)
-{
-    if (true == compare_type(character, "application", 2)) {
-        type_ = media_type_type::APPLICATION;
-    }
-}
-
-void media_type::parse_type_audio(int32_t & character)
-{
-    if (true == compare_type(character, "audio", 2)) {
-        type_ = media_type_type::AUDIO;
-    }
-}
-
-void media_type::parse_type_example(int32_t & character)
-{
-    if (true == compare_type(character, "example", 1)) {
-        type_ = media_type_type::EXAMPLE;
-    }
-}
-
-void media_type::parse_type_image(int32_t & character)
-{
-    if (true == compare_type(character, "image", 1)) {
-        type_ = media_type_type::IMAGE;
-    }
-}
-
-void media_type::parse_type_message(int32_t & character)
-{
-    if (true == compare_type(character, "message", 2)) {
-        type_ = media_type_type::MESSAGE;
-    }
-}
-
-void media_type::parse_type_model(int32_t & character)
-{
-    if (true == compare_type(character, "model", 2)) {
-        type_ = media_type_type::MODEL;
-    }
-}
-
-void media_type::parse_type_multipart(int32_t & character)
-{
-    if (true == compare_type(character, "multipart", 2)) {
-        type_ = media_type_type::MULTIPART;
-    }
-}
-
-void media_type::parse_type_text(int32_t & character)
-{
-    if (true == compare_type(character, "text", 1)) {
-        type_ = media_type_type::TEXT;
-    }
-}
-
-void media_type::parse_type_video(int32_t & character)
-{
-    if (true == compare_type(character, "video", 1)) {
-        type_ = media_type_type::VIDEO;
-    }
-}
-
-void media_type::parse_type_a(int32_t & character)
-{
-    using parsing_function_map = std::array<parsing_function_type, 128>;
-    static const auto generate_type_character = []() -> std::array<parsing_function_type, 128> {
-        parsing_function_map result;
-        for (size_t i = 0; i < result.size(); i++) {
-            bool valid = is_valid_token_character(static_cast<uint8_t>(i));
-            result[i] = valid ? &media_type::parse_type_custom : &media_type::parse_type_end;
-        }
-
-        result['P'] = &media_type::parse_type_application;
-        result['p'] = &media_type::parse_type_application;
-        result['U'] = &media_type::parse_type_audio;
-        result['u'] = &media_type::parse_type_audio;
-        return result;
-    };
-    static const parsing_function_map type_character = generate_type_character();
-
-    character = lexer_.get();
-    if (((static_cast<uint32_t>(character) & 0xFFFFFF80) != 0) ||
-        (false == is_valid_token_character(static_cast<uint8_t>(character)))) {
-        custom_type_.push_back('a');
-        return;
-    }
-    auto pointer = type_character[static_cast<uint8_t>(character)];
-    (this->*pointer)(character);
-}
-
-void media_type::parse_type_m(int32_t & character)
-{
-    using parsing_function_map = std::array<parsing_function_type, 128>;
-    static const auto generate_type_character = []() -> std::array<parsing_function_type, 128> {
-        parsing_function_map result;
-        for (size_t i = 0; i < result.size(); i++) {
-            bool valid = is_valid_token_character(static_cast<uint8_t>(i));
-            result[i] = valid ? &media_type::parse_type_custom : &media_type::parse_type_end;
-        }
-
-        result['E'] = &media_type::parse_type_message;
-        result['e'] = &media_type::parse_type_message;
-        result['O'] = &media_type::parse_type_model;
-        result['o'] = &media_type::parse_type_model;
-        result['U'] = &media_type::parse_type_multipart;
-        result['u'] = &media_type::parse_type_multipart;
-        return result;
-    };
-    static const parsing_function_map type_character = generate_type_character();
-
-    character = lexer_.get();
-    if (((static_cast<uint32_t>(character) & 0xFFFFFF80) != 0) ||
-        (false == is_valid_token_character(static_cast<uint8_t>(character)))) {
-        custom_type_.push_back('m');
-        return;
-    }
-    auto pointer = type_character[static_cast<uint8_t>(character)];
-    (this->*pointer)(character);
-}
-
 void media_type::parse_type(int32_t & character)
 {
-    using parsing_function_map = std::array<parsing_function_type, 128>;
-    static const auto generate_type_character = []() -> std::array<parsing_function_type, 128> {
-        parsing_function_map result;
-        for (size_t i = 0; i < result.size(); i++) {
-            bool valid = is_valid_token_character(static_cast<uint8_t>(i));
-            result[i] = valid ? &media_type::parse_type_custom : &media_type::parse_type_end;
-        }
+    using value_info = trie<media_type_type>::value_info;
 
-        result['A'] = &media_type::parse_type_a;
-        result['a'] = &media_type::parse_type_a;
-        result['E'] = &media_type::parse_type_example;
-        result['e'] = &media_type::parse_type_example;
-        result['M'] = &media_type::parse_type_m;
-        result['m'] = &media_type::parse_type_m;
-        result['I'] = &media_type::parse_type_image;
-        result['i'] = &media_type::parse_type_image;
-        result['T'] = &media_type::parse_type_text;
-        result['t'] = &media_type::parse_type_text;
-        result['V'] = &media_type::parse_type_video;
-        result['v'] = &media_type::parse_type_video;
-        result['*'] = &media_type::parse_type_wildcard;
-        return result;
+    // The index of the vector has to be the same as the value of the type, because this largely
+    // boosts the conversion below.
+    static const std::vector<value_info> types = {{
+            value_info{"*", media_type_type::WILDCARD},
+            value_info{"application", media_type_type::APPLICATION},
+            value_info{"audio", media_type_type::AUDIO},
+            value_info{"example", media_type_type::EXAMPLE},
+            value_info{"image", media_type_type::IMAGE},
+            value_info{"message", media_type_type::MESSAGE},
+            value_info{"model", media_type_type::MODEL},
+            value_info{"multipart", media_type_type::MULTIPART},
+            value_info{"text", media_type_type::TEXT},
+            value_info{"video", media_type_type::VIDEO}
+        }
     };
-    static const parsing_function_map type_character = generate_type_character();
 
-    if (((static_cast<uint32_t>(character) & 0xFFFFFF80) != 0) ||
-        (false == is_valid_token_character(static_cast<uint8_t>(character)))) {
-        return;
+    static const trie<media_type_type> t(types, media_type_type::CUSTOM);
+    type_ = t.parse(character, custom_type_, lexer_);
+    if ((media_type_type::CUSTOM != type_) &&
+        (true == is_valid_token_character(static_cast<char>(character)))) {
+        custom_type_.push_back(std::get<0>(types[static_cast<int32_t>(type_)]));
+        type_ = media_type_type::CUSTOM;
     }
-    auto pointer = type_character[static_cast<uint8_t>(character)];
-    (this->*pointer)(character);
-}
 
-bool media_type::compare_subtype(int32_t & character,
-                                 const char * ref,
-                                 const size_t & already_parsed)
-{
-    if (true == compare_to_reference(character,
-                                     ref,
-                                     already_parsed,
-                                     custom_subtype_,
-                                     &is_valid_token_character,
-                                     lexer_)) {
-        if (false == is_valid_token_character(static_cast<char>(character))) {
-            return true;
-        } else {
-            custom_subtype_.push_back(ref);
-        }
-    }
-    parse_word(character, custom_subtype_, &do_nothing, &is_valid_token_character, lexer_);
-    return false;
-}
-
-void media_type::parse_subtype_wildcard(int32_t & character)
-{
-    if (true == compare_subtype(character, "*", 1)) {
-        subtype_ = media_type_subtype::WILDCARD;
-    }
-}
-
-void media_type::parse_subtype_plain(int32_t & character)
-{
-    if (true == compare_subtype(character, "plain", 1)) {
-        subtype_ = media_type_subtype::PLAIN;
+    if (media_type_type::CUSTOM == type_) {
+        parse_word(character, custom_type_, &do_nothing, &is_valid_token_character, lexer_);
     }
 }
 
 void media_type::parse_subtype(int32_t & character)
 {
-    using parsing_function_map = std::array<parsing_function_type, 128>;
-    static const auto generate_type_character = []() -> std::array<parsing_function_type, 128> {
-        parsing_function_map result;
-        for (size_t i = 0; i < result.size(); i++) {
-            bool valid = is_valid_token_character(static_cast<uint8_t>(i));
-            result[i] = valid ? &media_type::parse_type_custom : &media_type::parse_type_end;
+    using value_info = trie<media_type_subtype>::value_info;
+
+    // The index of the vector has to be the same as the value of the subtype, because this
+    // largely boosts the conversion below.
+    static const std::vector<value_info> types = {{
+            value_info{"*", media_type_subtype::WILDCARD},
+            value_info{"plain", media_type_subtype::PLAIN}
         }
-
-        result['P'] = &media_type::parse_subtype_plain;
-        result['p'] = &media_type::parse_subtype_plain;
-        result['*'] = &media_type::parse_subtype_wildcard;
-        return result;
     };
-    static const parsing_function_map type_character = generate_type_character();
 
-    if (((static_cast<uint32_t>(character) & 0xFFFFFF80) != 0) ||
-        (false == is_valid_token_character(static_cast<uint8_t>(character)))) {
-        return;
+    static const trie<media_type_subtype> t(types, media_type_subtype::CUSTOM);
+    subtype_ = t.parse(character, custom_subtype_, lexer_);
+    if ((media_type_subtype::CUSTOM != subtype_) &&
+        (true == is_valid_token_character(static_cast<char>(character)))) {
+        custom_subtype_.push_back(std::get<0>(types[static_cast<int32_t>(subtype_)]));
+        subtype_ = media_type_subtype::CUSTOM;
     }
-    auto pointer = type_character[static_cast<uint8_t>(character)];
-    (this->*pointer)(character);
+
+    if (media_type_subtype::CUSTOM == subtype_) {
+        parse_word(character, custom_subtype_, &do_nothing, &is_valid_token_character, lexer_);
+    }
 }
 
 bool media_type::parse_parameter(int32_t & character)

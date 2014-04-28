@@ -50,7 +50,7 @@ enum class media_type_subtype : int32_t
 {
     CUSTOM = -1,
     WILDCARD = 0,
-    PLAIN
+    PLAIN = 1
 };
 
 class media_type
@@ -67,26 +67,6 @@ public:
     const char * parameter(const char * key) const;
 
 private:
-    bool compare_type(int32_t & character, const char * ref, const size_t & already_parsed);
-    void parse_type_end(int32_t & character);
-    void parse_type_custom(int32_t & character);
-    void parse_type_wildcard(int32_t & character);
-    void parse_type_application(int32_t & character);
-    void parse_type_audio(int32_t & character);
-    void parse_type_example(int32_t & character);
-    void parse_type_image(int32_t & character);
-    void parse_type_message(int32_t & character);
-    void parse_type_model(int32_t & character);
-    void parse_type_multipart(int32_t & character);
-    void parse_type_text(int32_t & character);
-    void parse_type_video(int32_t & character);
-    void parse_type_a(int32_t & character);
-    void parse_type_m(int32_t & character);
-
-    bool compare_subtype(int32_t & character, const char * ref, const size_t & already_parsed);
-    void parse_subtype_wildcard(int32_t & character);
-    void parse_subtype_plain(int32_t & character);
-
     void parse_type(int32_t & character);
     void parse_subtype(int32_t & character);
     bool parse_parameter(int32_t & character);

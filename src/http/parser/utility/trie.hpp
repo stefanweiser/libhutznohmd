@@ -45,7 +45,7 @@ public:
     template<size_t size>
     value_type parse(int32_t & character,
                      push_back_string<size> & fail_safe_result,
-                     const lexer & l);
+                     const lexer & l) const;
 
 private:
     explicit trie(const std::vector<value_info> & values,
@@ -68,7 +68,7 @@ template<typename value_type>
 template<size_t size>
 value_type trie<value_type>::parse(int32_t & character,
                                    push_back_string<size> & fail_safe_result,
-                                   const lexer & l)
+                                   const lexer & l) const
 {
     const std::unique_ptr<trie> & child = children_[static_cast<uint8_t>(character)];
     if (std::unique_ptr<trie>() == child) {
