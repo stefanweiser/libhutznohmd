@@ -15,7 +15,7 @@
  * along with the librest project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <http/parser/utility/charactercompare.hpp>
+#include <http/parser/utility/trie.hpp>
 
 #include "httpdate.hpp"
 
@@ -44,56 +44,28 @@ int32_t parse_time(int32_t & character, const lexer & l)
     return (60 * ((60 * hour) + minute)) + second;
 }
 
-int32_t parse_month(const char c1, const char c2, const char c3)
+int32_t parse_month(int32_t & character, const lexer & l)
 {
-    if (true == compare_case_insensitive('j', c1)) {
-        if ((true == compare_case_insensitive('a', c2)) &&
-            (true == compare_case_insensitive('n', c3))) {
-            return 1;
-        } else if (true == compare_case_insensitive('u', c2)) {
-            if (true == compare_case_insensitive('n', c3)) {
-                return 6;
-            } else if (true == compare_case_insensitive('l', c3)) {
-                return 7;
-            }
+    using value_info = trie<int32_t>::value_info;
+    static const std::vector<value_info> types = {{
+            value_info{"jan", 1},
+            value_info{"feb", 2},
+            value_info{"mar", 3},
+            value_info{"apr", 4},
+            value_info{"may", 5},
+            value_info{"jun", 6},
+            value_info{"jul", 7},
+            value_info{"aug", 8},
+            value_info{"sep", 9},
+            value_info{"oct", 10},
+            value_info{"nov", 11},
+            value_info{"dec", 12}
         }
-    } else if ((true == compare_case_insensitive('f', c1)) &&
-               (true == compare_case_insensitive('e', c2)) &&
-               (true == compare_case_insensitive('b', c3))) {
-        return 2;
-    } else if ((true == compare_case_insensitive('m', c1)) &&
-               (true == compare_case_insensitive('a', c2))) {
-        if (true == compare_case_insensitive('r', c3)) {
-            return 3;
-        } else if (true == compare_case_insensitive('y', c3)) {
-            return 5;
-        }
-    } else if ((true == compare_case_insensitive('a', c1))) {
-        if ((true == compare_case_insensitive('p', c2)) &&
-            (true == compare_case_insensitive('r', c3))) {
-            return 4;
-        } else if ((true == compare_case_insensitive('u', c2)) &&
-                   (true == compare_case_insensitive('g', c3))) {
-            return 8;
-        }
-    } else if ((true == compare_case_insensitive('s', c1)) &&
-               (true == compare_case_insensitive('e', c2)) &&
-               (true == compare_case_insensitive('p', c3))) {
-        return 9;
-    } else if ((true == compare_case_insensitive('o', c1)) &&
-               (true == compare_case_insensitive('c', c2)) &&
-               (true == compare_case_insensitive('t', c3))) {
-        return 10;
-    } else if ((true == compare_case_insensitive('n', c1)) &&
-               (true == compare_case_insensitive('o', c2)) &&
-               (true == compare_case_insensitive('v', c3))) {
-        return 11;
-    } else if ((true == compare_case_insensitive('d', c1)) &&
-               (true == compare_case_insensitive('e', c2)) &&
-               (true == compare_case_insensitive('c', c3))) {
-        return 12;
-    }
-    return -1;
+    };
+
+    static const trie<int32_t> t(types, -1);
+    push_back_string<32> tmp;
+    return t.parse(character, tmp, l);
 }
 
 time_t day_of_the_year(const time_t day,
@@ -145,7 +117,18 @@ bool is_valid_epoch_date(const time_t day, const time_t month, const time_t year
     return true;
 }
 
-LOWER_CASE_STRING(mt);
+bool parse_gmt(int32_t & character, const lexer & l)
+{
+    using value_info = trie<bool>::value_info;
+    static const std::vector<value_info> types = {{
+            value_info{"gmt", true}
+        }
+    };
+
+    static const trie<bool> t(types, false);
+    push_back_string<32> tmp;
+    return t.parse(character, tmp, l);
+}
 
 time_t parse_rfc1123_date_time(int32_t & character, const lexer & l)
 {
@@ -155,12 +138,11 @@ time_t parse_rfc1123_date_time(int32_t & character, const lexer & l)
     if ((character == ' ') || (character == '\n')) {
         character = l.get_non_whitespace();
     }
-    const char c1 = static_cast<char>(character);
-    const char c2 = static_cast<char>(l.get());
-    const char c3 = static_cast<char>(l.get());
-    const int32_t month = parse_month(c1, c2, c3);
+    const int32_t month = parse_month(character, l);
 
-    character = l.get_non_whitespace();
+    if ((character == ' ') || (character == '\n')) {
+        character = l.get_non_whitespace();
+    }
     const int32_t year = l.get_unsigned_integer(character);
 
     if ((character == ' ') || (character == '\n')) {
@@ -174,11 +156,9 @@ time_t parse_rfc1123_date_time(int32_t & character, const lexer & l)
     if ((character == ' ') || (character == '\n')) {
         character = l.get_non_whitespace();
     }
-    if ((false == compare_case_insensitive('g', character)) ||
-        (0 != compare_lower_case_string(lower_case_string_mt(), character, l))) {
+    if (false == parse_gmt(character, l)) {
         return -1;
     }
-    character = l.get_non_whitespace();
 
     if (false == is_valid_epoch_date(day, month, year)) {
         return -1;
@@ -188,6 +168,12 @@ time_t parse_rfc1123_date_time(int32_t & character, const lexer & l)
 
 time_t parse_rfc850_date_time(int32_t & character, const lexer & l)
 {
+    if ((character == ' ') || (character == '\n')) {
+        character = l.get_non_whitespace();
+    }
+    if (character != ',') {
+        return -1;
+    }
     character = l.get_non_whitespace();
     const int32_t day = l.get_unsigned_integer(character);
 
@@ -195,12 +181,8 @@ time_t parse_rfc850_date_time(int32_t & character, const lexer & l)
         return -1;
     }
     character = l.get();
-    const char c1 = static_cast<char>(character);
-    const char c2 = static_cast<char>(l.get());
-    const char c3 = static_cast<char>(l.get());
-    const int32_t month = parse_month(c1, c2, c3);
+    const int32_t month = parse_month(character, l);
 
-    character = l.get();
     if (character != '-') {
         return -1;
     }
@@ -218,11 +200,9 @@ time_t parse_rfc850_date_time(int32_t & character, const lexer & l)
     if ((character == ' ') || (character == '\n')) {
         character = l.get_non_whitespace();
     }
-    if ((false == compare_case_insensitive('g', character)) ||
-        (0 != compare_lower_case_string(lower_case_string_mt(), character, l))) {
+    if (false == parse_gmt(character, l)) {
         return -1;
     }
-    character = l.get_non_whitespace();
 
     if (false == is_valid_epoch_date(day, month, year)) {
         return -1;
@@ -235,10 +215,7 @@ time_t parse_asctime_date_time(int32_t & character, const lexer & l)
     if ((character == ' ') || (character == '\n')) {
         character = l.get_non_whitespace();
     }
-    const char c1 = static_cast<char>(character);
-    const char c2 = static_cast<char>(l.get());
-    const char c3 = static_cast<char>(l.get());
-    const int32_t month = parse_month(c1, c2, c3);
+    const int32_t month = parse_month(character, l);
 
     character = l.get_non_whitespace();
     const int32_t day = l.get_unsigned_integer(character);
@@ -259,107 +236,45 @@ time_t parse_asctime_date_time(int32_t & character, const lexer & l)
     return seconds_since_epoch(second_of_day, day, month, year);
 }
 
-int32_t parse_weekday(int32_t & character, const lexer & l)
+std::tuple<int8_t, bool> parse_weekday(int32_t & character, const lexer & l)
 {
-    const char c1 = static_cast<char>(character);
-    const char c2 = static_cast<char>(l.get());
-    const char c3 = static_cast<char>(l.get());
+    using value_type = std::tuple<int8_t, bool>;
+    using value_info = trie<value_type>::value_info;
 
-    if ((true == compare_case_insensitive('s', c1))) {
-        if ((true == compare_case_insensitive('a', c2)) &&
-            (true == compare_case_insensitive('t', c3))) {
-            return 6;
-        } else if ((true == compare_case_insensitive('u', c2)) &&
-                   (true == compare_case_insensitive('n', c3))) {
-            return 0;
+    static const std::vector<value_info> types = {{
+            value_info{"sun", value_type{0, false}},
+            value_info{"sunday", value_type{0, true}},
+            value_info{"mon", value_type{1, false}},
+            value_info{"monday", value_type{1, true}},
+            value_info{"tue", value_type{2, false}},
+            value_info{"tuesday", value_type{2, true}},
+            value_info{"wed", value_type{3, false}},
+            value_info{"wednesday", value_type{3, true}},
+            value_info{"thu", value_type{4, false}},
+            value_info{"thursday", value_type{4, true}},
+            value_info{"fri", value_type{5, false}},
+            value_info{"friday", value_type{5, true}},
+            value_info{"sat", value_type{6, false}},
+            value_info{"saturday", value_type{6, true}}
         }
-    } else if ((true == compare_case_insensitive('t', c1))) {
-        if ((true == compare_case_insensitive('u', c2)) &&
-            (true == compare_case_insensitive('e', c3))) {
-            return 2;
-        } else if ((true == compare_case_insensitive('h', c2)) &&
-                   (true == compare_case_insensitive('u', c3))) {
-            return 4;
-        }
-    } else if ((true == compare_case_insensitive('f', c1)) &&
-               (true == compare_case_insensitive('r', c2)) &&
-               (true == compare_case_insensitive('i', c3))) {
-        return 5;
-    } else if ((true == compare_case_insensitive('m', c1)) &&
-               (true == compare_case_insensitive('o', c2)) &&
-               (true == compare_case_insensitive('n', c3))) {
-        return 1;
-    } else if ((true == compare_case_insensitive('w', c1)) &&
-               (true == compare_case_insensitive('e', c2)) &&
-               (true == compare_case_insensitive('d', c3))) {
-        return 3;
-    }
-    return -1;
+    };
+
+    static const trie<value_type> t(types, value_type { -1, false});
+    push_back_string<32> tmp;
+    return t.parse(character, tmp, l);
 }
-
-LOWER_CASE_STRING(ay);
-LOWER_CASE_STRING(day);
-LOWER_CASE_STRING(esday);
-LOWER_CASE_STRING(sday);
-LOWER_CASE_STRING(rday);
 
 time_t parse_timestamp(int32_t & character, const lexer & l)
 {
-    const int32_t weekday = parse_weekday(character, l);
-    character = l.get();
-    if (character == ' ') {
-        return parse_asctime_date_time(character, l);
-    } else if (character == ',') {
-        return parse_rfc1123_date_time(character, l);
-    } else {
-        switch (weekday) {
-        case 0:
-        case 1:
-        case 5:
-            if ((false == compare_case_insensitive('d', character)) ||
-                (0 != compare_lower_case_string(lower_case_string_ay(), character, l))) {
-                return -1;
-            }
-            break;
-
-        case 2:
-            if ((false == compare_case_insensitive('s', character)) ||
-                (0 != compare_lower_case_string(lower_case_string_day(), character, l))) {
-                return -1;
-            }
-            break;
-
-        case 3:
-            if ((false == compare_case_insensitive('n', character)) ||
-                (0 != compare_lower_case_string(lower_case_string_esday(), character, l))) {
-                return -1;
-            }
-            break;
-
-        case 4:
-            if ((false == compare_case_insensitive('r', character)) ||
-                (0 != compare_lower_case_string(lower_case_string_sday(), character, l))) {
-                return -1;
-            }
-            break;
-
-        case 6:
-            if ((false == compare_case_insensitive('u', character)) ||
-                (0 != compare_lower_case_string(lower_case_string_rday(), character, l))) {
-                return -1;
-            }
-            break;
-
-        default:
-            return -1;
-        }
-
-        character = l.get_non_whitespace();
-        if (character != ',') {
-            return -1;
-        }
-
+    int32_t weekday = -1;
+    int32_t is_long_format = false;
+    std::tie(weekday, is_long_format) = parse_weekday(character, l);
+    if (true == is_long_format) {
         return parse_rfc850_date_time(character, l);
+    } else if ((character == ' ') || (character == '\t')) {
+        return parse_asctime_date_time(character, l);
+    } else {
+        return parse_rfc1123_date_time(character, l);
     }
     return -1;
 }
