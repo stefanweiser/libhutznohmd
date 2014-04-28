@@ -57,8 +57,13 @@ int32_t peek_char(void * handle)
 
 void test_trie_parse(const std::string & token)
 {
-    const std::vector<const char *> strings = {{"content-length", "content-type", "date"}};
-    trie t(strings, "", 0);
+    const std::vector<trie<header_type>::value_info> values = {{
+            trie<header_type>::value_info{"content-length", header_type::CONTENT_LENGTH},
+            trie<header_type>::value_info{"content-type", header_type::CONTENT_TYPE},
+            trie<header_type>::value_info{"date", header_type::DATE}
+        }
+    };
+    trie<header_type> t(values, header_type::CUSTOM);
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
     for (size_t i = 0; i < 1000000; i++) {
         string_index_pair p(token, 0);
@@ -66,7 +71,7 @@ void test_trie_parse(const std::string & token)
                 anonymous_int_function(&peek_char, &p));
         int32_t character = l.get();
         push_back_string<4> fail_safe_result;
-        t.parse(character, fail_safe_result, &is_valid_token_character, l);
+        t.parse(character, fail_safe_result, l);
     }
     std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
     auto diff = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);

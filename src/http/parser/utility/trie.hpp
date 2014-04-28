@@ -20,6 +20,7 @@
 
 #include <array>
 #include <memory>
+#include <tuple>
 #include <vector>
 
 #include <http/parser/utility/charactercompare.hpp>
@@ -32,79 +33,107 @@ namespace rest
 namespace http
 {
 
+//! Provides a parsing algorithm to convert
+template<typename value_type>
 class trie
 {
 public:
-    explicit trie(const std::vector<const char *> & strings,
-                  const std::string & name,
-                  const size_t & index);
+    using value_info = std::tuple<const char * const, value_type>;
 
-    template<typename continue_function, size_t size>
-    bool parse(int32_t & character,
-               push_back_string<size> & fail_safe_result,
-               const continue_function & continue_condition_functor,
-               const lexer & l);
+    explicit trie(const std::vector<value_info> & values, const value_type & default_value);
+
+    template<size_t size>
+    value_type parse(int32_t & character,
+                     push_back_string<size> & fail_safe_result,
+                     const lexer & l);
 
 private:
-    bool is_leaf_;
+    explicit trie(const std::vector<value_info> & values,
+                  const std::string & name,
+                  const size_t & index,
+                  const value_type & default_value);
+
+    const bool has_value_;
     const std::string name_;
+    const value_type value_;
     std::array<std::unique_ptr<trie>, 256> children_;
 };
 
-inline trie::trie(const std::vector<const char *> & strings,
-                  const std::string & name,
-                  const size_t & index)
-    : is_leaf_(true)
-    , name_(name)
-    , children_()
+template<typename value_type>
+trie<value_type>::trie(const std::vector<value_info> & values, const value_type & default_value)
+    : trie(values, "", 0, default_value)
+{}
+
+template<typename value_type>
+template<size_t size>
+value_type trie<value_type>::parse(int32_t & character,
+                                   push_back_string<size> & fail_safe_result,
+                                   const lexer & l)
 {
-    for (size_t i = 0; i < strings.size(); i++) {
-        const char * string = strings[i];
-        const uint8_t c = static_cast<uint8_t>(string[index]);
-        if ((c != 0) && (c < children_.size()) && (std::unique_ptr<trie>() == children_[c])) {
-            std::vector<const char *> next_strings;
-            for (size_t j = 0; j < strings.size(); j++) {
-                const char * next_string = strings[j];
-                if (next_string[index] == c) {
-                    next_strings.push_back(next_string);
-                }
-            }
-            if (false == next_strings.empty()) {
-                is_leaf_ = false;
-                children_[c] = std::unique_ptr<trie>(new trie(next_strings, name_ + static_cast<char>(c),
-                                                     index + 1));
-                if ((c >= 'a') && (c <= 'z')) {
-                    children_[c & 0xDF] = std::unique_ptr<trie>(new trie(next_strings, name_ + static_cast<char>(c),
-                                          index + 1));
-                }
-            }
-        }
-    }
-}
-
-template<typename continue_function, size_t size>
-bool trie::parse(int32_t & character,
-                 push_back_string<size> & fail_safe_result,
-                 const continue_function & continue_condition_functor,
-                 const lexer & l)
-{
-    if (false == continue_condition_functor(static_cast<char>(character))) {
-        if (true == is_leaf_) {
-            return true;
-        }
-
-        fail_safe_result.push_back(name_.c_str());
-        return false;
-    }
-
     const std::unique_ptr<trie> & child = children_[static_cast<uint8_t>(character)];
     if (std::unique_ptr<trie>() == child) {
-        fail_safe_result.push_back(name_.c_str());
-        return false;
+        if (false == has_value_) {
+            fail_safe_result.push_back(name_.c_str());
+        }
+        return value_;
     }
 
     character = l.get();
-    return child->parse(character, fail_safe_result, continue_condition_functor, l);
+    return child->parse(character, fail_safe_result, l);
+}
+
+template<typename value_type>
+trie<value_type>::trie(const std::vector<value_info> & values,
+                       const std::string & name,
+                       const size_t & index,
+                       const value_type & default_value)
+    : has_value_(false)
+    , name_(name)
+    , value_(default_value)
+    , children_()
+{
+    for (size_t i = 0; i < values.size(); i++) {
+        const value_info & v = values[i];
+        const char * const string = std::get<0>(v);
+        const value_type & value = std::get<1>(v);
+        const uint8_t c = static_cast<uint8_t>(string[index]);
+
+        if ('\0' == c) {
+            const_cast<bool &>(has_value_) = true;
+            const_cast<value_type &>(value_) = value;
+        } else if (std::unique_ptr<trie>() == children_[c]) {
+            // Because we already carried all children going on with that character, we must
+            // not do this again.
+            std::vector<value_info> next_values;
+            for (size_t j = 0; j < values.size(); j++) {
+                const value_info & w = values[j];
+                const char * const next_string = std::get<0>(w);
+                if ((c != 0) && (static_cast<uint8_t>(next_string[index]) == c)) {
+                    next_values.push_back(w);
+                }
+            }
+
+            if (false == next_values.empty()) {
+                children_[c] = std::unique_ptr<trie>(new trie(next_values,
+                                                     name_ + static_cast<char>(c),
+                                                     index + 1,
+                                                     default_value));
+
+                // The trie parsing is case insensitive.
+                if ((c >= 'a') && (c <= 'z')) {
+                    children_[c & 0xDF] = std::unique_ptr<trie>(new trie(next_values,
+                                          name_ + static_cast<char>(c),
+                                          index + 1,
+                                          default_value));
+                } else if ((c >= 'A') && (c <= 'Z')) {
+                    children_[c | 0x20] = std::unique_ptr<trie>(new trie(next_values,
+                                          name_ + static_cast<char>(c),
+                                          index + 1,
+                                          default_value));
+                }
+            }
+        }
+    }
 }
 
 } // namespace http

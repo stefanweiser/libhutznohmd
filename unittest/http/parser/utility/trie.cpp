@@ -60,8 +60,8 @@ public:
     explicit fixture(const std::string & str);
 
     template<size_t size>
-    bool parse(const std::vector<const char *> & strings,
-               push_back_string<size> & fail_safe_result);
+    size_t parse(const std::vector<trie<size_t>::value_info> & strings,
+                 push_back_string<size> & fail_safe_result);
 
     std::string str_;
 };
@@ -71,15 +71,15 @@ fixture::fixture(const std::string & str)
 {}
 
 template<size_t size>
-bool fixture::parse(const std::vector<const char *> & strings,
-                    push_back_string<size> & fail_safe_result)
+size_t fixture::parse(const std::vector<trie<size_t>::value_info> & values,
+                      push_back_string<size> & fail_safe_result)
 {
     string_index_pair p(str_, 0);
     lexer l(anonymous_int_function(&get_char, &p),
             anonymous_int_function(&peek_char, &p));
-    trie t(strings, "", 0);
+    trie<size_t> t(values, 0);
     int32_t character = l.get();
-    return t.parse(character, fail_safe_result, &is_valid_token_character, l);
+    return t.parse(character, fail_safe_result, l);
 }
 
 } // namespace
@@ -88,7 +88,13 @@ TEST(trie_parse, basic_function)
 {
     fixture f("abc");
     push_back_string<4> fail_safe_result;
-    EXPECT_EQ(f.parse({{"abc", "def", "aef"}}, fail_safe_result), true);
+    std::vector<trie<size_t>::value_info> values = {{
+            trie<size_t>::value_info{"abc", 1},
+            trie<size_t>::value_info{"def", 2},
+            trie<size_t>::value_info{"aef", 3}
+        }
+    };
+    EXPECT_EQ(f.parse(values, fail_safe_result), 1);
     EXPECT_EQ(fail_safe_result.c_str(), std::string(""));
 }
 
