@@ -32,9 +32,8 @@ namespace rest
 namespace http
 {
 
-method lex_request_method(const int32_t & last, int32_t & character, const lexer & l);
 bool lex_request_url(int32_t & result, push_back_string<1000> & url, const lexer & l);
-version lex_http_version(const int32_t & last, int32_t & character, const lexer & l);
+version lex_http_version(int32_t & character, const lexer & l);
 uint16_t lex_status_code(int32_t & result, const lexer & l);
 bool lex_reason_phrase(int32_t & character, push_back_string<100> & phrase, const lexer & l);
 

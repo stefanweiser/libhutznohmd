@@ -146,7 +146,7 @@ TEST(request, no_needed_httpscan_available)
     request request(socket);
 
     EXPECT_CALL(*socket, receive(_, _))
-    .Times(2)
+    .Times(1)
     .WillRepeatedly(Return(false));
     request.parse();
 }

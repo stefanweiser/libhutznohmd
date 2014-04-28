@@ -16,6 +16,7 @@
  */
 
 #include <limits>
+#include <iostream>
 #include <sstream>
 
 #include <http/parser/utility/charactercompare.hpp>
@@ -121,18 +122,30 @@ bool parse_headers(int32_t & result, httpscan * scanner)
 
 parser_state lex_first_line(httpscan * scanner)
 {
-    int32_t last = scanner->lexer_.get_non_whitespace();
-    int32_t result = scanner->lexer_.get();
-    if ((last < 0) || (result < 0)) {
-        return parser_state::ERROR;
+    int32_t result = scanner->lexer_.get_non_whitespace();
+    {
+        using value_type = std::tuple<method, version>;
+        using value_info = trie<value_type>::value_info;
+        static const std::vector<value_info> types = {{
+                value_info{"head", value_type{method::HEAD, version::HTTP_UNKNOWN}},
+                value_info{"get", value_type{method::GET, version::HTTP_UNKNOWN}},
+                value_info{"put", value_type{method::PUT, version::HTTP_UNKNOWN}},
+                value_info{"delete", value_type{method::DELETE, version::HTTP_UNKNOWN}},
+                value_info{"post", value_type{method::POST, version::HTTP_UNKNOWN}},
+                value_info{"trace", value_type{method::TRACE, version::HTTP_UNKNOWN}},
+                value_info{"options", value_type{method::OPTIONS, version::HTTP_UNKNOWN}},
+                value_info{"connect", value_type{method::CONNECT, version::HTTP_UNKNOWN}},
+                value_info{"http/1.0", value_type{method::UNKNOWN, version::HTTP_1_0}},
+                value_info{"http/1.1", value_type{method::UNKNOWN, version::HTTP_1_1}}
+            }
+        };
+
+        static const trie<value_type> t(types, value_type {method::UNKNOWN, version::HTTP_UNKNOWN});
+        push_back_string<32> tmp;
+        std::tie(scanner->method_, scanner->version_) = t.parse(result, tmp, scanner->lexer_);
     }
 
-    if ((true == compare_case_insensitive('h', last)) &&
-        ((true == compare_case_insensitive('t', result)))) {
-        scanner->version_ = lex_http_version(last, result, scanner->lexer_);
-        if (version::HTTP_UNKNOWN == scanner->version_) {
-            return parser_state::ERROR;
-        }
+    if (version::HTTP_UNKNOWN != scanner->version_) {
         result = scanner->lexer_.get_non_whitespace();
         scanner->status_code_ = lex_status_code(result, scanner->lexer_);
         if (0 == scanner->status_code_) {
@@ -143,7 +156,6 @@ parser_state lex_first_line(httpscan * scanner)
             return parser_state::ERROR;
         }
     } else {
-        scanner->method_ = lex_request_method(last, result, scanner->lexer_);
         if (method::UNKNOWN == scanner->method_) {
             return parser_state::ERROR;
         }
@@ -151,17 +163,29 @@ parser_state lex_first_line(httpscan * scanner)
         if (false == lex_request_url(result, scanner->url_, scanner->lexer_)) {
             return parser_state::ERROR;
         }
-        last = scanner->lexer_.get_non_whitespace();
-        result = scanner->lexer_.get();
-        scanner->version_ = lex_http_version(last, result, scanner->lexer_);
+        result = scanner->lexer_.get_non_whitespace();
+
+        {
+            using value_info = trie<version>::value_info;
+            static const std::vector<value_info> types = {{
+                    value_info{"http/1.0", version::HTTP_1_0},
+                    value_info{"http/1.1", version::HTTP_1_1}
+                }
+            };
+
+            static const trie<version> t(types, version::HTTP_UNKNOWN);
+            push_back_string<32> tmp;
+            scanner->version_ = t.parse(result, tmp, scanner->lexer_);
+        }
+
         if (version::HTTP_UNKNOWN == scanner->version_) {
             return parser_state::ERROR;
         }
-        const int32_t newline = scanner->lexer_.get_non_whitespace();
-        if (newline != '\n') {
+        if (result != '\n') {
             return parser_state::ERROR;
         }
     }
+
     result = scanner->lexer_.get();
     if (false == parse_headers(result, scanner)) {
         return parser_state::ERROR;
