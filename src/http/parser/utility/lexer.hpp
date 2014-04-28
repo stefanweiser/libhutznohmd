@@ -47,20 +47,6 @@ private:
     mutable char last_char_;
 };
 
-template<typename lower_case_string>
-size_t compare_lower_case_string(const lower_case_string &, int32_t & character, const lexer & l)
-{
-    size_t result = lower_case_string::size;
-    for (size_t i = 0; i < lower_case_string::size; i++) {
-        character = l.get();
-        if (false == compare_case_insensitive(lower_case_string::value[i], character)) {
-            break;
-        }
-        result--;
-    }
-    return result;
-}
-
 //! Parses a word utilizing a transformations functor and stopping if the continue condition gets
 //! wrong.
 template<size_t size, typename transformation_function, typename continue_function>

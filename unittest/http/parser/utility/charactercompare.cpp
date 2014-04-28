@@ -33,19 +33,6 @@ namespace rest
 namespace http
 {
 
-namespace
-{
-
-LOWER_CASE_STRING(abcd);
-
-} // namespace
-
-TEST(charactercompare, lower_case_string)
-{
-    EXPECT_EQ(strcmp(lower_case_string_abcd::value, "abcd"), 0);
-    EXPECT_EQ(lower_case_string_abcd::size, strlen("abcd"));
-}
-
 TEST(charactercompare, to_lower)
 {
     const std::array<uint8_t, 256> validity_map = {

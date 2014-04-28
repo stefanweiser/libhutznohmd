@@ -29,47 +29,6 @@ namespace rest
 namespace http
 {
 
-namespace detail
-{
-
-//! Provides an integral constant for a given character, that describes whether the character is a
-//! lower letter or not.
-template<char c>
-struct is_lower_char {
-    using value = std::integral_constant < bool, (c >= 'a') && (c <= 'z') >;
-};
-
-//! Provides an integral constant for a given string, that describes whether the string consists
-//! only of lower letters or not.
-template<typename s, size_t n>
-struct is_lower_string {
-    using value = std::integral_constant < bool, is_lower_string < s, n - 1 >::value::value &&
-                  std::integral_constant < bool, (s::value[n - 1] >= 'a') && (s::value[n - 1] <= 'z') >::value >;
-};
-
-//! Terminates the template recursion.
-template <typename s>
-struct is_lower_string<s, 0> {
-    using value = std::true_type;
-};
-
-} // namespace detail
-
-//! Defines a string and asserts statically if, the string consists of something else, than lower
-//! case letters.
-//! @example LOWER_CASE_STRING(abc); will work fine.
-//! @example LOWER_CASE_STRING(abC); will raise an assertion during compilation.
-#define LOWER_CASE_STRING(S) \
-    struct lower_case_string_##S \
-    { \
-        static constexpr const char * const value = #S; \
-        static constexpr const size_t size = sizeof(#S) - 1; \
-        static_assert(detail::is_lower_string<lower_case_string_##S, size>::value::value == true, \
-                      "String is not lower case."); \
-    }; \
-    constexpr const char * const lower_case_string_##S::value; \
-    constexpr const size_t lower_case_string_##S::size
-
 //! Converts a letter into the corresponding lower case letter.
 static char UNUSED to_lower(const char c)
 {
@@ -161,22 +120,6 @@ static bool UNUSED is_valid_header_value_character(uint8_t c)
         }
     };
     return (validity_map[c] != 0);
-}
-
-//! Returns true, if the given indetermined letter is equal to the lower case character or its
-//! upper case equivalent. The first parameter must be a lower letter, although this is not
-//! checked for performance.
-//! @example compare_case_insensitive('a', 'A') will return true.
-//! @example compare_case_insensitive('a', 'a') will return true.
-//! @example compare_case_insensitive('a', 'B') will return false.
-//! @example compare_case_insensitive('a', 'b') will return false.
-static bool UNUSED compare_case_insensitive(const int32_t lower_letter,
-        const int32_t indetermined_letter)
-{
-    if ((indetermined_letter >= 'A') && (indetermined_letter <= 'Z')) {
-        return ((indetermined_letter | 0x20) == lower_letter);
-    }
-    return (indetermined_letter == lower_letter);
 }
 
 } // namespace http

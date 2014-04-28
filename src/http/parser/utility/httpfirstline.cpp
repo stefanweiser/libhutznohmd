@@ -37,8 +37,6 @@ bool lex_request_url(int32_t & character, push_back_string<1000> & url, const le
     return true;
 }
 
-LOWER_CASE_STRING(tp);
-
 version lex_http_version(int32_t & character, const lexer & l)
 {
     character = l.get();
