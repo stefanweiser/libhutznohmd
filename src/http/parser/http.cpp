@@ -131,17 +131,6 @@ bool lex_request_url(int32_t & character, push_back_string<1000> & url, const le
     return true;
 }
 
-version lex_http_version(int32_t & character, const lexer & l)
-{
-    character = l.get();
-    if (character == '0') {
-        return rest::http::version::HTTP_1_0;
-    } else if (character == '1') {
-        return rest::http::version::HTTP_1_1;
-    }
-    return version::HTTP_UNKNOWN;
-}
-
 uint16_t lex_status_code(int32_t & result, const lexer & l)
 {
     int32_t code = l.get_unsigned_integer(result);
