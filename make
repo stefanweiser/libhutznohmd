@@ -119,7 +119,7 @@ function check_valgrind()
 function usage()
 {
 	echo ""
-	echo "  This script assists you to build librest."
+	echo "  This script assists you to build librestsrv."
 	echo ""
 	echo "  usage: ${script_name} [step] [target] [options]"
 	echo ""
@@ -212,9 +212,9 @@ function exec_unittest()
 {
 	cd "${build_path}"
 	if [ "${opts_summary}" -ne 0 ]; then
-		LD_LIBRARY_PATH="${build_path}/src" "${build_path}/unittest/unittest_rest" | grep -E "\[==========\]|\[\ \ PASSED\ \ \]"
+		LD_LIBRARY_PATH="${build_path}/src" "${build_path}/unittest/unittest_restsrv" | grep -E "\[==========\]|\[\ \ PASSED\ \ \]"
 	else
-		LD_LIBRARY_PATH="${build_path}/src" "${build_path}/unittest/unittest_rest"
+		LD_LIBRARY_PATH="${build_path}/src" "${build_path}/unittest/unittest_restsrv"
 	fi
 }
 
@@ -222,9 +222,9 @@ function exec_integrationtest()
 {
 	cd "${build_path}"
 	if [ "${opts_summary}" -ne 0 ]; then
-		LD_LIBRARY_PATH="${build_path}/src" "${build_path}/integrationtest/integrationtest_rest" | grep -E "\[==========\]|\[\ \ PASSED\ \ \]"
+		LD_LIBRARY_PATH="${build_path}/src" "${build_path}/integrationtest/integrationtest_restsrv" | grep -E "\[==========\]|\[\ \ PASSED\ \ \]"
 	else
-		LD_LIBRARY_PATH="${build_path}/src" "${build_path}/integrationtest/integrationtest_rest"
+		LD_LIBRARY_PATH="${build_path}/src" "${build_path}/integrationtest/integrationtest_restsrv"
 	fi
 }
 
@@ -265,8 +265,8 @@ function exec_coverage()
 function exec_valgrind()
 {
 	cd "${build_path}"
-	LD_LIBRARY_PATH="${build_path}/src" ${binary_valgrind} "${build_path}/unittest/unittest_rest"
-	LD_LIBRARY_PATH="${build_path}/src" ${binary_valgrind} "${build_path}/integrationtest/integrationtest_rest"
+	LD_LIBRARY_PATH="${build_path}/src" ${binary_valgrind} "${build_path}/unittest/unittest_restsrv"
+	LD_LIBRARY_PATH="${build_path}/src" ${binary_valgrind} "${build_path}/integrationtest/integrationtest_restsrv"
 }
 
 opts_words=()
