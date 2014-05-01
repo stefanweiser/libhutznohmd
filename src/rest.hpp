@@ -284,135 +284,139 @@ enum class header_type
     CUSTOM = 0,
 
     //! A list of accepted mime types. Normally part of the request.
-    ACCEPT = 1,
+    ACCEPT,
 
     //! A list of accepted character. Normally part of the request.
-    ACCEPT_CHARSET = 2,
+    ACCEPT_CHARSET,
 
     //! A list of accepted encodings. Normally part of the request.
-    ACCEPT_ENCODING = 3,
+    ACCEPT_ENCODING,
 
     //! A list of accepted languages. Normally part of the request.
-    ACCEPT_LANGUAGE = 4,
+    ACCEPT_LANGUAGE,
 
     //! If set, the sender supports byte serving for bandwidth optimization. Normally this is only
     //! capable for constant data.
-    ACCEPT_RANGES = 5,
+    ACCEPT_RANGES,
 
     //! The age in seconds, since the original response was generated. Is limited to a signed 32-bit
     //! integer. In case of an overflow, the maximum 2^31 is transmitted.
-    AGE = 6,
+    AGE,
 
     //! List of allowed methods for the requested resource. Part of the response.
-    ALLOW = 7,
+    ALLOW,
 
     //! Contains authorization credentials.
-    AUTHORIZATION = 8,
+    AUTHORIZATION,
 
     //! Contains the type of the cache. Controls how the cache works.
-    CACHE_CONTROL = 9,
+    CACHE_CONTROL,
 
     //! Contains information about what to do after the request is completed.
-    CONNECTION = 10,
+    CONNECTION,
 
     //! Contains the encoding of the content.
-    CONTENT_ENCODING = 11,
+    CONTENT_ENCODING,
 
     //! Contains the language of the content.
-    CONTENT_LANGUAGE = 12,
+    CONTENT_LANGUAGE,
 
     //! Contains the length of the content.
-    CONTENT_LENGTH = 13,
+    CONTENT_LENGTH,
 
     //! Contains the location where the content originally can be found.
-    CONTENT_LOCATION = 14,
+    CONTENT_LOCATION,
 
     //! Contains the md5 sum for the content.
-    CONTENT_MD5 = 15,
+    CONTENT_MD5,
 
     //! Contains the range of the content.
-    CONTENT_RANGE = 16,
+    CONTENT_RANGE,
 
     //! Contains the mime type of the content.
-    CONTENT_TYPE = 17,
+    CONTENT_TYPE,
 
     //! Refers to a cookie.
-    COOKIE = 18,
+    COOKIE,
 
     //! The timestamp, when the message was sent.
-    DATE = 19,
+    DATE,
 
     //! Defines an tag for the contained entity. Can be used for conditional requests.
-    ETAG = 20,
+    ETAG,
 
     //! Includes expectations for the server. If those cannot be met, the server must respond 417.
-    EXPECT = 21,
+    EXPECT,
 
     //! A timestamp, when the response considered stale.
-    EXPIRES = 22,
+    EXPIRES,
 
     //! Contains a mailbox entry, which defines who controls source of the request.
-    FROM = 23,
+    FROM,
 
     //! Specifies an internet host and maybe a port used for the request.
-    HOST = 24,
+    HOST,
 
     //! Responds only if the entity tag matches to the current or any past entity of that resource.
-    IF_MATCH = 25,
+    IF_MATCH,
 
     //! Responds only if the request variant has been modified since that timestamp.
-    IF_MODIFIED_SINCE = 26,
+    IF_MODIFIED_SINCE,
 
     //! Responds only if the entity tag does not match to the current or any past entity of that
     //! resource.
-    IF_NONE_MATCH = 27,
+    IF_NONE_MATCH,
 
     //! A condition that short circuits a second request, if a conditional request would otherwise
     //! fail.
-    IF_RANGE = 28,
+    IF_RANGE,
 
     //! The requested operation will be performed, if the resource has been unmodified since that
     //! timestamp.
-    IF_UNMODIFIED_SINCE = 29,
+    IF_UNMODIFIED_SINCE,
+
+    //! How long (in seconds) to keep the connection open, if and only if sent with the connection
+    //! header that must be set to keep-alive.
+    KEEP_ALIVE,
 
     //! Indicated when the resource has been modified last time.
-    LAST_MODIFIED = 30,
+    LAST_MODIFIED,
 
     //! Should redirect the client to the URL set in that header.
-    LOCATION = 31,
+    LOCATION,
 
     //! Limits the number of http proxies and gateways between client and server.
-    MAX_FORWARDS = 32,
+    MAX_FORWARDS,
 
     //! Contains application defined parameters.
-    PRAGMA = 33,
+    PRAGMA,
 
     //! Contains a challenge with informations for the client on how to authenticate to the proxy.
-    PROXY_AUTHENTICATE = 34,
+    PROXY_AUTHENTICATE,
 
     //! Contains authorization credentials for the proxy.
-    PROXY_AUTHORIZATION = 35,
+    PROXY_AUTHORIZATION,
 
     //! Contains information about a specific range, that shall be responded.
-    RANGE = 36,
+    RANGE,
 
     //! Contains an URL, where the client got the requested URL from.
-    REFERER = 37,
+    REFERER,
 
     //! Indicates, that request could retried and then may succeed.
-    RETRY_AFTER = 38,
+    RETRY_AFTER,
 
     //! Contains some information about the used server.
-    SERVER = 39,
+    SERVER,
 
     //! Contains some information about the used client.
-    USER_AGENT = 40,
+    USER_AGENT,
 
     //! Contains a set of header fields, that determine the validity of a cached response.
-    VARY = 41,
+    VARY,
 
     //! Contains a challenge with informations for the client on how to authenticate to the server.
-    WWW_AUTHENTICATE = 42
+    WWW_AUTHENTICATE
 };
 
 //! Represents all data, that depend on the request.
