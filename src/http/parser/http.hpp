@@ -41,6 +41,13 @@ enum class parser_state
     ERROR = 2
 };
 
+enum class connection_type
+{
+    ERROR = 0,
+    CLOSE,
+    KEEP_ALIVE
+};
+
 class httpscan
 {
 public:
@@ -61,6 +68,7 @@ public:
     size_t content_length_;
     media_type content_type_;
     time_t date_;
+    connection_type connection_;
 };
 
 inline httpscan::httpscan(const lexer & l)
@@ -77,6 +85,7 @@ inline httpscan::httpscan(const lexer & l)
     , content_length_(0)
     , content_type_(lexer_)
     , date_(time(NULL))
+    , connection_(connection_type::KEEP_ALIVE)
 {}
 
 } // namespace http

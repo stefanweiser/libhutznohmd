@@ -16,7 +16,6 @@
  */
 
 #include <limits>
-#include <iostream>
 #include <sstream>
 
 #include <http/parser/utility/charactercompare.hpp>
@@ -31,14 +30,33 @@ namespace rest
 namespace http
 {
 
+bool parse_connection(int32_t & result, httpscan * scanner)
+{
+    using value_info = trie<connection_type>::value_info;
+    static const std::vector<value_info> types = {{
+            value_info{"close", connection_type::CLOSE},
+            value_info{"keep-alive", connection_type::KEEP_ALIVE}
+        }
+    };
+
+    static const trie<connection_type> t(types, connection_type::ERROR);
+    push_back_string<32> tmp;
+    connection_type connection = t.parse(result, tmp, scanner->lexer_);
+    if (connection != connection_type::ERROR) {
+        scanner->connection_ = connection;
+        return true;
+    }
+    return false;
+}
+
 bool parse_content_length(int32_t & result, httpscan * scanner)
 {
-    int32_t code = scanner->lexer_.get_unsigned_integer(result);
-    if (code < 0) {
+    int32_t content_length = scanner->lexer_.get_unsigned_integer(result);
+    if (content_length < 0) {
         return false;
     }
 
-    scanner->content_length_ = static_cast<size_t>(code);
+    scanner->content_length_ = static_cast<size_t>(content_length);
     return true;
 }
 
@@ -66,7 +84,8 @@ bool parse_header(int32_t & result, httpscan * scanner)
     static const std::vector<value_info> types = {{
             value_info{"content-length", trie_value{&parse_content_length, 0}},
             value_info{"content-type", trie_value{&parse_content_type, 1}},
-            value_info{"date", trie_value{&parse_date, 2}}
+            value_info{"date", trie_value{&parse_date, 2}},
+            value_info{"connection", trie_value{&parse_connection, 3}}
         }
     };
     static const trie<trie_value> t(types, trie_value {nullptr, -1});
@@ -209,6 +228,10 @@ parser_state lex_first_line(httpscan * scanner)
             static const trie<version> t(types, version::HTTP_UNKNOWN);
             push_back_string<32> tmp;
             scanner->version_ = t.parse(result, tmp, scanner->lexer_);
+        }
+
+        if (version::HTTP_1_0 == scanner->version_) {
+            scanner->connection_ = connection_type::CLOSE;
         }
 
         if (version::HTTP_UNKNOWN == scanner->version_) {

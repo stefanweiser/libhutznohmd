@@ -94,9 +94,14 @@ rest::buffer request::data() const
     return data_;
 }
 
-time_t request::date()
+time_t request::date() const
 {
     return http_parser_.date();
+}
+
+bool request::is_keep_connection() const
+{
+    return http_parser_.is_keep_connection();
 }
 
 int32_t request::get()

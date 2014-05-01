@@ -41,6 +41,7 @@ public:
     const std::string header(const std::string & key) const;
     const size_t & content_length() const;
     const time_t & date() const;
+    bool is_keep_connection() const;
 
 private:
     httpscan httpscan_;

@@ -441,7 +441,7 @@ public:
     virtual rest::buffer data() const = 0;
 
     //! Returns the content of the date header or the current timestamp.
-    virtual time_t date() = 0;
+    virtual time_t date() const = 0;
 };
 
 //! Represents all data, that get transmitted in the response.

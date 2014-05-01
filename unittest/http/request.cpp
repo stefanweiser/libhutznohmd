@@ -53,9 +53,10 @@ TEST(request, parse)
         std::stringstream stream;
         stream << "GET / HTTP/1.1\r\n";
         stream << "Content-Length: 1\r\n";
-        stream << "Accept: text/html,\r\n";
-        stream << " text/xml\r\n";
+        stream << "Accept: text/html;q=1.0,\r\n";
+        stream << " text/xml;q=0.5\r\n";
         stream << "Date: Wed, 01 Mar 2000 00:00:00 GMT\r\n";
+        stream << "Connection: close\r\n";
         stream << "\r\n";
         stream << "00";
         std::string request_data = stream.str();
@@ -71,6 +72,7 @@ TEST(request, parse)
     EXPECT_EQ(request.method(), method::GET);
     EXPECT_EQ(request.url(), "/");
     EXPECT_EQ(request.version(), version::HTTP_1_1);
+    EXPECT_EQ(request.is_keep_connection(), false);
 }
 
 TEST(request, parse_false_return)

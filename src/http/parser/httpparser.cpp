@@ -89,6 +89,11 @@ const time_t & http_parser::date() const
     return httpscan_.date_;
 }
 
+bool http_parser::is_keep_connection() const
+{
+    return (httpscan_.connection_ == connection_type::KEEP_ALIVE);
+}
+
 } // namespace http
 
 } // namespace rest
