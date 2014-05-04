@@ -16,3 +16,11 @@ Examples
 Some examples are provided by an example script:
 
     $ ./example --help
+
+Documentation
+-------------
+
+Documentation is stored in the code through doxygen comments. You need doxygen and graphviz installed to build the documentation.
+For UML support the project utilizes PlantUML and therefore you will also need Java installed. The script will download PlantUML to the temporary folder, if not exists, before building the documentation.
+
+    $ ./make doc
