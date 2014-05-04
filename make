@@ -210,7 +210,7 @@ function exec_doc()
         wget "http://sourceforge.net/projects/plantuml/files/plantuml.jar/download" -O "${plantuml_jar}"
     fi
 
-    java -Djava.awt.headless=true -jar "${plantuml_jar}" -v -o "${build_path}/html" "./**.(c|cpp|h|hpp)"
+    java -Djava.awt.headless=true -jar "${plantuml_jar}" -v -o "${build_path}/html" "./src/**.(c|cpp|h|hpp)"
     cd "${build_path}"
     make doc
 }
