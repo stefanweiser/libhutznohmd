@@ -20,9 +20,7 @@
 /**
 @page development Development
 
-@todo [DOC] Fill developer informations.
 @todo [DOC] Fill concepts.
-@todo [DOC] Fill links to todo and bug list.
 
 @section sec_principles Development Principles
 
@@ -83,10 +81,14 @@ For valgrind:
 @li \b valgrind >= 3.7
 
 For packaging:
-@todo Find out how to build deb files in rpm based distributions.
 @li \b debhelper
 @li \b rpmbuild >= 4.9
 @li \b tar >= 1.26
+@todo Find out how to build deb files in rpm based distributions.
+
+@section sec_concepts Concepts
+
+\li \ref concept_overview
 
 */
 
