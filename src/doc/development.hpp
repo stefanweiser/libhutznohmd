@@ -55,5 +55,38 @@ them, but keep them in mind and improve the code.
 Anyone who is passionated in developing software and shared the principles of
 this project is welcome to contribute to it.
 
+@section sec_tools Tools
+
+Generally:
+@li \b bash >= 4.2
+@li \b git >= 1.7.9
+@li \b cmake >= 2.8
+
+For building:
+@li \b g++ >= 4.8 with complete C++11 support.
+@li \b cppcheck >= 1.60
+@li \b astyle >= 2.03
+
+For developing:
+@li \b qtcreator >= 2.8
+
+For documentation:
+@li \b doxygen >= 1.7.6
+@li \b dot >= 2.26
+@li \b java >= 1.6
+
+For coverage:
+@li \b gcov >= 4.8
+@li \b lcov >= 1.9
+
+For valgrind:
+@li \b valgrind >= 3.7
+
+For packaging:
+@todo Find out how to build deb files in rpm based distributions.
+@li \b debhelper
+@li \b rpmbuild >= 4.9
+@li \b tar >= 1.26
+
 */
 
