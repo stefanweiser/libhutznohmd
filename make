@@ -124,6 +124,14 @@ function check_valgrind()
     check_version "${binary_valgrind}" "${valgrind_version}" "${min_version_valgrind}"
 }
 
+function check_is_bootstrapped()
+{
+    if [ ! -d "${build_path}" ]; then
+        echo "ERROR: Project is not bootstrapped."
+        exit 1
+    fi
+}
+
 function usage()
 {
     echo ""
@@ -183,6 +191,7 @@ function exec_bootstrap()
 function exec_check()
 {
     check_cppcheck
+    check_is_bootstrapped
 
     cd "${build_path}"
     make check
@@ -204,6 +213,7 @@ function exec_doc()
     check_doxygen
     check_dot
     check_java
+    check_is_bootstrapped
 
     local plantuml_jar="/tmp/plantuml.jar"
     if [ ! -f "${plantuml_jar}" ]; then
@@ -218,6 +228,7 @@ function exec_doc()
 function exec_build()
 {
     check_compiler
+    check_is_bootstrapped
 
     cd "${build_path}"
     make -j"$(grep processor /proc/cpuinfo | wc -l)" all
@@ -225,6 +236,8 @@ function exec_build()
 
 function exec_unittest()
 {
+    check_is_bootstrapped
+
     cd "${build_path}"
     if [ "${opts_summary}" -ne 0 ]; then
         LD_LIBRARY_PATH="${build_path}/src" "${build_path}/unittest/unittest_restsrv" | grep -E "\[==========\]|\[\ \ PASSED\ \ \]"
@@ -235,6 +248,8 @@ function exec_unittest()
 
 function exec_integrationtest()
 {
+    check_is_bootstrapped
+
     cd "${build_path}"
     if [ "${opts_summary}" -ne 0 ]; then
         LD_LIBRARY_PATH="${build_path}/src" "${build_path}/integrationtest/integrationtest_restsrv" | grep -E "\[==========\]|\[\ \ PASSED\ \ \]"
@@ -245,12 +260,16 @@ function exec_integrationtest()
 
 function exec_install()
 {
+    check_is_bootstrapped
+
     cd "${build_path}"
     make install
 }
 
 function exec_package()
 {
+    check_is_bootstrapped
+
     cd "${build_path}"
     make package
 }
@@ -279,6 +298,8 @@ function exec_coverage()
 
 function exec_valgrind()
 {
+    check_is_bootstrapped
+
     cd "${build_path}"
     LD_LIBRARY_PATH="${build_path}/src" ${binary_valgrind} "${build_path}/unittest/unittest_restsrv"
     LD_LIBRARY_PATH="${build_path}/src" ${binary_valgrind} "${build_path}/integrationtest/integrationtest_restsrv"
