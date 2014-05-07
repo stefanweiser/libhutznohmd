@@ -51,7 +51,7 @@ them, but keep them in mind and improve the code.
 @section sec_who Who can contribute?
 
 Anyone who is passionated in developing software and shared the principles of
-this project is welcome to contribute to it.
+this project is welcome to contribute to it. Please use a pull request on GitHub.
 
 @section sec_tools Tools
 
