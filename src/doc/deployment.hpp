@@ -20,7 +20,28 @@
 /*!
 @page deployment Deployment
 
-@todo [DOC] Fill help for make.
+@section sec_quick_start Quick Start
+
+All deployment steps are done by the @c make script. A help could be printed out
+by:
+
+@code
+$ ./make --help
+@endcode
+
+Normally making @c all in both targets (@c debug and @c release) and making
+@c coverage is of interest.
+
+@section sec_deploying Deploying
+
+Deploying a version is done by incrementing the version and making a package:
+
+@code
+./make all release
+@endcode
+
+These packages are ought to be released. Create a tag on the git repository
+afterwards.
 
 */
 
