@@ -84,7 +84,7 @@ For packaging:
 @li @b debhelper
 @li @b rpmbuild >= 4.9
 @li @b tar >= 1.26
-@todo Find out how to build deb files in rpm based distributions.
+@todo [DOC] Find out how to build deb files in rpm based distributions.
 
 @section sec_concepts Concepts
 

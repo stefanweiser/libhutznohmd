@@ -20,7 +20,7 @@
 /*!
 @page getting_started Getting Started
 
-@todo Fill examples.
+@todo [DOC] Fill examples.
 
 */
 
