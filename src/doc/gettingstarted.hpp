@@ -17,7 +17,7 @@
 
 #error "Do not include this pure documentation file."
 
-/**
+/*!
 @page getting_started Getting Started
 
 @todo Fill examples.

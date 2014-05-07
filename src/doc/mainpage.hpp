@@ -17,7 +17,7 @@
 
 #error "Do not include this pure documentation file."
 
-/**
+/*!
 @mainpage
 
 @section sec_mission Mission Statement

@@ -17,7 +17,7 @@
 
 #error "Do not include this pure documentation file."
 
-/**
+/*!
 @page deployment Deployment
 
 @todo [DOC] Fill help for make.
