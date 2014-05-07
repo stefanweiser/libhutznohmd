@@ -89,6 +89,7 @@ For packaging:
 @section sec_concepts Concepts
 
 @li @ref concept_overview
+@li @ref http_parser
 
 */
 
