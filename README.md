@@ -21,9 +21,13 @@ Documentation
 -------------
 
 For a complete doxygen documentation (including concepts), you can generate it with:
+
     $ ./make bootstrap doc
+
 Then look at:
+
     $ firefox ./build/html/index.html
+
 Documentation is stored in the code through doxygen comments. You need doxygen and graphviz installed to build it.
 For UML support the project utilizes PlantUML and therefore you will also need Java installed. The script will download PlantUML, if not exists, to the temporary folder before building the documentation.
 
