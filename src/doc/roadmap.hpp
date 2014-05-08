@@ -22,9 +22,16 @@
 
 @todo [DOC] Make roadmap.
 
-@li Initial HTTP-Support
+@li Initial HTTP-Support (protocol, document negotiation)
 @li REST helpers
+@li Authentification / Authorization
+@li HSTS
+@li Conditional-Requests
+@li Encodings
+@li Cookie-Support
+@li Byte Serving
 @li Caching
+@li DNT
 @li WADL support
 
 */
