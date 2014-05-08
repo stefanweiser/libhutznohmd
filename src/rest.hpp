@@ -375,10 +375,6 @@ enum class header_type
     //! timestamp.
     IF_UNMODIFIED_SINCE,
 
-    //! How long (in seconds) to keep the connection open, if and only if sent with the connection
-    //! header that must be set to keep-alive.
-    KEEP_ALIVE,
-
     //! Indicated when the resource has been modified last time.
     LAST_MODIFIED,
 
