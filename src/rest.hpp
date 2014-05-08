@@ -381,17 +381,8 @@ enum class header_type
     //! Should redirect the client to the URL set in that header.
     LOCATION,
 
-    //! Limits the number of http proxies and gateways between client and server.
-    MAX_FORWARDS,
-
     //! Contains application defined parameters.
     PRAGMA,
-
-    //! Contains a challenge with informations for the client on how to authenticate to the proxy.
-    PROXY_AUTHENTICATE,
-
-    //! Contains authorization credentials for the proxy.
-    PROXY_AUTHORIZATION,
 
     //! Contains information about a specific range, that shall be responded.
     RANGE,
