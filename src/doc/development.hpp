@@ -90,6 +90,7 @@ For packaging:
 
 @li @ref concept_overview
 @li @ref roadmap
+@li @ref header_fields
 @li @ref http_parser
 
 */
