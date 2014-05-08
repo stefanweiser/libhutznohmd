@@ -405,6 +405,9 @@ enum class header_type
     //! Contains some information about the used server.
     SERVER,
 
+    //! Sets a cookie at client side. The client could block setting the cookie.
+    SET_COOKIE,
+
     //! Contains some information about the used client.
     USER_AGENT,
 
