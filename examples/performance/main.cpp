@@ -20,7 +20,7 @@
 #include <iostream>
 #include <sstream>
 
-#include <http/parser/httpparser.hpp>
+#include <http/parser/requestparser.hpp>
 #include <http/parser/utility/httpdate.hpp>
 #include <http/parser/utility/trie.hpp>
 

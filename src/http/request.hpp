@@ -26,7 +26,7 @@
 
 #include <rest.hpp>
 
-#include <http/parser/httpparser.hpp>
+#include <http/parser/requestparser.hpp>
 
 namespace rest
 {

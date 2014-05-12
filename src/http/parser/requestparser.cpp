@@ -23,7 +23,7 @@
 #include <http/parser/utility/httpdate.hpp>
 #include <http/parser/utility/trie.hpp>
 
-#include "httpparser.hpp"
+#include "requestparser.hpp"
 
 namespace rest
 {
