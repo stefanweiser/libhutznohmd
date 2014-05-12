@@ -15,6 +15,7 @@
  * along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <common.hpp>
 #include <http/parser/utility/trie.hpp>
 
 #include "httpdate.hpp"
@@ -24,16 +25,6 @@ namespace rest
 
 namespace http
 {
-
-template<typename type, type lower_bound, type upper_bound>
-bool check_range(const type & value)
-{
-    static_assert(lower_bound <= upper_bound, "Lower bound must be less or equal to upper bound.");
-    if ((value < lower_bound) || (value > upper_bound)) {
-        return false;
-    }
-    return true;
-}
 
 int32_t parse_time(int32_t & character, const lexer & l)
 {

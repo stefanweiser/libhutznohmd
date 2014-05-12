@@ -24,6 +24,16 @@ namespace rest
 //! This define can be used to declare a symbol as unused.
 #define UNUSED __attribute__((unused))
 
+template<typename type, type lower_bound, type upper_bound>
+bool check_range(const type & value)
+{
+    static_assert(lower_bound <= upper_bound, "Lower bound must be less or equal to upper bound.");
+    if ((value < lower_bound) || (value > upper_bound)) {
+        return false;
+    }
+    return true;
+}
+
 } // namespace rest
 
 #endif // __LIBREST_COMMON_HPP__

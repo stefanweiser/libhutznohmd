@@ -23,6 +23,7 @@
 #include <tuple>
 #include <vector>
 
+#include <common.hpp>
 #include <http/parser/utility/charactercompare.hpp>
 #include <http/parser/utility/lexer.hpp>
 #include <http/parser/utility/pushbackstring.hpp>
@@ -82,6 +83,21 @@ value_type trie<value_type>::parse(int32_t & character,
     return child->parse(character, fail_safe_result, l);
 }
 
+template<typename value_info>
+void fill_next_values(std::vector<value_info> & next_values,
+                      const std::vector<value_info> & values,
+                      const size_t & index,
+                      const uint8_t & c)
+{
+    for (size_t j = 0; j < values.size(); j++) {
+        const value_info & w = values[j];
+        const char * const next_string = std::get<0>(w);
+        if ((c != 0) && (static_cast<uint8_t>(next_string[index]) == c)) {
+            next_values.push_back(w);
+        }
+    }
+}
+
 template<typename value_type>
 trie<value_type>::trie(const std::vector<value_info> & values,
                        const std::string & name,
@@ -101,36 +117,35 @@ trie<value_type>::trie(const std::vector<value_info> & values,
         if ('\0' == c) {
             const_cast<bool &>(has_value_) = true;
             const_cast<value_type &>(value_) = value;
-        } else if (std::unique_ptr<trie>() == children_[c]) {
-            // Because we already carried all children going on with that character, we must
-            // not do this again.
-            std::vector<value_info> next_values;
-            for (size_t j = 0; j < values.size(); j++) {
-                const value_info & w = values[j];
-                const char * const next_string = std::get<0>(w);
-                if ((c != 0) && (static_cast<uint8_t>(next_string[index]) == c)) {
-                    next_values.push_back(w);
-                }
-            }
+            continue;
+        }
 
-            if (false == next_values.empty()) {
-                children_[c] = std::unique_ptr<trie>(new trie(next_values,
-                                                     name_ + static_cast<char>(c),
-                                                     index + 1,
-                                                     default_value));
+        if (std::unique_ptr<trie>() != children_[c]) {
+            continue;
+        }
 
-                // The trie parsing is case insensitive.
-                if ((c >= 'a') && (c <= 'z')) {
-                    children_[c & 0xDF] = std::unique_ptr<trie>(new trie(next_values,
-                                          name_ + static_cast<char>(c),
-                                          index + 1,
-                                          default_value));
-                } else if ((c >= 'A') && (c <= 'Z')) {
-                    children_[c | 0x20] = std::unique_ptr<trie>(new trie(next_values,
-                                          name_ + static_cast<char>(c),
-                                          index + 1,
-                                          default_value));
-                }
+        // Because we already carried all children going on with that character, we must not do
+        // this again.
+        std::vector<value_info> next_values;
+        fill_next_values(next_values, values, index, c);
+
+        if (false == next_values.empty()) {
+            children_[c] = std::unique_ptr<trie>(new trie(next_values,
+                                                 name_ + static_cast<char>(c),
+                                                 index + 1,
+                                                 default_value));
+
+            // The trie parsing is case insensitive.
+            if (true == check_range < uint8_t, 'a', 'z' > (c)) {
+                children_[c & 0xDF] = std::unique_ptr<trie>(new trie(next_values,
+                                      name_ + static_cast<char>(c),
+                                      index + 1,
+                                      default_value));
+            } else if (true == check_range < uint8_t, 'A', 'Z' > (c)) {
+                children_[c | 0x20] = std::unique_ptr<trie>(new trie(next_values,
+                                      name_ + static_cast<char>(c),
+                                      index + 1,
+                                      default_value));
             }
         }
     }
