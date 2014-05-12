@@ -18,13 +18,32 @@
 #ifndef __LIBREST_HTTP_PARSER_HTTPPARSER_HPP__
 #define __LIBREST_HTTP_PARSER_HTTPPARSER_HPP__
 
-#include <http/parser/http.hpp>
+#include <http/parser/utility/anonymousintfunction.hpp>
+#include <http/parser/utility/lexer.hpp>
+#include <http/parser/utility/httpmediatype.hpp>
+#include <http/parser/utility/pushbackstring.hpp>
+
+#include <rest.hpp>
 
 namespace rest
 {
 
 namespace http
 {
+
+enum class parser_state
+{
+    UNFINISHED = 0,
+    SUCCEEDED = 1,
+    ERROR = 2
+};
+
+enum class connection_type
+{
+    ERROR = 0,
+    CLOSE,
+    KEEP_ALIVE
+};
 
 class http_parser
 {
@@ -44,7 +63,29 @@ public:
     bool is_keep_connection() const;
 
 private:
-    httpscan httpscan_;
+    bool parse_connection(int32_t & result);
+    bool parse_content_length(int32_t & result);
+    bool parse_content_type(int32_t & result);
+    bool parse_date(int32_t & result);
+    bool parse_header(int32_t & result);
+    bool parse_headers(int32_t & result);
+    parser_state lex_first_line();
+
+    lexer lexer_;
+    parser_state state_;
+
+    push_back_string<40> header_key_;
+    push_back_string<1000> header_value_;
+    rest::http::method method_;
+    rest::http::version version_;
+    push_back_string<1000> url_;
+    uint16_t status_code_;
+    push_back_string<100> reason_phrase_;
+    std::map<std::string, std::string> headers_;
+    size_t content_length_;
+    media_type content_type_;
+    time_t date_;
+    connection_type connection_;
 };
 
 } // namespace http

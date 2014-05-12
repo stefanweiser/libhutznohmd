@@ -108,9 +108,8 @@ void test_http_date_parser(const std::string & date_string)
         string_index_pair p(date_string, 0);
         lexer l(anonymous_int_function(&get_char, &p),
                 anonymous_int_function(&peek_char, &p));
-        httpscan httpscan(l);
-        int32_t result = httpscan.lexer_.get();
-        parse_timestamp(result, httpscan.lexer_);
+        int32_t result = l.get();
+        parse_timestamp(result, l);
     }
 
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
@@ -118,9 +117,8 @@ void test_http_date_parser(const std::string & date_string)
         string_index_pair p(date_string, 0);
         lexer l(anonymous_int_function(&get_char, &p),
                 anonymous_int_function(&peek_char, &p));
-        httpscan httpscan(l);
-        int32_t result = httpscan.lexer_.get();
-        parse_timestamp(result, httpscan.lexer_);
+        int32_t result = l.get();
+        parse_timestamp(result, l);
     }
     std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
     auto diff = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
