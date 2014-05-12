@@ -25,20 +25,30 @@ namespace rest
 namespace http
 {
 
+template<typename type, type lower_bound, type upper_bound>
+bool check_range(const type & value)
+{
+    static_assert(lower_bound <= upper_bound, "Lower bound must be less or equal to upper bound.");
+    if ((value < lower_bound) || (value > upper_bound)) {
+        return false;
+    }
+    return true;
+}
+
 int32_t parse_time(int32_t & character, const lexer & l)
 {
     int32_t hour = l.get_unsigned_integer(character);
-    if ((hour < 0) || (hour > 23) || (character != ':')) {
+    if ((false == check_range<int32_t, 0, 23>(hour)) || (character != ':')) {
         return -1;
     }
     character = l.get_non_whitespace();
     int32_t minute = l.get_unsigned_integer(character);
-    if ((minute < 0) || (minute > 59) || (character != ':')) {
+    if ((false == check_range<int32_t, 0, 59>(minute)) || (character != ':')) {
         return -1;
     }
     character = l.get_non_whitespace();
     int32_t second = l.get_unsigned_integer(character);
-    if ((second < 0) || (second > 59)) {
+    if (false == check_range<int32_t, 0, 59>(second)) {
         return -1;
     }
     return (60 * ((60 * hour) + minute)) + second;
@@ -86,35 +96,58 @@ time_t day_of_the_year(const time_t day,
     return result;
 }
 
+bool is_valid_day(const time_t day, const time_t month, const time_t year)
+{
+    if (day < 1) {
+        return false;
+    }
+
+    if (month > 7) {
+        if ((month % 2) == 0) {
+            return (day <= 31);
+        } else {
+            return (day <= 30);
+        }
+    } else {
+        if (month == 2) {
+            if ((year % 4) == 0) {
+                return (day <= 29);
+            } else {
+                return (day <= 28);
+            }
+        } else if ((month % 2) == 0) {
+            return (day <= 30);
+        } else {
+            return (day <= 31);
+        }
+    }
+}
+
+bool is_valid_epoch_date(const time_t day, const time_t month, const time_t year)
+{
+    if ((year < 1970) ||
+        (false == check_range<time_t, 1, 12>(month)) ||
+        (false == is_valid_day(day, month, year))) {
+        return false;
+    }
+    return true;
+}
+
 time_t seconds_since_epoch(const time_t second_of_day,
                            const time_t day,
                            const time_t month,
                            const time_t year)
 {
+    if (false == is_valid_epoch_date(day, month, year)) {
+        return -1;
+    }
+
     const time_t second_of_year = second_of_day +
                                   ((day_of_the_year(day, month, year) - 1) * 86400);
     const time_t year_seconds_since_epoch = ((year - 1970) * 86400 * 365) +
                                             (((year - (1972 - 3)) / 4) * 86400);
 
     return year_seconds_since_epoch + second_of_year;
-}
-
-bool is_valid_epoch_date(const time_t day, const time_t month, const time_t year)
-{
-    if ((year < 1970) ||
-        (month < 1) ||
-        (month > 12) ||
-        (day < 1) ||
-        ((month < 8) && ((month % 2) == 1) && (day > 31)) ||
-        ((month < 8) && ((month % 2) == 0) && (day > 30)) ||
-        ((month > 7) && ((month % 2) == 0) && (day > 31)) ||
-        ((month > 7) && ((month % 2) == 1) && (day > 30)) ||
-        ((month == 2) && ((year % 4) != 0) && (day > 28)) ||
-        ((month == 2) && ((year % 4) == 0) && (day > 29))) {
-
-        return false;
-    }
-    return true;
 }
 
 bool parse_gmt(int32_t & character, const lexer & l)
@@ -130,47 +163,41 @@ bool parse_gmt(int32_t & character, const lexer & l)
     return t.parse(character, tmp, l);
 }
 
+void parse_optional_whitespace(int32_t & character, const lexer & l)
+{
+    if ((character == ' ') || (character == '\n')) {
+        character = l.get_non_whitespace();
+    }
+}
+
 time_t parse_rfc1123_date_time(int32_t & character, const lexer & l)
 {
     character = l.get_non_whitespace();
     const int32_t day = l.get_unsigned_integer(character);
 
-    if ((character == ' ') || (character == '\n')) {
-        character = l.get_non_whitespace();
-    }
+    parse_optional_whitespace(character, l);
     const int32_t month = parse_month(character, l);
 
-    if ((character == ' ') || (character == '\n')) {
-        character = l.get_non_whitespace();
-    }
+    parse_optional_whitespace(character, l);
     const int32_t year = l.get_unsigned_integer(character);
 
-    if ((character == ' ') || (character == '\n')) {
-        character = l.get_non_whitespace();
-    }
+    parse_optional_whitespace(character, l);
     const int32_t second_of_day = parse_time(character, l);
     if (second_of_day < 0) {
         return -1;
     }
 
-    if ((character == ' ') || (character == '\n')) {
-        character = l.get_non_whitespace();
-    }
+    parse_optional_whitespace(character, l);
     if (false == parse_gmt(character, l)) {
         return -1;
     }
 
-    if (false == is_valid_epoch_date(day, month, year)) {
-        return -1;
-    }
     return seconds_since_epoch(second_of_day, day, month, year);
 }
 
 time_t parse_rfc850_date_time(int32_t & character, const lexer & l)
 {
-    if ((character == ' ') || (character == '\n')) {
-        character = l.get_non_whitespace();
-    }
+    parse_optional_whitespace(character, l);
     if (character != ',') {
         return -1;
     }
@@ -188,33 +215,24 @@ time_t parse_rfc850_date_time(int32_t & character, const lexer & l)
     }
     character = l.get();
     const int32_t year = 1900 + l.get_unsigned_integer(character);
-    if ((year < 1900) || (year > 1999)) {
+    if (false == check_range<int32_t, 1900, 1999>(year)) {
         return -1;
     }
 
-    if ((character == ' ') || (character == '\n')) {
-        character = l.get_non_whitespace();
-    }
+    parse_optional_whitespace(character, l);
     const int32_t second_of_day = parse_time(character, l);
 
-    if ((character == ' ') || (character == '\n')) {
-        character = l.get_non_whitespace();
-    }
+    parse_optional_whitespace(character, l);
     if (false == parse_gmt(character, l)) {
         return -1;
     }
 
-    if (false == is_valid_epoch_date(day, month, year)) {
-        return -1;
-    }
     return seconds_since_epoch(second_of_day, day, month, year);
 }
 
 time_t parse_asctime_date_time(int32_t & character, const lexer & l)
 {
-    if ((character == ' ') || (character == '\n')) {
-        character = l.get_non_whitespace();
-    }
+    parse_optional_whitespace(character, l);
     const int32_t month = parse_month(character, l);
 
     character = l.get_non_whitespace();
@@ -230,9 +248,6 @@ time_t parse_asctime_date_time(int32_t & character, const lexer & l)
         character = l.get_non_whitespace();
     }
 
-    if (false == is_valid_epoch_date(day, month, year)) {
-        return -1;
-    }
     return seconds_since_epoch(second_of_day, day, month, year);
 }
 
