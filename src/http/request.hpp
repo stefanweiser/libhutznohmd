@@ -54,7 +54,7 @@ public:
 private:
     rest::socket::connection_pointer connection_;
     rest::buffer buffer_;
-    rest::http::http_parser http_parser_;
+    rest::http::request_parser request_parser_;
     rest::buffer data_;
     size_t index_;
 };

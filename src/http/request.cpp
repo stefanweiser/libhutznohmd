@@ -41,16 +41,16 @@ int32_t peek_char(void * handle)
 request::request(const rest::socket::connection_pointer & connection)
     : connection_(connection)
     , buffer_()
-    , http_parser_(anonymous_int_function(&get_char, this),
-                   anonymous_int_function(&peek_char, this))
+    , request_parser_(anonymous_int_function(&get_char, this),
+                      anonymous_int_function(&peek_char, this))
     , data_()
     , index_(0)
 {}
 
 void request::parse()
 {
-    http_parser_.parse();
-    ssize_t content_length = http_parser_.content_length();
+    request_parser_.parse();
+    ssize_t content_length = request_parser_.content_length();
 
     while ((content_length > 0) && (peek() >= 0)) {
         ssize_t old_size = data_.size();
@@ -71,22 +71,22 @@ void request::parse()
 
 rest::http::method request::method() const
 {
-    return static_cast<rest::http::method>(http_parser_.method());
+    return static_cast<rest::http::method>(request_parser_.method());
 }
 
 std::string request::url() const
 {
-    return http_parser_.url();
+    return request_parser_.url();
 }
 
 rest::http::version request::version() const
 {
-    return static_cast<rest::http::version>(http_parser_.version());
+    return static_cast<rest::http::version>(request_parser_.version());
 }
 
 const std::string request::header(const std::string & key) const
 {
-    return http_parser_.header(key);
+    return request_parser_.header(key);
 }
 
 rest::buffer request::data() const
@@ -96,12 +96,12 @@ rest::buffer request::data() const
 
 time_t request::date() const
 {
-    return http_parser_.date();
+    return request_parser_.date();
 }
 
 bool request::is_keep_connection() const
 {
-    return http_parser_.is_keep_connection();
+    return request_parser_.is_keep_connection();
 }
 
 int32_t request::get()

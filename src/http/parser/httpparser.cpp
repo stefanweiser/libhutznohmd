@@ -31,8 +31,8 @@ namespace rest
 namespace http
 {
 
-http_parser::http_parser(const anonymous_int_function & get_functor,
-                         const anonymous_int_function & peek_functor)
+request_parser::request_parser(const anonymous_int_function & get_functor,
+                               const anonymous_int_function & peek_functor)
     : lexer_(get_functor, peek_functor)
     , state_(parser_state::UNFINISHED)
     , header_key_()
@@ -40,8 +40,6 @@ http_parser::http_parser(const anonymous_int_function & get_functor,
     , method_(rest::http::method::UNKNOWN)
     , version_(rest::http::version::HTTP_UNKNOWN)
     , url_()
-    , status_code_(0)
-    , reason_phrase_()
     , headers_()
     , content_length_(0)
     , content_type_(lexer_)
@@ -64,31 +62,9 @@ bool lex_request_url(int32_t & character, push_back_string<1000> & url, const le
     return true;
 }
 
-uint16_t lex_status_code(int32_t & result, const lexer & l)
-{
-    int32_t code = l.get_unsigned_integer(result);
-    if (code <= 0) {
-        return 0;
-    }
-    return static_cast<uint16_t>(code);
-}
-
-bool lex_reason_phrase(int32_t & character, push_back_string<100> & phrase, const lexer & l)
-{
-    do {
-        if ((character < 0) ||
-            ((character != ' ') && (character != '\t') && (0 == isalnum(character)))) {
-            return false;
-        }
-        phrase.push_back(static_cast<char>(character));
-        character = l.get();
-    } while (character != '\n');
-    return true;
-}
-
 } // namespace
 
-void http_parser::parse()
+void request_parser::parse()
 {
     if (parser_state::UNFINISHED != state_) {
         return;
@@ -96,76 +72,60 @@ void http_parser::parse()
 
     int32_t result = lexer_.get_non_whitespace();
     {
-        using value_type = std::tuple<rest::http::method, rest::http::version>;
-        using value_info = trie<value_type>::value_info;
+        using value_info = trie<rest::http::method>::value_info;
         static const std::vector<value_info> types = {{
-                value_info{"head", value_type{rest::http::method::HEAD, rest::http::version::HTTP_UNKNOWN}},
-                value_info{"get", value_type{rest::http::method::GET, rest::http::version::HTTP_UNKNOWN}},
-                value_info{"put", value_type{rest::http::method::PUT, rest::http::version::HTTP_UNKNOWN}},
-                value_info{"delete", value_type{rest::http::method::DELETE, rest::http::version::HTTP_UNKNOWN}},
-                value_info{"post", value_type{rest::http::method::POST, rest::http::version::HTTP_UNKNOWN}},
-                value_info{"trace", value_type{rest::http::method::TRACE, rest::http::version::HTTP_UNKNOWN}},
-                value_info{"options", value_type{rest::http::method::OPTIONS, rest::http::version::HTTP_UNKNOWN}},
-                value_info{"connect", value_type{rest::http::method::CONNECT, rest::http::version::HTTP_UNKNOWN}},
-                value_info{"http/1.0", value_type{rest::http::method::UNKNOWN, rest::http::version::HTTP_1_0}},
-                value_info{"http/1.1", value_type{rest::http::method::UNKNOWN, rest::http::version::HTTP_1_1}}
+                value_info{"head", rest::http::method::HEAD},
+                value_info{"get", rest::http::method::GET},
+                value_info{"put", rest::http::method::PUT},
+                value_info{"delete", rest::http::method::DELETE},
+                value_info{"post", rest::http::method::POST},
+                value_info{"trace", rest::http::method::TRACE},
+                value_info{"options", rest::http::method::OPTIONS},
+                value_info{"connect", rest::http::method::CONNECT}
             }
         };
 
-        static const trie<value_type> t(types, value_type {rest::http::method::UNKNOWN, rest::http::version::HTTP_UNKNOWN});
+        static const trie<rest::http::method> t(types, rest::http::method::UNKNOWN);
         push_back_string<32> tmp;
-        std::tie(method_, version_) = t.parse(result, tmp, lexer_);
+        method_ = t.parse(result, tmp, lexer_);
     }
 
-    if (rest::http::version::HTTP_UNKNOWN != version_) {
-        result = lexer_.get_non_whitespace();
-        status_code_ = lex_status_code(result, lexer_);
-        if (0 == status_code_) {
-            state_ = parser_state::ERROR;
-            return;
-        }
-        result = lexer_.get_non_whitespace();
-        if (false == lex_reason_phrase(result, reason_phrase_, lexer_)) {
-            state_ = parser_state::ERROR;
-            return;
-        }
-    } else {
-        if (rest::http::method::UNKNOWN == method_) {
-            state_ = parser_state::ERROR;
-            return;
-        }
-        result = lexer_.get_non_whitespace();
-        if (false == lex_request_url(result, url_, lexer_)) {
-            state_ = parser_state::ERROR;
-            return;
-        }
-        result = lexer_.get_non_whitespace();
+    if (rest::http::method::UNKNOWN == method_) {
+        state_ = parser_state::ERROR;
+        return;
+    }
 
-        {
-            using value_info = trie<rest::http::version>::value_info;
-            static const std::vector<value_info> types = {{
-                    value_info{"http/1.0", rest::http::version::HTTP_1_0},
-                    value_info{"http/1.1", rest::http::version::HTTP_1_1}
-                }
-            };
+    result = lexer_.get_non_whitespace();
+    if (false == lex_request_url(result, url_, lexer_)) {
+        state_ = parser_state::ERROR;
+        return;
+    }
 
-            static const trie<rest::http::version> t(types, rest::http::version::HTTP_UNKNOWN);
-            push_back_string<32> tmp;
-            version_ = t.parse(result, tmp, lexer_);
-        }
+    result = lexer_.get_non_whitespace();
+    {
+        using value_info = trie<rest::http::version>::value_info;
+        static const std::vector<value_info> types = {{
+                value_info{"http/1.0", rest::http::version::HTTP_1_0},
+                value_info{"http/1.1", rest::http::version::HTTP_1_1}
+            }
+        };
 
-        if (rest::http::version::HTTP_1_0 == version_) {
-            connection_ = connection_type::CLOSE;
-        }
+        static const trie<rest::http::version> t(types, rest::http::version::HTTP_UNKNOWN);
+        push_back_string<32> tmp;
+        version_ = t.parse(result, tmp, lexer_);
+    }
 
-        if (rest::http::version::HTTP_UNKNOWN == version_) {
-            state_ = parser_state::ERROR;
-            return;
-        }
-        if (result != '\n') {
-            state_ = parser_state::ERROR;
-            return;
-        }
+    if (rest::http::version::HTTP_1_0 == version_) {
+        connection_ = connection_type::CLOSE;
+    }
+
+    if (rest::http::version::HTTP_UNKNOWN == version_) {
+        state_ = parser_state::ERROR;
+        return;
+    }
+    if (result != '\n') {
+        state_ = parser_state::ERROR;
+        return;
     }
 
     result = lexer_.get();
@@ -176,37 +136,27 @@ void http_parser::parse()
     state_ = parser_state::SUCCEEDED;
 }
 
-bool http_parser::valid() const
+bool request_parser::valid() const
 {
     return (parser_state::SUCCEEDED == state_);
 }
 
-const rest::http::method & http_parser::method() const
+const rest::http::method & request_parser::method() const
 {
     return method_;
 }
 
-const rest::http::version & http_parser::version() const
+const rest::http::version & request_parser::version() const
 {
     return version_;
 }
 
-const std::string http_parser::url() const
+const std::string request_parser::url() const
 {
     return std::string(url_.c_str());
 }
 
-const uint16_t & http_parser::status_code() const
-{
-    return status_code_;
-}
-
-const std::string http_parser::reason_phrase() const
-{
-    return std::string(reason_phrase_.c_str());
-}
-
-const std::string http_parser::header(const std::string & key) const
+const std::string request_parser::header(const std::string & key) const
 {
     auto it = headers_.find(key);
     if (it != headers_.end()) {
@@ -215,22 +165,22 @@ const std::string http_parser::header(const std::string & key) const
     return "";
 }
 
-const size_t & http_parser::content_length() const
+const size_t & request_parser::content_length() const
 {
     return content_length_;
 }
 
-const time_t & http_parser::date() const
+const time_t & request_parser::date() const
 {
     return date_;
 }
 
-bool http_parser::is_keep_connection() const
+bool request_parser::is_keep_connection() const
 {
     return (connection_ == connection_type::KEEP_ALIVE);
 }
 
-bool http_parser::parse_connection(int32_t & result)
+bool request_parser::parse_connection(int32_t & result)
 {
     using value_info = trie<connection_type>::value_info;
     static const std::vector<value_info> types = {{
@@ -249,7 +199,7 @@ bool http_parser::parse_connection(int32_t & result)
     return false;
 }
 
-bool http_parser::parse_content_length(int32_t & result)
+bool request_parser::parse_content_length(int32_t & result)
 {
     int32_t length = lexer_.get_unsigned_integer(result);
     if (length < 0) {
@@ -260,12 +210,12 @@ bool http_parser::parse_content_length(int32_t & result)
     return true;
 }
 
-bool http_parser::parse_content_type(int32_t & result)
+bool request_parser::parse_content_type(int32_t & result)
 {
     return content_type_.parse(result);
 }
 
-bool http_parser::parse_date(int32_t & result)
+bool request_parser::parse_date(int32_t & result)
 {
     time_t d = parse_timestamp(result, lexer_);
     if (d < 0) {
@@ -276,16 +226,16 @@ bool http_parser::parse_date(int32_t & result)
     return true;
 }
 
-bool http_parser::parse_header(int32_t & result)
+bool request_parser::parse_header(int32_t & result)
 {
-    using parsing_function = bool (http_parser::*)(int32_t &);
+    using parsing_function = bool (request_parser::*)(int32_t &);
     using trie_value = std::tuple<parsing_function, size_t>;
     using value_info = trie<trie_value>::value_info;
     static const std::vector<value_info> types = {{
-            value_info{"content-length", trie_value{&http_parser::parse_content_length, 0}},
-            value_info{"content-type", trie_value{&http_parser::parse_content_type, 1}},
-            value_info{"date", trie_value{&http_parser::parse_date, 2}},
-            value_info{"connection", trie_value{&http_parser::parse_connection, 3}}
+            value_info{"content-length", trie_value{&request_parser::parse_content_length, 0}},
+            value_info{"content-type", trie_value{&request_parser::parse_content_type, 1}},
+            value_info{"date", trie_value{&request_parser::parse_date, 2}},
+            value_info{"connection", trie_value{&request_parser::parse_connection, 3}}
         }
     };
     static const trie<trie_value> t(types, trie_value {nullptr, -1});
@@ -326,7 +276,7 @@ bool http_parser::parse_header(int32_t & result)
     return true;
 }
 
-bool http_parser::parse_headers(int32_t & result)
+bool request_parser::parse_headers(int32_t & result)
 {
     while (result != '\n') {
         if (false == parse_header(result)) {

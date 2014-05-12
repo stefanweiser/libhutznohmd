@@ -79,20 +79,20 @@ void test_trie_parse(const std::string & token)
               << " ns for token: <" << token << ">" << std::endl;
 }
 
-void test_http_parser(const std::string & request)
+void test_req_parser(const std::string & request)
 {
     {
         // This initializes all static variables, that else would sophisticate the results.
         string_index_pair p(request, 0);
-        http_parser parser(anonymous_int_function(&get_char, &p),
-                           anonymous_int_function(&peek_char, &p));
+        request_parser parser(anonymous_int_function(&get_char, &p),
+                              anonymous_int_function(&peek_char, &p));
         parser.parse();
     }
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
     for (size_t i = 0; i < 1000; i++) {
         string_index_pair p(request, 0);
-        http_parser parser(anonymous_int_function(&get_char, &p),
-                           anonymous_int_function(&peek_char, &p));
+        request_parser parser(anonymous_int_function(&get_char, &p),
+                              anonymous_int_function(&peek_char, &p));
         parser.parse();
     }
     std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
@@ -135,16 +135,16 @@ int main()
 {
     std::cout << "example_performance" << std::endl;
 
-    rest::http::test_http_parser("GET / HTTP/1.1\r\n\r\n");
-    rest::http::test_http_parser("GET /what/a/long/url HTTP/1.1\r\nContent-Length: 0\r\n\r\n");
-    rest::http::test_http_parser("GET /what/a/long/url HTTP/1.1\r\nContent-Length: 0\r\n"
-                                 "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
-                                 "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
-                                 "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
-                                 "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
-                                 "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
-                                 "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
-                                 "Content-Length: 0\r\n\r\n");
+    rest::http::test_req_parser("GET / HTTP/1.1\r\n\r\n");
+    rest::http::test_req_parser("GET /what/a/long/url HTTP/1.1\r\nContent-Length: 0\r\n\r\n");
+    rest::http::test_req_parser("GET /what/a/long/url HTTP/1.1\r\nContent-Length: 0\r\n"
+                                "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
+                                "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
+                                "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
+                                "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
+                                "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
+                                "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
+                                "Content-Length: 0\r\n\r\n");
 
     rest::http::test_http_date_parser("Sun, 06 Nov 1994 08:49:37 GMT");
     rest::http::test_http_date_parser("Sunday, 06-Nov-94 08:49:37 GMT");

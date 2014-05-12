@@ -45,18 +45,16 @@ enum class connection_type
     KEEP_ALIVE
 };
 
-class http_parser
+class request_parser
 {
 public:
-    explicit http_parser(const anonymous_int_function & get_functor,
-                         const anonymous_int_function & peek_functor);
+    explicit request_parser(const anonymous_int_function & get_functor,
+                            const anonymous_int_function & peek_functor);
     void parse();
     bool valid() const;
     const rest::http::method & method() const;
     const rest::http::version & version() const;
     const std::string url() const;
-    const uint16_t & status_code() const;
-    const std::string reason_phrase() const;
     const std::string header(const std::string & key) const;
     const size_t & content_length() const;
     const time_t & date() const;
@@ -78,8 +76,6 @@ private:
     rest::http::method method_;
     rest::http::version version_;
     push_back_string<1000> url_;
-    uint16_t status_code_;
-    push_back_string<100> reason_phrase_;
     std::map<std::string, std::string> headers_;
     size_t content_length_;
     media_type content_type_;
