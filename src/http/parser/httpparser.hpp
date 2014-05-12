@@ -69,7 +69,6 @@ private:
     bool parse_date(int32_t & result);
     bool parse_header(int32_t & result);
     bool parse_headers(int32_t & result);
-    parser_state lex_first_line();
 
     lexer lexer_;
     parser_state state_;

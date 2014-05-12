@@ -49,14 +49,131 @@ http_parser::http_parser(const anonymous_int_function & get_functor,
     , connection_(connection_type::KEEP_ALIVE)
 {}
 
+namespace
+{
+
+bool lex_request_url(int32_t & character, push_back_string<1000> & url, const lexer & l)
+{
+    do {
+        if ((character < 0) || (false == is_valid_url_character(static_cast<uint8_t>(character)))) {
+            return false;
+        }
+        url.push_back(static_cast<char>(character));
+        character = l.get();
+    } while ((character != ' ') && (character != '\t'));
+    return true;
+}
+
+uint16_t lex_status_code(int32_t & result, const lexer & l)
+{
+    int32_t code = l.get_unsigned_integer(result);
+    if (code <= 0) {
+        return 0;
+    }
+    return static_cast<uint16_t>(code);
+}
+
+bool lex_reason_phrase(int32_t & character, push_back_string<100> & phrase, const lexer & l)
+{
+    do {
+        if ((character < 0) ||
+            ((character != ' ') && (character != '\t') && (0 == isalnum(character)))) {
+            return false;
+        }
+        phrase.push_back(static_cast<char>(character));
+        character = l.get();
+    } while (character != '\n');
+    return true;
+}
+
+} // namespace
+
 void http_parser::parse()
 {
-    if (parser_state::UNFINISHED == state_) {
-        if ((state_ != parser_state::SUCCEEDED) &&
-            (state_ != parser_state::ERROR)) {
-            state_ = lex_first_line();
+    if (parser_state::UNFINISHED != state_) {
+        return;
+    }
+
+    int32_t result = lexer_.get_non_whitespace();
+    {
+        using value_type = std::tuple<rest::http::method, rest::http::version>;
+        using value_info = trie<value_type>::value_info;
+        static const std::vector<value_info> types = {{
+                value_info{"head", value_type{rest::http::method::HEAD, rest::http::version::HTTP_UNKNOWN}},
+                value_info{"get", value_type{rest::http::method::GET, rest::http::version::HTTP_UNKNOWN}},
+                value_info{"put", value_type{rest::http::method::PUT, rest::http::version::HTTP_UNKNOWN}},
+                value_info{"delete", value_type{rest::http::method::DELETE, rest::http::version::HTTP_UNKNOWN}},
+                value_info{"post", value_type{rest::http::method::POST, rest::http::version::HTTP_UNKNOWN}},
+                value_info{"trace", value_type{rest::http::method::TRACE, rest::http::version::HTTP_UNKNOWN}},
+                value_info{"options", value_type{rest::http::method::OPTIONS, rest::http::version::HTTP_UNKNOWN}},
+                value_info{"connect", value_type{rest::http::method::CONNECT, rest::http::version::HTTP_UNKNOWN}},
+                value_info{"http/1.0", value_type{rest::http::method::UNKNOWN, rest::http::version::HTTP_1_0}},
+                value_info{"http/1.1", value_type{rest::http::method::UNKNOWN, rest::http::version::HTTP_1_1}}
+            }
+        };
+
+        static const trie<value_type> t(types, value_type {rest::http::method::UNKNOWN, rest::http::version::HTTP_UNKNOWN});
+        push_back_string<32> tmp;
+        std::tie(method_, version_) = t.parse(result, tmp, lexer_);
+    }
+
+    if (rest::http::version::HTTP_UNKNOWN != version_) {
+        result = lexer_.get_non_whitespace();
+        status_code_ = lex_status_code(result, lexer_);
+        if (0 == status_code_) {
+            state_ = parser_state::ERROR;
+            return;
+        }
+        result = lexer_.get_non_whitespace();
+        if (false == lex_reason_phrase(result, reason_phrase_, lexer_)) {
+            state_ = parser_state::ERROR;
+            return;
+        }
+    } else {
+        if (rest::http::method::UNKNOWN == method_) {
+            state_ = parser_state::ERROR;
+            return;
+        }
+        result = lexer_.get_non_whitespace();
+        if (false == lex_request_url(result, url_, lexer_)) {
+            state_ = parser_state::ERROR;
+            return;
+        }
+        result = lexer_.get_non_whitespace();
+
+        {
+            using value_info = trie<rest::http::version>::value_info;
+            static const std::vector<value_info> types = {{
+                    value_info{"http/1.0", rest::http::version::HTTP_1_0},
+                    value_info{"http/1.1", rest::http::version::HTTP_1_1}
+                }
+            };
+
+            static const trie<rest::http::version> t(types, rest::http::version::HTTP_UNKNOWN);
+            push_back_string<32> tmp;
+            version_ = t.parse(result, tmp, lexer_);
+        }
+
+        if (rest::http::version::HTTP_1_0 == version_) {
+            connection_ = connection_type::CLOSE;
+        }
+
+        if (rest::http::version::HTTP_UNKNOWN == version_) {
+            state_ = parser_state::ERROR;
+            return;
+        }
+        if (result != '\n') {
+            state_ = parser_state::ERROR;
+            return;
         }
     }
+
+    result = lexer_.get();
+    if (false == parse_headers(result)) {
+        state_ = parser_state::ERROR;
+        return;
+    }
+    state_ = parser_state::SUCCEEDED;
 }
 
 bool http_parser::valid() const
@@ -219,117 +336,6 @@ bool http_parser::parse_headers(int32_t & result)
     }
 
     return true;
-}
-
-bool lex_request_url(int32_t & character, push_back_string<1000> & url, const lexer & l)
-{
-    do {
-        if ((character < 0) || (false == is_valid_url_character(static_cast<uint8_t>(character)))) {
-            return false;
-        }
-        url.push_back(static_cast<char>(character));
-        character = l.get();
-    } while ((character != ' ') && (character != '\t'));
-    return true;
-}
-
-uint16_t lex_status_code(int32_t & result, const lexer & l)
-{
-    int32_t code = l.get_unsigned_integer(result);
-    if (code <= 0) {
-        return 0;
-    }
-    return static_cast<uint16_t>(code);
-}
-
-bool lex_reason_phrase(int32_t & character, push_back_string<100> & phrase, const lexer & l)
-{
-    do {
-        if ((character < 0) ||
-            ((character != ' ') && (character != '\t') && (0 == isalnum(character)))) {
-            return false;
-        }
-        phrase.push_back(static_cast<char>(character));
-        character = l.get();
-    } while (character != '\n');
-    return true;
-}
-
-parser_state http_parser::lex_first_line()
-{
-    int32_t result = lexer_.get_non_whitespace();
-    {
-        using value_type = std::tuple<rest::http::method, rest::http::version>;
-        using value_info = trie<value_type>::value_info;
-        static const std::vector<value_info> types = {{
-                value_info{"head", value_type{rest::http::method::HEAD, rest::http::version::HTTP_UNKNOWN}},
-                value_info{"get", value_type{rest::http::method::GET, rest::http::version::HTTP_UNKNOWN}},
-                value_info{"put", value_type{rest::http::method::PUT, rest::http::version::HTTP_UNKNOWN}},
-                value_info{"delete", value_type{rest::http::method::DELETE, rest::http::version::HTTP_UNKNOWN}},
-                value_info{"post", value_type{rest::http::method::POST, rest::http::version::HTTP_UNKNOWN}},
-                value_info{"trace", value_type{rest::http::method::TRACE, rest::http::version::HTTP_UNKNOWN}},
-                value_info{"options", value_type{rest::http::method::OPTIONS, rest::http::version::HTTP_UNKNOWN}},
-                value_info{"connect", value_type{rest::http::method::CONNECT, rest::http::version::HTTP_UNKNOWN}},
-                value_info{"http/1.0", value_type{rest::http::method::UNKNOWN, rest::http::version::HTTP_1_0}},
-                value_info{"http/1.1", value_type{rest::http::method::UNKNOWN, rest::http::version::HTTP_1_1}}
-            }
-        };
-
-        static const trie<value_type> t(types, value_type {rest::http::method::UNKNOWN, rest::http::version::HTTP_UNKNOWN});
-        push_back_string<32> tmp;
-        std::tie(method_, version_) = t.parse(result, tmp, lexer_);
-    }
-
-    if (rest::http::version::HTTP_UNKNOWN != version_) {
-        result = lexer_.get_non_whitespace();
-        status_code_ = lex_status_code(result, lexer_);
-        if (0 == status_code_) {
-            return parser_state::ERROR;
-        }
-        result = lexer_.get_non_whitespace();
-        if (false == lex_reason_phrase(result, reason_phrase_, lexer_)) {
-            return parser_state::ERROR;
-        }
-    } else {
-        if (rest::http::method::UNKNOWN == method_) {
-            return parser_state::ERROR;
-        }
-        result = lexer_.get_non_whitespace();
-        if (false == lex_request_url(result, url_, lexer_)) {
-            return parser_state::ERROR;
-        }
-        result = lexer_.get_non_whitespace();
-
-        {
-            using value_info = trie<rest::http::version>::value_info;
-            static const std::vector<value_info> types = {{
-                    value_info{"http/1.0", rest::http::version::HTTP_1_0},
-                    value_info{"http/1.1", rest::http::version::HTTP_1_1}
-                }
-            };
-
-            static const trie<rest::http::version> t(types, rest::http::version::HTTP_UNKNOWN);
-            push_back_string<32> tmp;
-            version_ = t.parse(result, tmp, lexer_);
-        }
-
-        if (rest::http::version::HTTP_1_0 == version_) {
-            connection_ = connection_type::CLOSE;
-        }
-
-        if (rest::http::version::HTTP_UNKNOWN == version_) {
-            return parser_state::ERROR;
-        }
-        if (result != '\n') {
-            return parser_state::ERROR;
-        }
-    }
-
-    result = lexer_.get();
-    if (false == parse_headers(result)) {
-        return parser_state::ERROR;
-    }
-    return parser_state::SUCCEEDED;
 }
 
 } // namespace http
