@@ -299,10 +299,6 @@ enum class header_type
     //! capable for constant data.
     ACCEPT_RANGES,
 
-    //! The age in seconds, since the original response was generated. Is limited to a signed 32-bit
-    //! integer. In case of an overflow, the maximum 2^31 is transmitted.
-    AGE,
-
     //! List of allowed methods for the requested resource. Part of the response.
     ALLOW,
 
