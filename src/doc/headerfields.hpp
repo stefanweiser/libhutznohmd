@@ -20,271 +20,281 @@
 /*!
 @page header_fields Header Fields
 
-@section sec_common_fields Common
+@subpage page_basic_http_support
 
-@htmlonly
-<table border="1" cellpadding="2px" cellspacing="0px">
-    <tr>
-        <th>Header name</th>
-        <th>Description</th>
-        <th>Example</th>
-        <th>Feature</th>
-    </tr>
-    <tr>
-        <td>Cache-Control</td>
-        <td>TBD</td>
-        <td><pre>Cache-Control: no-cache</pre></td>
-        <td>Caching</td>
-    </tr>
-    <tr>
-        <td>Connection</td>
-        <td>TBD</td>
-        <td><pre>Connection: keep-alive</pre></td>
-        <td>Basic</td>
-    </tr>
-    <tr>
-        <td>Content-Encoding</td>
-        <td>TBD</td>
-        <td><pre>Content-Encoding: gzip</pre></td>
-        <td>Encoding</td>
-    </tr>
-    <tr>
-        <td>Content-Language</td>
-        <td>TBD</td>
-        <td><pre>Content-Language: en-US</pre></td>
-        <td>Encoding</td>
-    </tr>
-    <tr>
-        <td>Content-Length</td>
-        <td>TBD</td>
-        <td><pre>Content-Length: 0</pre></td>
-        <td>Basic</td>
-    </tr>
-    <tr>
-        <td>Content-MD5</td>
-        <td>TBD</td>
-        <td><pre>Content-MD5: Q2hlY2sgSW50ZWdyaXR5IQ==</pre></td>
-        <td>Basic</td>
-    </tr>
-    <tr>
-        <td>Content-Type</td>
-        <td>TBD</td>
-        <td><pre>Content-Type: text/plain</pre></td>
-        <td>Basic</td>
-    </tr>
-    <tr>
-        <td>Date</td>
-        <td>TBD</td>
-        <td><pre>Date: Wed, 13 May 2014 22:10:48 GMT</pre></td>
-        <td>Basic</td>
-    </tr>
-    <tr>
-        <td>Pragma</td>
-        <td>TBD</td>
-        <td><pre>Pragma: no-cache</pre></td>
-        <td>Basic</td>
-    </tr>
-</table>
-@endhtmlonly
+@subpage page_encoding
 
-@section sec_request_fields Request Specific
+@subpage page_auth
 
-@htmlonly
-<table border="1" cellpadding="2px" cellspacing="0px">
-    <tr>
-        <th>Header name</th>
-        <th>Description</th>
-        <th>Example</th>
-        <th>Feature</th>
-    </tr>
-    <tr>
-        <td>Accept</td>
-        <td>TBD</td>
-        <td><pre>Accept: text/plain</pre></td>
-        <td>Basic</td>
-    </tr>
-    <tr>
-        <td>Accept-Charset</td>
-        <td>TBD</td>
-        <td><pre>Accept-Charset: utf-8</pre></td>
-        <td>Encoding</td>
-    </tr>
-    <tr>
-        <td>Accept-Encoding</td>
-        <td>TBD</td>
-        <td><pre>Accept-Encoding: gzip</pre></td>
-        <td>Encoding</td>
-    </tr>
-    <tr>
-        <td>Accept-Language</td>
-        <td>TBD</td>
-        <td><pre>Accept-Language: en-US</pre></td>
-        <td>Encoding</td>
-    </tr>
-    <tr>
-        <td>Authorization</td>
-        <td>TBD</td>
-        <td><pre>Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==</pre></td>
-        <td>Auth</td>
-    </tr>
-    <tr>
-        <td>Cookie</td>
-        <td>TBD</td>
-        <td><pre>Cookie: id=123</pre></td>
-        <td>Cookies</td>
-    </tr>
-    <tr>
-        <td>Expect</td>
-        <td>TBD</td>
-        <td><pre>Expect: 100-continue</pre></td>
-        <td>Basic</td>
-    </tr>
-    <tr>
-        <td>From</td>
-        <td>TBD</td>
-        <td><pre>From: user@example.com</pre></td>
-        <td>Basic</td>
-    </tr>
-    <tr>
-        <td>Host</td>
-        <td>TBD</td>
-        <td><pre>Host: example.com</pre></td>
-        <td>Basic</td>
-    </tr>
-    <tr>
-        <td>If-Match</td>
-        <td>TBD</td>
-        <td><pre>If-Match: "0123456789abcdef"</pre></td>
-        <td>Conditional</td>
-    </tr>
-    <tr>
-        <td>If-Modified-Since</td>
-        <td>TBD</td>
-        <td><pre>If-Modified-Since: Wed, 13 May 2014 22:10:48 GMT</pre></td>
-        <td>Conditional</td>
-    </tr>
-    <tr>
-        <td>If-None-Match</td>
-        <td>TBD</td>
-        <td><pre>If-None-Match: "0123456789abcdef"</pre></td>
-        <td>Conditional</td>
-    </tr>
-    <tr>
-        <td>If-Range</td>
-        <td>TBD</td>
-        <td><pre>If-Range: "0123456789abcdef"</pre></td>
-        <td>Byte Serving and Conditional</td>
-    </tr>
-    <tr>
-        <td>If-Unmodified-Since</td>
-        <td>TBD</td>
-        <td><pre>If-Unmodified-Since: Wed, 13 May 2014 22:10:48 GMT</pre></td>
-        <td>Conditional</td>
-    </tr>
-    <tr>
-        <td>Range</td>
-        <td>TBD</td>
-        <td><pre>Range: bytes=0-2048</pre></td>
-        <td>Byte Serving</td>
-    </tr>
-    <tr>
-        <td>Referer</td>
-        <td>TBD</td>
-        <td><pre>Referer: http://www.example.com/</pre></td>
-        <td>Basic</td>
-    </tr>
-    <tr>
-        <td>User-Agent</td>
-        <td>TBD</td>
-        <td><pre>User-Agent: Googlebot/2.1 (+http://www.google.com/bot.html)</pre></td>
-        <td>Basic</td>
-    </tr>
-</table>
-@endhtmlonly
+@subpage page_caching
 
-@section sec_response_fields Response Specific
+@subpage page_cookies
 
-@htmlonly
-<table border="1" cellpadding="2px" cellspacing="0px">
-    <tr>
-        <th>Header name</th>
-        <th>Description</th>
-        <th>Example</th>
-        <th>Feature</th>
-    </tr>
-    <tr>
-        <td>Accept-Ranges</td>
-        <td>TBD</td>
-        <td><pre>Accept-Ranges: bytes</pre></td>
-        <td>Byte Serving</td>
-    </tr>
-    <tr>
-        <td>Allow</td>
-        <td>TBD</td>
-        <td><pre>Allow: GET, HEAD, PUT</pre></td>
-        <td>Basic</td>
-    </tr>
-    <tr>
-        <td>Content-Location</td>
-        <td>TBD</td>
-        <td><pre>Content-Location: /example</pre></td>
-        <td>Basic</td>
-    </tr>
-    <tr>
-        <td>Content-Range</td>
-        <td>TBD</td>
-        <td><pre>Content-Range: 0-2048/4096</pre></td>
-        <td>Byte Serving</td>
-    </tr>
-    <tr>
-        <td>ETag</td>
-        <td>TBD</td>
-        <td><pre>ETag: "0123456789abcdef"</pre></td>
-        <td>Basic</td>
-    </tr>
-    <tr>
-        <td>Expires</td>
-        <td>TBD</td>
-        <td><pre>Expires: Wed, 13 May 2014 22:10:48 GMT</pre></td>
-        <td>Caching</td>
-    </tr>
-    <tr>
-        <td>Last-Modified</td>
-        <td>TBD</td>
-        <td><pre>Last-Modified: Wed, 13 May 2014 22:10:48 GMT</pre></td>
-        <td>Caching</td>
-    </tr>
-    <tr>
-        <td>Location</td>
-        <td>TBD</td>
-        <td><pre>Location: http://example.com/example</pre></td>
-        <td>Basic</td>
-    </tr>
-    <tr>
-        <td>Retry-After</td>
-        <td>TBD</td>
-        <td><pre>Retry-After: 120</pre></td>
-        <td>Basic</td>
-    </tr>
-    <tr>
-        <td>Server</td>
-        <td>TBD</td>
-        <td><pre>Server: librest/x.y.z</pre></td>
-        <td>Basic</td>
-    </tr>
-    <tr>
-        <td>Set-Cookie</td>
-        <td>TBD</td>
-        <td><pre>Set-Cookie: id=123</pre></td>
-        <td>Cookies</td>
-    </tr>
-    <tr>
-        <td>WWW-Authenticate</td>
-        <td>TBD</td>
-        <td><pre>WWW-Authenticate: Basic</pre></td>
-        <td>Auth</td>
-    </tr>
-</table>
-@endhtmlonly
+@subpage page_byte_serving
+
+@subpage page_conditional
+
+
+
+@page page_basic_http_support Basic HTTP support
+
+@section sec_basic_common Common
+
+@subsection sub_connection Connection
+
+Determines, what to do with the connection after the request is finished. Two values
+are possible: @c close and @c keep-alive.
+
+In case of @c close the connection will be closed after the response is sent and in case of
+@c keep-alive the connection will be kept until the client closes the connection or a predefined
+time duration elapsed without activity on the connection. This time duration can be configured.
+@todo How it can be configured.
+
+@a Example:
+@code
+Connection: keep-alive
+@endcode
+
+@a Default:
+
+@code
+Connection: close (HTTP/1.0)
+Connection: keep-alive (HTTP/1.1)
+@endcode
+
+@subsection sub_content_length Content-Length
+
+<td>TBD</td>
+<td><pre>Content-Length: 0</pre></td>
+
+@subsection sub_content_md5 Content-MD5
+
+<td>TBD</td>
+<td><pre>Content-MD5: Q2hlY2sgSW50ZWdyaXR5IQ==</pre></td>
+
+@subsection sub_content_type Content-Type
+
+<td>TBD</td>
+<td><pre>Content-Type: text/plain</pre></td>
+
+@subsection sub_content_date Date
+
+<td>TBD</td>
+<td><pre>Date: Wed, 13 May 2014 22:10:48 GMT</pre></td>
+
+@subsection sub_content_pragma Pragma
+
+<td>TBD</td>
+<td><pre>Pragma: no-cache</pre></td>
+
+@section sec_basic_request Request-Specific
+
+@subsection sub_accept Accept
+
+<td>TBD</td>
+<td><pre>Accept: text/plain</pre></td>
+
+@subsection sub_expect Expect
+
+<td>TBD</td>
+<td><pre>Expect: 100-continue</pre></td>
+
+@subsection sub_from From
+
+<td>TBD</td>
+<td><pre>From: user@example.com</pre></td>
+
+@subsection sub_host Host
+
+<td>TBD</td>
+<td><pre>Host: example.com</pre></td>
+
+@subsection sub_referer Referer
+
+<td>TBD</td>
+<td><pre>Referer: http://www.example.com/</pre></td>
+
+@subsection sub_user_agent User-Agent
+
+<td>TBD</td>
+<td><pre>User-Agent: Googlebot/2.1 (+http://www.google.com/bot.html)</pre></td>
+
+@section sec_basic_response Response-Specific
+
+@subsection sub_allow Allow
+
+<td>TBD</td>
+<td><pre>Allow: GET, HEAD, PUT</pre></td>
+
+@subsection sub_content_location Content-Location
+
+<td>TBD</td>
+<td><pre>Content-Location: /example</pre></td>
+
+@subsection sub_etag ETag
+
+<td>TBD</td>
+<td><pre>ETag: "0123456789abcdef"</pre></td>
+
+@subsection sub_location Location
+
+<td>TBD</td>
+<td><pre>Location: http://example.com/example</pre></td>
+
+@subsection sub_retry_after Retry-After
+
+<td>TBD</td>
+<td><pre>Retry-After: 120</pre></td>
+
+@subsection sub_server Server
+
+<td>TBD</td>
+<td><pre>Server: librest/x.y.z</pre></td>
+
+
+
+@page page_encoding Encoding
+
+@section sec_encoding_common Common
+
+@subsection sub_content_encoding Content-Encoding
+
+<td>TBD</td>
+<td><pre>Content-Encoding: gzip</pre></td>
+
+@subsection sub_content_language Content-Language
+
+<td>TBD</td>
+<td><pre>Content-Language: en-US</pre></td>
+
+@section sec_encoding_request Request-Specific
+
+@subsection sub_accept_charset Accept-Charset
+
+<td>TBD</td>
+<td><pre>Accept-Charset: utf-8</pre></td>
+
+@subsection sub_accept_encoding Accept-Encoding
+
+<td>TBD</td>
+<td><pre>Accept-Encoding: gzip</pre></td>
+
+@subsection sub_accept_language Accept-Language
+
+<td>TBD</td>
+<td><pre>Accept-Language: en-US</pre></td>
+
+
+
+@page page_auth Authentification / Authorization
+
+@section sec_auth_request Request-Specific
+
+@subsection sub_authorization Authorization
+
+<td>TBD</td>
+<td><pre>Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==</pre></td>
+
+@section sec_auth_response Response-Specific
+
+@subsection sub_www_authenticate WWW-Authenticate
+
+<td>TBD</td>
+<td><pre>WWW-Authenticate: Basic</pre></td>
+
+
+
+@page page_caching Caching
+
+@section sec_caching_common Common
+
+@subsection sub_cache_control Cache-Control
+
+<td>TBD</td>
+<td><pre>Cache-Control: no-cache</pre></td>
+
+@section sec_caching_response Response-Specific
+
+@subsection sub_expires Expires
+
+<td>TBD</td>
+<td><pre>Expires: Wed, 13 May 2014 22:10:48 GMT</pre></td>
+
+@subsection sub_last_modified Last-Modified
+
+<td>TBD</td>
+<td><pre>Last-Modified: Wed, 13 May 2014 22:10:48 GMT</pre></td>
+
+
+
+@page page_cookies Cookies
+
+@section sec_cookies_request Request-Specific
+
+@subsection sub_cookie Cookie
+
+<td>TBD</td>
+<td><pre>Cookie: id=123</pre></td>
+
+@section sec_cookies_response Response-Specific
+
+@subsection sub_set_cookie Set-Cookie
+
+<td>TBD</td>
+<td><pre>Set-Cookie: id=123</pre></td>
+
+
+
+@page page_byte_serving Byte-Serving
+
+@section sec_byte_serving_request Request-Specific
+
+@subsection sub_range Range
+
+<td>TBD</td>
+<td><pre>Range: bytes=0-2048</pre></td>
+
+@section sec_byte_serving_response Response-Specific
+
+@subsection sub_accept_ranges Accept-Ranges
+
+<td>TBD</td>
+<td><pre>Accept-Ranges: bytes</pre></td>
+
+@subsection sub_content_range Content-Range
+
+<td>TBD</td>
+<td><pre>Content-Range: 0-2048/4096</pre></td>
+
+
+
+@page page_conditional Conditional Requests
+
+@section sec_conditional_request Request-Specific
+
+@subsection sub_if_match If-Match
+
+<td>TBD</td>
+<td><pre>If-Match: "0123456789abcdef"</pre></td>
+
+@subsection sub_if_modified_since If-Modified-Since
+
+<td>TBD</td>
+<td><pre>If-Modified-Since: Wed, 13 May 2014 22:10:48 GMT</pre></td>
+
+@subsection sub_if_none_match If-None-Match
+
+<td>TBD</td>
+<td><pre>If-None-Match: "0123456789abcdef"</pre></td>
+
+@subsection sub_if_range If-Range
+
+<td>TBD</td>
+<td><pre>If-Range: "0123456789abcdef"</pre></td>
+
+@subsection sub_if_unmodified_since If-Unmodified-Since
+
+<td>TBD</td>
+<td><pre>If-Unmodified-Since: Wed, 13 May 2014 22:10:48 GMT</pre></td>
 
 */
