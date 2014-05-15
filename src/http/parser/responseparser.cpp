@@ -20,7 +20,7 @@
 #include <limits>
 #include <map>
 
-#include <http/parser/utility/httpdate.hpp>
+#include <http/parser/utility/date.hpp>
 #include <http/parser/utility/trie.hpp>
 
 #include "responseparser.hpp"

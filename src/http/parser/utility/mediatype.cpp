@@ -20,7 +20,7 @@
 #include <http/parser/utility/charactercompare.hpp>
 #include <http/parser/utility/trie.hpp>
 
-#include "httpmediatype.hpp"
+#include "mediatype.hpp"
 
 namespace rest
 {

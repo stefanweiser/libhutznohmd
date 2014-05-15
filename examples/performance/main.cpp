@@ -21,7 +21,7 @@
 #include <sstream>
 
 #include <http/parser/requestparser.hpp>
-#include <http/parser/utility/httpdate.hpp>
+#include <http/parser/utility/date.hpp>
 #include <http/parser/utility/trie.hpp>
 
 namespace rest

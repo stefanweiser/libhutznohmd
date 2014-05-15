@@ -21,7 +21,7 @@
 #include <http/parser/utility/anonymousintfunction.hpp>
 #include <http/parser/utility/baseparser.hpp>
 #include <http/parser/utility/lexer.hpp>
-#include <http/parser/utility/httpmediatype.hpp>
+#include <http/parser/utility/mediatype.hpp>
 #include <http/parser/utility/pushbackstring.hpp>
 
 #include <rest.hpp>

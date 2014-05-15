@@ -23,7 +23,7 @@
 #define private public
 #define protected public
 
-#include <http/parser/utility/httpmediatype.hpp>
+#include <http/parser/utility/mediatype.hpp>
 
 using namespace testing;
 
