@@ -94,27 +94,32 @@ void request_parser::parse()
 
     result = lexer_.get_non_whitespace();
     {
-        using value_info = trie<rest::http::version>::value_info;
+        using value_type = std::tuple<rest::http::version, connection_type>;
+        using value_info = trie<value_type>::value_info;
         static const std::vector<value_info> types = {{
-                value_info{"http/1.0", rest::http::version::HTTP_1_0},
-                value_info{"http/1.1", rest::http::version::HTTP_1_1}
+                value_info{"http/1.0", value_type{
+                        rest::http::version::HTTP_1_0,
+                        connection_type::CLOSE
+                    }
+                },
+                value_info{"http/1.1", value_type{
+                        rest::http::version::HTTP_1_1,
+                        connection_type::KEEP_ALIVE
+                    }
+                }
             }
         };
 
-        static const trie<rest::http::version> t(types, rest::http::version::HTTP_UNKNOWN);
+        static const trie<value_type> t(types, value_type {
+            rest::http::version::HTTP_UNKNOWN,
+            connection_type::ERROR
+        });
         push_back_string<32> tmp;
-        version_ = t.parse(result, tmp, lexer_);
+        std::tie(version_, connection_) = t.parse(result, tmp, lexer_);
     }
 
-    if (rest::http::version::HTTP_1_0 == version_) {
-        connection_ = connection_type::CLOSE;
-    }
-
-    if (rest::http::version::HTTP_UNKNOWN == version_) {
-        state_ = parser_state::ERROR;
-        return;
-    }
-    if (result != '\n') {
+    if ((rest::http::version::HTTP_UNKNOWN == version_) ||
+        (result != '\n')) {
         state_ = parser_state::ERROR;
         return;
     }
