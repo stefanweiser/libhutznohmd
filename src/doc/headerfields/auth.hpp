@@ -18,20 +18,20 @@
 #error "Do not include this pure documentation file."
 
 /*!
-@page header_fields Header Fields
+@page page_auth Authentification / Authorization
 
-@subpage page_basic_http_support
+@section sec_auth_request Request-Specific
 
-@subpage page_encoding
+@subsection sub_authorization Authorization
 
-@subpage page_auth
+<td>TBD</td>
+<td><pre>Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==</pre></td>
 
-@subpage page_caching
+@section sec_auth_response Response-Specific
 
-@subpage page_cookies
+@subsection sub_www_authenticate WWW-Authenticate
 
-@subpage page_byte_serving
-
-@subpage page_conditional
+<td>TBD</td>
+<td><pre>WWW-Authenticate: Basic</pre></td>
 
 */

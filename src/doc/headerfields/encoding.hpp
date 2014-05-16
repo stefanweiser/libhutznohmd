@@ -18,20 +18,35 @@
 #error "Do not include this pure documentation file."
 
 /*!
-@page header_fields Header Fields
+@page page_encoding Encoding
 
-@subpage page_basic_http_support
+@section sec_encoding_common Common
 
-@subpage page_encoding
+@subsection sub_content_encoding Content-Encoding
 
-@subpage page_auth
+<td>TBD</td>
+<td><pre>Content-Encoding: gzip</pre></td>
 
-@subpage page_caching
+@subsection sub_content_language Content-Language
 
-@subpage page_cookies
+<td>TBD</td>
+<td><pre>Content-Language: en-US</pre></td>
 
-@subpage page_byte_serving
+@section sec_encoding_request Request-Specific
 
-@subpage page_conditional
+@subsection sub_accept_charset Accept-Charset
+
+<td>TBD</td>
+<td><pre>Accept-Charset: utf-8</pre></td>
+
+@subsection sub_accept_encoding Accept-Encoding
+
+<td>TBD</td>
+<td><pre>Accept-Encoding: gzip</pre></td>
+
+@subsection sub_accept_language Accept-Language
+
+<td>TBD</td>
+<td><pre>Accept-Language: en-US</pre></td>
 
 */

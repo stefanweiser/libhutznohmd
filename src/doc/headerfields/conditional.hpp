@@ -18,20 +18,33 @@
 #error "Do not include this pure documentation file."
 
 /*!
-@page header_fields Header Fields
+@page page_conditional Conditional Requests
 
-@subpage page_basic_http_support
+@section sec_conditional_request Request-Specific
 
-@subpage page_encoding
+@subsection sub_if_match If-Match
 
-@subpage page_auth
+<td>TBD</td>
+<td><pre>If-Match: "0123456789abcdef"</pre></td>
 
-@subpage page_caching
+@subsection sub_if_modified_since If-Modified-Since
 
-@subpage page_cookies
+<td>TBD</td>
+<td><pre>If-Modified-Since: Wed, 13 May 2014 22:10:48 GMT</pre></td>
 
-@subpage page_byte_serving
+@subsection sub_if_none_match If-None-Match
 
-@subpage page_conditional
+<td>TBD</td>
+<td><pre>If-None-Match: "0123456789abcdef"</pre></td>
+
+@subsection sub_if_range If-Range
+
+<td>TBD</td>
+<td><pre>If-Range: "0123456789abcdef"</pre></td>
+
+@subsection sub_if_unmodified_since If-Unmodified-Since
+
+<td>TBD</td>
+<td><pre>If-Unmodified-Since: Wed, 13 May 2014 22:10:48 GMT</pre></td>
 
 */

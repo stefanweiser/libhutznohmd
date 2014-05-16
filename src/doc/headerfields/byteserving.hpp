@@ -18,20 +18,25 @@
 #error "Do not include this pure documentation file."
 
 /*!
-@page header_fields Header Fields
+@page page_byte_serving Byte-Serving
 
-@subpage page_basic_http_support
+@section sec_byte_serving_request Request-Specific
 
-@subpage page_encoding
+@subsection sub_range Range
 
-@subpage page_auth
+<td>TBD</td>
+<td><pre>Range: bytes=0-2048</pre></td>
 
-@subpage page_caching
+@section sec_byte_serving_response Response-Specific
 
-@subpage page_cookies
+@subsection sub_accept_ranges Accept-Ranges
 
-@subpage page_byte_serving
+<td>TBD</td>
+<td><pre>Accept-Ranges: bytes</pre></td>
 
-@subpage page_conditional
+@subsection sub_content_range Content-Range
+
+<td>TBD</td>
+<td><pre>Content-Range: 0-2048/4096</pre></td>
 
 */

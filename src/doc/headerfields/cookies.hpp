@@ -18,20 +18,20 @@
 #error "Do not include this pure documentation file."
 
 /*!
-@page header_fields Header Fields
+@page page_cookies Cookies
 
-@subpage page_basic_http_support
+@section sec_cookies_request Request-Specific
 
-@subpage page_encoding
+@subsection sub_cookie Cookie
 
-@subpage page_auth
+<td>TBD</td>
+<td><pre>Cookie: id=123</pre></td>
 
-@subpage page_caching
+@section sec_cookies_response Response-Specific
 
-@subpage page_cookies
+@subsection sub_set_cookie Set-Cookie
 
-@subpage page_byte_serving
-
-@subpage page_conditional
+<td>TBD</td>
+<td><pre>Set-Cookie: id=123</pre></td>
 
 */

@@ -18,20 +18,25 @@
 #error "Do not include this pure documentation file."
 
 /*!
-@page header_fields Header Fields
+@page page_caching Caching
 
-@subpage page_basic_http_support
+@section sec_caching_common Common
 
-@subpage page_encoding
+@subsection sub_cache_control Cache-Control
 
-@subpage page_auth
+<td>TBD</td>
+<td><pre>Cache-Control: no-cache</pre></td>
 
-@subpage page_caching
+@section sec_caching_response Response-Specific
 
-@subpage page_cookies
+@subsection sub_expires Expires
 
-@subpage page_byte_serving
+<td>TBD</td>
+<td><pre>Expires: Wed, 13 May 2014 22:10:48 GMT</pre></td>
 
-@subpage page_conditional
+@subsection sub_last_modified Last-Modified
+
+<td>TBD</td>
+<td><pre>Last-Modified: Wed, 13 May 2014 22:10:48 GMT</pre></td>
 
 */
