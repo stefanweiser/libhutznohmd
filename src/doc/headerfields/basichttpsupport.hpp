@@ -39,15 +39,33 @@ Connection: keep-alive
 
 @a Default:
 
+till HTTP/1.0:
 @code
-Connection: close (HTTP/1.0)
-Connection: keep-alive (HTTP/1.1)
+Connection: close
+@endcode
+
+since HTTP/1.1:
+@code
+Connection: keep-alive
 @endcode
 
 @subsection sub_content_length Content-Length
 
-<td>TBD</td>
-<td><pre>Content-Length: 0</pre></td>
+The header field of the @c Content-Length must be added by the client in requests, if the request
+carries any payload data. The server will add this header field, if the payload data of the
+response is not empty. It must then contain the size of the payload in bytes. Thus it must be an
+unsinged integer. The size is limited to \f$2^31-1\f$. In case of an overflow the request gets
+rejected.
+
+@a Example:
+@code
+Content-Length: 123
+@endcode
+
+@a Default:
+@code
+Content-Length: 0
+@endcode
 
 @subsection sub_content_md5 Content-MD5
 

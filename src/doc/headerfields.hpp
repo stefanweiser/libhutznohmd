@@ -20,18 +20,21 @@
 /*!
 @page header_fields Header Fields
 
-@subpage page_basic_http_support
+@section sec_header_fields_how How to read the header fields:
 
-@subpage page_encoding
+Every header field documentation is splitted into three parts:
+- @a Description: What and how does it influence the system? What can you expect? Informations on
+the content.
+- @a Example: A common example on how to use it.
+- @a Default: Which value supposes the server, if the header field is missing.
 
-@subpage page_auth
-
-@subpage page_caching
-
-@subpage page_cookies
-
-@subpage page_byte_serving
-
-@subpage page_conditional
+@section sec_header_fields_categories Categories:
+-# @subpage page_basic_http_support
+-# @subpage page_encoding
+-# @subpage page_auth
+-# @subpage page_caching
+-# @subpage page_cookies
+-# @subpage page_byte_serving
+-# @subpage page_conditional
 
 */
