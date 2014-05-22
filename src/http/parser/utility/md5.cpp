@@ -23,6 +23,9 @@ namespace rest
 namespace http
 {
 
+namespace
+{
+
 static constexpr size_t block_size = 64;
 
 inline uint32_t rotate_left(const uint32_t & x, const uint8_t bits)
@@ -99,6 +102,10 @@ inline uint32_t set4(const uint32_t & a, const uint32_t & b, const uint32_t & c,
     return rotate_left(a + i(b, c, d) + x[k] + t[j], s) + b;
 }
 
+//! @brief Processes one block.
+//! @param The data block to process.
+//! @param The current digest result.
+//! @warning Calling this function makes only sense inside of the md5 algorithm.
 void process(const uint8_t data[block_size], std::array<uint32_t, 4> & digest)
 {
     uint32_t a = digest[0];
@@ -178,6 +185,8 @@ void process(const uint8_t data[block_size], std::array<uint32_t, 4> & digest)
     digest[2] += c;
     digest[3] += d;
 }
+
+} // namespace
 
 std::array<uint8_t, 16> calculate_md5(const std::vector<uint8_t> & data)
 {
