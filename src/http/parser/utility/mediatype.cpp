@@ -153,7 +153,6 @@ bool media_type::parse_parameter(int32_t & character)
     }
     character = lexer_.get();
     parse_word(character, value, &do_nothing, &is_valid_token_character, lexer_);
-    character = lexer_.get();
     parameters_[key.c_str()] = value.c_str();
     return true;
 }
