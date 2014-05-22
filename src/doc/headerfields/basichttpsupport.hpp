@@ -74,7 +74,7 @@ content. If the header field is missing, the content is not verified with MD5. T
 default value.
 
 @note This is no security feature, because of 2 reasons:
--# MD5 could be cracked within reasonable time by recent hardware.
+-# Collisions for MD5 could be found within reasonable time by recent hardware.
 -# An attacker that is able to modify the header field or the content is everytime also able to
 modify both.
 
