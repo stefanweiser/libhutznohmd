@@ -155,12 +155,12 @@ bool base_parser::parse_header(int32_t & result)
         header_key_.push_back(std::get<0>(types[index]));
     }
 
-    parse_word(result, header_key_, &do_nothing, &is_valid_token_character, lexer_);
+    parse_word(result, header_key_, &is_valid_token_character, lexer_);
     if (result != ':') {
         return false;
     }
     result = lexer_.get();
-    parse_word(result, header_value_, &do_nothing, &is_valid_header_value_character,
+    parse_word(result, header_value_, &is_valid_header_value_character,
                lexer_);
     if (result != '\n') {
         return false;

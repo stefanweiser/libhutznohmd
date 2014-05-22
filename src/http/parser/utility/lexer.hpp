@@ -47,18 +47,16 @@ private:
     mutable char last_char_;
 };
 
-//! Parses a word utilizing a transformations functor and stopping if the continue condition gets
-//! wrong.
-template<size_t size, typename transformation_function, typename continue_function>
+//! Parses a word stopping if the continue condition gets wrong.
+template<size_t size, typename continue_function>
 void parse_word(int32_t & character,
                 push_back_string<size> & result,
-                const transformation_function & transformation_functor,
                 const continue_function & continue_condition_functor,
                 const lexer & l)
 {
     while ((character >= 0) &&
            (true == continue_condition_functor(static_cast<char>(character)))) {
-        result.push_back(transformation_functor(static_cast<char>(character)));
+        result.push_back(static_cast<char>(character));
         character = l.get();
     }
 }

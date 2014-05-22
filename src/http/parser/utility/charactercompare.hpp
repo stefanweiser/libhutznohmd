@@ -38,12 +38,6 @@ static char UNUSED to_lower(const char c)
     return c;
 }
 
-//! Does not convert the character.
-static char UNUSED do_nothing(const char c)
-{
-    return c;
-}
-
 //! Returns true, if the given character is a valid character for an URL.
 static bool UNUSED is_valid_url_character(uint8_t c)
 {

@@ -111,7 +111,7 @@ void media_type::parse_type(int32_t & character)
     }
 
     if (media_type_type::CUSTOM == type_) {
-        parse_word(character, custom_type_, &do_nothing, &is_valid_token_character, lexer_);
+        parse_word(character, custom_type_, &is_valid_token_character, lexer_);
     }
 }
 
@@ -136,7 +136,7 @@ void media_type::parse_subtype(int32_t & character)
     }
 
     if (media_type_subtype::CUSTOM == subtype_) {
-        parse_word(character, custom_subtype_, &do_nothing, &is_valid_token_character, lexer_);
+        parse_word(character, custom_subtype_, &is_valid_token_character, lexer_);
     }
 }
 
@@ -147,7 +147,7 @@ bool media_type::parse_parameter(int32_t & character)
 
     character = lexer_.get_non_whitespace();
 
-    parse_word(character, key, &do_nothing, &is_valid_token_character, lexer_);
+    parse_word(character, key, &is_valid_token_character, lexer_);
     if ('=' != character) {
         return false;
     }
@@ -157,7 +157,7 @@ bool media_type::parse_parameter(int32_t & character)
             return false;
         }
     } else {
-        parse_word(character, value, &do_nothing, &is_valid_token_character, lexer_);
+        parse_word(character, value, &is_valid_token_character, lexer_);
     }
     parameters_[key.c_str()] = value.c_str();
     return true;
