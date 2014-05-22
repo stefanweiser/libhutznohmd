@@ -85,13 +85,29 @@ Content-MD5: Q2hlY2sgSW50ZWdyaXR5IQ==
 
 @subsection sub_content_type Content-Type
 
-<td>TBD</td>
-<td><pre>Content-Type: text/plain</pre></td>
+A content type header defines how the application should interpret the content. It consists of one
+MIME type.
+
+@a Example:
+@code
+Content-Type: application/xml
+@endcode
+
+@a Default:
+@code
+Content-Type: text/plain
+@endcode
 
 @subsection sub_content_date Date
 
-<td>TBD</td>
-<td><pre>Date: Wed, 13 May 2014 22:10:48 GMT</pre></td>
+This header contains the timestamp, when the message was generated.
+
+@todo Explain, when the date is used and how it can be configured.
+
+@a Example:
+@code
+Date: Wed, 13 May 2014 22:10:48 GMT
+@endcode
 
 @subsection sub_content_pragma Pragma
 
