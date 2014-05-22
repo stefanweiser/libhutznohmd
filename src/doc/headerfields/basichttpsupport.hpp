@@ -69,8 +69,19 @@ Content-Length: 0
 
 @subsection sub_content_md5 Content-MD5
 
-<td>TBD</td>
-<td><pre>Content-MD5: Q2hlY2sgSW50ZWdyaXR5IQ==</pre></td>
+This header field is optional and carries a MD5 hash sum. This hash sum is used to verify the
+content. If the header field is missing, the content is not verified with MD5. Thus there is no
+default value.
+
+@note This is no security feature, because of 2 reasons:
+-# MD5 could be cracked within reasonable time by recent hardware.
+-# An attacker that is able to modify the header field or the content is everytime also able to
+modify both.
+
+@a Example:
+@code
+Content-MD5: Q2hlY2sgSW50ZWdyaXR5IQ==
+@endcode
 
 @subsection sub_content_type Content-Type
 
