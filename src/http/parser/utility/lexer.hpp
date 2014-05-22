@@ -63,6 +63,40 @@ void parse_word(int32_t & character,
     }
 }
 
+//! Parses a quoted string stopping if an invalid character is found or the end is found.
+//! @return True if the string was successfully parsed and false if an error occurred.
+template<size_t size>
+bool parse_quoted_string(int32_t & character,
+                         push_back_string<size> & result,
+                         const lexer & l)
+{
+    // First character must be a quote character.
+    if (character != '"') {
+        return false;
+    }
+
+    // Go on to the first character.
+    character = l.get();
+
+    // Fill the result string till a valid end is detected. This could be
+    // 1. the end of the stream or
+    // 2. an invalid character.
+    while ((character >= 0) &&
+           (true == is_valid_quoted_string_character(static_cast<uint8_t>(character)))) {
+        result.push_back(static_cast<char>(character));
+        character = l.get();
+    }
+
+    // Last character must be a quote character.
+    if (character != '"') {
+        return false;
+    }
+
+    // Go on one character.
+    character = l.get();
+    return true;
+}
+
 } // namespace http
 
 } // namespace rest

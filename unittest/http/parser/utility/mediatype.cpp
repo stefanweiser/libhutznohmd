@@ -42,7 +42,7 @@ int32_t get_char(void * handle)
 {
     string_index_pair * p = static_cast<string_index_pair *>(handle);
     if (p->second < p->first.size()) {
-        return p->first[p->second++];
+        return static_cast<uint8_t>(p->first[p->second++]);
     }
     return -1;
 }
@@ -51,7 +51,7 @@ int32_t peek_char(void * handle)
 {
     string_index_pair * p = static_cast<string_index_pair *>(handle);
     if (p->second < p->first.size()) {
-        return p->first[p->second];
+        return static_cast<uint8_t>(p->first[p->second]);
     }
     return -1;
 }
@@ -164,12 +164,13 @@ TEST(http_media_type, model_wildcard)
 
 TEST(http_media_type, multipart_wildcard)
 {
-    fixture f("multipart/*");
+    fixture f("multipart/*;q=\"\xFF\xFE\xFD\"");
     const std::unique_ptr<media_type> m = f.parse();
     EXPECT_EQ(m->type(), media_type_type::MULTIPART);
     EXPECT_EQ(m->subtype(), media_type_subtype::WILDCARD);
     EXPECT_EQ(m->custom_type(), std::string(""));
     EXPECT_EQ(m->custom_subtype(), std::string(""));
+    EXPECT_EQ(m->parameter("q"), std::string("\xFF\xFE\xFD"));
 }
 
 TEST(http_media_type, text_wildcard)

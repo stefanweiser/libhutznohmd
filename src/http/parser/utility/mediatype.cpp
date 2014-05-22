@@ -152,7 +152,13 @@ bool media_type::parse_parameter(int32_t & character)
         return false;
     }
     character = lexer_.get();
-    parse_word(character, value, &do_nothing, &is_valid_token_character, lexer_);
+    if ('"' == character) {
+        if (false == parse_quoted_string(character, value, lexer_)) {
+            return false;
+        }
+    } else {
+        parse_word(character, value, &do_nothing, &is_valid_token_character, lexer_);
+    }
     parameters_[key.c_str()] = value.c_str();
     return true;
 }
