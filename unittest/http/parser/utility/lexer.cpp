@@ -146,6 +146,48 @@ TEST(lexer, wrong_unsigned_integer)
     EXPECT_EQ(l.get_unsigned_integer(character), -1);
 }
 
+TEST(lexer, word)
+{
+    std::stringstream s("xyz ");
+    lexer l(anonymous_int_function(&get_char, &s), anonymous_int_function(&peek_char, &s));
+    int32_t character = l.get();
+    push_back_string<4> data;
+    parse_word(character, data, [](const char & c) {
+        return c != ' ';
+    }, l);
+    EXPECT_EQ(std::string(data.c_str()), std::string("xyz"));
+    EXPECT_EQ(character, ' ');
+}
+
+TEST(lexer, quoted_string)
+{
+    std::stringstream s("\"xyz\"-");
+    lexer l(anonymous_int_function(&get_char, &s), anonymous_int_function(&peek_char, &s));
+    int32_t character = l.get();
+    push_back_string<4> data;
+    EXPECT_TRUE(parse_quoted_string(character, data, l));
+    EXPECT_EQ(std::string(data.c_str()), std::string("xyz"));
+    EXPECT_EQ(character, '-');
+}
+
+TEST(lexer, comment)
+{
+    std::stringstream s("()-");
+    lexer l(anonymous_int_function(&get_char, &s), anonymous_int_function(&peek_char, &s));
+    int32_t character = l.get();
+    EXPECT_TRUE(parse_comment(character, l));
+    EXPECT_EQ(character, '-');
+}
+
+TEST(lexer, nested_comments)
+{
+    std::stringstream s("(a()()b)-");
+    lexer l(anonymous_int_function(&get_char, &s), anonymous_int_function(&peek_char, &s));
+    int32_t character = l.get();
+    EXPECT_TRUE(parse_comment(character, l));
+    EXPECT_EQ(character, '-');
+}
+
 } // namespace http
 
 } // namespace rest
