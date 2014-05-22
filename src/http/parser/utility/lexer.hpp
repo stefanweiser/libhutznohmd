@@ -97,9 +97,7 @@ bool parse_quoted_string(int32_t & character,
 
 //! Parses a comment stopping if an invalid character is found or the end is found.
 //! @return True if the comment was successfully parsed and false if an error occurred.
-template<size_t size>
-bool parse_comment(int32_t & character,
-                   const lexer & l)
+static bool UNUSED parse_comment(int32_t & character, const lexer & l)
 {
     // First character must be an opening parenthesis.
     if (character != '(') {
@@ -112,27 +110,23 @@ bool parse_comment(int32_t & character,
     // Comments support nesting, so we have to check for that.
     size_t nesting_depth = 1;
 
-    // Eat up the characters till a valid end is detected. This could be
-    // 1. the end of the stream or
-    // 2. the closing parenthesis.
-    while ((character >= 0) &&
-           ((')' == character) && (1 == nesting_depth))) {
+    // Eat up the characters till a valid end is detected. This could only be the end of the
+    // stream.
+    while (character >= 0) {
         if ('(' == character) {
             nesting_depth++;
         } else if (')' == character) {
             nesting_depth--;
+            if (0 == nesting_depth) {
+                character = l.get();
+                return true;
+            }
         }
         character = l.get();
     }
 
-    // Last character must be a closing parenthesis.
-    if (character != ')') {
-        return false;
-    }
-
-    // Go on one character.
-    character = l.get();
-    return true;
+    // Is only reached in case of the end of the stream.
+    return false;
 }
 
 } // namespace http
