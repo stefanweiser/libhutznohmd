@@ -40,7 +40,7 @@ int32_t get_char(void * handle)
 {
     string_index_pair * p = static_cast<string_index_pair *>(handle);
     if (p->second < p->first.size()) {
-        return p->first[p->second++];
+        return static_cast<uint8_t>(p->first[p->second++]);
     }
     return -1;
 }
@@ -49,7 +49,7 @@ int32_t peek_char(void * handle)
 {
     string_index_pair * p = static_cast<string_index_pair *>(handle);
     if (p->second < p->first.size()) {
-        return p->first[p->second];
+        return static_cast<uint8_t>(p->first[p->second]);
     }
     return -1;
 }

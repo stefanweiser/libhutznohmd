@@ -35,6 +35,13 @@ namespace http
 class response_parser: public base_parser
 {
 public:
+    //! Constructs the response parser.
+    //! @param get_functor Returns an integer with the current character in the input stream and
+    //!                    sets the pointer of the current character one byte further. This value
+    //!                    must be in [0..255] for valid and less than 0 for invalid character.
+    //! @param peek_functor Returns an integer with the current character in the input stream.
+    //!                     This value must be in [0..255] for valid and less than 0 for invalid
+    //!                     character.
     explicit response_parser(const anonymous_int_function & get_functor,
                              const anonymous_int_function & peek_functor);
     void parse();

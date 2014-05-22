@@ -112,7 +112,7 @@ int32_t request::get()
         }
     }
 
-    return buffer_[index_++];
+    return static_cast<uint8_t>(buffer_[index_++]);
 }
 
 int32_t request::peek()
@@ -123,7 +123,7 @@ int32_t request::peek()
         }
     }
 
-    return buffer_[index_];
+    return static_cast<uint8_t>(buffer_[index_]);
 }
 
 } // namespace http
