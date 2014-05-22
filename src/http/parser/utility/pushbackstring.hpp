@@ -28,10 +28,10 @@ namespace http
 {
 
 //! Provides a tradeoff between fast and static but limited string types and slower and dynamic
-//! string types. Its size at begin is predefined by a template argument. The user is only able
-//! to push one character at the back of the string or clear the string at all to manipulate the
-//! string.
-template<size_t size>
+//! string types. Its maximum_size at begin is predefined by a template argument. The user is only
+//! able to push one character at the back of the string or clear the string at all to manipulate
+//! the string.
+template<size_t maximum_size>
 class push_back_string
 {
 public:
@@ -51,11 +51,17 @@ public:
     //! it for user defined data. This may cause a buffer overflow.
     void push_back(const char * s);
 
+    //! Returns the character at a given index.
+    char & operator[](const size_t & index);
+
     //! Returns the current string. Before returning it, the data will be terminated by '\0'.
     const char * c_str() const;
 
     //! Returns true if the current length is 0.
     bool empty() const;
+
+    //! Returns the current size of the string.
+    size_t size() const;
 
     //! Clears the string. Frees the dynamically allocated memory if needed.
     void clear();
@@ -66,12 +72,12 @@ public:
 private:
     size_t current_length_;
     size_t dynamic_size_;
-    mutable char static_buffer_[size + 1];
+    mutable char static_buffer_[maximum_size + 1];
     mutable char * dynamic_buffer_;
 };
 
-template<size_t size>
-push_back_string<size>::push_back_string()
+template<size_t maximum_size>
+push_back_string<maximum_size>::push_back_string()
     : current_length_(0)
     , dynamic_size_(0)
     , static_buffer_()
@@ -79,27 +85,27 @@ push_back_string<size>::push_back_string()
 {
 }
 
-template<size_t size>
-push_back_string<size>::~push_back_string()
+template<size_t maximum_size>
+push_back_string<maximum_size>::~push_back_string()
 {
     free(dynamic_buffer_);
 }
 
-template<size_t size>
-void push_back_string<size>::push_back(const char c)
+template<size_t maximum_size>
+void push_back_string<maximum_size>::push_back(const char c)
 {
     // It makes some difference to push it onto the static or the dynamically allocated buffer.
-    if (current_length_ < size) {
+    if (current_length_ < maximum_size) {
         static_buffer_[current_length_++] = c;
     } else {
         // The string is too long for static memory.
         if ((current_length_ + 1) >= dynamic_size_) {
             if (nullptr == dynamic_buffer_) {
-                dynamic_size_ = (2 * size) + 1;
+                dynamic_size_ = (2 * maximum_size) + 1;
                 dynamic_buffer_ = static_cast<char *>(malloc(dynamic_size_));
-                memcpy(dynamic_buffer_, static_buffer_, size);
+                memcpy(dynamic_buffer_, static_buffer_, maximum_size);
             } else {
-                dynamic_size_ += size;
+                dynamic_size_ += maximum_size;
 
                 // Don't forget to free the buffer block that was used before reallocation in case
                 // of a failed reallocation.
@@ -114,8 +120,8 @@ void push_back_string<size>::push_back(const char c)
     }
 }
 
-template<size_t size>
-void push_back_string<size>::push_back(const char * s)
+template<size_t maximum_size>
+void push_back_string<maximum_size>::push_back(const char * s)
 {
     while ((*s) != '\0') {
         push_back(*s);
@@ -123,8 +129,18 @@ void push_back_string<size>::push_back(const char * s)
     }
 }
 
-template<size_t size>
-const char * push_back_string<size>::c_str() const
+template<size_t maximum_size>
+char & push_back_string<maximum_size>::operator[](const size_t & index)
+{
+    if (nullptr == dynamic_buffer_) {
+        return static_buffer_[index];
+    } else {
+        return dynamic_buffer_[index];
+    }
+}
+
+template<size_t maximum_size>
+const char * push_back_string<maximum_size>::c_str() const
 {
     if (nullptr == dynamic_buffer_) {
         // Terminate the data before returning it.
@@ -137,14 +153,20 @@ const char * push_back_string<size>::c_str() const
     }
 }
 
-template<size_t size>
-bool push_back_string<size>::empty() const
+template<size_t maximum_size>
+bool push_back_string<maximum_size>::empty() const
 {
     return (current_length_ == 0);
 }
 
-template<size_t size>
-void push_back_string<size>::clear()
+template<size_t maximum_size>
+size_t push_back_string<maximum_size>::size() const
+{
+    return current_length_;
+}
+
+template<size_t maximum_size>
+void push_back_string<maximum_size>::clear()
 {
     if (nullptr != dynamic_buffer_) {
         // We need to free the buffer, because we will work with the static data again.
