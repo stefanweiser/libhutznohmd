@@ -56,6 +56,7 @@ TEST(charactercompare, to_lower)
         }
     };
 
+    // Check
     for (size_t i = 0; i < validity_map.size(); i++) {
         EXPECT_EQ(static_cast<uint8_t>(to_lower(static_cast<char>(i))), validity_map[i]);
     }
@@ -98,6 +99,7 @@ TEST(charactercompare, url_characters)
     validity_map['['] = true;
     validity_map[']'] = true;
 
+    // Check
     for (size_t i = 0; i < validity_map.size(); i++) {
         EXPECT_EQ(is_valid_url_character(static_cast<uint8_t>(i)), validity_map[i]);
     }
@@ -110,6 +112,7 @@ TEST(charactercompare, token_characters)
     for (size_t i = 0; i < validity_map.size(); i++) {
         validity_map[i] = (i < 0x80) ? true : false;
     }
+
     // But no CTLs
     for (size_t i = 0; i <= 31; i++) {
         validity_map[i] = false;
@@ -124,6 +127,7 @@ TEST(charactercompare, token_characters)
         validity_map[c] = false;
     }
 
+    // Check
     for (size_t i = 0; i < validity_map.size(); i++) {
         EXPECT_EQ(is_valid_token_character(static_cast<uint8_t>(i)), validity_map[i]);
     }
@@ -132,18 +136,37 @@ TEST(charactercompare, token_characters)
 TEST(charactercompare, header_value_characters)
 {
     std::array<bool, 256> validity_map;
-    // Any CHAR
-    for (size_t i = 0; i < validity_map.size(); i++) {
-        validity_map[i] = true;
-    }
+
+    // Any OCTET
+    std::fill(validity_map.begin(), validity_map.end(), true);
+
     // Instead of all CTLs like in the RFC, we are more tolerant and forbid only the line ending
     // characters. We will not include LWS here like the RFC, because this is already filtered out
     // by the lexer.
     validity_map['\r'] = false;
     validity_map['\n'] = false;
 
+    // Check
     for (size_t i = 0; i < validity_map.size(); i++) {
         EXPECT_EQ(is_valid_header_value_character(static_cast<uint8_t>(i)), validity_map[i]);
+    }
+}
+
+TEST(charactercompare, quoted_string_characters)
+{
+    std::array<bool, 256> validity_map;
+    // Any OCTET, but no CTLs
+    for (size_t i = 0; i < validity_map.size(); i++) {
+        validity_map[i] = (i < 0x20) ? false : true;
+    }
+
+    // But no DEL and no quote
+    validity_map[0x7F] = false;
+    validity_map['"'] = false;
+
+    // Check
+    for (size_t i = 0; i < validity_map.size(); i++) {
+        EXPECT_EQ(is_valid_quoted_string_character(static_cast<uint8_t>(i)), validity_map[i]);
     }
 }
 
