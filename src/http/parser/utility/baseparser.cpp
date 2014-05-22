@@ -155,7 +155,7 @@ bool base_parser::parse_header(int32_t & result)
         header_key_.push_back(std::get<0>(types[index]));
     }
 
-    parse_word(result, header_key_, &to_lower, &is_valid_token_character, lexer_);
+    parse_word(result, header_key_, &do_nothing, &is_valid_token_character, lexer_);
     if (result != ':') {
         return false;
     }
@@ -164,6 +164,10 @@ bool base_parser::parse_header(int32_t & result)
                lexer_);
     if (result != '\n') {
         return false;
+    }
+
+    for (size_t i = 0; i < header_key_.size(); i++) {
+        header_key_[i] = to_lower(header_key_[i]);
     }
 
     auto it = headers_.find(header_key_.c_str());
