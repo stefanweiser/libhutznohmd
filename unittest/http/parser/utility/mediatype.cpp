@@ -205,12 +205,14 @@ TEST(http_media_type, text_plain_parameter)
 
 TEST(http_media_type, applucation_wildcard)
 {
-    fixture f("applucation/*");
+    fixture f("applucation/*;p=0.1;q=0.2");
     const std::unique_ptr<media_type> m = f.parse();
     EXPECT_EQ(m->type(), media_type_type::CUSTOM);
     EXPECT_EQ(m->subtype(), media_type_subtype::WILDCARD);
     EXPECT_EQ(m->custom_type(), std::string("applucation"));
     EXPECT_EQ(m->custom_subtype(), std::string(""));
+    EXPECT_EQ(m->parameter("p"), std::string("0.1"));
+    EXPECT_EQ(m->parameter("q"), std::string("0.2"));
 }
 
 TEST(http_media_type, audo_wildcard)
