@@ -103,8 +103,8 @@ inline uint32_t set4(const uint32_t & a, const uint32_t & b, const uint32_t & c,
 }
 
 //! @brief Processes one block.
-//! @param The data block to process.
-//! @param The current digest result.
+//! @param data The data block to process.
+//! @param digest The current digest result.
 //! @warning Calling this function makes only sense inside of the md5 algorithm.
 void process(const uint8_t data[block_size], std::array<uint32_t, 4> & digest)
 {
