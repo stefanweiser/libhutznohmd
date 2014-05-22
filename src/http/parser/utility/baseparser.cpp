@@ -87,7 +87,8 @@ bool base_parser::parse_connection(int32_t & result)
     using value_info = trie<connection_type>::value_info;
     static const std::vector<value_info> types = {{
             value_info{"close", connection_type::CLOSE},
-            value_info{"keep-alive", connection_type::KEEP_ALIVE}
+            value_info{"keep-alive", connection_type::KEEP_ALIVE},
+            value_info{"persist", connection_type::KEEP_ALIVE}
         }
     };
 
