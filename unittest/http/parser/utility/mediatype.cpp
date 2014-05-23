@@ -60,7 +60,7 @@ class fixture
 {
 public:
     explicit fixture(const std::string & str);
-    std::unique_ptr<media_type> parse();
+    std::unique_ptr<media_type> parse(const bool expect_sucess = true);
 
     std::string str_;
 };
@@ -69,14 +69,14 @@ fixture::fixture(const std::string & str)
     : str_(str)
 {}
 
-std::unique_ptr<media_type> fixture::parse()
+std::unique_ptr<media_type> fixture::parse(const bool expect_sucess)
 {
     string_index_pair p(str_, 0);
     lexer l(anonymous_int_function(&get_char, &p),
             anonymous_int_function(&peek_char, &p));
     std::unique_ptr<media_type> m = std::unique_ptr<media_type>(new media_type(l));
     int32_t result = l.get();
-    m->parse(result);
+    EXPECT_EQ(expect_sucess, m->parse(result));
     return m;
 }
 
@@ -112,14 +112,14 @@ TEST(http_media_type, application_wildcard)
     EXPECT_EQ(m->custom_subtype(), std::string(""));
 }
 
-TEST(http_media_type, audio_wildcard)
+TEST(http_media_type, audio_bla)
 {
-    fixture f("audio/*");
+    fixture f("audio/*bla");
     const std::unique_ptr<media_type> m = f.parse();
     EXPECT_EQ(m->type(), media_type_type::AUDIO);
-    EXPECT_EQ(m->subtype(), media_type_subtype::WILDCARD);
+    EXPECT_EQ(m->subtype(), media_type_subtype::CUSTOM);
     EXPECT_EQ(m->custom_type(), std::string(""));
-    EXPECT_EQ(m->custom_subtype(), std::string(""));
+    EXPECT_EQ(m->custom_subtype(), std::string("*bla"));
 }
 
 TEST(http_media_type, example_wildcard)
@@ -201,6 +201,7 @@ TEST(http_media_type, text_plain_parameter)
     EXPECT_EQ(m->subtype(), media_type_subtype::PLAIN);
     EXPECT_EQ(m->custom_type(), std::string(""));
     EXPECT_EQ(m->custom_subtype(), std::string(""));
+    EXPECT_EQ(m->parameter("p"), std::string(""));
     EXPECT_EQ(m->parameter("q"), std::string("0.1"));
 }
 
@@ -284,6 +285,38 @@ TEST(http_media_type, starm_wildcard)
     EXPECT_EQ(m->subtype(), media_type_subtype::WILDCARD);
     EXPECT_EQ(m->custom_type(), std::string("*m"));
     EXPECT_EQ(m->custom_subtype(), std::string(""));
+}
+
+TEST(http_media_type, erroneous_slash)
+{
+    fixture f("audio,*");
+    const std::unique_ptr<media_type> m = f.parse(false);
+    EXPECT_EQ(m->type(), media_type_type::AUDIO);
+    EXPECT_EQ(m->subtype(), media_type_subtype::CUSTOM);
+    EXPECT_EQ(m->custom_type(), std::string(""));
+    EXPECT_EQ(m->custom_subtype(), std::string(""));
+}
+
+TEST(http_media_type, erroneous_parameter_equal_sign)
+{
+    fixture f("audio/*;q,0.1");
+    const std::unique_ptr<media_type> m = f.parse(false);
+    EXPECT_EQ(m->type(), media_type_type::AUDIO);
+    EXPECT_EQ(m->subtype(), media_type_subtype::WILDCARD);
+    EXPECT_EQ(m->custom_type(), std::string(""));
+    EXPECT_EQ(m->custom_subtype(), std::string(""));
+    EXPECT_EQ(m->parameter("q"), std::string(""));
+}
+
+TEST(http_media_type, erroneous_parameter_quoted_string)
+{
+    fixture f("audio/*;q=\"0.1\n");
+    const std::unique_ptr<media_type> m = f.parse(false);
+    EXPECT_EQ(m->type(), media_type_type::AUDIO);
+    EXPECT_EQ(m->subtype(), media_type_subtype::WILDCARD);
+    EXPECT_EQ(m->custom_type(), std::string(""));
+    EXPECT_EQ(m->custom_subtype(), std::string(""));
+    EXPECT_EQ(m->parameter("q"), std::string(""));
 }
 
 } // namespace http
