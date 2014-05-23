@@ -100,7 +100,7 @@ TEST(trie_parse, basic_function)
 
 TEST(trie_parse, basic_function2)
 {
-    fixture f("abc");
+    fixture f("aef");
     push_back_string<4> fail_safe_result;
     std::vector<trie<size_t>::value_info> values = {{
             trie<size_t>::value_info{"abc", 1},
@@ -108,7 +108,7 @@ TEST(trie_parse, basic_function2)
             trie<size_t>::value_info{"aef", 3}
         }
     };
-    EXPECT_EQ(f.parse(values, fail_safe_result), 1);
+    EXPECT_EQ(f.parse(values, fail_safe_result), 3);
     EXPECT_EQ(fail_safe_result.c_str(), std::string(""));
 }
 
@@ -117,7 +117,7 @@ TEST(trie_parse, failed)
     fixture f("aef");
     push_back_string<4> fail_safe_result;
     std::vector<trie<size_t>::value_info> values = {{
-            trie<size_t>::value_info{"abc", 1},
+            trie<size_t>::value_info{"aBc", 1},
             trie<size_t>::value_info{"def", 2},
             trie<size_t>::value_info{"aef", 3}
         }

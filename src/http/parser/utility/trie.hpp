@@ -138,12 +138,12 @@ trie<value_type>::trie(const std::vector<value_info> & values,
             // The trie parsing is case insensitive.
             if (true == check_range < uint8_t, 'a', 'z' > (c)) {
                 children_[c & 0xDF] = std::unique_ptr<trie>(new trie(next_values,
-                                      name_ + static_cast<char>(c),
+                                      name_ + static_cast<char>(c & 0xDF),
                                       index + 1,
                                       default_value));
             } else if (true == check_range < uint8_t, 'A', 'Z' > (c)) {
                 children_[c | 0x20] = std::unique_ptr<trie>(new trie(next_values,
-                                      name_ + static_cast<char>(c),
+                                      name_ + static_cast<char>(c | 0x20),
                                       index + 1,
                                       default_value));
             }
