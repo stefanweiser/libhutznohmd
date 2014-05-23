@@ -120,6 +120,13 @@ TEST(http_date, rfc1123_erroneous_second)
     EXPECT_EQ(timestamp, -1);
 }
 
+TEST(http_date, rfc1123_erroneous_gmt)
+{
+    fixture f("Sun, 06 Nov 1994 08:49:37 TNT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, -1);
+}
+
 TEST(http_date, rfc850_sunday)
 {
     fixture f("Sunday, 14-Apr-85 00:00:00 GMT");
@@ -207,6 +214,48 @@ TEST(http_date, rfc850_erroneous_noday)
 TEST(http_date, rfc850_erroneous_monday)
 {
     fixture f("Monday 06-Nov-94 08:49:37 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, -1);
+}
+
+TEST(http_date, rfc850_erroneous_day)
+{
+    fixture f("Monday, 00-Nov-94 08:49:37 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, -1);
+}
+
+TEST(http_date, rfc850_erroneous_leap_day)
+{
+    fixture f("Monday, 30-Feb-96 08:49:37 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, -1);
+}
+
+TEST(http_date, rfc850_erroneous_first_hyphen)
+{
+    fixture f("Sunday, 06_Nov-94 08:49:37 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, -1);
+}
+
+TEST(http_date, rfc850_erroneous_second_hyphen)
+{
+    fixture f("Sunday, 06-Nov_94 08:49:37 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, -1);
+}
+
+TEST(http_date, rfc850_erroneous_year)
+{
+    fixture f("Sunday, 06-Nov-100 08:49:37 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(timestamp, -1);
+}
+
+TEST(http_date, rfc850_erroneous_gmt)
+{
+    fixture f("Sunday, 06-Nov-94 08:49:37 TNT");
     const time_t timestamp = f.parse();
     EXPECT_EQ(timestamp, -1);
 }
