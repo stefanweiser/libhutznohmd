@@ -53,6 +53,16 @@ TEST(base64, encode_hello_world)
     EXPECT_EQ(base64, "SGVsbG8gV29ybGQh");
 }
 
+TEST(base64, encode_pangram)
+{
+    std::string base64 = encode_base64({
+        'P', 'u', 'b', 'l', 'i', 'c', ' ', 'j', 'u', 'n', 'k', ' ', 'd', 'w', 'a', 'r', 'v', 'e',
+        's', ' ', 'h', 'u', 'g', ' ', 'm', 'y', ' ', 'q', 'u', 'a', 'r', 't', 'z', ' ', 'f', 'o',
+        'x', '.'
+    });
+    EXPECT_EQ(base64, "UHVibGljIGp1bmsgZHdhcnZlcyBodWcgbXkgcXVhcnR6IGZveC4=");
+}
+
 TEST(base64, decode_empty)
 {
     std::vector<uint8_t> decoded_data = decode_base64("");
@@ -64,6 +74,13 @@ TEST(base64, decode_space)
 {
     std::vector<uint8_t> decoded_data = decode_base64("IA==");
     std::vector<uint8_t> data {' '};
+    EXPECT_EQ(decoded_data, data);
+}
+
+TEST(base64, decode_double_space)
+{
+    std::vector<uint8_t> decoded_data = decode_base64("ICA=");
+    std::vector<uint8_t> data {' ', ' '};
     EXPECT_EQ(decoded_data, data);
 }
 
@@ -86,6 +103,12 @@ TEST(base64, decode_hello_world)
     std::vector<uint8_t> decoded_data = decode_base64("SGVsbG8gV29ybGQh");
     std::vector<uint8_t> data {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '!'};
     EXPECT_EQ(decoded_data, data);
+}
+
+TEST(base64, decode_errornous)
+{
+    std::vector<uint8_t> decoded_data = decode_base64("I");
+    EXPECT_EQ(decoded_data, std::vector<uint8_t>());
 }
 
 } // namespace http
