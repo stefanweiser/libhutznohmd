@@ -62,7 +62,7 @@ void request_parser::parse()
         return;
     }
 
-    int32_t result = lexer_.get_non_whitespace();
+    int32_t character = lexer_.get_non_whitespace();
     {
         using value_info = trie<rest::http::method>::value_info;
         static const std::vector<value_info> types = {{
@@ -79,7 +79,7 @@ void request_parser::parse()
 
         static const trie<rest::http::method> t(types, rest::http::method::UNKNOWN);
         push_back_string<32> tmp;
-        method_ = t.parse(result, tmp, lexer_);
+        method_ = t.parse(character, tmp, lexer_);
     }
 
     if (rest::http::method::UNKNOWN == method_) {
@@ -87,13 +87,13 @@ void request_parser::parse()
         return;
     }
 
-    result = lexer_.get_non_whitespace();
-    if (false == lex_request_uri(result, request_uri_, lexer_)) {
+    character = lexer_.get_non_whitespace();
+    if (false == lex_request_uri(character, request_uri_, lexer_)) {
         state_ = parser_state::ERROR;
         return;
     }
 
-    result = lexer_.get_non_whitespace();
+    character = lexer_.get_non_whitespace();
     {
         using value_type = std::tuple<rest::http::version, connection_type>;
         using value_info = trie<value_type>::value_info;
@@ -116,17 +116,17 @@ void request_parser::parse()
             connection_type::ERROR
         });
         push_back_string<32> tmp;
-        std::tie(version_, connection_) = t.parse(result, tmp, lexer_);
+        std::tie(version_, connection_) = t.parse(character, tmp, lexer_);
     }
 
     if ((rest::http::version::HTTP_UNKNOWN == version_) ||
-        (result != '\n')) {
+        (character != '\n')) {
         state_ = parser_state::ERROR;
         return;
     }
 
-    result = lexer_.get();
-    if (false == parse_headers(result)) {
+    character = lexer_.get();
+    if (false == parse_headers(character)) {
         state_ = parser_state::ERROR;
         return;
     }
