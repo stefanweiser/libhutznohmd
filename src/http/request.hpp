@@ -46,7 +46,7 @@ public:
     bool parse();
 
     virtual rest::http::method method() const;
-    virtual std::string url() const;
+    virtual std::string request_uri() const;
     virtual rest::http::version version() const;
     virtual const std::string header(const std::string & key) const;
     virtual rest::buffer data() const;

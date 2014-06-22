@@ -414,8 +414,8 @@ public:
     //! Requested HTTP method.
     virtual rest::http::method method() const = 0;
 
-    //! Requested URL.
-    virtual std::string url() const = 0;
+    //! Requested URI.
+    virtual std::string request_uri() const = 0;
 
     //! Requested HTTP version.
     virtual rest::http::version version() const = 0;
