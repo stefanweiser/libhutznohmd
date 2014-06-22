@@ -167,34 +167,8 @@ bool base_parser::parse_date(int32_t & character)
     return true;
 }
 
-bool base_parser::parse_header(int32_t & character)
+bool base_parser::parse_custom_header(int32_t & character)
 {
-    using parsing_function = bool (base_parser::*)(int32_t &);
-    using trie_value = std::tuple<parsing_function, size_t>;
-    using value_info = trie<trie_value>::value_info;
-    static const std::vector<value_info> types = {{
-            value_info{"content-length", trie_value{&base_parser::parse_content_length, 0}},
-            value_info{"content-md5", trie_value{&base_parser::parse_content_md5, 1}},
-            value_info{"content-type", trie_value{&base_parser::parse_content_type, 2}},
-            value_info{"date", trie_value{&base_parser::parse_date, 3}},
-            value_info{"connection", trie_value{&base_parser::parse_connection, 4}}
-        }
-    };
-    static const trie<trie_value> t(types, trie_value {nullptr, -1});
-    trie_value value = t.parse(character, header_key_, lexer_);
-    if (character == ':') {
-        character = lexer_.get_non_whitespace();
-        parsing_function functor = std::get<0>(value);
-        if (nullptr != functor) {
-            return (this->*functor)(character);
-        }
-    }
-
-    size_t index = std::get<1>(value);
-    if (index < types.size()) {
-        header_key_.push_back(std::get<0>(types[index]));
-    }
-
     parse_word(character, header_key_, &is_valid_token_character, lexer_);
     if (character != ':') {
         return false;
@@ -218,18 +192,6 @@ bool base_parser::parse_header(int32_t & character)
 
     header_key_.clear();
     header_value_.clear();
-    return true;
-}
-
-bool base_parser::parse_headers(int32_t & character)
-{
-    while (character != '\n') {
-        if (false == parse_header(character)) {
-            return false;
-        }
-        character = lexer_.get();
-    }
-
     return true;
 }
 

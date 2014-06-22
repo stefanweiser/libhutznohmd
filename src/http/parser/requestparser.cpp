@@ -142,6 +142,34 @@ const std::string request_parser::url() const
     return std::string(url_.c_str());
 }
 
+bool request_parser::parse_header(int32_t & character)
+{
+    using trie_value_ = trie_value<request_parser>;
+    using value_info = trie<trie_value_>::value_info;
+    static const std::vector<value_info> types = {{
+            value_info{"content-length", trie_value_{&request_parser::parse_content_length, 0}},
+            value_info{"content-md5", trie_value_{&request_parser::parse_content_md5, 1}},
+            value_info{"content-type", trie_value_{&request_parser::parse_content_type, 2}},
+            value_info{"date", trie_value_{&request_parser::parse_date, 3}},
+            value_info{"connection", trie_value_{&request_parser::parse_connection, 4}}
+        }
+    };
+
+    return parse_generic_header<request_parser>(types, character);
+}
+
+bool request_parser::parse_headers(int32_t & character)
+{
+    while (character != '\n') {
+        if (false == parse_header(character)) {
+            return false;
+        }
+        character = lexer_.get();
+    }
+
+    return true;
+}
+
 } // namespace http
 
 } // namespace rest

@@ -22,6 +22,7 @@
 #include <http/parser/utility/lexer.hpp>
 #include <http/parser/utility/mediatype.hpp>
 #include <http/parser/utility/pushbackstring.hpp>
+#include <http/parser/utility/trie.hpp>
 
 #include <rest.hpp>
 
@@ -62,13 +63,25 @@ public:
     bool has_md5() const;
 
 protected:
-    bool parse_connection(int32_t & result);
-    bool parse_content_length(int32_t & result);
-    bool parse_content_md5(int32_t & result);
-    bool parse_content_type(int32_t & result);
-    bool parse_date(int32_t & result);
-    bool parse_header(int32_t & result);
-    bool parse_headers(int32_t & result);
+    bool parse_connection(int32_t & character);
+    bool parse_content_length(int32_t & character);
+    bool parse_content_md5(int32_t & character);
+    bool parse_content_type(int32_t & character);
+    bool parse_date(int32_t & character);
+    bool parse_custom_header(int32_t & character);
+
+    template<typename parser_class>
+    using parsing_function = bool (parser_class::*)(int32_t &);
+
+    template<typename parser_class>
+    using trie_value = std::tuple<parsing_function<parser_class>, size_t>;
+
+    template<typename parser_class>
+    using trie_value_info = typename trie<trie_value<parser_class>>::value_info;
+
+    template<class parser>
+    bool parse_generic_header(const std::vector<trie_value_info<parser>> & types,
+                              int32_t & character);
 
     lexer lexer_;
     parser_state state_;
@@ -84,6 +97,30 @@ protected:
     std::array<uint8_t, 16> md5_;
     bool has_md5_;
 };
+
+template<class parser>
+bool base_parser::parse_generic_header(
+    const std::vector<base_parser::trie_value_info<parser>> & types,
+    int32_t & character)
+{
+    using trie_value_ = trie_value<parser>;
+    static const trie<trie_value_> t(types, trie_value_ {nullptr, -1});
+    trie_value_ value = t.parse(character, header_key_, lexer_);
+    if (character == ':') {
+        character = lexer_.get_non_whitespace();
+        parsing_function<parser> functor = std::get<0>(value);
+        if (nullptr != functor) {
+            return (static_cast<parser *>(this)->*functor)(character);
+        }
+    }
+
+    size_t index = std::get<1>(value);
+    if (index < types.size()) {
+        header_key_.push_back(std::get<0>(types[index]));
+    }
+
+    return parse_custom_header(character);
+}
 
 } // namespace http
 
