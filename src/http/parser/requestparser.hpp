@@ -49,10 +49,13 @@ public:
     const std::string url() const;
 
 private:
+    bool parse_accept(int32_t & character);
     bool parse_headers(int32_t & character);
 
     rest::http::method method_;
     push_back_string<1000> url_;
+
+    std::vector<std::unique_ptr<media_type>> accept_header_;
 };
 
 } // namespace http

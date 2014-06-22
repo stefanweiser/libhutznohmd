@@ -175,7 +175,8 @@ TEST(request, parse)
     EXPECT_TRUE(request.parse());
 
     EXPECT_EQ(request.request_parser_.content_length(), 1);
-    EXPECT_EQ(request.request_parser_.headers_.size(), 1);
+    EXPECT_EQ(request.request_parser_.headers_.size(), 0);
+    EXPECT_EQ(request.request_parser_.accept_header_.size(), 1);
     EXPECT_EQ(request.data(), rest::buffer({ '0' }));
     EXPECT_EQ(request.date(), 951868800);
     EXPECT_EQ(request.method(), method::GET);
@@ -239,7 +240,8 @@ TEST(request, parse_large_request)
     EXPECT_TRUE(request.parse());
 
     EXPECT_EQ(request.request_parser_.content_length(), 2000);
-    EXPECT_EQ(request.request_parser_.headers_.size(), 1);
+    EXPECT_EQ(request.request_parser_.headers_.size(), 0);
+    EXPECT_EQ(request.request_parser_.accept_header_.size(), 1);
     EXPECT_EQ(request.header("abc"), "");
     EXPECT_EQ(request.data().size(), 2000);
     EXPECT_EQ(request.data(), rest::buffer(2000, '0'));

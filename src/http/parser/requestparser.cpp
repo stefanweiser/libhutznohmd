@@ -36,6 +36,7 @@ request_parser::request_parser(const anonymous_int_function & get_functor,
     : base_parser(get_functor, peek_functor)
     , method_(rest::http::method::UNKNOWN)
     , url_()
+    , accept_header_()
 {}
 
 namespace
@@ -142,6 +143,22 @@ const std::string request_parser::url() const
     return std::string(url_.c_str());
 }
 
+bool request_parser::parse_accept(int32_t & character)
+{
+    accept_header_.push_back(std::unique_ptr<media_type>(new media_type(lexer_)));
+    do {
+        if (false == accept_header_.back()->parse(character)) {
+            return false;
+        }
+
+        if (',' == character) {
+            character = lexer_.get_non_whitespace();
+        }
+    } while (character != '\n');
+
+    return true;
+}
+
 bool request_parser::parse_headers(int32_t & character)
 {
     using trie_value_ = trie_value<request_parser>;
@@ -151,7 +168,8 @@ bool request_parser::parse_headers(int32_t & character)
             value_info{"content-md5", trie_value_{&request_parser::parse_content_md5, 1}},
             value_info{"content-type", trie_value_{&request_parser::parse_content_type, 2}},
             value_info{"date", trie_value_{&request_parser::parse_date, 3}},
-            value_info{"connection", trie_value_{&request_parser::parse_connection, 4}}
+            value_info{"connection", trie_value_{&request_parser::parse_connection, 4}},
+            value_info{"accept", trie_value_{&request_parser::parse_accept, 5}}
         }
     };
 
