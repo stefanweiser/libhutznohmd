@@ -39,4 +39,9 @@
 <td>TBD</td>
 <td><pre>Last-Modified: Wed, 13 May 2014 22:10:48 GMT</pre></td>
 
+@subsection sub_content_pragma Pragma
+
+<td>TBD</td>
+<td><pre>Pragma: no-cache</pre></td>
+
 */

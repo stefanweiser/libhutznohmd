@@ -109,11 +109,6 @@ This header contains the timestamp, when the message was generated.
 Date: Wed, 13 May 2014 22:10:48 GMT
 @endcode
 
-@subsection sub_content_pragma Pragma
-
-<td>TBD</td>
-<td><pre>Pragma: no-cache</pre></td>
-
 @section sec_basic_request Request-Specific
 
 @subsection sub_accept Accept
