@@ -70,7 +70,8 @@ uri::uri(const lexer & l)
 
 bool uri::parse(int32_t & character)
 {
-    // Check whether there is a scheme and authority or neither of them.
+    // Check whether there is a scheme and authority or neither of them. This is not conform with
+    // RFC 3986, but HTTP specifies request URIs without scheme and authority.
     if ('/' != character) {
         if (false == parse_scheme(character)) {
             return false;
