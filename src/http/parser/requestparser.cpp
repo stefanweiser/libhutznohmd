@@ -145,8 +145,8 @@ const std::string request_parser::url() const
 
 bool request_parser::parse_accept(int32_t & character)
 {
-    accept_header_.push_back(std::unique_ptr<media_type>(new media_type(lexer_)));
     do {
+        accept_header_.push_back(std::unique_ptr<media_type>(new media_type(lexer_)));
         if (false == accept_header_.back()->parse(character)) {
             return false;
         }
