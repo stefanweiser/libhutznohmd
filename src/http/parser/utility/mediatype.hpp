@@ -66,6 +66,11 @@ public:
     const char * custom_subtype() const;
     const char * parameter(const char * key) const;
 
+    //! Returns a value, that defines how specific the media type is. The less the value, the more
+    //! unspecific the media type is. These values can be used to compare media types with each
+    //! other.
+    uint8_t specification_grade() const;
+
 private:
     void parse_type(int32_t & character);
     void parse_subtype(int32_t & character);

@@ -82,6 +82,23 @@ const char * media_type::parameter(const char * key) const
     return "";
 }
 
+uint8_t media_type::specification_grade() const
+{
+    if (media_type_type::WILDCARD == type_) {
+        if (media_type_subtype::WILDCARD == subtype_) {
+            return 0;
+        } else {
+            return 1;
+        }
+    } else {
+        if (media_type_subtype::WILDCARD == subtype_) {
+            return 2;
+        } else {
+            return 3;
+        }
+    }
+}
+
 void media_type::parse_type(int32_t & character)
 {
     using value_info = trie<media_type_type>::value_info;

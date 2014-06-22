@@ -319,6 +319,34 @@ TEST(http_media_type, erroneous_parameter_quoted_string)
     EXPECT_EQ(m->parameter("q"), std::string(""));
 }
 
+TEST(http_media_type, specification_grade1)
+{
+    fixture f("*/*");
+    const std::unique_ptr<media_type> m = f.parse();
+    EXPECT_EQ(m->specification_grade(), 0);
+}
+
+TEST(http_media_type, specification_grade2)
+{
+    fixture f("*/html");
+    const std::unique_ptr<media_type> m = f.parse();
+    EXPECT_EQ(m->specification_grade(), 1);
+}
+
+TEST(http_media_type, specification_grade3)
+{
+    fixture f("text/*");
+    const std::unique_ptr<media_type> m = f.parse();
+    EXPECT_EQ(m->specification_grade(), 2);
+}
+
+TEST(http_media_type, specification_grade4)
+{
+    fixture f("text/html");
+    const std::unique_ptr<media_type> m = f.parse();
+    EXPECT_EQ(m->specification_grade(), 3);
+}
+
 } // namespace http
 
 } // namespace rest
