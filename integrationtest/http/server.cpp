@@ -62,7 +62,7 @@ TEST(server, construction_destruction)
     disable_time_wait(get_socket(s));
 }
 
-TEST(server, normal_use_case)
+TEST(server, normal_use_case_http_1_1)
 {
     bool called = false;
     auto transaction = [&called](const http::request_interface & /*request*/,
@@ -79,6 +79,33 @@ TEST(server, normal_use_case)
     EXPECT_TRUE(connection->connect());
     disable_time_wait(get_socket(connection));
     std::string request = "GET / HTTP/1.1\r\n\r\n";
+    EXPECT_FALSE(called);
+    EXPECT_TRUE(connection->send(request));
+    buffer data;
+    EXPECT_TRUE(connection->receive(data, 4000));
+    EXPECT_TRUE(called);
+
+    server->stop();
+    thread.join();
+}
+
+TEST(server, normal_use_case_http_1_0)
+{
+    bool called = false;
+    auto transaction = [&called](const http::request_interface & /*request*/,
+    http::response_interface & /*response*/) {
+        called = true;
+    };
+
+    auto server = http::create_server("localhost", 10000, transaction);
+    disable_time_wait(get_socket(server));
+
+    std::thread thread(std::bind(&http::server_interface::run, server.get()));
+
+    socket::connection_pointer connection = socket::connect("localhost", 10000);
+    EXPECT_TRUE(connection->connect());
+    disable_time_wait(get_socket(connection));
+    std::string request = "GET / HTTP/1.0\r\n\r\n";
     EXPECT_FALSE(called);
     EXPECT_TRUE(connection->send(request));
     buffer data;

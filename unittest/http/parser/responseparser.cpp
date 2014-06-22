@@ -195,6 +195,21 @@ TEST(response_parser, unknown_reason_phrase_in_response)
     EXPECT_EQ(f.parser_.headers_.empty(), true);
 }
 
+TEST(response_parser, unknown_date_in_request)
+{
+    fixture f("HTTP/1.1 200 OK\r\nABC:\r\nDate:\n a\r\n\r\n");
+    f.parser_.parse();
+    EXPECT_EQ(f.parser_.state_, parser_state::ERROR);
+    EXPECT_EQ(f.parser_.lexer_.last_char_, '\xFF');
+    EXPECT_EQ(f.parser_.header_key_.empty(), true);
+    EXPECT_EQ(f.parser_.header_value_.empty(), true);
+    EXPECT_EQ(f.parser_.version_, version::HTTP_1_1);
+    EXPECT_EQ(f.parser_.status_code_, 200);
+    EXPECT_EQ(f.parser_.reason_phrase_.c_str(), std::string("OK"));
+    EXPECT_EQ(f.parser_.headers_.size(), 1);
+    EXPECT_EQ(f.parser_.content_length(), 0);
+}
+
 TEST(response_parser, http_error)
 {
     fixture f("abcdefghijklmnopqrstuvwxyz");
