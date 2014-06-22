@@ -100,7 +100,7 @@ bool base_parser::has_md5() const
     return has_md5_;
 }
 
-bool base_parser::parse_connection(int32_t & result)
+bool base_parser::parse_connection(int32_t & character)
 {
     using value_info = trie<connection_type>::value_info;
     static const std::vector<value_info> types = {{
@@ -112,7 +112,7 @@ bool base_parser::parse_connection(int32_t & result)
 
     static const trie<connection_type> t(types, connection_type::ERROR);
     push_back_string<32> tmp;
-    connection_type connection = t.parse(result, tmp, lexer_);
+    connection_type connection = t.parse(character, tmp, lexer_);
     if (connection != connection_type::ERROR) {
         connection_ = connection;
         return true;
@@ -120,9 +120,9 @@ bool base_parser::parse_connection(int32_t & result)
     return false;
 }
 
-bool base_parser::parse_content_length(int32_t & result)
+bool base_parser::parse_content_length(int32_t & character)
 {
-    int32_t length = lexer_.get_unsigned_integer(result);
+    int32_t length = lexer_.get_unsigned_integer(character);
     if (length < 0) {
         return false;
     }
@@ -131,13 +131,13 @@ bool base_parser::parse_content_length(int32_t & result)
     return true;
 }
 
-bool base_parser::parse_content_md5(int32_t & result)
+bool base_parser::parse_content_md5(int32_t & character)
 {
     std::string s;
-    while ((result >= 0) &&
-           ((true == is_base64(static_cast<uint8_t>(result))) || ('=' == result))) {
-        s += static_cast<uint8_t>(result);
-        result = lexer_.get();
+    while ((character >= 0) &&
+           ((true == is_base64(static_cast<uint8_t>(character))) || ('=' == character))) {
+        s += static_cast<uint8_t>(character);
+        character = lexer_.get();
     }
 
     std::vector<uint8_t> temp = decode_base64(s);
@@ -151,14 +151,14 @@ bool base_parser::parse_content_md5(int32_t & result)
     return false;
 }
 
-bool base_parser::parse_content_type(int32_t & result)
+bool base_parser::parse_content_type(int32_t & character)
 {
-    return content_type_.parse(result);
+    return content_type_.parse(character);
 }
 
-bool base_parser::parse_date(int32_t & result)
+bool base_parser::parse_date(int32_t & character)
 {
-    time_t d = parse_timestamp(result, lexer_);
+    time_t d = parse_timestamp(character, lexer_);
     if (d < 0) {
         return false;
     }
@@ -167,7 +167,7 @@ bool base_parser::parse_date(int32_t & result)
     return true;
 }
 
-bool base_parser::parse_header(int32_t & result)
+bool base_parser::parse_header(int32_t & character)
 {
     using parsing_function = bool (base_parser::*)(int32_t &);
     using trie_value = std::tuple<parsing_function, size_t>;
@@ -181,12 +181,12 @@ bool base_parser::parse_header(int32_t & result)
         }
     };
     static const trie<trie_value> t(types, trie_value {nullptr, -1});
-    trie_value value = t.parse(result, header_key_, lexer_);
-    if (result == ':') {
-        result = lexer_.get_non_whitespace();
+    trie_value value = t.parse(character, header_key_, lexer_);
+    if (character == ':') {
+        character = lexer_.get_non_whitespace();
         parsing_function functor = std::get<0>(value);
         if (nullptr != functor) {
-            return (this->*functor)(result);
+            return (this->*functor)(character);
         }
     }
 
@@ -195,14 +195,13 @@ bool base_parser::parse_header(int32_t & result)
         header_key_.push_back(std::get<0>(types[index]));
     }
 
-    parse_word(result, header_key_, &is_valid_token_character, lexer_);
-    if (result != ':') {
+    parse_word(character, header_key_, &is_valid_token_character, lexer_);
+    if (character != ':') {
         return false;
     }
-    result = lexer_.get();
-    parse_word(result, header_value_, &is_valid_header_value_character,
-               lexer_);
-    if (result != '\n') {
+    character = lexer_.get();
+    parse_word(character, header_value_, &is_valid_header_value_character, lexer_);
+    if (character != '\n') {
         return false;
     }
 
@@ -222,13 +221,13 @@ bool base_parser::parse_header(int32_t & result)
     return true;
 }
 
-bool base_parser::parse_headers(int32_t & result)
+bool base_parser::parse_headers(int32_t & character)
 {
-    while (result != '\n') {
-        if (false == parse_header(result)) {
+    while (character != '\n') {
+        if (false == parse_header(character)) {
             return false;
         }
-        result = lexer_.get();
+        character = lexer_.get();
     }
 
     return true;
