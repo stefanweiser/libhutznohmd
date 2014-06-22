@@ -55,6 +55,7 @@ public:
     const rest::http::version & version() const;
     const std::string header(const std::string & key) const;
     const size_t & content_length() const;
+    const media_type & content_type() const;
     const time_t & date() const;
     bool is_keep_connection() const;
     const std::array<uint8_t, 16> & md5() const;

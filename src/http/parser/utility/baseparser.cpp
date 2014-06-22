@@ -75,6 +75,11 @@ const size_t & base_parser::content_length() const
     return content_length_;
 }
 
+const media_type & base_parser::content_type() const
+{
+    return content_type_;
+}
+
 const time_t & base_parser::date() const
 {
     return date_;
