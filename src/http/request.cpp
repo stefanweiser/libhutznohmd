@@ -20,6 +20,8 @@
 #include <iterator>
 #include <set>
 
+#include <http/parser/utility/md5.hpp>
+
 #include "request.hpp"
 
 namespace rest
@@ -47,7 +49,7 @@ request::request(const rest::socket::connection_pointer & connection)
     , index_(0)
 {}
 
-void request::parse()
+bool request::parse()
 {
     request_parser_.parse();
     ssize_t content_length = request_parser_.content_length();
@@ -67,6 +69,13 @@ void request::parse()
             content_length -= (data_.size() - old_size);
         }
     }
+
+    bool result = request_parser_.valid();
+    if ((true == result) && (true == request_parser_.has_md5())) {
+        const std::array<uint8_t, 16> & md5 = request_parser_.md5();
+        result = (md5 == calculate_md5(data_));
+    }
+    return result;
 }
 
 rest::http::method request::method() const

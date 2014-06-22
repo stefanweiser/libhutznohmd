@@ -20,6 +20,7 @@
 #include <limits>
 #include <map>
 
+#include <http/parser/utility/base64.hpp>
 #include <http/parser/utility/date.hpp>
 #include <http/parser/utility/trie.hpp>
 
@@ -43,6 +44,8 @@ base_parser::base_parser(const anonymous_int_function & get_functor,
     , content_type_(lexer_)
     , date_(time(NULL))
     , connection_(connection_type::KEEP_ALIVE)
+    , md5_()
+    , has_md5_(false)
 {}
 
 base_parser::~base_parser()
@@ -82,6 +85,16 @@ bool base_parser::is_keep_connection() const
     return (connection_ == connection_type::KEEP_ALIVE);
 }
 
+const std::array<uint8_t, 16> & base_parser::md5() const
+{
+    return md5_;
+}
+
+bool base_parser::has_md5() const
+{
+    return has_md5_;
+}
+
 bool base_parser::parse_connection(int32_t & result)
 {
     using value_info = trie<connection_type>::value_info;
@@ -113,6 +126,26 @@ bool base_parser::parse_content_length(int32_t & result)
     return true;
 }
 
+bool base_parser::parse_content_md5(int32_t & result)
+{
+    std::string s;
+    while ((result >= 0) &&
+           ((true == is_base64(static_cast<uint8_t>(result))) || ('=' == result))) {
+        s += static_cast<uint8_t>(result);
+        result = lexer_.get();
+    }
+
+    std::vector<uint8_t> temp = decode_base64(s);
+    if (temp.size() == 16) {
+        for (size_t i = 0; i < 16; i++) {
+            md5_[i] = temp[i];
+        }
+        has_md5_ = true;
+        return true;
+    }
+    return false;
+}
+
 bool base_parser::parse_content_type(int32_t & result)
 {
     return content_type_.parse(result);
@@ -136,9 +169,10 @@ bool base_parser::parse_header(int32_t & result)
     using value_info = trie<trie_value>::value_info;
     static const std::vector<value_info> types = {{
             value_info{"content-length", trie_value{&base_parser::parse_content_length, 0}},
-            value_info{"content-type", trie_value{&base_parser::parse_content_type, 1}},
-            value_info{"date", trie_value{&base_parser::parse_date, 2}},
-            value_info{"connection", trie_value{&base_parser::parse_connection, 3}}
+            value_info{"content-md5", trie_value{&base_parser::parse_content_md5, 1}},
+            value_info{"content-type", trie_value{&base_parser::parse_content_type, 2}},
+            value_info{"date", trie_value{&base_parser::parse_date, 3}},
+            value_info{"connection", trie_value{&base_parser::parse_connection, 4}}
         }
     };
     static const trie<trie_value> t(types, trie_value {nullptr, -1});

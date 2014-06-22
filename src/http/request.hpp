@@ -38,7 +38,7 @@ class request: public request_interface
 {
 public:
     explicit request(const rest::socket::connection_pointer & connection);
-    void parse();
+    bool parse();
 
     virtual rest::http::method method() const;
     virtual std::string url() const;

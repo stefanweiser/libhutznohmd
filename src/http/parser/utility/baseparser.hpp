@@ -57,10 +57,13 @@ public:
     const size_t & content_length() const;
     const time_t & date() const;
     bool is_keep_connection() const;
+    const std::array<uint8_t, 16> & md5() const;
+    bool has_md5() const;
 
 protected:
     bool parse_connection(int32_t & result);
     bool parse_content_length(int32_t & result);
+    bool parse_content_md5(int32_t & result);
     bool parse_content_type(int32_t & result);
     bool parse_date(int32_t & result);
     bool parse_header(int32_t & result);
@@ -77,6 +80,8 @@ protected:
     media_type content_type_;
     time_t date_;
     connection_type connection_;
+    std::array<uint8_t, 16> md5_;
+    bool has_md5_;
 };
 
 } // namespace http
