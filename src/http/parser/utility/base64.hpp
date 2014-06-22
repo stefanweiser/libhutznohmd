@@ -40,4 +40,4 @@ std::vector<uint8_t> decode_base64(const std::string & encoded_string);
 
 } // namespace rest
 
-#endif // __LIBREST_HTTP_PARSER_UTILITY_MD5_HPP__
+#endif // __LIBREST_HTTP_PARSER_UTILITY_BASE64_HPP__

@@ -15,8 +15,8 @@
  * along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_HTTP_PARSER_HTTPPARSER_HPP__
-#define __LIBREST_HTTP_PARSER_HTTPPARSER_HPP__
+#ifndef __LIBREST_HTTP_PARSER_RESPONSEPARSER_HPP__
+#define __LIBREST_HTTP_PARSER_RESPONSEPARSER_HPP__
 
 #include <http/parser/utility/anonymousintfunction.hpp>
 #include <http/parser/utility/baseparser.hpp>
@@ -59,4 +59,4 @@ private:
 
 } // namespace rest
 
-#endif /* __LIBREST_HTTP_PARSER_HTTPPARSER_HPP__ */
+#endif /* __LIBREST_HTTP_PARSER_RESPONSEPARSER_HPP__ */

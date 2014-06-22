@@ -15,8 +15,8 @@
  * along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_LIBREST_HPP__
-#define __LIBREST_LIBREST_HPP__
+#ifndef __LIBREST_REST_HPP__
+#define __LIBREST_REST_HPP__
 
 #include <cstdint>
 #include <ctime>
@@ -478,4 +478,4 @@ server_pointer create_server(const std::string & host,
 
 } // namespace rest
 
-#endif // __LIBREST_LIBREST_HPP__
+#endif // __LIBREST_REST_HPP__
