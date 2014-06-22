@@ -106,7 +106,7 @@ inline uint32_t set4(const uint32_t & a, const uint32_t & b, const uint32_t & c,
 //! @param data The data block to process.
 //! @param digest The current digest result.
 //! @warning Calling this function makes only sense inside of the md5 algorithm.
-void process(const uint8_t data[block_size], std::array<uint32_t, 4> & digest)
+void process(const char data[block_size], std::array<uint32_t, 4> & digest)
 {
     uint32_t a = digest[0];
     uint32_t b = digest[1];
@@ -188,14 +188,14 @@ void process(const uint8_t data[block_size], std::array<uint32_t, 4> & digest)
 
 } // namespace
 
-std::array<uint8_t, 16> calculate_md5(const std::vector<uint8_t> & data)
+std::array<uint8_t, 16> calculate_md5(const std::vector<char> & data)
 {
     static constexpr size_t bits_per_byte = 8;
     static constexpr size_t size_of_size = sizeof(uint64_t);
     static constexpr size_t max_size_minus_size = block_size - size_of_size;
 
     std::array<uint32_t, 4> digest {{0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476}};
-    const uint8_t * pointer = data.data();
+    const char * pointer = data.data();
     size_t remaining = data.size();
 
     // Process.
@@ -206,7 +206,7 @@ std::array<uint8_t, 16> calculate_md5(const std::vector<uint8_t> & data)
     }
 
     // Copy the rest.
-    std::array<uint8_t, block_size> buffer;
+    std::array<char, block_size> buffer;
     uint8_t last_bit = 0x80;
     std::copy(data.end() - remaining, data.end(), buffer.begin());
 
