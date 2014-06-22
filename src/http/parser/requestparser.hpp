@@ -49,7 +49,6 @@ public:
     const std::string url() const;
 
 private:
-    bool parse_header(int32_t & character);
     bool parse_headers(int32_t & character);
 
     rest::http::method method_;

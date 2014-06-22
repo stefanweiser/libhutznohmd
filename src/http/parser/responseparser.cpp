@@ -121,7 +121,7 @@ const std::string response_parser::reason_phrase() const
     return std::string(reason_phrase_.c_str());
 }
 
-bool response_parser::parse_header(int32_t & character)
+bool response_parser::parse_headers(int32_t & character)
 {
     using trie_value_ = trie_value<response_parser>;
     using value_info = trie<trie_value_>::value_info;
@@ -134,18 +134,12 @@ bool response_parser::parse_header(int32_t & character)
         }
     };
 
-    return parse_generic_header<response_parser>(types, character);
-}
-
-bool response_parser::parse_headers(int32_t & character)
-{
     while (character != '\n') {
-        if (false == parse_header(character)) {
+        if (false == parse_generic_header<response_parser>(types, character)) {
             return false;
         }
         character = lexer_.get();
     }
-
     return true;
 }
 

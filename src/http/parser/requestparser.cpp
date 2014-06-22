@@ -142,7 +142,7 @@ const std::string request_parser::url() const
     return std::string(url_.c_str());
 }
 
-bool request_parser::parse_header(int32_t & character)
+bool request_parser::parse_headers(int32_t & character)
 {
     using trie_value_ = trie_value<request_parser>;
     using value_info = trie<trie_value_>::value_info;
@@ -155,18 +155,12 @@ bool request_parser::parse_header(int32_t & character)
         }
     };
 
-    return parse_generic_header<request_parser>(types, character);
-}
-
-bool request_parser::parse_headers(int32_t & character)
-{
     while (character != '\n') {
-        if (false == parse_header(character)) {
+        if (false == parse_generic_header<request_parser>(types, character)) {
             return false;
         }
         character = lexer_.get();
     }
-
     return true;
 }
 

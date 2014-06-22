@@ -49,7 +49,6 @@ public:
     const std::string reason_phrase() const;
 
 private:
-    bool parse_header(int32_t & character);
     bool parse_headers(int32_t & character);
 
     uint16_t status_code_;
