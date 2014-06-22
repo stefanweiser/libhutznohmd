@@ -18,11 +18,45 @@
 #ifndef __LIBREST_HTTP_PARSER_UTILITY_URI_HPP__
 #define __LIBREST_HTTP_PARSER_UTILITY_URI_HPP__
 
+#include <http/parser/utility/lexer.hpp>
+#include <http/parser/utility/pushbackstring.hpp>
+
 namespace rest
 {
 
 namespace http
 {
+
+enum class uri_scheme
+{
+    UNKNOWN = 0,
+    HTTP = 1,
+    MAILTO = 2
+};
+
+//! Implements parsing of URIs as specified in RFC 3986. It supports only the specified schemes.
+class uri
+{
+public:
+    explicit uri(const lexer & l);
+
+    bool parse(int32_t & character);
+
+private:
+    bool parse_scheme(int32_t & character);
+    bool parse_authority(int32_t & character);
+
+    bool parse_word();
+
+    const lexer & lexer_;
+    uri_scheme scheme_;
+    push_back_string<16> userinfo_;
+    push_back_string<32> host_;
+    uint16_t port_;
+    push_back_string<32> path_;
+    push_back_string<32> query_;
+    push_back_string<32> fragment_;
+};
 
 } // namespace http
 
