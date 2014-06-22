@@ -28,6 +28,11 @@ namespace rest
 namespace http
 {
 
+static inline bool is_base64(uint8_t c)
+{
+    return (std::isalnum(c) || (c == '+') || (c == '/'));
+}
+
 std::string encode_base64(const std::vector<uint8_t> & data);
 std::vector<uint8_t> decode_base64(const std::string & encoded_string);
 

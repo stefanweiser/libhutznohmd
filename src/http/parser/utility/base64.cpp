@@ -49,11 +49,6 @@ static const std::array<int8_t, 256> base64_decoder_map = {{
     }
 };
 
-static inline bool is_base64(uint8_t c)
-{
-    return (std::isalnum(c) || (c == '+') || (c == '/'));
-}
-
 std::string encode_base64(const std::vector<uint8_t> & data)
 {
     std::string result;
