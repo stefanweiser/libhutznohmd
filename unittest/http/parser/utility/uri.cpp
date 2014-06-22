@@ -162,6 +162,19 @@ TEST(uri, fragment_only)
     EXPECT_EQ(u->fragment_.c_str(), std::string("anchor"));
 }
 
+TEST(uri, no_scheme_no_authority)
+{
+    fixture f("/");
+    const std::unique_ptr<uri> u = f.parse();
+    EXPECT_EQ(u->scheme_, uri_scheme::UNKNOWN);
+    EXPECT_EQ(u->userinfo_.c_str(), std::string(""));
+    EXPECT_EQ(u->host_.c_str(), std::string(""));
+    EXPECT_EQ(u->port_, 0);
+    EXPECT_EQ(u->path_.c_str(), std::string("/"));
+    EXPECT_EQ(u->query_.c_str(), std::string(""));
+    EXPECT_EQ(u->fragment_.c_str(), std::string(""));
+}
+
 } // namespace http
 
 } // namespace rest

@@ -70,6 +70,7 @@ uri::uri(const lexer & l)
 
 bool uri::parse(int32_t & character)
 {
+    // Check whether there is a scheme and authority or neither of them.
     if ('/' != character) {
         if (false == parse_scheme(character)) {
             return false;
@@ -78,24 +79,24 @@ bool uri::parse(int32_t & character)
         if (':' != character) {
             return false;
         }
-    }
 
-    character = lexer_.get();
-    if (character < 0) {
-        return false;
-    }
-
-    if ('/' == character) {
-        const int32_t last_character = character;
-        path_.push_back(static_cast<char>(character));
         character = lexer_.get();
+        if (character < 0) {
+            return false;
+        }
 
-        if (('/' == last_character) && ('/' == character)) {
-            // It is no path. It is an authority.
-            path_.clear();
+        if ('/' == character) {
+            const int32_t last_character = character;
+            path_.push_back(static_cast<char>(character));
             character = lexer_.get();
-            if (false == parse_authority(character)) {
-                return false;
+
+            if (('/' == last_character) && ('/' == character)) {
+                // It is no path. It is an authority.
+                path_.clear();
+                character = lexer_.get();
+                if (false == parse_authority(character)) {
+                    return false;
+                }
             }
         }
     }
