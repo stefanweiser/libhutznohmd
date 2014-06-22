@@ -95,6 +95,232 @@ TEST(charactercompare, from_hex)
     }
 }
 
+TEST(charactercompare, uri_scheme_characters)
+{
+    std::array<bool, 256> validity_map;
+    std::fill(validity_map.begin(), validity_map.end(), false);
+    for (char c = 'A'; c <= 'Z'; c++) {
+        validity_map[c] = true;
+    }
+    for (char c = 'a'; c <= 'z'; c++) {
+        validity_map[c] = true;
+    }
+    for (char c = '0'; c <= '9'; c++) {
+        validity_map[c] = true;
+    }
+    validity_map['-'] = true;
+    validity_map['.'] = true;
+    validity_map['+'] = true;
+
+    // Check
+    for (size_t i = 0; i < validity_map.size(); i++) {
+        EXPECT_EQ(is_valid_uri_scheme_character(static_cast<uint8_t>(i)), validity_map[i]);
+    }
+}
+
+TEST(charactercompare, uri_userinfo_characters)
+{
+    std::array<bool, 256> validity_map;
+    std::fill(validity_map.begin(), validity_map.end(), false);
+    for (char c = 'A'; c <= 'Z'; c++) {
+        validity_map[c] = true;
+    }
+    for (char c = 'a'; c <= 'z'; c++) {
+        validity_map[c] = true;
+    }
+    for (char c = '0'; c <= '9'; c++) {
+        validity_map[c] = true;
+    }
+    validity_map['-'] = true;
+    validity_map['.'] = true;
+    validity_map['_'] = true;
+    validity_map['~'] = true;
+    validity_map['%'] = true;
+    validity_map['!'] = true;
+    validity_map['$'] = true;
+    validity_map['&'] = true;
+    validity_map['\''] = true;
+    validity_map['('] = true;
+    validity_map[')'] = true;
+    validity_map['*'] = true;
+    validity_map['+'] = true;
+    validity_map[','] = true;
+    validity_map[';'] = true;
+    validity_map['='] = true;
+
+    // Check
+    for (size_t i = 0; i < validity_map.size(); i++) {
+        EXPECT_EQ(is_valid_uri_userinfo_character(static_cast<uint8_t>(i)), validity_map[i]);
+    }
+}
+
+TEST(charactercompare, uri_host_characters)
+{
+    std::array<bool, 256> validity_map;
+    std::fill(validity_map.begin(), validity_map.end(), false);
+    for (char c = 'A'; c <= 'Z'; c++) {
+        validity_map[c] = true;
+    }
+    for (char c = 'a'; c <= 'z'; c++) {
+        validity_map[c] = true;
+    }
+    for (char c = '0'; c <= '9'; c++) {
+        validity_map[c] = true;
+    }
+    validity_map['-'] = true;
+    validity_map['.'] = true;
+    validity_map['_'] = true;
+    validity_map['~'] = true;
+    validity_map['%'] = true;
+    validity_map['!'] = true;
+    validity_map['$'] = true;
+    validity_map['&'] = true;
+    validity_map['\''] = true;
+    validity_map['('] = true;
+    validity_map[')'] = true;
+    validity_map['*'] = true;
+    validity_map['+'] = true;
+    validity_map[','] = true;
+    validity_map[';'] = true;
+    validity_map['='] = true;
+    validity_map['['] = true;
+    validity_map[']'] = true;
+
+    // Check
+    for (size_t i = 0; i < validity_map.size(); i++) {
+        EXPECT_EQ(is_valid_uri_host_character(static_cast<uint8_t>(i)), validity_map[i]);
+    }
+}
+
+TEST(charactercompare, uri_path_characters)
+{
+    std::array<bool, 256> validity_map;
+    std::fill(validity_map.begin(), validity_map.end(), false);
+    for (char c = 'A'; c <= 'Z'; c++) {
+        validity_map[c] = true;
+    }
+    for (char c = 'a'; c <= 'z'; c++) {
+        validity_map[c] = true;
+    }
+    for (char c = '0'; c <= '9'; c++) {
+        validity_map[c] = true;
+    }
+    validity_map['-'] = true;
+    validity_map['.'] = true;
+    validity_map['_'] = true;
+    validity_map['~'] = true;
+
+    validity_map['%'] = true;
+    validity_map['!'] = true;
+    validity_map['$'] = true;
+    validity_map['&'] = true;
+    validity_map['\''] = true;
+    validity_map['('] = true;
+    validity_map[')'] = true;
+    validity_map['*'] = true;
+    validity_map['+'] = true;
+    validity_map[','] = true;
+    validity_map[';'] = true;
+    validity_map['='] = true;
+    validity_map[':'] = true;
+    validity_map['/'] = true;
+    validity_map['['] = true;
+    validity_map[']'] = true;
+    validity_map['@'] = true;
+
+    // Check
+    for (size_t i = 0; i < validity_map.size(); i++) {
+        EXPECT_EQ(is_valid_uri_path_character(static_cast<uint8_t>(i)), validity_map[i]);
+    }
+}
+
+TEST(charactercompare, uri_query_characters)
+{
+    std::array<bool, 256> validity_map;
+    std::fill(validity_map.begin(), validity_map.end(), false);
+    for (char c = 'A'; c <= 'Z'; c++) {
+        validity_map[c] = true;
+    }
+    for (char c = 'a'; c <= 'z'; c++) {
+        validity_map[c] = true;
+    }
+    for (char c = '0'; c <= '9'; c++) {
+        validity_map[c] = true;
+    }
+    validity_map['-'] = true;
+    validity_map['.'] = true;
+    validity_map['_'] = true;
+    validity_map['~'] = true;
+
+    validity_map['%'] = true;
+    validity_map['!'] = true;
+    validity_map['$'] = true;
+    validity_map['&'] = true;
+    validity_map['\''] = true;
+    validity_map['('] = true;
+    validity_map[')'] = true;
+    validity_map['*'] = true;
+    validity_map['+'] = true;
+    validity_map[','] = true;
+    validity_map[';'] = true;
+    validity_map['='] = true;
+    validity_map[':'] = true;
+    validity_map['/'] = true;
+    validity_map['?'] = true;
+    validity_map['['] = true;
+    validity_map[']'] = true;
+    validity_map['@'] = true;
+
+    // Check
+    for (size_t i = 0; i < validity_map.size(); i++) {
+        EXPECT_EQ(is_valid_uri_query_character(static_cast<uint8_t>(i)), validity_map[i]);
+    }
+}
+
+TEST(charactercompare, uri_fragment_characters)
+{
+    std::array<bool, 256> validity_map;
+    std::fill(validity_map.begin(), validity_map.end(), false);
+    for (char c = 'A'; c <= 'Z'; c++) {
+        validity_map[c] = true;
+    }
+    for (char c = 'a'; c <= 'z'; c++) {
+        validity_map[c] = true;
+    }
+    for (char c = '0'; c <= '9'; c++) {
+        validity_map[c] = true;
+    }
+    validity_map['-'] = true;
+    validity_map['.'] = true;
+    validity_map['_'] = true;
+    validity_map['~'] = true;
+
+    validity_map['%'] = true;
+    validity_map['!'] = true;
+    validity_map['$'] = true;
+    validity_map['&'] = true;
+    validity_map['\''] = true;
+    validity_map['('] = true;
+    validity_map[')'] = true;
+    validity_map['*'] = true;
+    validity_map['+'] = true;
+    validity_map[','] = true;
+    validity_map[';'] = true;
+    validity_map['='] = true;
+    validity_map[':'] = true;
+    validity_map['/'] = true;
+    validity_map['?'] = true;
+    validity_map['#'] = true;
+    validity_map['['] = true;
+    validity_map[']'] = true;
+    validity_map['@'] = true;
+
+    // Check
+    for (size_t i = 0; i < validity_map.size(); i++) {
+        EXPECT_EQ(is_valid_uri_fragment_character(static_cast<uint8_t>(i)), validity_map[i]);
+    }
+}
+
 TEST(charactercompare, url_characters)
 {
     std::array<bool, 256> validity_map;
