@@ -108,12 +108,14 @@ bool uri::parse(int32_t & character)
     }
 
     if ('?' == character) {
+        character = lexer_.get();
         if (false == parse_uri_word(character, query_, &is_valid_uri_query_character, lexer_)) {
             return false;
         }
     }
 
     if ('#' == character) {
+        character = lexer_.get();
         if (false == parse_uri_word(character,
                                     fragment_,
                                     &is_valid_uri_fragment_character,
@@ -137,7 +139,6 @@ bool uri::parse_scheme(int32_t & character)
     static const trie<rest::http::uri_scheme> t(types, rest::http::uri_scheme::UNKNOWN);
     push_back_string<8> tmp;
     scheme_ = t.parse(character, tmp, lexer_);
-    character = lexer_.get();
     return (uri_scheme::UNKNOWN != scheme_);
 }
 
@@ -151,6 +152,8 @@ bool uri::parse_authority(int32_t & character)
         // This authority contains no userinfo. All we have parsed till here is part of the host.
         host_.push_back(userinfo_.c_str());
         userinfo_.clear();
+    } else {
+        character = lexer_.get();
     }
 
     if (false == parse_uri_word(character, host_, &is_valid_uri_host_character, lexer_)) {
