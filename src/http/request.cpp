@@ -112,9 +112,9 @@ time_t request::date() const
     return request_parser_.date();
 }
 
-bool request::is_keep_connection() const
+bool request::keeps_connection() const
 {
-    return request_parser_.is_keep_connection();
+    return request_parser_.keeps_connection();
 }
 
 int32_t request::get()

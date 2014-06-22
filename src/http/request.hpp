@@ -51,7 +51,7 @@ public:
     virtual const std::string header(const std::string & key) const;
     virtual rest::buffer data() const;
     virtual time_t date() const;
-    virtual bool is_keep_connection() const;
+    virtual bool keeps_connection() const;
 
     int32_t get();
     int32_t peek();

@@ -57,7 +57,7 @@ public:
     const size_t & content_length() const;
     const media_type & content_type() const;
     const time_t & date() const;
-    bool is_keep_connection() const;
+    bool keeps_connection() const;
     const std::array<uint8_t, 16> & md5() const;
     bool has_md5() const;
 

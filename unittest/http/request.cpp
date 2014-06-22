@@ -76,7 +76,7 @@ TEST(request, empty_body)
     EXPECT_EQ(request.method(), method::GET);
     EXPECT_EQ(request.url(), "/");
     EXPECT_EQ(request.version(), version::HTTP_1_1);
-    EXPECT_EQ(request.is_keep_connection(), true);
+    EXPECT_EQ(request.keeps_connection(), true);
 }
 
 TEST(request, wrong_md5)
@@ -112,7 +112,7 @@ TEST(request, wrong_md5)
     EXPECT_EQ(request.method(), method::GET);
     EXPECT_EQ(request.url(), "/");
     EXPECT_EQ(request.version(), version::HTTP_1_1);
-    EXPECT_EQ(request.is_keep_connection(), true);
+    EXPECT_EQ(request.keeps_connection(), true);
 }
 
 TEST(request, wrong_md5_but_no_check)
@@ -148,7 +148,7 @@ TEST(request, wrong_md5_but_no_check)
     EXPECT_EQ(request.method(), method::GET);
     EXPECT_EQ(request.url(), "/");
     EXPECT_EQ(request.version(), version::HTTP_1_1);
-    EXPECT_EQ(request.is_keep_connection(), true);
+    EXPECT_EQ(request.keeps_connection(), true);
 }
 
 TEST(request, parse)
@@ -181,7 +181,7 @@ TEST(request, parse)
     EXPECT_EQ(request.method(), method::GET);
     EXPECT_EQ(request.url(), "/");
     EXPECT_EQ(request.version(), version::HTTP_1_1);
-    EXPECT_EQ(request.is_keep_connection(), false);
+    EXPECT_EQ(request.keeps_connection(), false);
 }
 
 TEST(request, parse_false_return)

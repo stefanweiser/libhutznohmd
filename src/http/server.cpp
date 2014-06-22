@@ -77,7 +77,7 @@ void server::parse_request(const rest::socket::connection_pointer & connection)
     response.deliver();
 
     // Close the connection if needed.
-    if (false == request.is_keep_connection()) {
+    if (false == request.keeps_connection()) {
         connection->close();
     }
 }

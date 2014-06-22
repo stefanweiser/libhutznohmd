@@ -85,7 +85,7 @@ const time_t & base_parser::date() const
     return date_;
 }
 
-bool base_parser::is_keep_connection() const
+bool base_parser::keeps_connection() const
 {
     return (connection_ == connection_type::KEEP_ALIVE);
 }
