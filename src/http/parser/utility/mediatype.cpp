@@ -35,6 +35,7 @@ media_type::media_type(const lexer & l)
     , custom_type_()
     , custom_subtype_()
     , parameters_()
+    , quality_(10)
 {}
 
 bool media_type::parse(int32_t & character)
@@ -46,6 +47,7 @@ bool media_type::parse(int32_t & character)
     character = lexer_.get_non_whitespace();
     parse_subtype(character);
     while (';' == character) {
+        character = lexer_.get_non_whitespace();
         if (false == parse_parameter(character)) {
             return false;
         }
@@ -80,6 +82,11 @@ const char * media_type::parameter(const char * key) const
         return it->second.c_str();
     }
     return "";
+}
+
+uint8_t media_type::quality() const
+{
+    return quality_;
 }
 
 uint8_t media_type::specification_grade() const
@@ -159,12 +166,36 @@ void media_type::parse_subtype(int32_t & character)
 
 bool media_type::parse_parameter(int32_t & character)
 {
+    using parsing_function = bool (media_type::*)(int32_t &);
+    using trie_value = std::tuple<parsing_function, size_t>;
+    using value_info = trie<trie_value>::value_info;
+
+    // The index of the vector has to be the same as the value of the type, because this largely
+    // boosts the conversion below.
+    static const std::vector<value_info> types = {{
+            value_info{"q", trie_value{&media_type::parse_quality_parameter, 0}}
+        }
+    };
+
     push_back_string<16> key;
     push_back_string<16> value;
+    static const trie<trie_value> t(types, trie_value {nullptr, -1});
+    trie_value v = t.parse(character, key, lexer_);
+    if ('=' == character) {
+        character = lexer_.get_non_whitespace();
+        parsing_function functor = std::get<0>(v);
+        if (nullptr != functor) {
+            return (this->*functor)(character);
+        }
+    }
 
-    character = lexer_.get_non_whitespace();
+    size_t index = std::get<1>(v);
+    if (index < types.size()) {
+        key.push_back(std::get<0>(types[index]));
+    }
 
     parse_word(character, key, &is_valid_token_character, lexer_);
+
     if ('=' != character) {
         return false;
     }
@@ -177,6 +208,29 @@ bool media_type::parse_parameter(int32_t & character)
         parse_word(character, value, &is_valid_token_character, lexer_);
     }
     parameters_[key.c_str()] = value.c_str();
+    return true;
+}
+
+bool media_type::parse_quality_parameter(int32_t & character)
+{
+    const uint8_t upper = static_cast<uint8_t>(character - '0');
+    if (upper > 1) {
+        return false;
+    }
+
+    character = lexer_.get();
+    if ('.' != character) {
+        return false;
+    }
+
+    character = lexer_.get();
+    const uint8_t lower = static_cast<uint8_t>(character - '0');
+    if (lower > 9) {
+        return false;
+    }
+
+    quality_ = static_cast<uint8_t>((upper * 10) + lower);
+    character = lexer_.get();
     return true;
 }
 

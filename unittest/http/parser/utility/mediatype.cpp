@@ -164,13 +164,13 @@ TEST(http_media_type, model_wildcard)
 
 TEST(http_media_type, multipart_wildcard)
 {
-    fixture f("multipart/*;q=\"\xFF\xFE\xFD\"");
+    fixture f("multipart/*;r=\"\xFF\xFE\xFD\"");
     const std::unique_ptr<media_type> m = f.parse();
     EXPECT_EQ(m->type(), media_type_type::MULTIPART);
     EXPECT_EQ(m->subtype(), media_type_subtype::WILDCARD);
     EXPECT_EQ(m->custom_type(), std::string(""));
     EXPECT_EQ(m->custom_subtype(), std::string(""));
-    EXPECT_EQ(m->parameter("q"), std::string("\xFF\xFE\xFD"));
+    EXPECT_EQ(m->parameter("r"), std::string("\xFF\xFE\xFD"));
 }
 
 TEST(http_media_type, text_wildcard)
@@ -195,26 +195,28 @@ TEST(http_media_type, video_wildcard)
 
 TEST(http_media_type, text_plain_parameter)
 {
-    fixture f("text/plain;q=0.1");
+    fixture f("text/plain;r=0.1");
     const std::unique_ptr<media_type> m = f.parse();
     EXPECT_EQ(m->type(), media_type_type::TEXT);
     EXPECT_EQ(m->subtype(), media_type_subtype::PLAIN);
     EXPECT_EQ(m->custom_type(), std::string(""));
     EXPECT_EQ(m->custom_subtype(), std::string(""));
     EXPECT_EQ(m->parameter("p"), std::string(""));
-    EXPECT_EQ(m->parameter("q"), std::string("0.1"));
+    EXPECT_EQ(m->parameter("r"), std::string("0.1"));
+    EXPECT_EQ(m->quality(), 10);
 }
 
 TEST(http_media_type, applucation_wildcard)
 {
-    fixture f("applucation/*;p=0.1;q=0.2");
+    fixture f("applucation/*;p=0.1;q=0.5;r=0.2");
     const std::unique_ptr<media_type> m = f.parse();
     EXPECT_EQ(m->type(), media_type_type::CUSTOM);
     EXPECT_EQ(m->subtype(), media_type_subtype::WILDCARD);
     EXPECT_EQ(m->custom_type(), std::string("applucation"));
     EXPECT_EQ(m->custom_subtype(), std::string(""));
     EXPECT_EQ(m->parameter("p"), std::string("0.1"));
-    EXPECT_EQ(m->parameter("q"), std::string("0.2"));
+    EXPECT_EQ(m->parameter("r"), std::string("0.2"));
+    EXPECT_EQ(m->quality(), 5);
 }
 
 TEST(http_media_type, audo_wildcard)
@@ -310,13 +312,13 @@ TEST(http_media_type, erroneous_parameter_equal_sign)
 
 TEST(http_media_type, erroneous_parameter_quoted_string)
 {
-    fixture f("audio/*;q=\"0.1\n");
+    fixture f("audio/*;r=\"0.1\n");
     const std::unique_ptr<media_type> m = f.parse(false);
     EXPECT_EQ(m->type(), media_type_type::AUDIO);
     EXPECT_EQ(m->subtype(), media_type_subtype::WILDCARD);
     EXPECT_EQ(m->custom_type(), std::string(""));
     EXPECT_EQ(m->custom_subtype(), std::string(""));
-    EXPECT_EQ(m->parameter("q"), std::string(""));
+    EXPECT_EQ(m->parameter("r"), std::string(""));
 }
 
 TEST(http_media_type, specification_grade1)

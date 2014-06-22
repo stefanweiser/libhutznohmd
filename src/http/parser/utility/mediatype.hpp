@@ -65,6 +65,7 @@ public:
     const char * custom_type() const;
     const char * custom_subtype() const;
     const char * parameter(const char * key) const;
+    uint8_t quality() const;
 
     //! Returns a value, that defines how specific the media type is. The less the value, the more
     //! unspecific the media type is. These values can be used to compare media types with each
@@ -76,12 +77,16 @@ private:
     void parse_subtype(int32_t & character);
     bool parse_parameter(int32_t & character);
 
+    bool parse_quality_parameter(int32_t & character);
+
     const lexer & lexer_;
     media_type_type type_;
     media_type_subtype subtype_;
     push_back_string<32> custom_type_;
     push_back_string<64> custom_subtype_;
     std::map<std::string, std::string> parameters_;
+
+    uint8_t quality_;
 };
 
 } // namespace http
