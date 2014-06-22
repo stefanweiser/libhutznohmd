@@ -67,7 +67,7 @@ void server::stop()
 
 void server::parse_request(const rest::socket::connection_pointer & connection)
 {
-    request request(connection);
+    request request(connection, request::parameters {true});
     request.parse();
 
     response response(connection);

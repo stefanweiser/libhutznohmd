@@ -37,7 +37,12 @@ namespace http
 class request: public request_interface
 {
 public:
-    explicit request(const rest::socket::connection_pointer & connection);
+    struct parameters {
+        bool check_md5;
+    };
+
+    explicit request(const rest::socket::connection_pointer & connection,
+                     const parameters & param);
     bool parse();
 
     virtual rest::http::method method() const;
@@ -57,6 +62,7 @@ private:
     rest::http::request_parser request_parser_;
     rest::buffer data_;
     size_t index_;
+    parameters parameters_;
 };
 
 } // namespace http

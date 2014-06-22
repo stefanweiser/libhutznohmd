@@ -40,13 +40,15 @@ int32_t peek_char(void * handle)
     return static_cast<request *>(handle)->peek();
 }
 
-request::request(const rest::socket::connection_pointer & connection)
+request::request(const rest::socket::connection_pointer & connection,
+                 const parameters & param)
     : connection_(connection)
     , buffer_()
     , request_parser_(anonymous_int_function(&get_char, this),
                       anonymous_int_function(&peek_char, this))
     , data_()
     , index_(0)
+    , parameters_(param)
 {}
 
 bool request::parse()
@@ -71,7 +73,9 @@ bool request::parse()
     }
 
     bool result = request_parser_.valid();
-    if ((true == result) && (true == request_parser_.has_md5())) {
+    if ((true == result) &&
+        (true == request_parser_.has_md5()) &&
+        (true == parameters_.check_md5)) {
         const std::array<uint8_t, 16> & md5 = request_parser_.md5();
         result = (md5 == calculate_md5(data_));
     }

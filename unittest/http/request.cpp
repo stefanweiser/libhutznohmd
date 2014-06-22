@@ -36,17 +36,17 @@ namespace http
 
 TEST(request, construction_destruction)
 {
-    auto r = std::make_shared<request>(rest::socket::connection_pointer());
-    EXPECT_EQ(r->connection_, rest::socket::connection_pointer());
-    EXPECT_EQ(r->buffer_.size(), 0);
-    EXPECT_EQ(r->data_.size(), 0);
-    EXPECT_EQ(r->index_, 0);
+    request r(rest::socket::connection_pointer(), request::parameters {true});
+    EXPECT_EQ(r.connection_, rest::socket::connection_pointer());
+    EXPECT_EQ(r.buffer_.size(), 0);
+    EXPECT_EQ(r.data_.size(), 0);
+    EXPECT_EQ(r.index_, 0);
 }
 
 TEST(request, empty_body)
 {
     auto socket = std::make_shared<rest::socket::connection_socket_mock>();
-    request request(socket);
+    request request(socket, request::parameters {true});
 
     EXPECT_CALL(*socket, receive(_, _))
     .Times(1)
@@ -79,10 +79,46 @@ TEST(request, empty_body)
     EXPECT_EQ(request.is_keep_connection(), true);
 }
 
+TEST(request, wrong_md5)
+{
+    auto socket = std::make_shared<rest::socket::connection_socket_mock>();
+    request request(socket, request::parameters {false});
+
+    EXPECT_CALL(*socket, receive(_, _))
+    .Times(1)
+    .WillOnce(Invoke([](rest::buffer & data, const size_t & /*max_size*/) -> bool {
+        std::stringstream stream;
+        stream << "GET / HTTP/1.1\r\n";
+        stream << "Content-MD5: 2B2M2Y8AsgTpgAmY7PhCfg==\r\n";
+        stream << "\r\n";
+        std::string request_data = stream.str();
+        data = rest::buffer(request_data.begin(), request_data.end());
+        return true;
+    }));
+    EXPECT_TRUE(request.parse());
+
+    std::array<uint8_t, 16> sum {{
+            0xD4, 0x1D, 0x8C, 0xD9, 0x8F, 0x00, 0xB2, 0x04,
+            0xE9, 0x80, 0x09, 0x98, 0xEC, 0xF8, 0x42, 0x7E
+        }
+    };
+
+    EXPECT_EQ(request.request_parser_.content_length(), 0);
+    EXPECT_EQ(request.request_parser_.headers_.size(), 0);
+    EXPECT_EQ(request.request_parser_.valid(), true);
+    EXPECT_NE(request.request_parser_.md5(), sum);
+    EXPECT_EQ(calculate_md5(request.data()), sum);
+    EXPECT_EQ(request.data(), rest::buffer());
+    EXPECT_EQ(request.method(), method::GET);
+    EXPECT_EQ(request.url(), "/");
+    EXPECT_EQ(request.version(), version::HTTP_1_1);
+    EXPECT_EQ(request.is_keep_connection(), true);
+}
+
 TEST(request, parse)
 {
     auto socket = std::make_shared<rest::socket::connection_socket_mock>();
-    request request(socket);
+    request request(socket, request::parameters {true});
 
     EXPECT_CALL(*socket, receive(_, _))
     .Times(1)
@@ -115,7 +151,7 @@ TEST(request, parse)
 TEST(request, parse_false_return)
 {
     auto socket = std::make_shared<rest::socket::connection_socket_mock>();
-    request request(socket);
+    request request(socket, request::parameters {true});
 
     EXPECT_CALL(*socket, receive(_, _))
     .Times(2)
@@ -144,7 +180,7 @@ TEST(request, parse_false_return)
 TEST(request, parse_large_request)
 {
     auto socket = std::make_shared<rest::socket::connection_socket_mock>();
-    request request(socket);
+    request request(socket, request::parameters {true});
 
     EXPECT_CALL(*socket, receive(_, _))
     .Times(3)
@@ -182,7 +218,7 @@ TEST(request, parse_large_request)
 TEST(request, no_needed_vailable)
 {
     auto socket = std::make_shared<rest::socket::connection_socket_mock>();
-    request request(socket);
+    request request(socket, request::parameters {true});
 
     EXPECT_CALL(*socket, receive(_, _))
     .Times(1)

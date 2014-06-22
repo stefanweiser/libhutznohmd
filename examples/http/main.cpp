@@ -76,7 +76,7 @@ int main()
     std::cout << "example_http" << std::endl;
 
     auto connection = std::make_shared<::connection>("../examples/res/request0");
-    rest::http::request request(connection);
+    rest::http::request request(connection, rest::http::request::parameters {true});
     request.parse();
 
     return 0;
