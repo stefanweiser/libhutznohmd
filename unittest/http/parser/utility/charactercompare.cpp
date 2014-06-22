@@ -62,6 +62,39 @@ TEST(charactercompare, to_lower)
     }
 }
 
+TEST(charactercompare, from_hex)
+{
+    std::array<char, 256> validity_map;
+    validity_map.fill(-1);
+    validity_map['0'] = 0;
+    validity_map['1'] = 1;
+    validity_map['2'] = 2;
+    validity_map['3'] = 3;
+    validity_map['4'] = 4;
+    validity_map['5'] = 5;
+    validity_map['6'] = 6;
+    validity_map['7'] = 7;
+    validity_map['8'] = 8;
+    validity_map['9'] = 9;
+    validity_map['a'] = 10;
+    validity_map['b'] = 11;
+    validity_map['c'] = 12;
+    validity_map['d'] = 13;
+    validity_map['e'] = 14;
+    validity_map['f'] = 15;
+    validity_map['A'] = 10;
+    validity_map['B'] = 11;
+    validity_map['C'] = 12;
+    validity_map['D'] = 13;
+    validity_map['E'] = 14;
+    validity_map['F'] = 15;
+
+    // Check
+    for (size_t i = 0; i < validity_map.size(); i++) {
+        EXPECT_EQ(from_hex(i), validity_map[i]);
+    }
+}
+
 TEST(charactercompare, url_characters)
 {
     std::array<bool, 256> validity_map;
