@@ -39,7 +39,6 @@ binary_lcov="$(get_command_path lcov)"
 binary_genhtml="$(get_command_path genhtml)"
 binary_rpmbuild="$(get_command_path rpmbuild)"
 binary_valgrind="$(get_command_path valgrind)"
-binary_lizard="$(get_command_path lizard)"
 
 min_version_cmake="2.8"
 min_version_gpp="4.8"
@@ -128,6 +127,7 @@ function check_valgrind()
 
 function check_lizard()
 {
+    local binary_lizard="$(get_command_path lizard)"
     local lizard_version=$(${binary_lizard} --version 2>&1)
     check_version "${binary_lizard}" "${lizard_version}" "${min_version_lizard}"
 }
