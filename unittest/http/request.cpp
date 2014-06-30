@@ -55,7 +55,7 @@ TEST(request, empty_body)
         }
     };
 
-    EXPECT_EQ(request.header().size(), 0);
+    EXPECT_EQ(request.headers().size(), 0);
     EXPECT_EQ(calculate_md5(request.data()), sum);
     EXPECT_EQ(request.data(), rest::buffer());
     EXPECT_EQ(request.method(), method::GET);
@@ -88,7 +88,7 @@ TEST(request, wrong_md5)
         }
     };
 
-    EXPECT_EQ(request.header().size(), 0);
+    EXPECT_EQ(request.headers().size(), 0);
     EXPECT_EQ(calculate_md5(request.data()), sum);
     EXPECT_EQ(request.data(), rest::buffer());
     EXPECT_EQ(request.method(), method::GET);
@@ -121,7 +121,7 @@ TEST(request, wrong_md5_but_no_check)
         }
     };
 
-    EXPECT_EQ(request.header().size(), 0);
+    EXPECT_EQ(request.headers().size(), 0);
     EXPECT_EQ(calculate_md5(request.data()), sum);
     EXPECT_EQ(request.data(), rest::buffer());
     EXPECT_EQ(request.method(), method::GET);
@@ -153,7 +153,7 @@ TEST(request, parse)
     }));
     EXPECT_TRUE(request.parse());
 
-    EXPECT_EQ(request.header().size(), 0);
+    EXPECT_EQ(request.headers().size(), 0);
     EXPECT_EQ(request.data(), rest::buffer({ '0' }));
     EXPECT_EQ(request.date(), 951868800);
     EXPECT_EQ(request.method(), method::GET);
@@ -183,7 +183,7 @@ TEST(request, parse_false_return)
     }));
     EXPECT_TRUE(request.parse());
 
-    EXPECT_EQ(request.header().size(), 0);
+    EXPECT_EQ(request.headers().size(), 0);
     EXPECT_EQ(request.data().empty(), true);
     EXPECT_EQ(request.method(), method::GET);
     EXPECT_EQ(request.request_uri(), "/");
@@ -215,8 +215,8 @@ TEST(request, parse_large_request)
     }));
     EXPECT_TRUE(request.parse());
 
-    EXPECT_EQ(request.header().size(), 0);
-    EXPECT_EQ(request.header().find("abc"), request.header().end());
+    EXPECT_EQ(request.headers().size(), 0);
+    EXPECT_EQ(request.headers().find("abc"), request.headers().end());
     EXPECT_EQ(request.data().size(), 2000);
     EXPECT_EQ(request.data(), rest::buffer(2000, '0'));
     time_t compare_time = time(NULL);

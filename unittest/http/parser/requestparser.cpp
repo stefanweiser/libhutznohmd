@@ -76,7 +76,7 @@ TEST(request_parser, construction_destruction)
     EXPECT_EQ(f.parser_.method(), method::UNKNOWN);
     EXPECT_EQ(f.parser_.version(), version::HTTP_UNKNOWN);
     EXPECT_EQ(f.parser_.request_uri().empty(), true);
-    EXPECT_EQ(f.parser_.header().empty(), true);
+    EXPECT_EQ(f.parser_.headers().empty(), true);
 }
 
 TEST(request_parser, options_request)
@@ -88,7 +88,7 @@ TEST(request_parser, options_request)
     EXPECT_EQ(f.parser_.method(), method::OPTIONS);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().c_str(), std::string("/"));
-    EXPECT_EQ(f.parser_.header().empty(), true);
+    EXPECT_EQ(f.parser_.headers().empty(), true);
 }
 
 TEST(request_parser, get_request)
@@ -101,7 +101,7 @@ TEST(request_parser, get_request)
         EXPECT_EQ(f.parser_.method(), method::GET);
         EXPECT_EQ(f.parser_.version(), version::HTTP_1_0);
         EXPECT_EQ(f.parser_.request_uri().c_str(), std::string("/"));
-        EXPECT_EQ(f.parser_.header().empty(), true);
+        EXPECT_EQ(f.parser_.headers().empty(), true);
     }
 }
 
@@ -114,7 +114,7 @@ TEST(request_parser, head_request)
     EXPECT_EQ(f.parser_.method(), method::HEAD);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().c_str(), std::string("/"));
-    EXPECT_EQ(f.parser_.header().empty(), true);
+    EXPECT_EQ(f.parser_.headers().empty(), true);
 }
 
 TEST(request_parser, post_request)
@@ -126,7 +126,7 @@ TEST(request_parser, post_request)
     EXPECT_EQ(f.parser_.method(), method::POST);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().c_str(), std::string("/"));
-    EXPECT_EQ(f.parser_.header().empty(), true);
+    EXPECT_EQ(f.parser_.headers().empty(), true);
     EXPECT_EQ(f.parser_.content_type().type(), media_type_type::TEXT);
     EXPECT_EQ(f.parser_.content_type().subtype(), media_type_subtype::WILDCARD);
 }
@@ -140,9 +140,9 @@ TEST(request_parser, put_request)
     EXPECT_EQ(f.parser_.method(), method::PUT);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().c_str(), std::string("/bla"));
-    EXPECT_EQ(f.parser_.header().empty(), true);
+    EXPECT_EQ(f.parser_.headers().empty(), true);
     EXPECT_EQ(f.parser_.content_length(), 1);
-    EXPECT_EQ(f.parser_.header().find("???"), f.parser_.header().end());
+    EXPECT_EQ(f.parser_.headers().find("???"), f.parser_.headers().end());
 }
 
 TEST(request_parser, delete_request)
@@ -154,9 +154,9 @@ TEST(request_parser, delete_request)
     EXPECT_EQ(f.parser_.method(), method::DELETE);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().c_str(), std::string("/"));
-    EXPECT_EQ(f.parser_.header().size(), 2);
+    EXPECT_EQ(f.parser_.headers().size(), 2);
     EXPECT_EQ(f.parser_.content_length(), 1);
-    EXPECT_EQ(f.parser_.header().find("abc")->second, "");
+    EXPECT_EQ(f.parser_.headers().find("abc")->second, "");
 }
 
 TEST(request_parser, trace_request)
@@ -168,7 +168,7 @@ TEST(request_parser, trace_request)
     EXPECT_EQ(f.parser_.method(), method::TRACE);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().c_str(), std::string("/"));
-    EXPECT_EQ(f.parser_.header().empty(), true);
+    EXPECT_EQ(f.parser_.headers().empty(), true);
 }
 
 TEST(request_parser, connect_request)
@@ -180,7 +180,7 @@ TEST(request_parser, connect_request)
     EXPECT_EQ(f.parser_.method(), method::CONNECT);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().c_str(), std::string("/"));
-    EXPECT_EQ(f.parser_.header().size(), 1);
+    EXPECT_EQ(f.parser_.headers().size(), 1);
 }
 
 TEST(request_parser, same_header_name_request)
@@ -192,8 +192,8 @@ TEST(request_parser, same_header_name_request)
     EXPECT_EQ(f.parser_.method(), method::GET);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_0);
     EXPECT_EQ(f.parser_.request_uri().c_str(), std::string("/"));
-    EXPECT_EQ(f.parser_.header().size(), 1);
-    EXPECT_EQ(f.parser_.header().find("allow")->second, " HEAD, GET");
+    EXPECT_EQ(f.parser_.headers().size(), 1);
+    EXPECT_EQ(f.parser_.headers().find("allow")->second, " HEAD, GET");
 }
 
 TEST(request_parser, same_custom_header_name_request)
@@ -205,8 +205,8 @@ TEST(request_parser, same_custom_header_name_request)
     EXPECT_EQ(f.parser_.method(), method::GET);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_0);
     EXPECT_EQ(f.parser_.request_uri().c_str(), std::string("/"));
-    EXPECT_EQ(f.parser_.header().size(), 1);
-    EXPECT_EQ(f.parser_.header().find("check")->second, " HEAD, GET");
+    EXPECT_EQ(f.parser_.headers().size(), 1);
+    EXPECT_EQ(f.parser_.headers().find("check")->second, " HEAD, GET");
 }
 
 TEST(request_parser, unknown_content_length_in_request)
@@ -218,7 +218,7 @@ TEST(request_parser, unknown_content_length_in_request)
     EXPECT_EQ(f.parser_.method(), method::DELETE);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().c_str(), std::string("/"));
-    EXPECT_EQ(f.parser_.header().size(), 0);
+    EXPECT_EQ(f.parser_.headers().size(), 0);
     EXPECT_EQ(f.parser_.content_length(), 0);
 }
 
@@ -231,7 +231,7 @@ TEST(request_parser, unknown_date_in_request)
     EXPECT_EQ(f.parser_.method(), method::DELETE);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().c_str(), std::string("/"));
-    EXPECT_EQ(f.parser_.header().size(), 0);
+    EXPECT_EQ(f.parser_.headers().size(), 0);
     EXPECT_EQ(f.parser_.content_length(), 0);
 }
 
@@ -244,7 +244,7 @@ TEST(request_parser, unknown_method_in_request)
     EXPECT_EQ(f.parser_.method(), method::UNKNOWN);
     EXPECT_EQ(f.parser_.version(), version::HTTP_UNKNOWN);
     EXPECT_EQ(f.parser_.request_uri().c_str(), std::string(""));
-    EXPECT_EQ(f.parser_.header().size(), 0);
+    EXPECT_EQ(f.parser_.headers().size(), 0);
     EXPECT_EQ(f.parser_.content_length(), 0);
 }
 
@@ -257,7 +257,7 @@ TEST(request_parser, unknown_url_in_request)
     EXPECT_EQ(f.parser_.method(), method::DELETE);
     EXPECT_EQ(f.parser_.version(), version::HTTP_UNKNOWN);
     EXPECT_EQ(f.parser_.request_uri().c_str(), std::string(""));
-    EXPECT_EQ(f.parser_.header().size(), 0);
+    EXPECT_EQ(f.parser_.headers().size(), 0);
     EXPECT_EQ(f.parser_.content_length(), 0);
 }
 
@@ -270,7 +270,7 @@ TEST(request_parser, unknown_version_in_request)
     EXPECT_EQ(f.parser_.method(), method::DELETE);
     EXPECT_EQ(f.parser_.version(), version::HTTP_UNKNOWN);
     EXPECT_EQ(f.parser_.request_uri().c_str(), std::string("/"));
-    EXPECT_EQ(f.parser_.header().size(), 0);
+    EXPECT_EQ(f.parser_.headers().size(), 0);
     EXPECT_EQ(f.parser_.content_length(), 0);
 }
 
@@ -283,7 +283,7 @@ TEST(request_parser, unknown_first_line_end_in_request)
     EXPECT_EQ(f.parser_.method(), method::DELETE);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().c_str(), std::string("/"));
-    EXPECT_EQ(f.parser_.header().size(), 0);
+    EXPECT_EQ(f.parser_.headers().size(), 0);
     EXPECT_EQ(f.parser_.content_length(), 0);
 }
 
@@ -296,7 +296,7 @@ TEST(request_parser, http_error)
     EXPECT_EQ(f.parser_.method(), method::UNKNOWN);
     EXPECT_EQ(f.parser_.version(), version::HTTP_UNKNOWN);
     EXPECT_EQ(f.parser_.request_uri().empty(), true);
-    EXPECT_EQ(f.parser_.header().empty(), true);
+    EXPECT_EQ(f.parser_.headers().empty(), true);
 }
 
 } // namespace http

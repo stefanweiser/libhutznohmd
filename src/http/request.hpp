@@ -48,7 +48,7 @@ public:
     virtual rest::http::method method() const;
     virtual std::string request_uri() const;
     virtual rest::http::version version() const;
-    virtual const std::map<std::string, std::string> & header() const;
+    virtual const std::map<std::string, std::string> & headers() const;
     virtual rest::buffer data() const;
     virtual time_t date() const;
     virtual bool keeps_connection() const;

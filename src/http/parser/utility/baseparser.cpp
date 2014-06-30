@@ -61,7 +61,7 @@ const rest::http::version & base_parser::version() const
     return version_;
 }
 
-const std::map<std::string, std::string> & base_parser::header() const
+const std::map<std::string, std::string> & base_parser::headers() const
 {
     return headers_;
 }

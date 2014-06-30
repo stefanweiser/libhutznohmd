@@ -422,7 +422,7 @@ public:
     virtual rest::http::version version() const = 0;
 
     //! Returns the custom header of the specified key.
-    virtual const std::map<std::string, std::string> & header() const = 0;
+    virtual const std::map<std::string, std::string> & headers() const = 0;
 
     //! Returns the data buffer.
     virtual rest::buffer data() const = 0;

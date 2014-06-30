@@ -54,7 +54,7 @@ public:
     virtual ~base_parser();
     bool valid() const;
     const rest::http::version & version() const;
-    const std::map<std::string, std::string> & header() const;
+    const std::map<std::string, std::string> & headers() const;
     const size_t & content_length() const;
     const media_type & content_type() const;
     const time_t & date() const;

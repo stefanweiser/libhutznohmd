@@ -76,7 +76,7 @@ TEST(response_parser, construction_destruction)
     EXPECT_EQ(f.parser_.version(), version::HTTP_UNKNOWN);
     EXPECT_EQ(f.parser_.status_code(), 0);
     EXPECT_EQ(f.parser_.reason_phrase().empty(), true);
-    EXPECT_EQ(f.parser_.header().empty(), true);
+    EXPECT_EQ(f.parser_.headers().empty(), true);
 }
 
 TEST(response_parser, gone_response)
@@ -88,7 +88,7 @@ TEST(response_parser, gone_response)
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.status_code(), 410);
     EXPECT_EQ(f.parser_.reason_phrase().c_str(), std::string("Gone"));
-    EXPECT_EQ(f.parser_.header().empty(), true);
+    EXPECT_EQ(f.parser_.headers().empty(), true);
     EXPECT_EQ(f.parser_.reason_phrase(), "Gone");
 }
 
@@ -101,7 +101,7 @@ TEST(response_parser, not_found_response)
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.status_code(), 404);
     EXPECT_EQ(f.parser_.reason_phrase().c_str(), std::string("Not Found"));
-    EXPECT_EQ(f.parser_.header().empty(), true);
+    EXPECT_EQ(f.parser_.headers().empty(), true);
     EXPECT_EQ(f.parser_.reason_phrase(), "Not Found");
 }
 
@@ -114,7 +114,7 @@ TEST(response_parser, custom_response)
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.status_code(), 555);
     EXPECT_EQ(f.parser_.reason_phrase().c_str(), std::string("X0Y1Z2"));
-    EXPECT_EQ(f.parser_.header().empty(), true);
+    EXPECT_EQ(f.parser_.headers().empty(), true);
     EXPECT_EQ(f.parser_.reason_phrase(), "X0Y1Z2");
 }
 
@@ -127,7 +127,7 @@ TEST(response_parser, another_custom_response)
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.status_code(), 555);
     EXPECT_EQ(f.parser_.reason_phrase().c_str(), std::string("9X0Y1Z2"));
-    EXPECT_EQ(f.parser_.header().empty(), true);
+    EXPECT_EQ(f.parser_.headers().empty(), true);
     EXPECT_EQ(f.parser_.reason_phrase(), "9X0Y1Z2");
 }
 
@@ -140,7 +140,7 @@ TEST(response_parser, unknown_http_version_in_response)
     EXPECT_EQ(f.parser_.version(), version::HTTP_UNKNOWN);
     EXPECT_EQ(f.parser_.status_code(), 0);
     EXPECT_EQ(f.parser_.reason_phrase().c_str(), std::string(""));
-    EXPECT_EQ(f.parser_.header().empty(), true);
+    EXPECT_EQ(f.parser_.headers().empty(), true);
 }
 
 TEST(response_parser, unknown_status_code_in_response)
@@ -152,7 +152,7 @@ TEST(response_parser, unknown_status_code_in_response)
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.status_code(), 0);
     EXPECT_EQ(f.parser_.reason_phrase().c_str(), std::string(""));
-    EXPECT_EQ(f.parser_.header().empty(), true);
+    EXPECT_EQ(f.parser_.headers().empty(), true);
 }
 
 TEST(response_parser, unknown_reason_phrase_in_response)
@@ -164,7 +164,7 @@ TEST(response_parser, unknown_reason_phrase_in_response)
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.status_code(), 200);
     EXPECT_EQ(f.parser_.reason_phrase().c_str(), std::string(""));
-    EXPECT_EQ(f.parser_.header().empty(), true);
+    EXPECT_EQ(f.parser_.headers().empty(), true);
 }
 
 TEST(response_parser, unknown_date_in_request)
@@ -176,7 +176,7 @@ TEST(response_parser, unknown_date_in_request)
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.status_code(), 200);
     EXPECT_EQ(f.parser_.reason_phrase().c_str(), std::string("OK"));
-    EXPECT_EQ(f.parser_.header().size(), 1);
+    EXPECT_EQ(f.parser_.headers().size(), 1);
     EXPECT_EQ(f.parser_.content_length(), 0);
 }
 
@@ -189,7 +189,7 @@ TEST(response_parser, http_error)
     EXPECT_EQ(f.parser_.version(), version::HTTP_UNKNOWN);
     EXPECT_EQ(f.parser_.status_code(), 0);
     EXPECT_EQ(f.parser_.reason_phrase().empty(), true);
-    EXPECT_EQ(f.parser_.header().empty(), true);
+    EXPECT_EQ(f.parser_.headers().empty(), true);
 }
 
 } // namespace http
