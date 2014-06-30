@@ -39,6 +39,7 @@ binary_lcov="$(get_command_path lcov)"
 binary_genhtml="$(get_command_path genhtml)"
 binary_rpmbuild="$(get_command_path rpmbuild)"
 binary_valgrind="$(get_command_path valgrind)"
+binary_lizard="$(get_command_path lizard)"
 
 min_version_cmake="2.8"
 min_version_gpp="4.8"
@@ -51,6 +52,7 @@ min_version_java="1.6"
 min_version_lcov="1.9"
 min_version_rpmbuild="4.9"
 min_version_valgrind="3.7.0"
+min_version_lizard="1.8.4"
 
 script_path=$(dirname `readlink -f $0`)
 script_name=$(basename `readlink -f $0`)
@@ -117,11 +119,17 @@ function check_rpmbuild()
     local rpmbuild_version=$(${binary_rpmbuild} --version | tr ' ' '\n' | tail -n 1)
     check_version "${binary_rpmbuild}" "${rpmbuild_version}" "${min_version_rpmbuild}"
 }
- 
+
 function check_valgrind()
 {
     local valgrind_version=$(${binary_valgrind} --version | tr '-' '\n' | tail -n 1)
     check_version "${binary_valgrind}" "${valgrind_version}" "${min_version_valgrind}"
+}
+
+function check_lizard()
+{
+    local lizard_version=$(${binary_lizard} --version 2>&1)
+    check_version "${binary_lizard}" "${lizard_version}" "${min_version_lizard}"
 }
 
 function check_is_bootstrapped()
@@ -304,6 +312,15 @@ function exec_valgrind()
     LD_LIBRARY_PATH="${build_path}/src" ${binary_valgrind} "${build_path}/integrationtest/integrationtest_restsrv"
 }
 
+function exec_lizard()
+{
+    check_lizard
+    check_is_bootstrapped
+
+    cd "${build_path}"
+    make lizard
+}
+
 opts_words=()
 opts_clean=0
 opts_bootstrap=0
@@ -317,6 +334,7 @@ opts_install=0
 opts_package=0
 opts_coverage=0
 opts_valgrind=0
+opts_lizard=0
 opts_build_type="debug"
 opts_summary=0
 
@@ -411,6 +429,9 @@ for word in ${opts_words[*]} ; do
         valgrind)
             opts_valgrind=1
             ;;
+        lizard)
+            opts_lizard=1
+            ;;
 
         debug)
             opts_build_type="debug"
@@ -475,6 +496,10 @@ fi
 
 if [ ${opts_valgrind} -ne 0 ]; then
     exec_valgrind
+fi
+
+if [ ${opts_lizard} -ne 0 ]; then
+    exec_lizard
 fi
 
 exit 0
