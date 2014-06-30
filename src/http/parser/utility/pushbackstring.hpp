@@ -171,6 +171,7 @@ void push_back_string<maximum_size>::clear()
     if (nullptr != dynamic_buffer_) {
         // We need to free the buffer, because we will work with the static data again.
         free(dynamic_buffer_);
+        dynamic_buffer_ = nullptr;
         dynamic_size_ = 0;
     }
     current_length_ = 0;
