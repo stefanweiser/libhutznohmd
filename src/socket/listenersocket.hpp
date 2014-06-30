@@ -40,11 +40,13 @@ public:
     static std::shared_ptr<listener_socket> create(const std::string & host,
             const uint16_t & port);
 
-    explicit listener_socket(const int & socket);
+    explicit listener_socket(const int & s);
     virtual ~listener_socket();
     virtual connection_pointer accept();
     virtual bool listening() const;
     virtual void stop();
+
+    int socket() const;
 
 private:
     bool is_listening_;

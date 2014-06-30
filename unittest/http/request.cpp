@@ -18,9 +18,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#define private public
-#define protected public
-
 #include <http/parser/utility/md5.hpp>
 #include <http/request.hpp>
 
@@ -33,15 +30,6 @@ namespace rest
 
 namespace http
 {
-
-TEST(request, construction_destruction)
-{
-    request r(rest::socket::connection_pointer(), request::parameters {true});
-    EXPECT_EQ(r.connection_, rest::socket::connection_pointer());
-    EXPECT_EQ(r.buffer_.size(), 0);
-    EXPECT_EQ(r.data_.size(), 0);
-    EXPECT_EQ(r.index_, 0);
-}
 
 TEST(request, empty_body)
 {
@@ -67,10 +55,7 @@ TEST(request, empty_body)
         }
     };
 
-    EXPECT_EQ(request.request_parser_.content_length(), 0);
-    EXPECT_EQ(request.request_parser_.headers_.size(), 0);
-    EXPECT_EQ(request.request_parser_.valid(), true);
-    EXPECT_EQ(request.request_parser_.md5(), sum);
+    EXPECT_EQ(request.header().size(), 0);
     EXPECT_EQ(calculate_md5(request.data()), sum);
     EXPECT_EQ(request.data(), rest::buffer());
     EXPECT_EQ(request.method(), method::GET);
@@ -103,10 +88,7 @@ TEST(request, wrong_md5)
         }
     };
 
-    EXPECT_EQ(request.request_parser_.content_length(), 0);
-    EXPECT_EQ(request.request_parser_.headers_.size(), 0);
-    EXPECT_EQ(request.request_parser_.valid(), true);
-    EXPECT_NE(request.request_parser_.md5(), sum);
+    EXPECT_EQ(request.header().size(), 0);
     EXPECT_EQ(calculate_md5(request.data()), sum);
     EXPECT_EQ(request.data(), rest::buffer());
     EXPECT_EQ(request.method(), method::GET);
@@ -139,10 +121,7 @@ TEST(request, wrong_md5_but_no_check)
         }
     };
 
-    EXPECT_EQ(request.request_parser_.content_length(), 0);
-    EXPECT_EQ(request.request_parser_.headers_.size(), 0);
-    EXPECT_EQ(request.request_parser_.valid(), true);
-    EXPECT_NE(request.request_parser_.md5(), sum);
+    EXPECT_EQ(request.header().size(), 0);
     EXPECT_EQ(calculate_md5(request.data()), sum);
     EXPECT_EQ(request.data(), rest::buffer());
     EXPECT_EQ(request.method(), method::GET);
@@ -174,9 +153,7 @@ TEST(request, parse)
     }));
     EXPECT_TRUE(request.parse());
 
-    EXPECT_EQ(request.request_parser_.content_length(), 1);
-    EXPECT_EQ(request.request_parser_.headers_.size(), 0);
-    EXPECT_EQ(request.request_parser_.accept_header_.size(), 2);
+    EXPECT_EQ(request.header().size(), 0);
     EXPECT_EQ(request.data(), rest::buffer({ '0' }));
     EXPECT_EQ(request.date(), 951868800);
     EXPECT_EQ(request.method(), method::GET);
@@ -206,8 +183,7 @@ TEST(request, parse_false_return)
     }));
     EXPECT_TRUE(request.parse());
 
-    EXPECT_EQ(request.request_parser_.content_length(), 1);
-    EXPECT_EQ(request.request_parser_.headers_.empty(), true);
+    EXPECT_EQ(request.header().size(), 0);
     EXPECT_EQ(request.data().empty(), true);
     EXPECT_EQ(request.method(), method::GET);
     EXPECT_EQ(request.request_uri(), "/");
@@ -239,9 +215,7 @@ TEST(request, parse_large_request)
     }));
     EXPECT_TRUE(request.parse());
 
-    EXPECT_EQ(request.request_parser_.content_length(), 2000);
-    EXPECT_EQ(request.request_parser_.headers_.size(), 0);
-    EXPECT_EQ(request.request_parser_.accept_header_.size(), 2);
+    EXPECT_EQ(request.header().size(), 0);
     EXPECT_EQ(request.header().find("abc"), request.header().end());
     EXPECT_EQ(request.data().size(), 2000);
     EXPECT_EQ(request.data(), rest::buffer(2000, '0'));

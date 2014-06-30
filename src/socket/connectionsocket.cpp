@@ -53,15 +53,15 @@ std::shared_ptr<connection_socket> connection_socket::create(const std::string &
     return result;
 }
 
-connection_socket::connection_socket(const int & socket)
+connection_socket::connection_socket(const int & s)
     : is_connected_(true)
-    , socket_(socket)
+    , socket_(s)
     , address_()
 {}
 
-connection_socket::connection_socket(const int & socket, const ::sockaddr_in & address)
+connection_socket::connection_socket(const int & s, const ::sockaddr_in & address)
     : is_connected_(false)
-    , socket_(socket)
+    , socket_(s)
     , address_(address)
 {}
 
@@ -150,6 +150,11 @@ bool connection_socket::send(const char * buffer, const size_t & size)
     } while (sent_size < static_cast<::ssize_t>(size));
 
     return true;
+}
+
+int connection_socket::socket() const
+{
+    return socket_;
 }
 
 } // namespace socket

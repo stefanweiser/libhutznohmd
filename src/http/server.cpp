@@ -34,10 +34,10 @@ server_pointer create_server(const std::string & host,
     return std::make_shared<server>(socket, transaction_functor);
 }
 
-server::server(const rest::socket::listener_pointer & socket,
+server::server(const rest::socket::listener_pointer & s,
                const transaction_function & transaction_functor)
     : threads_()
-    , socket_(socket)
+    , socket_(s)
     , transaction_functor_(transaction_functor)
     , shutdown_(false)
 {}
@@ -80,6 +80,11 @@ void server::parse_request(const rest::socket::connection_pointer & connection)
     if (false == request.keeps_connection()) {
         connection->close();
     }
+}
+
+const rest::socket::listener_pointer & server::socket() const
+{
+    return socket_;
 }
 
 } // namespace http

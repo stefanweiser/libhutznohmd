@@ -18,9 +18,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#define private public
-#define protected public
-
 #include <http/server.hpp>
 #include <socket/connectionsocket.hpp>
 
@@ -40,18 +37,18 @@ void disable_time_wait(int socket)
 
 int get_socket(const http::server_pointer & server)
 {
-    auto listener = std::dynamic_pointer_cast<http::server>(server)->socket_;
-    return std::dynamic_pointer_cast<socket::listener_socket>(listener)->socket_;
+    auto listener = std::dynamic_pointer_cast<http::server>(server)->socket();
+    return std::dynamic_pointer_cast<socket::listener_socket>(listener)->socket();
 }
 
 int get_socket(const socket::connection_pointer & connection)
 {
-    return std::dynamic_pointer_cast<socket::connection_socket>(connection)->socket_;
+    return std::dynamic_pointer_cast<socket::connection_socket>(connection)->socket();
 }
 
 int get_socket(const socket::listener_pointer & listener)
 {
-    return std::dynamic_pointer_cast<socket::listener_socket>(listener)->socket_;
+    return std::dynamic_pointer_cast<socket::listener_socket>(listener)->socket();
 }
 
 }

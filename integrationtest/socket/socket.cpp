@@ -19,9 +19,6 @@
 
 #include <gtest/gtest.h>
 
-#define private public
-#define protected public
-
 #include <socket/connectionsocket.hpp>
 #include <socket/listenersocket.hpp>
 
@@ -39,12 +36,12 @@ void disable_time_wait(int socket)
 
 int get_socket(const socket::connection_pointer & connection)
 {
-    return std::dynamic_pointer_cast<socket::connection_socket>(connection)->socket_;
+    return std::dynamic_pointer_cast<socket::connection_socket>(connection)->socket();
 }
 
 int get_socket(const socket::listener_pointer & listener)
 {
-    return std::dynamic_pointer_cast<socket::listener_socket>(listener)->socket_;
+    return std::dynamic_pointer_cast<socket::listener_socket>(listener)->socket();
 }
 
 }
@@ -52,7 +49,7 @@ int get_socket(const socket::listener_pointer & listener)
 TEST(socket, construction_no_throw)
 {
     auto listener = socket::listener_socket::create("127.0.0.1", 10000);
-    disable_time_wait(listener->socket_);
+    disable_time_wait(listener->socket());
     EXPECT_NE(listener, std::shared_ptr<socket::listener_socket>());
     EXPECT_TRUE(listener->listening());
 }
@@ -69,8 +66,8 @@ TEST(socket, wrong_construction_arguments)
 TEST(socket, accepting_closed_socket)
 {
     auto listener = socket::listener_socket::create("127.0.0.1", 10000);
-    disable_time_wait(listener->socket_);
-    EXPECT_EQ(::close(listener->socket_), 0);
+    disable_time_wait(listener->socket());
+    EXPECT_EQ(::close(listener->socket()), 0);
     EXPECT_EQ(listener->accept(), socket::connection_pointer());
 }
 
@@ -98,7 +95,7 @@ TEST(socket, receive_send_closed_socket)
     std::thread thread([&disconnected, &connected] {
         auto connection = socket::connection_socket::create("localhost", 10000);
         EXPECT_TRUE(connection->connect());
-        disable_time_wait(connection->socket_);
+        disable_time_wait(connection->socket());
         connected = true;
         while (disconnected == false) {
             usleep(1);
@@ -107,11 +104,7 @@ TEST(socket, receive_send_closed_socket)
         buffer data;
         EXPECT_FALSE(connection->receive(data, 8));
 
-        EXPECT_EQ(::close(connection->socket_), 0);
-        EXPECT_FALSE(connection->receive(data, 8));
-        EXPECT_FALSE(connection->send(data));
-
-        const_cast<int &>(connection->socket_) = -1;
+        EXPECT_EQ(::close(connection->socket()), 0);
         EXPECT_FALSE(connection->receive(data, 8));
         EXPECT_FALSE(connection->send(data));
     });
@@ -137,7 +130,7 @@ TEST(socket, double_connect)
         auto connection = socket::connection_socket::create("localhost", 10000);
         EXPECT_TRUE(connection->connect());
         EXPECT_FALSE(connection->connect());
-        disable_time_wait(connection->socket_);
+        disable_time_wait(connection->socket());
     });
 
     socket::connection_pointer connection = listener->accept();

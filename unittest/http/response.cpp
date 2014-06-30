@@ -18,9 +18,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#define private public
-#define protected public
-
 #include <http/response.hpp>
 
 #include <socket/mocksocketinterface.hpp>
@@ -32,16 +29,6 @@ namespace rest
 
 namespace http
 {
-
-TEST(response, construction_destruction)
-{
-    auto r = std::make_shared<response>(rest::socket::connection_pointer());
-    EXPECT_EQ(r->connection_, rest::socket::connection_pointer());
-    EXPECT_EQ(r->status_code_, status_code::INTERNAL_SERVER_ERROR);
-    EXPECT_EQ(r->version_, version::HTTP_1_1);
-    EXPECT_EQ(r->headers_.size(), 0);
-    EXPECT_EQ(r->data_.size(), 0);
-}
 
 TEST(response, set_and_deliver)
 {

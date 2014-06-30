@@ -38,14 +38,16 @@ public:
     static std::shared_ptr<connection_socket> create(const std::string & host,
             const uint16_t & port);
 
-    explicit connection_socket(const int & socket);
-    explicit connection_socket(const int & socket, const ::sockaddr_in & address);
+    explicit connection_socket(const int & s);
+    explicit connection_socket(const int & s, const ::sockaddr_in & address);
     virtual ~connection_socket();
     virtual bool connect();
     virtual void close();
     virtual bool receive(rest::buffer & data, const size_t & max_size);
     virtual bool send(const rest::buffer & data);
     virtual bool send(const std::string & data);
+
+    int socket() const;
 
 private:
     bool send(const char * buffer, const size_t & size);

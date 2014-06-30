@@ -67,9 +67,9 @@ std::shared_ptr<listener_socket> listener_socket::create(const std::string & hos
     return result;
 }
 
-listener_socket::listener_socket(const int & socket)
+listener_socket::listener_socket(const int & s)
     : is_listening_(true)
-    , socket_(socket)
+    , socket_(s)
 {}
 
 listener_socket::~listener_socket()
@@ -100,6 +100,11 @@ void listener_socket::stop()
 {
     is_listening_ = false;
     ::shutdown(socket_, SHUT_RDWR);
+}
+
+int listener_socket::socket() const
+{
+    return socket_;
 }
 
 } // namespace socket
