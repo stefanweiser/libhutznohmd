@@ -185,6 +185,9 @@ int main()
 
     rest::http::test_uri_parser("/");
     rest::http::test_uri_parser("http://localhost/");
+    rest::http::test_uri_parser("http://localhost:80/");
+    rest::http::test_uri_parser("http://user:pw@localhost:80/");
+    rest::http::test_uri_parser("http://user:pw@localhost:80/?a=b#anchor");
 
     return 0;
 }
