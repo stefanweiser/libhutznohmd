@@ -146,28 +146,62 @@ bool uri::parse_scheme(int32_t & character)
 
 bool uri::parse_authority(int32_t & character)
 {
-    if (false == parse_uri_word(character, userinfo_, &is_valid_uri_userinfo_character, lexer_)) {
+    // There is an ambiguity in the authority part of an URI specified by RFC3986. You are not
+    // able to correctly parse the the authority into tokens without looking ahead n symbols,
+    // where n is the length of the whole authority part, because the symbol of ':' could occur
+    // before and after the '@' symbol, which is also optional. So what do you do, if you have
+    // found a ':' symbol without an '@' symbol before? The ':' could be part of the user info or
+    // it separates host and port.
+    // Therefore it is easier to perform a 2-pass parsing to determine, whether a '@' symbol
+    // occurs or not.
+
+    if (false == parse_uri_word(character,
+                                host_,
+                                &is_valid_uri_authority_character,
+                                lexer_)) {
         return false;
     }
 
-    if ('@' != character) {
-        // This authority contains no userinfo. All we have parsed till here is part of the host.
-        host_.push_back(userinfo_.c_str());
-        userinfo_.clear();
-    } else {
+    if ('@' == character) {
+        userinfo_.push_back(host_.c_str());
+        host_.clear();
         character = lexer_.get();
     }
 
-    if (false == parse_uri_word(character, host_, &is_valid_uri_host_character, lexer_)) {
+    if (false == parse_uri_word(character,
+                                host_,
+                                &is_valid_uri_authority_character,
+                                lexer_)) {
         return false;
     }
 
-    if (':' == character) {
-        // A port is appended.
-        character = lexer_.get();
-        const int32_t p = lexer_.get_unsigned_integer(character);
-        if ((p > 0) && (p < 65536)) {
-            port_ = static_cast<uint16_t>(p);
+    // Now there are all parts of the authority at the right place, except the port number, if it
+    // exists. We will search the host backwards for a number and search the ':' symbol.
+    uint32_t port = 0;
+    uint32_t factor = 1;
+    for (ssize_t i = (host_.size() - 1); i >= 0; i--) {
+        const uint8_t c = static_cast<uint8_t>(host_[i] - '0');
+
+        if ((c < 10) && (factor <= 10000)) {
+
+            port += (factor * c);
+            factor *= 10;
+
+        } else if ((':' == host_[i]) && (port > 0) && (port < 65536)) {
+
+            port_ = static_cast<uint16_t>(port);
+
+            push_back_string<32> tmp;
+            host_[i] = '\0';
+            tmp.push_back(host_.c_str());
+            host_.clear();
+            host_.push_back(tmp.c_str());
+
+            break;
+
+        } else if (':' == host_[i]) {
+            // This host is erroneous, because it has no correct port component, but a ':' symbol.
+            return false;
         }
     }
 

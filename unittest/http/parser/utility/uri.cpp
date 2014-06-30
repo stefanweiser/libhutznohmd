@@ -95,7 +95,6 @@ TEST(uri, http_localhost)
     EXPECT_EQ(u->fragment_.c_str(), std::string(""));
 }
 
-/*! @todo This test is currently in question, because it will fail due to the ambiguity of ':'.
 TEST(uri, complete_uri)
 {
     fixture f("http://user:password@localhost:80/?a=b#anchor");
@@ -108,7 +107,19 @@ TEST(uri, complete_uri)
     EXPECT_EQ(u->query_.c_str(), std::string("a=b"));
     EXPECT_EQ(u->fragment_.c_str(), std::string("anchor"));
 }
-*/
+
+TEST(uri, erroneous_port)
+{
+    fixture f("http://localhost:80000/");
+    const std::unique_ptr<uri> u = f.parse(false);
+    EXPECT_EQ(u->scheme_, uri_scheme::HTTP);
+    EXPECT_EQ(u->userinfo_.c_str(), std::string(""));
+    EXPECT_EQ(u->host_.c_str(), std::string("localhost:80000"));
+    EXPECT_EQ(u->port_, 0);
+    EXPECT_EQ(u->path_.c_str(), std::string(""));
+    EXPECT_EQ(u->query_.c_str(), std::string(""));
+    EXPECT_EQ(u->fragment_.c_str(), std::string(""));
+}
 
 TEST(uri, mailto_user_at_localhost)
 {
