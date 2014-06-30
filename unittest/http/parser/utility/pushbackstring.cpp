@@ -18,9 +18,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#define private public
-#define protected public
-
 #include <http/parser/utility/pushbackstring.hpp>
 
 using namespace testing;
@@ -34,28 +31,53 @@ namespace http
 TEST(push_back_string, basic_usage)
 {
     push_back_string<4> s;
-    EXPECT_EQ(s.empty(), true);
+
+    EXPECT_TRUE(s.empty());
+
     s.push_back('0');
     s.push_back('1');
     s.push_back('2');
     s.push_back('3');
-    EXPECT_EQ(s.dynamic_buffer_, nullptr);
-    EXPECT_EQ(s.dynamic_size_, 0);
+    EXPECT_FALSE(s.empty());
+    EXPECT_EQ(s.size(), 4);
     EXPECT_EQ(std::string(s.c_str()), "0123");
+
     s.push_back('4');
-    EXPECT_NE(s.dynamic_buffer_, nullptr);
-    EXPECT_EQ(s.dynamic_size_, 9);
+    EXPECT_FALSE(s.empty());
+    EXPECT_EQ(s.size(), 5);
     EXPECT_EQ(std::string(s.c_str()), "01234");
+
     s.push_back('5');
     s.push_back('6');
     s.push_back('7');
-    EXPECT_NE(s.dynamic_buffer_, nullptr);
-    EXPECT_EQ(s.dynamic_size_, 9);
+    EXPECT_FALSE(s.empty());
+    EXPECT_EQ(s.size(), 8);
     EXPECT_EQ(std::string(s.c_str()), "01234567");
+
     s.push_back('8');
-    EXPECT_NE(s.dynamic_buffer_, nullptr);
-    EXPECT_EQ(s.dynamic_size_, 13);
+    EXPECT_FALSE(s.empty());
+    EXPECT_EQ(s.size(), 9);
     EXPECT_EQ(std::string(s.c_str()), "012345678");
+    for (size_t i = 0; i < s.size(); i++) {
+        EXPECT_EQ(s[i], '0' + i);
+    }
+
+    s.clear();
+    EXPECT_TRUE(s.empty());
+    EXPECT_EQ(s.size(), 0);
+
+    s.push_back("abc");
+    EXPECT_FALSE(s.empty());
+    EXPECT_EQ(s.size(), 3);
+    EXPECT_EQ(std::string(s.c_str()), "abc");
+
+    s.push_back("de");
+    EXPECT_FALSE(s.empty());
+    EXPECT_EQ(s.size(), 5);
+    EXPECT_EQ(std::string(s.c_str()), "abcde");
+    for (size_t i = 0; i < s.size(); i++) {
+        EXPECT_EQ(s[i], 'a' + i);
+    }
 }
 
 } // namespace http
