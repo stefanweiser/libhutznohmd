@@ -23,6 +23,7 @@
 #include <http/parser/requestparser.hpp>
 #include <http/parser/utility/date.hpp>
 #include <http/parser/utility/trie.hpp>
+#include <http/parser/utility/uri.hpp>
 
 namespace rest
 {
@@ -126,6 +127,33 @@ void test_http_date_parser(const std::string & date_string)
               << " us for date string: " << date_string << std::endl;
 }
 
+void test_uri_parser(const std::string & uri)
+{
+    {
+        // This initializes all static variables, that else would sophisticate the results.
+        string_index_pair p(uri, 0);
+        lexer l(anonymous_int_function(&get_char, &p),
+                anonymous_int_function(&peek_char, &p));
+        int32_t result = l.get();
+        rest::http::uri u(l);
+        u.parse(result);
+    }
+
+    std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
+    for (size_t i = 0; i < 1000000; i++) {
+        string_index_pair p(uri, 0);
+        lexer l(anonymous_int_function(&get_char, &p),
+                anonymous_int_function(&peek_char, &p));
+        int32_t result = l.get();
+        rest::http::uri u(l);
+        u.parse(result);
+    }
+    std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
+    auto diff = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+    std::cout << std::fixed << std::setprecision(3) << (diff.count() * 1000.0)
+              << " ns for uri: " << uri << std::endl;
+}
+
 } // namespace http
 
 } // namespace rest
@@ -150,12 +178,13 @@ int main()
     rest::http::test_http_date_parser("Sunday, 06-Nov-94 08:49:37 GMT");
     rest::http::test_http_date_parser("Sun Nov  6 08:49:37 1994");
 
-    std::cout << std::endl;
-
     rest::http::test_trie_parse("");
     rest::http::test_trie_parse("content-length");
     rest::http::test_trie_parse("content-type");
     rest::http::test_trie_parse("date");
+
+    rest::http::test_uri_parser("/");
+    rest::http::test_uri_parser("http://localhost/");
 
     return 0;
 }
