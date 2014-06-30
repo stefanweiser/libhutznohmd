@@ -21,6 +21,7 @@
 #include <cstdint>
 #include <ctime>
 #include <functional>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -421,7 +422,7 @@ public:
     virtual rest::http::version version() const = 0;
 
     //! Returns the custom header of the specified key.
-    virtual const std::string header(const std::string & key) const = 0;
+    virtual const std::map<std::string, std::string> & header() const = 0;
 
     //! Returns the data buffer.
     virtual rest::buffer data() const = 0;

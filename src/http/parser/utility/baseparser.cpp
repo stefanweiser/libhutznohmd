@@ -61,13 +61,9 @@ const rest::http::version & base_parser::version() const
     return version_;
 }
 
-const std::string base_parser::header(const std::string & key) const
+const std::map<std::string, std::string> & base_parser::header() const
 {
-    auto it = headers_.find(key);
-    if (it != headers_.end()) {
-        return it->second;
-    }
-    return "";
+    return headers_;
 }
 
 const size_t & base_parser::content_length() const

@@ -97,9 +97,9 @@ rest::http::version request::version() const
     return static_cast<rest::http::version>(request_parser_.version());
 }
 
-const std::string request::header(const std::string & key) const
+const std::map<std::string, std::string> & request::header() const
 {
-    return request_parser_.header(key);
+    return request_parser_.header();
 }
 
 rest::buffer request::data() const
