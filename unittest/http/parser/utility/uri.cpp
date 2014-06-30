@@ -281,6 +281,58 @@ TEST(uri, erroneous_scheme3)
     EXPECT_EQ(u->fragment().c_str(), std::string(""));
 }
 
+TEST(uri, erroneous_query)
+{
+    fixture f("/?a%2");
+    const std::unique_ptr<uri> u = f.parse(false);
+    EXPECT_EQ(u->scheme(), uri_scheme::UNKNOWN);
+    EXPECT_EQ(u->userinfo().c_str(), std::string(""));
+    EXPECT_EQ(u->host().c_str(), std::string(""));
+    EXPECT_EQ(u->port(), 0);
+    EXPECT_EQ(u->path().c_str(), std::string("/"));
+    EXPECT_EQ(u->query().c_str(), std::string("a"));
+    EXPECT_EQ(u->fragment().c_str(), std::string(""));
+}
+
+TEST(uri, erroneous_fragment)
+{
+    fixture f("/#a%2");
+    const std::unique_ptr<uri> u = f.parse(false);
+    EXPECT_EQ(u->scheme(), uri_scheme::UNKNOWN);
+    EXPECT_EQ(u->userinfo().c_str(), std::string(""));
+    EXPECT_EQ(u->host().c_str(), std::string(""));
+    EXPECT_EQ(u->port(), 0);
+    EXPECT_EQ(u->path().c_str(), std::string("/"));
+    EXPECT_EQ(u->query().c_str(), std::string(""));
+    EXPECT_EQ(u->fragment().c_str(), std::string("a"));
+}
+
+TEST(uri, erroneous_authority1)
+{
+    fixture f("http://loca%2lhost/");
+    const std::unique_ptr<uri> u = f.parse(false);
+    EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
+    EXPECT_EQ(u->userinfo().c_str(), std::string(""));
+    EXPECT_EQ(u->host().c_str(), std::string("loca"));
+    EXPECT_EQ(u->port(), 0);
+    EXPECT_EQ(u->path().c_str(), std::string(""));
+    EXPECT_EQ(u->query().c_str(), std::string(""));
+    EXPECT_EQ(u->fragment().c_str(), std::string(""));
+}
+
+TEST(uri, erroneous_authority2)
+{
+    fixture f("http://user@loca%2lhost/");
+    const std::unique_ptr<uri> u = f.parse(false);
+    EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
+    EXPECT_EQ(u->userinfo().c_str(), std::string("user"));
+    EXPECT_EQ(u->host().c_str(), std::string("loca"));
+    EXPECT_EQ(u->port(), 0);
+    EXPECT_EQ(u->path().c_str(), std::string(""));
+    EXPECT_EQ(u->query().c_str(), std::string(""));
+    EXPECT_EQ(u->fragment().c_str(), std::string(""));
+}
+
 } // namespace http
 
 } // namespace rest
