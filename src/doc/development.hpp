@@ -80,6 +80,9 @@ For coverage:
 For valgrind:
 - @b valgrind >= 3.7
 
+For metrics:
+- @b lizard >= 1.8.4 (see https://pypi.python.org/pypi/lizard)
+
 For packaging:
 - @b debhelper
 - @b rpmbuild >= 4.9
