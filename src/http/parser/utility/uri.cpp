@@ -44,8 +44,13 @@ bool parse_uri_word(int32_t & character,
                 return false;
             }
 
-            int32_t c = (from_hex(static_cast<char>(a)) << 4) + from_hex(static_cast<char>(b));
-            result.push_back(static_cast<char>(c));
+            char d = from_hex(static_cast<char>(a));
+            char e = from_hex(static_cast<char>(b));
+            if ((d == -1) || (e == -1)) {
+                return false;
+            }
+
+            result.push_back(static_cast<char>((d << 4) + e));
         } else {
             result.push_back(static_cast<char>(character));
         }
@@ -69,6 +74,39 @@ uri::uri(const lexer & l)
 {}
 
 bool uri::parse(int32_t & character)
+{
+    if (false == parse_scheme_and_authority(character)) {
+        return false;
+    }
+
+    if (('?' != character) && ('#' != character)) {
+        // Must be a path or the end of the URI.
+        if (false == parse_uri_word(character, path_, &is_valid_uri_path_character, lexer_)) {
+            return false;
+        }
+    }
+
+    if ('?' == character) {
+        character = lexer_.get();
+        if (false == parse_uri_word(character, query_, &is_valid_uri_query_character, lexer_)) {
+            return false;
+        }
+    }
+
+    if ('#' == character) {
+        character = lexer_.get();
+        if (false == parse_uri_word(character,
+                                    fragment_,
+                                    &is_valid_uri_fragment_character,
+                                    lexer_)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool uri::parse_scheme_and_authority(int32_t & character)
 {
     // Check whether there is a scheme and authority or neither of them. This is not conform with
     // RFC 3986, but HTTP specifies request URIs without scheme and authority.
@@ -102,30 +140,6 @@ bool uri::parse(int32_t & character)
         }
     }
 
-    if (('?' != character) && ('#' != character)) {
-        // Must be a path or the end of the URI.
-        if (false == parse_uri_word(character, path_, &is_valid_uri_path_character, lexer_)) {
-            return false;
-        }
-    }
-
-    if ('?' == character) {
-        character = lexer_.get();
-        if (false == parse_uri_word(character, query_, &is_valid_uri_query_character, lexer_)) {
-            return false;
-        }
-    }
-
-    if ('#' == character) {
-        character = lexer_.get();
-        if (false == parse_uri_word(character,
-                                    fragment_,
-                                    &is_valid_uri_fragment_character,
-                                    lexer_)) {
-            return false;
-        }
-    }
-
     return true;
 }
 
@@ -155,6 +169,15 @@ bool uri::parse_authority(int32_t & character)
     // Therefore it is easier to perform a 2-pass parsing to determine, whether a '@' symbol
     // occurs or not.
 
+    if (false == parse_authority_1st_pass(character)) {
+        return false;
+    }
+
+    return parse_authority_2nd_pass();
+}
+
+bool uri::parse_authority_1st_pass(int32_t & character)
+{
     if (false == parse_uri_word(character,
                                 host_,
                                 &is_valid_uri_authority_character,
@@ -175,6 +198,11 @@ bool uri::parse_authority(int32_t & character)
         return false;
     }
 
+    return true;
+}
+
+bool uri::parse_authority_2nd_pass()
+{
     // Now there are all parts of the authority at the right place, except the port number, if it
     // exists. We will search the host backwards for a number and search the ':' symbol.
     uint32_t port = 0;

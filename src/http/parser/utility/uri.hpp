@@ -43,8 +43,11 @@ public:
     bool parse(int32_t & character);
 
 private:
+    bool parse_scheme_and_authority(int32_t & character);
     bool parse_scheme(int32_t & character);
     bool parse_authority(int32_t & character);
+    bool parse_authority_1st_pass(int32_t & character);
+    bool parse_authority_2nd_pass();
 
     bool parse_word();
 
