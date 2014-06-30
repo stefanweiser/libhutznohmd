@@ -106,6 +106,47 @@ bool uri::parse(int32_t & character)
     return true;
 }
 
+void uri::set_scheme(const uri_scheme & new_scheme)
+{
+    scheme_ = new_scheme;
+}
+
+const uri_scheme & uri::scheme() const
+{
+    return scheme_;
+}
+
+const push_back_string<16> & uri::userinfo() const
+{
+    return userinfo_;
+}
+
+const push_back_string<32> & uri::host() const
+{
+    return host_;
+}
+
+const uint16_t & uri::port() const
+{
+    return port_;
+}
+
+const push_back_string<32> & uri::path() const
+{
+    return path_;
+}
+
+const push_back_string<32> & uri::query() const
+{
+    return query_;
+}
+
+const push_back_string<32> & uri::fragment() const
+{
+    return fragment_;
+}
+
+
 bool uri::parse_scheme_and_authority(int32_t & character)
 {
     // Check whether there is a scheme and authority or neither of them. This is not conform with
@@ -205,19 +246,19 @@ bool uri::parse_authority_2nd_pass()
 {
     // Now there are all parts of the authority at the right place, except the port number, if it
     // exists. We will search the host backwards for a number and search the ':' symbol.
-    uint32_t port = 0;
+    uint32_t p = 0;
     uint32_t factor = 1;
     for (ssize_t i = (host_.size() - 1); i >= 0; i--) {
         const uint8_t c = static_cast<uint8_t>(host_[i] - '0');
 
         if ((c < 10) && (factor <= 10000)) {
 
-            port += (factor * c);
+            p += (factor * c);
             factor *= 10;
 
-        } else if ((':' == host_[i]) && (port > 0) && (port < 65536)) {
+        } else if ((':' == host_[i]) && (p > 0) && (p < 65536)) {
 
-            port_ = static_cast<uint16_t>(port);
+            port_ = static_cast<uint16_t>(p);
 
             push_back_string<32> tmp;
             host_[i] = '\0';

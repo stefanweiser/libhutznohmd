@@ -82,6 +82,23 @@ std::unique_ptr<uri> fixture::parse(const bool expect_sucess)
 
 } // namespace
 
+TEST(uri, empty_then_set_scheme)
+{
+    fixture f("/");
+    const std::unique_ptr<uri> u = f.parse();
+    EXPECT_EQ(u->scheme_, uri_scheme::UNKNOWN);
+    EXPECT_EQ(u->userinfo_.c_str(), std::string(""));
+    EXPECT_EQ(u->host_.c_str(), std::string(""));
+    EXPECT_EQ(u->port_, 0);
+    EXPECT_EQ(u->path_.c_str(), std::string("/"));
+    EXPECT_EQ(u->query_.c_str(), std::string(""));
+    EXPECT_EQ(u->fragment_.c_str(), std::string(""));
+
+    u->set_scheme(uri_scheme::MAILTO);
+
+    EXPECT_EQ(u->scheme_, uri_scheme::MAILTO);
+}
+
 TEST(uri, http_localhost)
 {
     fixture f("http://localhost/");
@@ -106,6 +123,13 @@ TEST(uri, complete_uri)
     EXPECT_EQ(u->path_.c_str(), std::string("/"));
     EXPECT_EQ(u->query_.c_str(), std::string("a=b"));
     EXPECT_EQ(u->fragment_.c_str(), std::string("anchor"));
+    EXPECT_EQ(u->scheme_, u->scheme());
+    EXPECT_EQ(std::string(u->userinfo_.c_str()), u->userinfo().c_str());
+    EXPECT_EQ(std::string(u->host_.c_str()), u->host().c_str());
+    EXPECT_EQ(u->port_, u->port());
+    EXPECT_EQ(std::string(u->path_.c_str()), u->path().c_str());
+    EXPECT_EQ(std::string(u->query_.c_str()), u->query().c_str());
+    EXPECT_EQ(std::string(u->fragment_.c_str()), u->fragment().c_str());
 }
 
 TEST(uri, erroneous_port)
