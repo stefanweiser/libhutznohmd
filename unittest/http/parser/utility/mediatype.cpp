@@ -20,9 +20,6 @@
 
 #include <memory>
 
-#define private public
-#define protected public
-
 #include <http/parser/utility/mediatype.hpp>
 
 using namespace testing;

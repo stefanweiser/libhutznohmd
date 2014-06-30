@@ -18,9 +18,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#define private public
-#define protected public
-
 #include <http/parser/utility/base64.hpp>
 
 #include <rest.hpp>

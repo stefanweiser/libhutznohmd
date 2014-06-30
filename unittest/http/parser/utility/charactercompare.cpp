@@ -20,9 +20,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#define private public
-#define protected public
-
 #include <http/parser/utility/charactercompare.hpp>
 
 using namespace testing;
