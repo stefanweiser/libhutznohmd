@@ -76,6 +76,9 @@ void request_parser::parse()
         return;
     }
 
+    // A request uri is everytime HTTP.
+    request_uri_.set_scheme(uri_scheme::HTTP);
+
     character = lexer_.get_non_whitespace();
     {
         using value_type = std::tuple<rest::http::version, connection_type>;
