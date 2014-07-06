@@ -46,12 +46,12 @@ public:
     void set_scheme(const uri_scheme & new_scheme);
 
     const uri_scheme & scheme() const;
-    const push_back_string<16> & userinfo() const;
-    const push_back_string<32> & host() const;
+    const char * userinfo() const;
+    const char * host() const;
     const uint16_t & port() const;
-    const push_back_string<32> & path() const;
-    const push_back_string<32> & query() const;
-    const push_back_string<32> & fragment() const;
+    const char * path() const;
+    const char * query() const;
+    const char * fragment() const;
 
 private:
     bool parse_scheme_and_authority(int32_t & character);

@@ -116,14 +116,14 @@ const uri_scheme & uri::scheme() const
     return scheme_;
 }
 
-const push_back_string<16> & uri::userinfo() const
+const char * uri::userinfo() const
 {
-    return userinfo_;
+    return userinfo_.c_str();
 }
 
-const push_back_string<32> & uri::host() const
+const char * uri::host() const
 {
-    return host_;
+    return host_.c_str();
 }
 
 const uint16_t & uri::port() const
@@ -131,19 +131,19 @@ const uint16_t & uri::port() const
     return port_;
 }
 
-const push_back_string<32> & uri::path() const
+const char * uri::path() const
 {
-    return path_;
+    return path_.c_str();
 }
 
-const push_back_string<32> & uri::query() const
+const char * uri::query() const
 {
-    return query_;
+    return query_.c_str();
 }
 
-const push_back_string<32> & uri::fragment() const
+const char * uri::fragment() const
 {
-    return fragment_;
+    return fragment_.c_str();
 }
 
 

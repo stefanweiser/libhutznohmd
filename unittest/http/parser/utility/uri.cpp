@@ -84,12 +84,12 @@ TEST(uri, empty_then_set_scheme)
     fixture f("/");
     const std::unique_ptr<uri> u = f.parse();
     EXPECT_EQ(u->scheme(), uri_scheme::UNKNOWN);
-    EXPECT_EQ(u->userinfo().c_str(), std::string(""));
-    EXPECT_EQ(u->host().c_str(), std::string(""));
+    EXPECT_EQ(u->userinfo(), std::string(""));
+    EXPECT_EQ(u->host(), std::string(""));
     EXPECT_EQ(u->port(), 0);
-    EXPECT_EQ(u->path().c_str(), std::string("/"));
-    EXPECT_EQ(u->query().c_str(), std::string(""));
-    EXPECT_EQ(u->fragment().c_str(), std::string(""));
+    EXPECT_EQ(u->path(), std::string("/"));
+    EXPECT_EQ(u->query(), std::string(""));
+    EXPECT_EQ(u->fragment(), std::string(""));
 
     u->set_scheme(uri_scheme::MAILTO);
 
@@ -101,12 +101,12 @@ TEST(uri, http_localhost)
     fixture f("http://localhost/");
     const std::unique_ptr<uri> u = f.parse();
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
-    EXPECT_EQ(u->userinfo().c_str(), std::string(""));
-    EXPECT_EQ(u->host().c_str(), std::string("localhost"));
+    EXPECT_EQ(u->userinfo(), std::string(""));
+    EXPECT_EQ(u->host(), std::string("localhost"));
     EXPECT_EQ(u->port(), 0);
-    EXPECT_EQ(u->path().c_str(), std::string("/"));
-    EXPECT_EQ(u->query().c_str(), std::string(""));
-    EXPECT_EQ(u->fragment().c_str(), std::string(""));
+    EXPECT_EQ(u->path(), std::string("/"));
+    EXPECT_EQ(u->query(), std::string(""));
+    EXPECT_EQ(u->fragment(), std::string(""));
 }
 
 TEST(uri, complete_uri)
@@ -114,12 +114,12 @@ TEST(uri, complete_uri)
     fixture f("http://user:password@localhost:80/?a=b#anchor");
     const std::unique_ptr<uri> u = f.parse();
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
-    EXPECT_EQ(u->userinfo().c_str(), std::string("user:password"));
-    EXPECT_EQ(u->host().c_str(), std::string("localhost"));
+    EXPECT_EQ(u->userinfo(), std::string("user:password"));
+    EXPECT_EQ(u->host(), std::string("localhost"));
     EXPECT_EQ(u->port(), 80);
-    EXPECT_EQ(u->path().c_str(), std::string("/"));
-    EXPECT_EQ(u->query().c_str(), std::string("a=b"));
-    EXPECT_EQ(u->fragment().c_str(), std::string("anchor"));
+    EXPECT_EQ(u->path(), std::string("/"));
+    EXPECT_EQ(u->query(), std::string("a=b"));
+    EXPECT_EQ(u->fragment(), std::string("anchor"));
 }
 
 TEST(uri, erroneous_port)
@@ -127,12 +127,12 @@ TEST(uri, erroneous_port)
     fixture f("http://localhost:80000/");
     const std::unique_ptr<uri> u = f.parse(false);
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
-    EXPECT_EQ(u->userinfo().c_str(), std::string(""));
-    EXPECT_EQ(u->host().c_str(), std::string("localhost:80000"));
+    EXPECT_EQ(u->userinfo(), std::string(""));
+    EXPECT_EQ(u->host(), std::string("localhost:80000"));
     EXPECT_EQ(u->port(), 0);
-    EXPECT_EQ(u->path().c_str(), std::string(""));
-    EXPECT_EQ(u->query().c_str(), std::string(""));
-    EXPECT_EQ(u->fragment().c_str(), std::string(""));
+    EXPECT_EQ(u->path(), std::string(""));
+    EXPECT_EQ(u->query(), std::string(""));
+    EXPECT_EQ(u->fragment(), std::string(""));
 }
 
 TEST(uri, mailto_user_at_localhost)
@@ -140,12 +140,12 @@ TEST(uri, mailto_user_at_localhost)
     fixture f("mailto://user@localhost");
     const std::unique_ptr<uri> u = f.parse();
     EXPECT_EQ(u->scheme(), uri_scheme::MAILTO);
-    EXPECT_EQ(u->userinfo().c_str(), std::string("user"));
-    EXPECT_EQ(u->host().c_str(), std::string("localhost"));
+    EXPECT_EQ(u->userinfo(), std::string("user"));
+    EXPECT_EQ(u->host(), std::string("localhost"));
     EXPECT_EQ(u->port(), 0);
-    EXPECT_EQ(u->path().c_str(), std::string(""));
-    EXPECT_EQ(u->query().c_str(), std::string(""));
-    EXPECT_EQ(u->fragment().c_str(), std::string(""));
+    EXPECT_EQ(u->path(), std::string(""));
+    EXPECT_EQ(u->query(), std::string(""));
+    EXPECT_EQ(u->fragment(), std::string(""));
 }
 
 TEST(uri, no_authority)
@@ -153,12 +153,12 @@ TEST(uri, no_authority)
     fixture f("http:/");
     const std::unique_ptr<uri> u = f.parse();
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
-    EXPECT_EQ(u->userinfo().c_str(), std::string(""));
-    EXPECT_EQ(u->host().c_str(), std::string(""));
+    EXPECT_EQ(u->userinfo(), std::string(""));
+    EXPECT_EQ(u->host(), std::string(""));
     EXPECT_EQ(u->port(), 0);
-    EXPECT_EQ(u->path().c_str(), std::string("/"));
-    EXPECT_EQ(u->query().c_str(), std::string(""));
-    EXPECT_EQ(u->fragment().c_str(), std::string(""));
+    EXPECT_EQ(u->path(), std::string("/"));
+    EXPECT_EQ(u->query(), std::string(""));
+    EXPECT_EQ(u->fragment(), std::string(""));
 }
 
 TEST(uri, query_only)
@@ -166,12 +166,12 @@ TEST(uri, query_only)
     fixture f("http:?a=b");
     const std::unique_ptr<uri> u = f.parse();
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
-    EXPECT_EQ(u->userinfo().c_str(), std::string(""));
-    EXPECT_EQ(u->host().c_str(), std::string(""));
+    EXPECT_EQ(u->userinfo(), std::string(""));
+    EXPECT_EQ(u->host(), std::string(""));
     EXPECT_EQ(u->port(), 0);
-    EXPECT_EQ(u->path().c_str(), std::string(""));
-    EXPECT_EQ(u->query().c_str(), std::string("a=b"));
-    EXPECT_EQ(u->fragment().c_str(), std::string(""));
+    EXPECT_EQ(u->path(), std::string(""));
+    EXPECT_EQ(u->query(), std::string("a=b"));
+    EXPECT_EQ(u->fragment(), std::string(""));
 }
 
 TEST(uri, fragment_only)
@@ -179,12 +179,12 @@ TEST(uri, fragment_only)
     fixture f("http:#anchor");
     const std::unique_ptr<uri> u = f.parse();
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
-    EXPECT_EQ(u->userinfo().c_str(), std::string(""));
-    EXPECT_EQ(u->host().c_str(), std::string(""));
+    EXPECT_EQ(u->userinfo(), std::string(""));
+    EXPECT_EQ(u->host(), std::string(""));
     EXPECT_EQ(u->port(), 0);
-    EXPECT_EQ(u->path().c_str(), std::string(""));
-    EXPECT_EQ(u->query().c_str(), std::string(""));
-    EXPECT_EQ(u->fragment().c_str(), std::string("anchor"));
+    EXPECT_EQ(u->path(), std::string(""));
+    EXPECT_EQ(u->query(), std::string(""));
+    EXPECT_EQ(u->fragment(), std::string("anchor"));
 }
 
 TEST(uri, no_scheme_no_authority)
@@ -192,12 +192,12 @@ TEST(uri, no_scheme_no_authority)
     fixture f("/");
     const std::unique_ptr<uri> u = f.parse();
     EXPECT_EQ(u->scheme(), uri_scheme::UNKNOWN);
-    EXPECT_EQ(u->userinfo().c_str(), std::string(""));
-    EXPECT_EQ(u->host().c_str(), std::string(""));
+    EXPECT_EQ(u->userinfo(), std::string(""));
+    EXPECT_EQ(u->host(), std::string(""));
     EXPECT_EQ(u->port(), 0);
-    EXPECT_EQ(u->path().c_str(), std::string("/"));
-    EXPECT_EQ(u->query().c_str(), std::string(""));
-    EXPECT_EQ(u->fragment().c_str(), std::string(""));
+    EXPECT_EQ(u->path(), std::string("/"));
+    EXPECT_EQ(u->query(), std::string(""));
+    EXPECT_EQ(u->fragment(), std::string(""));
 }
 
 TEST(uri, http_localhost_with_percent_encoding)
@@ -205,12 +205,12 @@ TEST(uri, http_localhost_with_percent_encoding)
     fixture f("http://localhost/%48%65%6c%6C%6f%20%57%6F%72%6c%64%21");
     const std::unique_ptr<uri> u = f.parse();
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
-    EXPECT_EQ(u->userinfo().c_str(), std::string(""));
-    EXPECT_EQ(u->host().c_str(), std::string("localhost"));
+    EXPECT_EQ(u->userinfo(), std::string(""));
+    EXPECT_EQ(u->host(), std::string("localhost"));
     EXPECT_EQ(u->port(), 0);
-    EXPECT_EQ(u->path().c_str(), std::string("/Hello World!"));
-    EXPECT_EQ(u->query().c_str(), std::string(""));
-    EXPECT_EQ(u->fragment().c_str(), std::string(""));
+    EXPECT_EQ(u->path(), std::string("/Hello World!"));
+    EXPECT_EQ(u->query(), std::string(""));
+    EXPECT_EQ(u->fragment(), std::string(""));
 }
 
 TEST(uri, http_localhost_with_erroneous_percent_encoding)
@@ -218,12 +218,12 @@ TEST(uri, http_localhost_with_erroneous_percent_encoding)
     fixture f("http://localhost/%48%65%6g%6C%6f%20%57%6F%72%6c%64%21");
     const std::unique_ptr<uri> u = f.parse(false);
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
-    EXPECT_EQ(u->userinfo().c_str(), std::string(""));
-    EXPECT_EQ(u->host().c_str(), std::string("localhost"));
+    EXPECT_EQ(u->userinfo(), std::string(""));
+    EXPECT_EQ(u->host(), std::string("localhost"));
     EXPECT_EQ(u->port(), 0);
-    EXPECT_EQ(u->path().c_str(), std::string("/He"));
-    EXPECT_EQ(u->query().c_str(), std::string(""));
-    EXPECT_EQ(u->fragment().c_str(), std::string(""));
+    EXPECT_EQ(u->path(), std::string("/He"));
+    EXPECT_EQ(u->query(), std::string(""));
+    EXPECT_EQ(u->fragment(), std::string(""));
 }
 
 TEST(uri, http_localhost_with_erroneous_percent_encoding2)
@@ -231,12 +231,12 @@ TEST(uri, http_localhost_with_erroneous_percent_encoding2)
     fixture f("http://localhost/%48%65%6");
     const std::unique_ptr<uri> u = f.parse(false);
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
-    EXPECT_EQ(u->userinfo().c_str(), std::string(""));
-    EXPECT_EQ(u->host().c_str(), std::string("localhost"));
+    EXPECT_EQ(u->userinfo(), std::string(""));
+    EXPECT_EQ(u->host(), std::string("localhost"));
     EXPECT_EQ(u->port(), 0);
-    EXPECT_EQ(u->path().c_str(), std::string("/He"));
-    EXPECT_EQ(u->query().c_str(), std::string(""));
-    EXPECT_EQ(u->fragment().c_str(), std::string(""));
+    EXPECT_EQ(u->path(), std::string("/He"));
+    EXPECT_EQ(u->query(), std::string(""));
+    EXPECT_EQ(u->fragment(), std::string(""));
 }
 
 TEST(uri, erroneous_scheme)
@@ -244,12 +244,12 @@ TEST(uri, erroneous_scheme)
     fixture f("html");
     const std::unique_ptr<uri> u = f.parse(false);
     EXPECT_EQ(u->scheme(), uri_scheme::UNKNOWN);
-    EXPECT_EQ(u->userinfo().c_str(), std::string(""));
-    EXPECT_EQ(u->host().c_str(), std::string(""));
+    EXPECT_EQ(u->userinfo(), std::string(""));
+    EXPECT_EQ(u->host(), std::string(""));
     EXPECT_EQ(u->port(), 0);
-    EXPECT_EQ(u->path().c_str(), std::string(""));
-    EXPECT_EQ(u->query().c_str(), std::string(""));
-    EXPECT_EQ(u->fragment().c_str(), std::string(""));
+    EXPECT_EQ(u->path(), std::string(""));
+    EXPECT_EQ(u->query(), std::string(""));
+    EXPECT_EQ(u->fragment(), std::string(""));
 }
 
 TEST(uri, erroneous_scheme2)
@@ -257,12 +257,12 @@ TEST(uri, erroneous_scheme2)
     fixture f("http//");
     const std::unique_ptr<uri> u = f.parse(false);
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
-    EXPECT_EQ(u->userinfo().c_str(), std::string(""));
-    EXPECT_EQ(u->host().c_str(), std::string(""));
+    EXPECT_EQ(u->userinfo(), std::string(""));
+    EXPECT_EQ(u->host(), std::string(""));
     EXPECT_EQ(u->port(), 0);
-    EXPECT_EQ(u->path().c_str(), std::string(""));
-    EXPECT_EQ(u->query().c_str(), std::string(""));
-    EXPECT_EQ(u->fragment().c_str(), std::string(""));
+    EXPECT_EQ(u->path(), std::string(""));
+    EXPECT_EQ(u->query(), std::string(""));
+    EXPECT_EQ(u->fragment(), std::string(""));
 }
 
 TEST(uri, erroneous_scheme3)
@@ -270,12 +270,12 @@ TEST(uri, erroneous_scheme3)
     fixture f("http:");
     const std::unique_ptr<uri> u = f.parse(false);
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
-    EXPECT_EQ(u->userinfo().c_str(), std::string(""));
-    EXPECT_EQ(u->host().c_str(), std::string(""));
+    EXPECT_EQ(u->userinfo(), std::string(""));
+    EXPECT_EQ(u->host(), std::string(""));
     EXPECT_EQ(u->port(), 0);
-    EXPECT_EQ(u->path().c_str(), std::string(""));
-    EXPECT_EQ(u->query().c_str(), std::string(""));
-    EXPECT_EQ(u->fragment().c_str(), std::string(""));
+    EXPECT_EQ(u->path(), std::string(""));
+    EXPECT_EQ(u->query(), std::string(""));
+    EXPECT_EQ(u->fragment(), std::string(""));
 }
 
 TEST(uri, erroneous_query)
@@ -283,12 +283,12 @@ TEST(uri, erroneous_query)
     fixture f("/?a%2");
     const std::unique_ptr<uri> u = f.parse(false);
     EXPECT_EQ(u->scheme(), uri_scheme::UNKNOWN);
-    EXPECT_EQ(u->userinfo().c_str(), std::string(""));
-    EXPECT_EQ(u->host().c_str(), std::string(""));
+    EXPECT_EQ(u->userinfo(), std::string(""));
+    EXPECT_EQ(u->host(), std::string(""));
     EXPECT_EQ(u->port(), 0);
-    EXPECT_EQ(u->path().c_str(), std::string("/"));
-    EXPECT_EQ(u->query().c_str(), std::string("a"));
-    EXPECT_EQ(u->fragment().c_str(), std::string(""));
+    EXPECT_EQ(u->path(), std::string("/"));
+    EXPECT_EQ(u->query(), std::string("a"));
+    EXPECT_EQ(u->fragment(), std::string(""));
 }
 
 TEST(uri, erroneous_fragment)
@@ -296,12 +296,12 @@ TEST(uri, erroneous_fragment)
     fixture f("/#a%2");
     const std::unique_ptr<uri> u = f.parse(false);
     EXPECT_EQ(u->scheme(), uri_scheme::UNKNOWN);
-    EXPECT_EQ(u->userinfo().c_str(), std::string(""));
-    EXPECT_EQ(u->host().c_str(), std::string(""));
+    EXPECT_EQ(u->userinfo(), std::string(""));
+    EXPECT_EQ(u->host(), std::string(""));
     EXPECT_EQ(u->port(), 0);
-    EXPECT_EQ(u->path().c_str(), std::string("/"));
-    EXPECT_EQ(u->query().c_str(), std::string(""));
-    EXPECT_EQ(u->fragment().c_str(), std::string("a"));
+    EXPECT_EQ(u->path(), std::string("/"));
+    EXPECT_EQ(u->query(), std::string(""));
+    EXPECT_EQ(u->fragment(), std::string("a"));
 }
 
 TEST(uri, erroneous_authority1)
@@ -309,12 +309,12 @@ TEST(uri, erroneous_authority1)
     fixture f("http://loca%2lhost/");
     const std::unique_ptr<uri> u = f.parse(false);
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
-    EXPECT_EQ(u->userinfo().c_str(), std::string(""));
-    EXPECT_EQ(u->host().c_str(), std::string("loca"));
+    EXPECT_EQ(u->userinfo(), std::string(""));
+    EXPECT_EQ(u->host(), std::string("loca"));
     EXPECT_EQ(u->port(), 0);
-    EXPECT_EQ(u->path().c_str(), std::string(""));
-    EXPECT_EQ(u->query().c_str(), std::string(""));
-    EXPECT_EQ(u->fragment().c_str(), std::string(""));
+    EXPECT_EQ(u->path(), std::string(""));
+    EXPECT_EQ(u->query(), std::string(""));
+    EXPECT_EQ(u->fragment(), std::string(""));
 }
 
 TEST(uri, erroneous_authority2)
@@ -322,12 +322,12 @@ TEST(uri, erroneous_authority2)
     fixture f("http://user@loca%2lhost/");
     const std::unique_ptr<uri> u = f.parse(false);
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
-    EXPECT_EQ(u->userinfo().c_str(), std::string("user"));
-    EXPECT_EQ(u->host().c_str(), std::string("loca"));
+    EXPECT_EQ(u->userinfo(), std::string("user"));
+    EXPECT_EQ(u->host(), std::string("loca"));
     EXPECT_EQ(u->port(), 0);
-    EXPECT_EQ(u->path().c_str(), std::string(""));
-    EXPECT_EQ(u->query().c_str(), std::string(""));
-    EXPECT_EQ(u->fragment().c_str(), std::string(""));
+    EXPECT_EQ(u->path(), std::string(""));
+    EXPECT_EQ(u->query(), std::string(""));
+    EXPECT_EQ(u->fragment(), std::string(""));
 }
 
 } // namespace http
