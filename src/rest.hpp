@@ -47,6 +47,9 @@ enum class uri_scheme
 class uri_interface
 {
 public:
+    //! Returns whether the containing URI is valid or not.
+    virtual bool valid() const = 0;
+
     //! In "http://user@example.com:8080/?a=b#anchor" this is "http".
     virtual const uri_scheme & scheme() const = 0;
 
@@ -450,7 +453,7 @@ public:
     virtual rest::http::method method() const = 0;
 
     //! Requested URI.
-    virtual std::string request_uri() const = 0;
+    virtual const uri_interface & request_uri() const = 0;
 
     //! Requested HTTP version.
     virtual rest::http::version version() const = 0;

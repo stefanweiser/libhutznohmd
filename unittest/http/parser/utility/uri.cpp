@@ -71,9 +71,9 @@ std::unique_ptr<uri> fixture::parse(const bool expect_sucess)
     string_index_pair p(str_, 0);
     lexer l(anonymous_int_function(&get_char, &p),
             anonymous_int_function(&peek_char, &p));
-    std::unique_ptr<uri> m = std::unique_ptr<uri>(new uri(l));
+    std::unique_ptr<uri> m = std::unique_ptr<uri>(new uri());
     int32_t result = l.get();
-    EXPECT_EQ(expect_sucess, m->parse(result));
+    EXPECT_EQ(expect_sucess, m->parse(l, result));
     return m;
 }
 

@@ -39,23 +39,6 @@ request_parser::request_parser(const anonymous_int_function & get_functor,
     , accept_header_()
 {}
 
-namespace
-{
-
-bool lex_request_uri(int32_t & character, push_back_string<1000> & uri, const lexer & l)
-{
-    do {
-        if ((character < 0) || (false == is_valid_url_character(static_cast<uint8_t>(character)))) {
-            return false;
-        }
-        uri.push_back(static_cast<char>(character));
-        character = l.get();
-    } while ((character != ' ') && (character != '\t'));
-    return true;
-}
-
-} // namespace
-
 void request_parser::parse()
 {
     if (parser_state::UNFINISHED != state_) {
@@ -88,7 +71,7 @@ void request_parser::parse()
     }
 
     character = lexer_.get_non_whitespace();
-    if (false == lex_request_uri(character, request_uri_, lexer_)) {
+    if (false == request_uri_.parse(lexer_, character)) {
         state_ = parser_state::ERROR;
         return;
     }
@@ -138,9 +121,9 @@ const rest::http::method & request_parser::method() const
     return method_;
 }
 
-const std::string request_parser::request_uri() const
+const uri_interface & request_parser::request_uri() const
 {
-    return std::string(request_uri_.c_str());
+    return request_uri_;
 }
 
 bool request_parser::parse_accept(int32_t & character)

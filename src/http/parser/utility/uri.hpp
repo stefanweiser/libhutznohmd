@@ -33,12 +33,16 @@ namespace http
 class uri: public uri_interface
 {
 public:
-    explicit uri(const lexer & l);
+    explicit uri();
 
-    bool parse(int32_t & character);
+    explicit uri(const uri & rhs) = delete;
+    uri & operator=(const uri & rhs) = delete;
+
+    bool parse(const lexer & l, int32_t & character);
 
     void set_scheme(const uri_scheme & new_scheme);
 
+    virtual bool valid() const;
     virtual const uri_scheme & scheme() const;
     virtual const char * userinfo() const;
     virtual const char * host() const;
@@ -56,7 +60,8 @@ private:
 
     bool parse_word();
 
-    const lexer & lexer_;
+    const lexer * lexer_;
+    bool valid_;
     uri_scheme scheme_;
     push_back_string<16> userinfo_;
     push_back_string<32> host_;

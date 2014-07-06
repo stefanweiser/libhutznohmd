@@ -135,8 +135,8 @@ void test_uri_parser(const std::string & uri)
         lexer l(anonymous_int_function(&get_char, &p),
                 anonymous_int_function(&peek_char, &p));
         int32_t result = l.get();
-        rest::http::uri u(l);
-        u.parse(result);
+        rest::http::uri u;
+        u.parse(l, result);
     }
 
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
@@ -145,8 +145,8 @@ void test_uri_parser(const std::string & uri)
         lexer l(anonymous_int_function(&get_char, &p),
                 anonymous_int_function(&peek_char, &p));
         int32_t result = l.get();
-        rest::http::uri u(l);
-        u.parse(result);
+        rest::http::uri u;
+        u.parse(l, result);
     }
     std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
     auto diff = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);

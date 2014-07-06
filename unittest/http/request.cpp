@@ -59,7 +59,7 @@ TEST(request, empty_body)
     EXPECT_EQ(calculate_md5(request.data()), sum);
     EXPECT_EQ(request.data(), rest::buffer());
     EXPECT_EQ(request.method(), method::GET);
-    EXPECT_EQ(request.request_uri(), "/");
+    EXPECT_EQ(request.request_uri().path(), std::string("/"));
     EXPECT_EQ(request.version(), version::HTTP_1_1);
     EXPECT_EQ(request.keeps_connection(), true);
 }
@@ -92,7 +92,7 @@ TEST(request, wrong_md5)
     EXPECT_EQ(calculate_md5(request.data()), sum);
     EXPECT_EQ(request.data(), rest::buffer());
     EXPECT_EQ(request.method(), method::GET);
-    EXPECT_EQ(request.request_uri(), "/");
+    EXPECT_EQ(request.request_uri().path(), std::string("/"));
     EXPECT_EQ(request.version(), version::HTTP_1_1);
     EXPECT_EQ(request.keeps_connection(), true);
 }
@@ -125,7 +125,7 @@ TEST(request, wrong_md5_but_no_check)
     EXPECT_EQ(calculate_md5(request.data()), sum);
     EXPECT_EQ(request.data(), rest::buffer());
     EXPECT_EQ(request.method(), method::GET);
-    EXPECT_EQ(request.request_uri(), "/");
+    EXPECT_EQ(request.request_uri().path(), std::string("/"));
     EXPECT_EQ(request.version(), version::HTTP_1_1);
     EXPECT_EQ(request.keeps_connection(), true);
 }
@@ -157,7 +157,7 @@ TEST(request, parse)
     EXPECT_EQ(request.data(), rest::buffer({ '0' }));
     EXPECT_EQ(request.date(), 951868800);
     EXPECT_EQ(request.method(), method::GET);
-    EXPECT_EQ(request.request_uri(), "/");
+    EXPECT_EQ(request.request_uri().path(), std::string("/"));
     EXPECT_EQ(request.version(), version::HTTP_1_1);
     EXPECT_EQ(request.keeps_connection(), false);
 }
@@ -186,7 +186,7 @@ TEST(request, parse_false_return)
     EXPECT_EQ(request.headers().size(), 0);
     EXPECT_EQ(request.data().empty(), true);
     EXPECT_EQ(request.method(), method::GET);
-    EXPECT_EQ(request.request_uri(), "/");
+    EXPECT_EQ(request.request_uri().path(), std::string("/"));
     EXPECT_EQ(request.version(), version::HTTP_1_1);
 }
 
@@ -223,7 +223,7 @@ TEST(request, parse_large_request)
     EXPECT_LE(request.date(), compare_time);
     EXPECT_GE(request.date(), compare_time - 2);
     EXPECT_EQ(request.method(), method::GET);
-    EXPECT_EQ(request.request_uri(), "/");
+    EXPECT_EQ(request.request_uri().path(), std::string("/"));
     EXPECT_EQ(request.version(), version::HTTP_1_1);
 }
 

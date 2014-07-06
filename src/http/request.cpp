@@ -87,7 +87,7 @@ rest::http::method request::method() const
     return static_cast<rest::http::method>(request_parser_.method());
 }
 
-std::string request::request_uri() const
+const uri_interface & request::request_uri() const
 {
     return request_parser_.request_uri();
 }

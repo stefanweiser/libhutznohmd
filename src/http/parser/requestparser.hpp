@@ -23,6 +23,7 @@
 #include <http/parser/utility/lexer.hpp>
 #include <http/parser/utility/mediatype.hpp>
 #include <http/parser/utility/pushbackstring.hpp>
+#include <http/parser/utility/uri.hpp>
 
 #include <rest.hpp>
 
@@ -46,14 +47,14 @@ public:
                             const anonymous_int_function & peek_functor);
     void parse();
     const rest::http::method & method() const;
-    const std::string request_uri() const;
+    const uri_interface & request_uri() const;
 
 private:
     bool parse_accept(int32_t & character);
     bool parse_headers(int32_t & character);
 
     rest::http::method method_;
-    push_back_string<1000> request_uri_;
+    uri request_uri_;
 
     std::vector<std::unique_ptr<media_type>> accept_header_;
 };
