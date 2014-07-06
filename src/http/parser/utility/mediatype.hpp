@@ -66,7 +66,7 @@ public:
     media_type_subtype subtype() const;
     const char * custom_type() const;
     const char * custom_subtype() const;
-    const char * parameter(const char * key) const;
+    const std::map<std::string, std::string> & parameters() const;
     uint8_t quality() const;
 
     //! Returns a value, that defines how specific the media type is. The less the value, the more

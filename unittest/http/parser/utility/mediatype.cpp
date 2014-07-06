@@ -167,7 +167,7 @@ TEST(http_media_type, multipart_wildcard)
     EXPECT_EQ(m.subtype(), media_type_subtype::WILDCARD);
     EXPECT_EQ(m.custom_type(), std::string(""));
     EXPECT_EQ(m.custom_subtype(), std::string(""));
-    EXPECT_EQ(m.parameter("r"), std::string("\xFF\xFE\xFD"));
+    EXPECT_EQ(m.parameters().find("r")->second, std::string("\xFF\xFE\xFD"));
 }
 
 TEST(http_media_type, text_wildcard)
@@ -198,8 +198,8 @@ TEST(http_media_type, text_plain_parameter)
     EXPECT_EQ(m.subtype(), media_type_subtype::PLAIN);
     EXPECT_EQ(m.custom_type(), std::string(""));
     EXPECT_EQ(m.custom_subtype(), std::string(""));
-    EXPECT_EQ(m.parameter("p"), std::string(""));
-    EXPECT_EQ(m.parameter("r"), std::string("0.1"));
+    EXPECT_EQ(m.parameters().find("p"), m.parameters().end());
+    EXPECT_EQ(m.parameters().find("r")->second, std::string("0.1"));
     EXPECT_EQ(m.quality(), 10);
 }
 
@@ -211,8 +211,9 @@ TEST(http_media_type, applucation_wildcard)
     EXPECT_EQ(m.subtype(), media_type_subtype::WILDCARD);
     EXPECT_EQ(m.custom_type(), std::string("applucation"));
     EXPECT_EQ(m.custom_subtype(), std::string(""));
-    EXPECT_EQ(m.parameter("p"), std::string("0.1"));
-    EXPECT_EQ(m.parameter("r"), std::string("0.2"));
+    EXPECT_EQ(m.parameters().find("p")->second, std::string("0.1"));
+    EXPECT_EQ(m.parameters().find("q"), m.parameters().end());
+    EXPECT_EQ(m.parameters().find("r")->second, std::string("0.2"));
     EXPECT_EQ(m.quality(), 5);
 }
 
@@ -304,18 +305,18 @@ TEST(http_media_type, erroneous_parameter_equal_sign)
     EXPECT_EQ(m.subtype(), media_type_subtype::WILDCARD);
     EXPECT_EQ(m.custom_type(), std::string(""));
     EXPECT_EQ(m.custom_subtype(), std::string(""));
-    EXPECT_EQ(m.parameter("q"), std::string(""));
+    EXPECT_EQ(m.parameters().find("q"), m.parameters().end());
 }
 
 TEST(http_media_type, erroneous_parameter_quoted_string)
 {
-    fixture f("audio/*;r=\"0.1\n");
+    fixture f("audio/*;q=\"0.1\n");
     const media_type m = f.parse(false);
     EXPECT_EQ(m.type(), media_type_type::AUDIO);
     EXPECT_EQ(m.subtype(), media_type_subtype::WILDCARD);
     EXPECT_EQ(m.custom_type(), std::string(""));
     EXPECT_EQ(m.custom_subtype(), std::string(""));
-    EXPECT_EQ(m.parameter("r"), std::string(""));
+    EXPECT_EQ(m.parameters().find("q"), m.parameters().end());
 }
 
 TEST(http_media_type, specification_grade1)

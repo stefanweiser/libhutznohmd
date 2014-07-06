@@ -104,13 +104,9 @@ const char * media_type::custom_subtype() const
     return custom_subtype_.c_str();
 }
 
-const char * media_type::parameter(const char * key) const
+const std::map<std::string, std::string> & media_type::parameters() const
 {
-    auto it = parameters_.find(key);
-    if (it != parameters_.end()) {
-        return it->second.c_str();
-    }
-    return "";
+    return parameters_;
 }
 
 uint8_t media_type::quality() const
