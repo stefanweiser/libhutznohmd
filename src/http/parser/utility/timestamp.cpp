@@ -282,7 +282,6 @@ time_t parse_timestamp(int32_t & character, const lexer & l)
     } else {
         return parse_rfc1123_date_time(character, l);
     }
-    return -1;
 }
 
 } // namespace http
