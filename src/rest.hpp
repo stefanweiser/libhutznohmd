@@ -47,6 +47,8 @@ enum class uri_scheme
 class uri_interface
 {
 public:
+    virtual ~uri_interface() {}
+
     //! Returns whether the containing URI is valid or not.
     virtual bool valid() const = 0;
 
@@ -97,6 +99,8 @@ public:
         WILDCARD = 0,
         PLAIN = 1
     };
+
+    virtual ~media_type_interface() {}
 
     //! Returns the type, if the media type is known or media_type_type::CUSTOM if unknown.
     virtual mime_type type() const = 0;
