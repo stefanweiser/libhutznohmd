@@ -57,6 +57,7 @@ public:
 private:
     bool parse_scheme_and_authority(int32_t & character, const bool skip_scheme);
     bool parse_scheme(int32_t & character);
+    bool parse_userinfo_and_authority(int32_t & character);
     bool parse_authority(int32_t & character);
     bool parse_authority_1st_pass(int32_t & character);
     bool parse_authority_2nd_pass();

@@ -214,19 +214,8 @@ bool uri::parse_scheme_and_authority(int32_t & character, const bool skip_scheme
                 return false;
             }
 
-            if ('/' == character) {
-                const int32_t last_character = character;
-                path_.push_back(static_cast<char>(character));
-                character = lexer_->get();
-
-                if (('/' == last_character) && ('/' == character)) {
-                    // It is no path. It is an authority.
-                    path_.clear();
-                    character = lexer_->get();
-                    if (false == parse_authority(character)) {
-                        return false;
-                    }
-                }
+            if (false == parse_userinfo_and_authority(character)) {
+                return false;
             }
         } else {
             if (false == parse_authority(character)) {
@@ -252,6 +241,25 @@ bool uri::parse_scheme(int32_t & character)
     push_back_string<8> tmp;
     std::tie(scheme_, port_) = t.parse(character, tmp, *lexer_);
     return (uri_scheme::UNKNOWN != scheme_);
+}
+
+bool uri::parse_userinfo_and_authority(int32_t & character)
+{
+    if ('/' == character) {
+        const int32_t last_character = character;
+        path_.push_back(static_cast<char>(character));
+        character = lexer_->get();
+
+        if (('/' == last_character) && ('/' == character)) {
+            // It is no path. It is an authority.
+            path_.clear();
+            character = lexer_->get();
+            if (false == parse_authority(character)) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 bool uri::parse_authority(int32_t & character)
