@@ -102,9 +102,14 @@ const std::map<std::string, std::string> & request::headers() const
     return request_parser_.headers();
 }
 
-rest::buffer request::data() const
+const rest::buffer & request::data() const
 {
     return data_;
+}
+
+const media_type_interface & request::data_content_type() const
+{
+    return request_parser_.content_type();
 }
 
 time_t request::date() const

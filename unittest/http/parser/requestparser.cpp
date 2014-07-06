@@ -209,6 +209,19 @@ TEST(request_parser, same_custom_header_name_request)
     EXPECT_EQ(f.parser_.headers().find("check")->second, " HEAD, GET");
 }
 
+TEST(request_parser, accept_header_request)
+{
+    fixture f("GET / HTTP/1.0\r\nAccept: text/plain\r\n\r\n");
+    f.parser_.parse();
+    EXPECT_TRUE(f.parser_.valid());
+    EXPECT_EQ(f.str_.second, f.str_.first.size());
+    EXPECT_EQ(f.parser_.accept_header().size(), 1);
+    EXPECT_EQ(f.parser_.accept_header().front()->type(),
+              media_type_interface::mime_type::TEXT);
+    EXPECT_EQ(f.parser_.accept_header().front()->subtype(),
+              media_type_interface::mime_subtype::PLAIN);
+}
+
 TEST(request_parser, unknown_content_length_in_request)
 {
     fixture f("DELETE / HTTP/1.1\r\nContent-Length:\n a\r\nABC:\r\nDEF:\r\n\r\n");

@@ -56,7 +56,7 @@ public:
     const rest::http::version & version() const;
     const std::map<std::string, std::string> & headers() const;
     const size_t & content_length() const;
-    const media_type & content_type() const;
+    const media_type_interface & content_type() const;
     const time_t & date() const;
     bool keeps_connection() const;
     const std::array<uint8_t, 16> & md5() const;

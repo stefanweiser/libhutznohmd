@@ -513,7 +513,10 @@ public:
     virtual const std::map<std::string, std::string> & headers() const = 0;
 
     //! Returns the data buffer.
-    virtual rest::buffer data() const = 0;
+    virtual const rest::buffer & data() const = 0;
+
+    //! Returns the conent type of the data buffer.
+    virtual const media_type_interface & data_content_type() const = 0;
 
     //! Returns the content of the date header or the current timestamp.
     virtual time_t date() const = 0;

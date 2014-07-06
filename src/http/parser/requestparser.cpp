@@ -129,6 +129,15 @@ const uri_interface & request_parser::request_uri() const
     return request_uri_;
 }
 
+std::vector<const media_type_interface *> request_parser::accept_header() const
+{
+    std::vector<const media_type_interface *> result;
+    for (size_t i = 0; i < accept_header_.size(); i++) {
+        result.push_back(&(accept_header_[i]));
+    }
+    return result;
+}
+
 bool request_parser::parse_accept(int32_t & character)
 {
     do {

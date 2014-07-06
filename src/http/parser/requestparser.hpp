@@ -48,6 +48,7 @@ public:
     void parse();
     const rest::http::method & method() const;
     const uri_interface & request_uri() const;
+    std::vector<const media_type_interface *> accept_header() const;
 
 private:
     bool parse_accept(int32_t & character);

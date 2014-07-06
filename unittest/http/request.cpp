@@ -58,6 +58,10 @@ TEST(request, empty_body)
     EXPECT_EQ(request.headers().size(), 0);
     EXPECT_EQ(calculate_md5(request.data()), sum);
     EXPECT_EQ(request.data(), rest::buffer());
+    EXPECT_EQ(request.data_content_type().type(), media_type_interface::mime_type::CUSTOM);
+    EXPECT_EQ(request.data_content_type().subtype(), media_type_interface::mime_subtype::CUSTOM);
+    EXPECT_EQ(request.data_content_type().custom_type(), std::string());
+    EXPECT_EQ(request.data_content_type().custom_subtype(), std::string());
     EXPECT_EQ(request.method(), method::GET);
     EXPECT_EQ(request.request_uri().path(), std::string("/"));
     EXPECT_EQ(request.version(), version::HTTP_1_1);
