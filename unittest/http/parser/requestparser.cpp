@@ -222,6 +222,21 @@ TEST(request_parser, accept_header_request)
               media_type_interface::mime_subtype::PLAIN);
 }
 
+TEST(request_parser, host_header_request)
+{
+    fixture f("GET / HTTP/1.0\r\nHost: user:pw@example.com\r\n\r\n");
+    f.parser_.parse();
+    EXPECT_TRUE(f.parser_.valid());
+    EXPECT_EQ(f.str_.second, f.str_.first.size());
+    EXPECT_EQ(f.parser_.request_uri().scheme(), uri_scheme::HTTP);
+    EXPECT_EQ(f.parser_.request_uri().userinfo(), std::string("user:pw"));
+    EXPECT_EQ(f.parser_.request_uri().host(), std::string("example.com"));
+    EXPECT_EQ(f.parser_.request_uri().port(), 80);
+    EXPECT_EQ(f.parser_.request_uri().path(), std::string("/"));
+    EXPECT_EQ(f.parser_.request_uri().query(), std::string());
+    EXPECT_EQ(f.parser_.request_uri().fragment(), std::string());
+}
+
 TEST(request_parser, unknown_content_length_in_request)
 {
     fixture f("DELETE / HTTP/1.1\r\nContent-Length:\n a\r\nABC:\r\nDEF:\r\n\r\n");
