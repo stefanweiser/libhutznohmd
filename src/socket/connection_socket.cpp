@@ -25,7 +25,7 @@
 
 #include <socket/utility.hpp>
 
-#include "connectionsocket.hpp"
+#include "connection_socket.hpp"
 
 namespace rest
 {

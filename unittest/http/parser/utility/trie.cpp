@@ -81,7 +81,7 @@ size_t fixture::parse(const std::vector<trie<size_t>::value_info> & values,
 
 } // namespace
 
-TEST(trie_parse, basic_function)
+TEST(trie, basic_function)
 {
     fixture f("abc");
     push_back_string<4> fail_safe_result;
@@ -95,7 +95,7 @@ TEST(trie_parse, basic_function)
     EXPECT_EQ(fail_safe_result.c_str(), std::string(""));
 }
 
-TEST(trie_parse, basic_function2)
+TEST(trie, basic_function2)
 {
     fixture f("aef");
     push_back_string<4> fail_safe_result;
@@ -109,7 +109,7 @@ TEST(trie_parse, basic_function2)
     EXPECT_EQ(fail_safe_result.c_str(), std::string(""));
 }
 
-TEST(trie_parse, failed)
+TEST(trie, failed)
 {
     fixture f("aef");
     push_back_string<4> fail_safe_result;

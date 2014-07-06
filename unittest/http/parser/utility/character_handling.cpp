@@ -20,7 +20,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <http/parser/utility/charactercompare.hpp>
+#include <http/parser/utility/character_handling.hpp>
 
 using namespace testing;
 
@@ -30,7 +30,7 @@ namespace rest
 namespace http
 {
 
-TEST(charactercompare, to_lower)
+TEST(character_handling, to_lower)
 {
     const std::array<uint8_t, 256> validity_map = {
         {
@@ -59,7 +59,7 @@ TEST(charactercompare, to_lower)
     }
 }
 
-TEST(charactercompare, from_hex)
+TEST(character_handling, from_hex)
 {
     std::array<char, 256> validity_map;
     validity_map.fill(-1);
@@ -92,7 +92,7 @@ TEST(charactercompare, from_hex)
     }
 }
 
-TEST(charactercompare, uri_authority_characters)
+TEST(character_handling, uri_authority_characters)
 {
     std::array<bool, 256> validity_map;
     std::fill(validity_map.begin(), validity_map.end(), false);
@@ -131,7 +131,7 @@ TEST(charactercompare, uri_authority_characters)
     }
 }
 
-TEST(charactercompare, uri_path_characters)
+TEST(character_handling, uri_path_characters)
 {
     std::array<bool, 256> validity_map;
     std::fill(validity_map.begin(), validity_map.end(), false);
@@ -173,7 +173,7 @@ TEST(charactercompare, uri_path_characters)
     }
 }
 
-TEST(charactercompare, uri_query_characters)
+TEST(character_handling, uri_query_characters)
 {
     std::array<bool, 256> validity_map;
     std::fill(validity_map.begin(), validity_map.end(), false);
@@ -216,7 +216,7 @@ TEST(charactercompare, uri_query_characters)
     }
 }
 
-TEST(charactercompare, uri_fragment_characters)
+TEST(character_handling, uri_fragment_characters)
 {
     std::array<bool, 256> validity_map;
     std::fill(validity_map.begin(), validity_map.end(), false);
@@ -260,7 +260,7 @@ TEST(charactercompare, uri_fragment_characters)
     }
 }
 
-TEST(charactercompare, token_characters)
+TEST(character_handling, token_characters)
 {
     std::array<bool, 256> validity_map;
     // Any CHAR
@@ -288,7 +288,7 @@ TEST(charactercompare, token_characters)
     }
 }
 
-TEST(charactercompare, header_value_characters)
+TEST(character_handling, header_value_characters)
 {
     std::array<bool, 256> validity_map;
 
@@ -307,7 +307,7 @@ TEST(charactercompare, header_value_characters)
     }
 }
 
-TEST(charactercompare, quoted_string_characters)
+TEST(character_handling, quoted_string_characters)
 {
     std::array<bool, 256> validity_map;
     // Any OCTET, but no CTLs

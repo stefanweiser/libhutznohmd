@@ -19,8 +19,8 @@
 
 #include <gtest/gtest.h>
 
-#include <socket/connectionsocket.hpp>
-#include <socket/listenersocket.hpp>
+#include <socket/connection_socket.hpp>
+#include <socket/listener_socket.hpp>
 
 namespace rest
 {

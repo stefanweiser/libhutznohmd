@@ -21,9 +21,9 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include <socket/connectionsocket.hpp>
+#include <socket/connection_socket.hpp>
 
-#include "listenersocket.hpp"
+#include "listener_socket.hpp"
 
 namespace rest
 {

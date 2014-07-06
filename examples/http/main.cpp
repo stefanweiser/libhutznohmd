@@ -18,7 +18,7 @@
 #include <fstream>
 #include <iostream>
 
-#include <socket/socketinterface.hpp>
+#include <socket/socket_interface.hpp>
 #include <http/request.hpp>
 
 class connection: public rest::socket::connection_socket_interface

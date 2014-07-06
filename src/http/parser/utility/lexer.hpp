@@ -21,9 +21,9 @@
 #include <cstddef>
 #include <string>
 
-#include <http/parser/utility/anonymousintfunction.hpp>
-#include <http/parser/utility/charactercompare.hpp>
-#include <http/parser/utility/pushbackstring.hpp>
+#include <http/parser/utility/anonymous_int_function.hpp>
+#include <http/parser/utility/character_handling.hpp>
+#include <http/parser/utility/push_back_string.hpp>
 
 namespace rest
 {

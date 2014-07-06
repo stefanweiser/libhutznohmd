@@ -20,10 +20,10 @@
 #include <limits>
 #include <map>
 
-#include <http/parser/utility/date.hpp>
+#include <http/parser/utility/timestamp.hpp>
 #include <http/parser/utility/trie.hpp>
 
-#include "responseparser.hpp"
+#include "response_parser.hpp"
 
 namespace rest
 {

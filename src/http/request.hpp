@@ -22,11 +22,11 @@
 #include <map>
 #include <memory>
 
-#include <socket/listenersocket.hpp>
+#include <socket/listener_socket.hpp>
 
 #include <rest.hpp>
 
-#include <http/parser/requestparser.hpp>
+#include <http/parser/request_parser.hpp>
 
 namespace rest
 {

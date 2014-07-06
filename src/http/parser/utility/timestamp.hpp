@@ -15,8 +15,8 @@
  * along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_HTTP_PARSER_UTILITY_DATE_HPP
-#define LIBREST_HTTP_PARSER_UTILITY_DATE_HPP
+#ifndef LIBREST_HTTP_PARSER_UTILITY_TIMESTAMP_HPP
+#define LIBREST_HTTP_PARSER_UTILITY_TIMESTAMP_HPP
 
 #include <cstddef>
 #include <ctime>
@@ -35,4 +35,4 @@ time_t parse_timestamp(int32_t & character, const lexer & l);
 
 } // namespace rest
 
-#endif // LIBREST_HTTP_PARSER_UTILITY_DATE_HPP
+#endif // LIBREST_HTTP_PARSER_UTILITY_TIMESTAMP_HPP

@@ -19,7 +19,6 @@
 #include <gmock/gmock.h>
 
 #include <http/parser/utility/md5.hpp>
-#include <http/parser/utility/base64.hpp>
 
 #include <rest.hpp>
 

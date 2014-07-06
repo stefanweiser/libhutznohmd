@@ -15,8 +15,8 @@
  * along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_HTTP_PARSER_UTILITY_CHARACTERCOMPARE_HPP
-#define LIBREST_HTTP_PARSER_UTILITY_CHARACTERCOMPARE_HPP
+#ifndef LIBREST_HTTP_PARSER_UTILITY_CHARACTER_COMPARE_HPP
+#define LIBREST_HTTP_PARSER_UTILITY_CHARACTER_COMPARE_HPP
 
 #include <array>
 #include <type_traits>
@@ -252,4 +252,4 @@ static bool UNUSED is_valid_quoted_string_character(uint8_t c)
 
 } // namespace rest
 
-#endif // LIBREST_HTTP_PARSER_UTILITY_CHARACTERCOMPARE_HPP
+#endif // LIBREST_HTTP_PARSER_UTILITY_CHARACTER_COMPARE_HPP

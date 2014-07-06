@@ -18,7 +18,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <http/parser/responseparser.hpp>
+#include <http/parser/response_parser.hpp>
 
 using namespace testing;
 

@@ -19,7 +19,7 @@
 #define LIBREST_HTTP_PARSER_UTILITY_URI_HPP
 
 #include <http/parser/utility/lexer.hpp>
-#include <http/parser/utility/pushbackstring.hpp>
+#include <http/parser/utility/push_back_string.hpp>
 
 #include <rest.hpp>
 

@@ -17,10 +17,10 @@
 
 #include <array>
 
-#include <http/parser/utility/charactercompare.hpp>
+#include <http/parser/utility/character_handling.hpp>
 #include <http/parser/utility/trie.hpp>
 
-#include "mediatype.hpp"
+#include "media_type.hpp"
 
 namespace rest
 {

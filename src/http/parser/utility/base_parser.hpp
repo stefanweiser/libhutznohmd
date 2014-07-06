@@ -15,13 +15,13 @@
  * along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_HTTP_PARSER_UTILITY_BASEPARSER_HPP
-#define LIBREST_HTTP_PARSER_UTILITY_BASEPARSER_HPP
+#ifndef LIBREST_HTTP_PARSER_UTILITY_BASE_PARSER_HPP
+#define LIBREST_HTTP_PARSER_UTILITY_BASE_PARSER_HPP
 
-#include <http/parser/utility/anonymousintfunction.hpp>
+#include <http/parser/utility/anonymous_int_function.hpp>
 #include <http/parser/utility/lexer.hpp>
-#include <http/parser/utility/mediatype.hpp>
-#include <http/parser/utility/pushbackstring.hpp>
+#include <http/parser/utility/media_type.hpp>
+#include <http/parser/utility/push_back_string.hpp>
 #include <http/parser/utility/trie.hpp>
 
 #include <rest.hpp>
@@ -118,4 +118,4 @@ bool base_parser::parse_generic_header(
 
 } // namespace rest
 
-#endif // LIBREST_HTTP_PARSER_UTILITY_BASEPARSER_HPP
+#endif // LIBREST_HTTP_PARSER_UTILITY_BASE_PARSER_HPP

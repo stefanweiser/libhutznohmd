@@ -15,8 +15,8 @@
  * along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_HTTP_PARSER_UTILITY_PUSHBACKSTRING_HPP
-#define LIBREST_HTTP_PARSER_UTILITY_PUSHBACKSTRING_HPP
+#ifndef LIBREST_HTTP_PARSER_UTILITY_PUSH_BACK_STRING_HPP
+#define LIBREST_HTTP_PARSER_UTILITY_PUSH_BACK_STRING_HPP
 
 #include <cstring>
 #include <cstdlib>
@@ -181,4 +181,4 @@ void push_back_string<maximum_size>::clear()
 
 } // namespace rest
 
-#endif // LIBREST_HTTP_PARSER_UTILITY_PUSHBACKSTRING_HPP
+#endif // LIBREST_HTTP_PARSER_UTILITY_PUSH_BACK_STRING_HPP

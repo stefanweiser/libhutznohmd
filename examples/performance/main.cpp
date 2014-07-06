@@ -20,8 +20,8 @@
 #include <iostream>
 #include <sstream>
 
-#include <http/parser/requestparser.hpp>
-#include <http/parser/utility/date.hpp>
+#include <http/parser/request_parser.hpp>
+#include <http/parser/utility/timestamp.hpp>
 #include <http/parser/utility/trie.hpp>
 #include <http/parser/utility/uri.hpp>
 

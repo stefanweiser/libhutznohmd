@@ -15,15 +15,15 @@
  * along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_HTTP_PARSER_UTILITY_MEDIATYPE_HPP
-#define LIBREST_HTTP_PARSER_UTILITY_MEDIATYPE_HPP
+#ifndef LIBREST_HTTP_PARSER_UTILITY_MEDIA_TYPE_HPP
+#define LIBREST_HTTP_PARSER_UTILITY_MEDIA_TYPE_HPP
 
 #include <cstddef>
 #include <cstring>
 #include <map>
 
 #include <http/parser/utility/lexer.hpp>
-#include <http/parser/utility/pushbackstring.hpp>
+#include <http/parser/utility/push_back_string.hpp>
 
 #include <rest.hpp>
 
@@ -71,4 +71,4 @@ private:
 
 } // namespace rest
 
-#endif // LIBREST_HTTP_PARSER_UTILITY_MEDIATYPE_HPP
+#endif // LIBREST_HTTP_PARSER_UTILITY_MEDIA_TYPE_HPP

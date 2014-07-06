@@ -19,7 +19,7 @@
 #include <gmock/gmock.h>
 
 #include <http/server.hpp>
-#include <socket/connectionsocket.hpp>
+#include <socket/connection_socket.hpp>
 
 using namespace testing;
 

@@ -18,7 +18,7 @@
 #include <common.hpp>
 #include <http/parser/utility/trie.hpp>
 
-#include "date.hpp"
+#include "timestamp.hpp"
 
 namespace rest
 {

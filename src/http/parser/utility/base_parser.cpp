@@ -21,10 +21,10 @@
 #include <map>
 
 #include <http/parser/utility/base64.hpp>
-#include <http/parser/utility/date.hpp>
+#include <http/parser/utility/timestamp.hpp>
 #include <http/parser/utility/trie.hpp>
 
-#include "baseparser.hpp"
+#include "base_parser.hpp"
 
 namespace rest
 {

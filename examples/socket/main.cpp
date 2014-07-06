@@ -20,7 +20,7 @@
 #include <thread>
 #include <vector>
 
-#include <socket/socketinterface.hpp>
+#include <socket/socket_interface.hpp>
 
 rest::buffer data = { 0, 1, 2, 3 };
 
