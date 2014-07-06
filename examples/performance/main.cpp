@@ -64,7 +64,7 @@ void test_trie_parse(const std::string & token)
             trie<header_type>::value_info{"date", header_type::DATE}
         }
     };
-    trie<header_type> t(values, header_type::CUSTOM);
+    trie<header_type> test_trie(values, header_type::CUSTOM);
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
     for (size_t i = 0; i < 1000000; i++) {
         string_index_pair p(token, 0);
@@ -72,7 +72,7 @@ void test_trie_parse(const std::string & token)
                 anonymous_int_function(&peek_char, &p));
         int32_t character = l.get();
         push_back_string<4> fail_safe_result;
-        t.parse(character, fail_safe_result, l);
+        test_trie.parse(character, fail_safe_result, l);
     }
     std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
     auto diff = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);

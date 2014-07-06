@@ -41,7 +41,7 @@ static char UNUSED to_lower(const char c)
 //! Converts a character with hexadecimal encoding to its digit.
 static char UNUSED from_hex(const char c)
 {
-    static const std::array<char, 256> conversion_map = {
+    static const std::array<char, 256> hex_conversion_map = {
         {
             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -62,14 +62,14 @@ static char UNUSED from_hex(const char c)
         }
     };
 
-    return conversion_map[static_cast<uint8_t>(c)];
+    return hex_conversion_map[static_cast<uint8_t>(c)];
 }
 
 //! Returns true, if the given character is a valid character for an URI authority without the '@'
 //! symbol.
 static bool UNUSED is_valid_uri_authority_character(uint8_t c)
 {
-    static const std::array<char, 256> validity_map = {
+    static const std::array<char, 256> uri_authority_validity_map = {
         {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -89,13 +89,13 @@ static bool UNUSED is_valid_uri_authority_character(uint8_t c)
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
         }
     };
-    return (validity_map[c] != 0);
+    return (uri_authority_validity_map[c] != 0);
 }
 
 //! Returns true, if the given character is a valid character for an URI path.
 static bool UNUSED is_valid_uri_path_character(uint8_t c)
 {
-    static const std::array<char, 256> validity_map = {
+    static const std::array<char, 256> uri_path_validity_map = {
         {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -115,13 +115,13 @@ static bool UNUSED is_valid_uri_path_character(uint8_t c)
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
         }
     };
-    return (validity_map[c] != 0);
+    return (uri_path_validity_map[c] != 0);
 }
 
 //! Returns true, if the given character is a valid character for an URI query.
 static bool UNUSED is_valid_uri_query_character(uint8_t c)
 {
-    static const std::array<char, 256> validity_map = {
+    static const std::array<char, 256> uri_query_validity_map = {
         {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -141,13 +141,13 @@ static bool UNUSED is_valid_uri_query_character(uint8_t c)
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
         }
     };
-    return (validity_map[c] != 0);
+    return (uri_query_validity_map[c] != 0);
 }
 
 //! Returns true, if the given character is a valid character for an URI fragment.
 static bool UNUSED is_valid_uri_fragment_character(uint8_t c)
 {
-    static const std::array<char, 256> validity_map = {
+    static const std::array<char, 256> uri_fragment_validity_map = {
         {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -167,13 +167,13 @@ static bool UNUSED is_valid_uri_fragment_character(uint8_t c)
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
         }
     };
-    return (validity_map[c] != 0);
+    return (uri_fragment_validity_map[c] != 0);
 }
 
 //! Returns true, if the given character is a valid token character.
 static bool UNUSED is_valid_token_character(uint8_t c)
 {
-    static const std::array<char, 256> validity_map = {
+    static const std::array<char, 256> token_validity_map = {
         {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -193,13 +193,13 @@ static bool UNUSED is_valid_token_character(uint8_t c)
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
         }
     };
-    return (validity_map[c] != 0);
+    return (token_validity_map[c] != 0);
 }
 
 //! Returns true, if the given character is a valid character for a custom header value.
 static bool UNUSED is_valid_header_value_character(uint8_t c)
 {
-    static const std::array<char, 256> validity_map = {
+    static const std::array<char, 256> header_value_validity_map = {
         {
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1,
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -219,13 +219,13 @@ static bool UNUSED is_valid_header_value_character(uint8_t c)
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
         }
     };
-    return (validity_map[c] != 0);
+    return (header_value_validity_map[c] != 0);
 }
 
 //! Returns true, if the given character is a valid character for a quoted string.
 static bool UNUSED is_valid_quoted_string_character(uint8_t c)
 {
-    static const std::array<char, 256> validity_map = {
+    static const std::array<char, 256> quoted_string_validity_map = {
         {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -245,7 +245,7 @@ static bool UNUSED is_valid_quoted_string_character(uint8_t c)
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
         }
     };
-    return (validity_map[c] != 0);
+    return (quoted_string_validity_map[c] != 0);
 }
 
 } // namespace http

@@ -74,9 +74,9 @@ size_t fixture::parse(const std::vector<trie<size_t>::value_info> & values,
     string_index_pair p(str_, 0);
     lexer l(anonymous_int_function(&get_char, &p),
             anonymous_int_function(&peek_char, &p));
-    trie<size_t> t(values, 0);
+    trie<size_t> test_trie(values, 0);
     int32_t character = l.get();
-    return t.parse(character, fail_safe_result, l);
+    return test_trie.parse(character, fail_safe_result, l);
 }
 
 } // namespace
