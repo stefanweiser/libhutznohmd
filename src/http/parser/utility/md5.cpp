@@ -61,16 +61,16 @@ inline uint32_t i(const uint32_t & x,
 }
 
 static const std::array<uint32_t, block_size> t {{
-        0xD76AA478, 0xE8C7B756, 0x242070DB, 0xC1BDCEEE, 0xF57C0FAF, 0x4787C62A, 0xA8304613,
-        0xFD469501, 0x698098D8, 0x8B44F7AF, 0xFFFF5BB1, 0x895CD7BE, 0x6B901122, 0xFD987193,
-        0xA679438E, 0x49B40821, 0xF61E2562, 0xC040B340, 0x265E5A51, 0xE9B6C7AA, 0xD62F105D,
-        0x02441453, 0xD8A1E681, 0xE7D3FBC8, 0x21E1CDE6, 0xC33707D6, 0xF4D50D87, 0x455A14ED,
-        0xA9E3E905, 0xFCEFA3F8, 0x676F02D9, 0x8D2A4C8A, 0xFFFA3942, 0x8771F681, 0x6D9D6122,
-        0xFDE5380C, 0xA4BEEA44, 0x4BDECFA9, 0xF6BB4B60, 0xBEBFBC70, 0x289B7EC6, 0xEAA127FA,
-        0xD4EF3085, 0x04881D05, 0xD9D4D039, 0xE6DB99E5, 0x1FA27CF8, 0xC4AC5665, 0xF4292244,
-        0x432AFF97, 0xAB9423A7, 0xFC93A039, 0x655B59C3, 0x8F0CCC92, 0xFFEFF47D, 0x85845DD1,
-        0x6FA87E4F, 0xFE2CE6E0, 0xA3014314, 0x4E0811A1, 0xF7537E82, 0xBD3AF235, 0x2AD7D2BB,
-        0xEB86D391
+        0xD76AA478U, 0xE8C7B756U, 0x242070DBU, 0xC1BDCEEEU, 0xF57C0FAFU, 0x4787C62AU, 0xA8304613U,
+        0xFD469501U, 0x698098D8U, 0x8B44F7AFU, 0xFFFF5BB1U, 0x895CD7BEU, 0x6B901122U, 0xFD987193U,
+        0xA679438EU, 0x49B40821U, 0xF61E2562U, 0xC040B340U, 0x265E5A51U, 0xE9B6C7AAU, 0xD62F105DU,
+        0x02441453U, 0xD8A1E681U, 0xE7D3FBC8U, 0x21E1CDE6U, 0xC33707D6U, 0xF4D50D87U, 0x455A14EDU,
+        0xA9E3E905U, 0xFCEFA3F8U, 0x676F02D9U, 0x8D2A4C8AU, 0xFFFA3942U, 0x8771F681U, 0x6D9D6122U,
+        0xFDE5380CU, 0xA4BEEA44U, 0x4BDECFA9U, 0xF6BB4B60U, 0xBEBFBC70U, 0x289B7EC6U, 0xEAA127FAU,
+        0xD4EF3085U, 0x04881D05U, 0xD9D4D039U, 0xE6DB99E5U, 0x1FA27CF8U, 0xC4AC5665U, 0xF4292244U,
+        0x432AFF97U, 0xAB9423A7U, 0xFC93A039U, 0x655B59C3U, 0x8F0CCC92U, 0xFFEFF47DU, 0x85845DD1U,
+        0x6FA87E4FU, 0xFE2CE6E0U, 0xA3014314U, 0x4E0811A1U, 0xF7537E82U, 0xBD3AF235U, 0x2AD7D2BBU,
+        0xEB86D391U
     }
 };
 
@@ -194,7 +194,7 @@ std::array<uint8_t, 16> calculate_md5(const std::vector<char> & data)
     static constexpr size_t size_of_size = sizeof(uint64_t);
     static constexpr size_t max_size_minus_size = block_size - size_of_size;
 
-    std::array<uint32_t, 4> digest {{0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476}};
+    std::array<uint32_t, 4> digest {{0x67452301U, 0xEFCDAB89U, 0x98BADCFEU, 0x10325476U}};
     const char * pointer = data.data();
     size_t remaining = data.size();
 
@@ -206,32 +206,32 @@ std::array<uint8_t, 16> calculate_md5(const std::vector<char> & data)
     }
 
     // Copy the rest.
-    std::array<char, block_size> buffer;
-    uint8_t last_bit = 0x80;
-    std::copy(data.end() - remaining, data.end(), buffer.begin());
+    std::array<char, block_size> data_buffer;
+    uint8_t last_bit = 0x80U;
+    std::copy(data.end() - remaining, data.end(), data_buffer.begin());
 
     // If there is not enough space to append the size, we have to fill it into another block.
     if (remaining > (max_size_minus_size - 1)) {
-        std::fill(buffer.begin() + remaining, buffer.end(), 0);
-        buffer[remaining] = last_bit;
-        process(buffer.data(), digest);
+        std::fill(data_buffer.begin() + remaining, data_buffer.end(), 0);
+        data_buffer[remaining] = last_bit;
+        process(data_buffer.data(), digest);
         last_bit = 0;
         remaining = 0;
     }
 
     // Fill up the block till there are 8 bytes left for the size in bits.
-    std::fill(buffer.begin() + remaining, buffer.begin() + max_size_minus_size, 0);
-    buffer[remaining] = last_bit;
+    std::fill(data_buffer.begin() + remaining, data_buffer.begin() + max_size_minus_size, 0);
+    data_buffer[remaining] = last_bit;
 
     // Fill up the number of bits.
     const size_t processed_bits = data.size() * bits_per_byte;
     for (size_t i = 0; i < size_of_size; ++i) {
         const size_t index = max_size_minus_size + i;
-        buffer[index] = static_cast<uint8_t>(processed_bits >>(i * bits_per_byte));
+        data_buffer[index] = static_cast<uint8_t>(processed_bits >>(i * bits_per_byte));
     }
 
     // Process last block.
-    process(buffer.data(), digest);
+    process(data_buffer.data(), digest);
 
     // Return result.
     std::array<uint8_t, 16> result;

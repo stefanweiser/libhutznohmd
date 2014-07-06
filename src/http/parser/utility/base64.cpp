@@ -66,7 +66,7 @@ std::string encode_base64(const std::vector<uint8_t> & data)
         if (3 == bytes_in_backlog) {
             for (size_t i = 0; i < 4; i++) {
                 const size_t bits_to_shift = 6 * (3 - i);
-                const uint8_t token = (bit_backlog >> bits_to_shift) & 0x3F;
+                const uint8_t token = (bit_backlog >> bits_to_shift) & 0x3FU;
                 result.push_back(base64_encoder_map[token]);
             }
             bytes_in_backlog = 0;
@@ -80,10 +80,10 @@ std::string encode_base64(const std::vector<uint8_t> & data)
             bytes_in_backlog++;
         }
 
-        result.push_back(base64_encoder_map[(bit_backlog >> 18) & 0x3F]);
-        result.push_back(base64_encoder_map[(bit_backlog >> 12) & 0x3F]);
+        result.push_back(base64_encoder_map[(bit_backlog >> 18) & 0x3FU]);
+        result.push_back(base64_encoder_map[(bit_backlog >> 12) & 0x3FU]);
         if (2 == original_bytes_in_backlog) {
-            result.push_back(base64_encoder_map[(bit_backlog >> 6) & 0x3F]);
+            result.push_back(base64_encoder_map[(bit_backlog >> 6) & 0x3FU]);
         } else {
             result.push_back('=');
         }
@@ -108,9 +108,9 @@ std::vector<uint8_t> decode_base64(const std::string & encoded_string)
         // Invalid tokens will be discarded.
 
         if (4 == sextets_in_backlog) {
-            result.push_back((bit_backlog >> 16) & 0xFF);
-            result.push_back((bit_backlog >> 8) & 0xFF);
-            result.push_back(bit_backlog & 0xFF);
+            result.push_back((bit_backlog >> 16) & 0xFFU);
+            result.push_back((bit_backlog >> 8) & 0xFFU);
+            result.push_back(bit_backlog & 0xFFU);
             sextets_in_backlog = 0;
         }
     }
@@ -126,9 +126,9 @@ std::vector<uint8_t> decode_base64(const std::string & encoded_string)
             sextets_in_backlog++;
         }
 
-        result.push_back((bit_backlog >> 16) & 0xFF);
+        result.push_back((bit_backlog >> 16) & 0xFFU);
         if (original_sextets_in_backlog == 3) {
-            result.push_back((bit_backlog >> 8) & 0xFF);
+            result.push_back((bit_backlog >> 8) & 0xFFU);
         }
     }
 
