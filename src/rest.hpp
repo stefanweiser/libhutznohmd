@@ -29,11 +29,45 @@
 namespace rest
 {
 
-//! Universal buffer type of the library.
+//! Universal data buffer type of the library.
 typedef std::vector<char> buffer;
 
 namespace http
 {
+
+//! These URI schemes are supported by the parser and needed for HTTP.
+enum class uri_scheme
+{
+    UNKNOWN = 0,
+    HTTP = 1,
+    MAILTO = 2
+};
+
+//! Contains an URI as used in the HTTP protocol (e.g. http://user@example.com:8080/?a=b#anchor).
+class uri_interface
+{
+public:
+    //! In "http://user@example.com:8080/?a=b#anchor" this is "http".
+    virtual const uri_scheme & scheme() const = 0;
+
+    //! In "http://user:pw@example.com:8080/?a=b#anchor" this is "user:pw".
+    virtual const char * userinfo() const = 0;
+
+    //! In "http://user:pw@example.com:8080/?a=b#anchor" this is "example.com".
+    virtual const char * host() const = 0;
+
+    //! In "http://user:pw@example.com:8080/?a=b#anchor" this is "8080".
+    virtual const uint16_t & port() const = 0;
+
+    //! In "http://user:pw@example.com:8080/?a=b#anchor" this is "/".
+    virtual const char * path() const = 0;
+
+    //! In "http://user:pw@example.com:8080/?a=b#anchor" this is "a=b".
+    virtual const char * query() const = 0;
+
+    //! In "http://user:pw@example.com:8080/?a=b#anchor" this is "anchor".
+    virtual const char * fragment() const = 0;
+};
 
 //! Every request of HTTP has a specific method.
 //! There are two properties to a subset of methods.

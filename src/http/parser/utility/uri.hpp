@@ -21,22 +21,16 @@
 #include <http/parser/utility/lexer.hpp>
 #include <http/parser/utility/pushbackstring.hpp>
 
+#include <rest.hpp>
+
 namespace rest
 {
 
 namespace http
 {
 
-//! These URI schemes are supported by the parser and needed for HTTP.
-enum class uri_scheme
-{
-    UNKNOWN = 0,
-    HTTP = 1,
-    MAILTO = 2
-};
-
 //! Implements parsing of URIs as specified in RFC 3986. It supports only the specified schemes.
-class uri
+class uri: public uri_interface
 {
 public:
     explicit uri(const lexer & l);
@@ -45,13 +39,13 @@ public:
 
     void set_scheme(const uri_scheme & new_scheme);
 
-    const uri_scheme & scheme() const;
-    const char * userinfo() const;
-    const char * host() const;
-    const uint16_t & port() const;
-    const char * path() const;
-    const char * query() const;
-    const char * fragment() const;
+    virtual const uri_scheme & scheme() const;
+    virtual const char * userinfo() const;
+    virtual const char * host() const;
+    virtual const uint16_t & port() const;
+    virtual const char * path() const;
+    virtual const char * query() const;
+    virtual const char * fragment() const;
 
 private:
     bool parse_scheme_and_authority(int32_t & character);
