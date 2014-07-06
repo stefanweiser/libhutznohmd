@@ -33,7 +33,7 @@ namespace http
 
 response_parser::response_parser(const anonymous_int_function & get_functor,
                                  const anonymous_int_function & peek_functor)
-    : base_parser(get_functor, peek_functor)
+    : common_(get_functor, peek_functor)
     , status_code_(0)
     , reason_phrase_()
 {}
@@ -67,11 +67,11 @@ bool lex_reason_phrase(int32_t & character, push_back_string<100> & phrase, cons
 
 void response_parser::parse()
 {
-    if (parser_state::UNFINISHED != state_) {
+    if (parser_state::UNFINISHED != common_.state_) {
         return;
     }
 
-    int32_t result = lexer_.get_non_whitespace();
+    int32_t result = common_.lexer_.get_non_whitespace();
     {
         using value_info = trie<rest::http::version>::value_info;
         static const std::vector<value_info> types = {{
@@ -82,33 +82,78 @@ void response_parser::parse()
 
         static const trie<rest::http::version> t(types, rest::http::version::HTTP_UNKNOWN);
         push_back_string<32> tmp;
-        version_ = t.parse(result, tmp, lexer_);
+        common_.version_ = t.parse(result, tmp, common_.lexer_);
     }
 
-    if (rest::http::version::HTTP_UNKNOWN == version_) {
-        state_ = parser_state::ERROR;
+    if (rest::http::version::HTTP_UNKNOWN == common_.version_) {
+        common_.state_ = parser_state::ERROR;
         return;
     }
 
-    result = lexer_.get_non_whitespace();
-    status_code_ = lex_status_code(result, lexer_);
+    result = common_.lexer_.get_non_whitespace();
+    status_code_ = lex_status_code(result, common_.lexer_);
     if (0 == status_code_) {
-        state_ = parser_state::ERROR;
+        common_.state_ = parser_state::ERROR;
         return;
     }
 
-    result = lexer_.get_non_whitespace();
-    if (false == lex_reason_phrase(result, reason_phrase_, lexer_)) {
-        state_ = parser_state::ERROR;
+    result = common_.lexer_.get_non_whitespace();
+    if (false == lex_reason_phrase(result, reason_phrase_, common_.lexer_)) {
+        common_.state_ = parser_state::ERROR;
         return;
     }
 
-    result = lexer_.get();
+    result = common_.lexer_.get();
     if (false == parse_headers(result)) {
-        state_ = parser_state::ERROR;
+        common_.state_ = parser_state::ERROR;
         return;
     }
-    state_ = parser_state::SUCCEEDED;
+    common_.state_ = parser_state::SUCCEEDED;
+}
+
+bool response_parser::valid() const
+{
+    return (parser_state::SUCCEEDED == common_.state_);
+}
+
+const rest::http::version & response_parser::version() const
+{
+    return common_.version_;
+}
+
+const std::map<std::string, std::string> & response_parser::headers() const
+{
+    return common_.headers_;
+}
+
+const size_t & response_parser::content_length() const
+{
+    return common_.content_length_;
+}
+
+const media_type_interface & response_parser::content_type() const
+{
+    return common_.content_type_;
+}
+
+const time_t & response_parser::date() const
+{
+    return common_.date_;
+}
+
+bool response_parser::keeps_connection() const
+{
+    return (common_.connection_ == connection_type::KEEP_ALIVE);
+}
+
+const std::array<uint8_t, 16> & response_parser::md5() const
+{
+    return common_.md5_;
+}
+
+bool response_parser::has_md5() const
+{
+    return common_.has_md5_;
 }
 
 const uint16_t & response_parser::status_code() const
@@ -121,9 +166,34 @@ const char * response_parser::reason_phrase() const
     return reason_phrase_.c_str();
 }
 
+bool response_parser::parse_connection(int32_t & character)
+{
+    return common_.parse_connection(character);
+}
+
+bool response_parser::parse_content_length(int32_t & character)
+{
+    return common_.parse_content_length(character);
+}
+
+bool response_parser::parse_content_md5(int32_t & character)
+{
+    return common_.parse_content_md5(character);
+}
+
+bool response_parser::parse_content_type(int32_t & character)
+{
+    return common_.parse_content_type(character);
+}
+
+bool response_parser::parse_date(int32_t & character)
+{
+    return common_.parse_date(character);
+}
+
 bool response_parser::parse_headers(int32_t & character)
 {
-    using trie_value_ = trie_value<response_parser>;
+    using trie_value_ = base_parser::trie_value<response_parser>;
     using value_info = trie<trie_value_>::value_info;
     static const std::vector<value_info> types = {{
             value_info{"content-length", trie_value_{&response_parser::parse_content_length, 0}},
@@ -135,10 +205,10 @@ bool response_parser::parse_headers(int32_t & character)
     };
 
     while (character != '\n') {
-        if (false == parse_generic_header<response_parser>(types, character)) {
+        if (false == common_.parse_generic_header(types, *this, character)) {
             return false;
         }
-        character = lexer_.get();
+        character = common_.lexer_.get();
     }
     return true;
 }

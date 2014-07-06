@@ -51,51 +51,6 @@ base_parser::base_parser(const anonymous_int_function & get_functor,
 base_parser::~base_parser()
 {}
 
-bool base_parser::valid() const
-{
-    return (parser_state::SUCCEEDED == state_);
-}
-
-const rest::http::version & base_parser::version() const
-{
-    return version_;
-}
-
-const std::map<std::string, std::string> & base_parser::headers() const
-{
-    return headers_;
-}
-
-const size_t & base_parser::content_length() const
-{
-    return content_length_;
-}
-
-const media_type_interface & base_parser::content_type() const
-{
-    return content_type_;
-}
-
-const time_t & base_parser::date() const
-{
-    return date_;
-}
-
-bool base_parser::keeps_connection() const
-{
-    return (connection_ == connection_type::KEEP_ALIVE);
-}
-
-const std::array<uint8_t, 16> & base_parser::md5() const
-{
-    return md5_;
-}
-
-bool base_parser::has_md5() const
-{
-    return has_md5_;
-}
-
 bool base_parser::parse_connection(int32_t & character)
 {
     using value_info = trie<connection_type>::value_info;

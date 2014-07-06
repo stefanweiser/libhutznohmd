@@ -33,7 +33,7 @@ namespace http
 
 request_parser::request_parser(const anonymous_int_function & get_functor,
                                const anonymous_int_function & peek_functor)
-    : base_parser(get_functor, peek_functor)
+    : common_(get_functor, peek_functor)
     , method_(rest::http::method::UNKNOWN)
     , request_uri_()
     , accept_header_()
@@ -41,11 +41,11 @@ request_parser::request_parser(const anonymous_int_function & get_functor,
 
 void request_parser::parse()
 {
-    if (parser_state::UNFINISHED != state_) {
+    if (parser_state::UNFINISHED != common_.state_) {
         return;
     }
 
-    int32_t character = lexer_.get_non_whitespace();
+    int32_t character = common_.lexer_.get_non_whitespace();
     {
         using value_info = trie<rest::http::method>::value_info;
         static const std::vector<value_info> types = {{
@@ -62,24 +62,24 @@ void request_parser::parse()
 
         static const trie<rest::http::method> t(types, rest::http::method::UNKNOWN);
         push_back_string<32> tmp;
-        method_ = t.parse(character, tmp, lexer_);
+        method_ = t.parse(character, tmp, common_.lexer_);
     }
 
     if (rest::http::method::UNKNOWN == method_) {
-        state_ = parser_state::ERROR;
+        common_.state_ = parser_state::ERROR;
         return;
     }
 
-    character = lexer_.get_non_whitespace();
-    if (false == request_uri_.parse(lexer_, character, false)) {
-        state_ = parser_state::ERROR;
+    character = common_.lexer_.get_non_whitespace();
+    if (false == request_uri_.parse(common_.lexer_, character, false)) {
+        common_.state_ = parser_state::ERROR;
         return;
     }
 
     // A request uri is everytime HTTP.
     request_uri_.set_scheme(uri_scheme::HTTP);
 
-    character = lexer_.get_non_whitespace();
+    character = common_.lexer_.get_non_whitespace();
     {
         using value_type = std::tuple<rest::http::version, connection_type>;
         using value_info = trie<value_type>::value_info;
@@ -102,21 +102,66 @@ void request_parser::parse()
             connection_type::ERROR
         });
         push_back_string<32> tmp;
-        std::tie(version_, connection_) = t.parse(character, tmp, lexer_);
+        std::tie(common_.version_, common_.connection_) = t.parse(character, tmp, common_.lexer_);
     }
 
-    if ((rest::http::version::HTTP_UNKNOWN == version_) ||
+    if ((rest::http::version::HTTP_UNKNOWN == common_.version_) ||
         (character != '\n')) {
-        state_ = parser_state::ERROR;
+        common_.state_ = parser_state::ERROR;
         return;
     }
 
-    character = lexer_.get();
+    character = common_.lexer_.get();
     if (false == parse_headers(character)) {
-        state_ = parser_state::ERROR;
+        common_.state_ = parser_state::ERROR;
         return;
     }
-    state_ = parser_state::SUCCEEDED;
+    common_.state_ = parser_state::SUCCEEDED;
+}
+
+bool request_parser::valid() const
+{
+    return (parser_state::SUCCEEDED == common_.state_);
+}
+
+const rest::http::version & request_parser::version() const
+{
+    return common_.version_;
+}
+
+const std::map<std::string, std::string> & request_parser::headers() const
+{
+    return common_.headers_;
+}
+
+const size_t & request_parser::content_length() const
+{
+    return common_.content_length_;
+}
+
+const media_type_interface & request_parser::content_type() const
+{
+    return common_.content_type_;
+}
+
+const time_t & request_parser::date() const
+{
+    return common_.date_;
+}
+
+bool request_parser::keeps_connection() const
+{
+    return (common_.connection_ == connection_type::KEEP_ALIVE);
+}
+
+const std::array<uint8_t, 16> & request_parser::md5() const
+{
+    return common_.md5_;
+}
+
+bool request_parser::has_md5() const
+{
+    return common_.has_md5_;
 }
 
 const rest::http::method & request_parser::method() const
@@ -142,22 +187,47 @@ bool request_parser::parse_accept(int32_t & character)
 {
     do {
         accept_header_.push_back(media_type());
-        if (false == accept_header_.back().parse(lexer_, character)) {
+        if (false == accept_header_.back().parse(common_.lexer_, character)) {
             return false;
         }
 
         if (',' == character) {
-            character = lexer_.get_non_whitespace();
+            character = common_.lexer_.get_non_whitespace();
         }
     } while (character != '\n');
 
     return true;
 }
 
+bool request_parser::parse_connection(int32_t & character)
+{
+    return common_.parse_connection(character);
+}
+
+bool request_parser::parse_content_length(int32_t & character)
+{
+    return common_.parse_content_length(character);
+}
+
+bool request_parser::parse_content_md5(int32_t & character)
+{
+    return common_.parse_content_md5(character);
+}
+
+bool request_parser::parse_content_type(int32_t & character)
+{
+    return common_.parse_content_type(character);
+}
+
+bool request_parser::parse_date(int32_t & character)
+{
+    return common_.parse_date(character);
+}
+
 bool request_parser::parse_host(int32_t & character)
 {
     uri host;
-    if (false == host.parse(lexer_, character, true)) {
+    if (false == host.parse(common_.lexer_, character, true)) {
         return false;
     }
 
@@ -177,7 +247,7 @@ bool request_parser::parse_host(int32_t & character)
 
 bool request_parser::parse_headers(int32_t & character)
 {
-    using trie_value_ = trie_value<request_parser>;
+    using trie_value_ = base_parser::trie_value<request_parser>;
     using value_info = trie<trie_value_>::value_info;
     static const std::vector<value_info> types = {{
             value_info{"content-length", trie_value_{&request_parser::parse_content_length, 0}},
@@ -191,10 +261,10 @@ bool request_parser::parse_headers(int32_t & character)
     };
 
     while (character != '\n') {
-        if (false == parse_generic_header<request_parser>(types, character)) {
+        if (false == common_.parse_generic_header(types, *this, character)) {
             return false;
         }
-        character = lexer_.get();
+        character = common_.lexer_.get();
     }
     return true;
 }

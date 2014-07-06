@@ -52,17 +52,7 @@ public:
     explicit base_parser(const anonymous_int_function & get_functor,
                          const anonymous_int_function & peek_functor);
     virtual ~base_parser();
-    bool valid() const;
-    const rest::http::version & version() const;
-    const std::map<std::string, std::string> & headers() const;
-    const size_t & content_length() const;
-    const media_type_interface & content_type() const;
-    const time_t & date() const;
-    bool keeps_connection() const;
-    const std::array<uint8_t, 16> & md5() const;
-    bool has_md5() const;
 
-protected:
     bool parse_connection(int32_t & character);
     bool parse_content_length(int32_t & character);
     bool parse_content_md5(int32_t & character);
@@ -81,6 +71,7 @@ protected:
 
     template<class parser>
     bool parse_generic_header(const std::vector<trie_value_info<parser>> & types,
+                              parser & p,
                               int32_t & character);
 
     lexer lexer_;
@@ -101,6 +92,7 @@ protected:
 template<class parser>
 bool base_parser::parse_generic_header(
     const std::vector<base_parser::trie_value_info<parser>> & types,
+    parser & p,
     int32_t & character)
 {
     using trie_value_ = trie_value<parser>;
@@ -110,7 +102,7 @@ bool base_parser::parse_generic_header(
         character = lexer_.get_non_whitespace();
         parsing_function<parser> functor = std::get<0>(value);
         if (nullptr != functor) {
-            return (static_cast<parser *>(this)->*functor)(character);
+            return (p.*functor)(character);
         }
     }
 
