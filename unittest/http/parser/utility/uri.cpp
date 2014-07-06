@@ -96,6 +96,23 @@ TEST(uri, empty_then_set_scheme)
     EXPECT_EQ(u->scheme(), uri_scheme::MAILTO);
 }
 
+TEST(uri, empty_then_set_host)
+{
+    fixture f("/");
+    const std::unique_ptr<uri> u = f.parse();
+    EXPECT_EQ(u->scheme(), uri_scheme::UNKNOWN);
+    EXPECT_EQ(u->userinfo(), std::string(""));
+    EXPECT_EQ(u->host(), std::string(""));
+    EXPECT_EQ(u->port(), 0);
+    EXPECT_EQ(u->path(), std::string("/"));
+    EXPECT_EQ(u->query(), std::string(""));
+    EXPECT_EQ(u->fragment(), std::string(""));
+
+    u->set_host("localhost");
+
+    EXPECT_EQ(u->host(), std::string("localhost"));
+}
+
 TEST(uri, http_localhost)
 {
     fixture f("http://localhost/");

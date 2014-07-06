@@ -119,6 +119,12 @@ void uri::set_scheme(const uri_scheme & new_scheme)
     scheme_ = new_scheme;
 }
 
+void uri::set_host(const char * new_host)
+{
+    host_.clear();
+    host_.push_back(new_host);
+}
+
 bool uri::valid() const
 {
     return valid_;

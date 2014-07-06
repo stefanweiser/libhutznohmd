@@ -41,6 +41,7 @@ public:
     bool parse(const lexer & l, int32_t & character);
 
     void set_scheme(const uri_scheme & new_scheme);
+    void set_host(const char * new_host);
 
     virtual bool valid() const;
     virtual const uri_scheme & scheme() const;
