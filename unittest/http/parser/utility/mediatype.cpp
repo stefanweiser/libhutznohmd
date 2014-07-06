@@ -89,6 +89,21 @@ TEST(http_media_type, empty_wildcard)
     EXPECT_EQ(m.custom_subtype(), std::string(""));
 }
 
+TEST(http_media_type, copy_wildcard)
+{
+    fixture f("*/*");
+    const media_type m = f.parse();
+    media_type n;
+    n = m;
+    EXPECT_EQ(n.type(), m.type());
+    EXPECT_EQ(n.subtype(), m.subtype());
+    EXPECT_EQ(n.custom_type(), std::string(m.custom_type()));
+    EXPECT_EQ(n.custom_subtype(), std::string(m.custom_subtype()));
+    EXPECT_EQ(n.quality(), m.quality());
+    EXPECT_EQ(n.parameters(), m.parameters());
+    EXPECT_EQ(n.specification_grade(), m.specification_grade());
+}
+
 TEST(http_media_type, wildcard_wildcard)
 {
     fixture f("*/*");
@@ -308,7 +323,7 @@ TEST(http_media_type, erroneous_parameter_equal_sign)
     EXPECT_EQ(m.parameters().find("q"), m.parameters().end());
 }
 
-TEST(http_media_type, erroneous_parameter_quoted_string)
+TEST(http_media_type, erroneous_parameter_quoted_string1)
 {
     fixture f("audio/*;q=\"0.1\n");
     const media_type m = f.parse(false);
@@ -317,6 +332,31 @@ TEST(http_media_type, erroneous_parameter_quoted_string)
     EXPECT_EQ(m.custom_type(), std::string(""));
     EXPECT_EQ(m.custom_subtype(), std::string(""));
     EXPECT_EQ(m.parameters().find("q"), m.parameters().end());
+}
+
+TEST(http_media_type, erroneous_parameter_quoted_string2)
+{
+    fixture f("audio/*;r=\"");
+    const media_type m = f.parse(false);
+    EXPECT_EQ(m.type(), media_type_interface::mime_type::AUDIO);
+    EXPECT_EQ(m.subtype(), media_type_interface::mime_subtype::WILDCARD);
+    EXPECT_EQ(m.custom_type(), std::string(""));
+    EXPECT_EQ(m.custom_subtype(), std::string(""));
+    EXPECT_EQ(m.parameters().find("r"), m.parameters().end());
+}
+
+TEST(http_media_type, erroneous_quality_parameter1)
+{
+    fixture f("audio/*;q=0");
+    const media_type m = f.parse(false);
+    EXPECT_EQ(m.quality(), 10);
+}
+
+TEST(http_media_type, erroneous_quality_parameter2)
+{
+    fixture f("audio/*;q=0.a");
+    const media_type m = f.parse(false);
+    EXPECT_EQ(m.quality(), 10);
 }
 
 TEST(http_media_type, specification_grade1)

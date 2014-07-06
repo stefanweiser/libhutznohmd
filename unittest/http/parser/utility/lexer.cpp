@@ -167,6 +167,28 @@ TEST(lexer, quoted_string)
     EXPECT_EQ(character, '-');
 }
 
+TEST(lexer, quoted_string_error1)
+{
+    std::stringstream s("xyz");
+    lexer l(anonymous_int_function(&get_char, &s), anonymous_int_function(&peek_char, &s));
+    int32_t character = l.get();
+    push_back_string<4> data;
+    EXPECT_FALSE(parse_quoted_string(character, data, l));
+    EXPECT_EQ(std::string(data.c_str()), std::string(""));
+    EXPECT_EQ(character, 'x');
+}
+
+TEST(lexer, quoted_string_error2)
+{
+    std::stringstream s("\"xyz");
+    lexer l(anonymous_int_function(&get_char, &s), anonymous_int_function(&peek_char, &s));
+    int32_t character = l.get();
+    push_back_string<4> data;
+    EXPECT_FALSE(parse_quoted_string(character, data, l));
+    EXPECT_EQ(std::string(data.c_str()), std::string("xyz"));
+    EXPECT_EQ(character, -1);
+}
+
 TEST(lexer, comment)
 {
     std::stringstream s("()-");
