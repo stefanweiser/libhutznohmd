@@ -126,6 +126,7 @@ bool uri::set_userinfo(const char * new_userinfo)
         if (false == is_valid_uri_authority_character(*c)) {
             return false;
         }
+        c++;
     }
 
     userinfo_.clear();
@@ -140,6 +141,7 @@ bool uri::set_host(const char * new_host)
         if (false == is_valid_uri_authority_character(*c)) {
             return false;
         }
+        c++;
     }
 
     host_.clear();
