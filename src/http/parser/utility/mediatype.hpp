@@ -25,35 +25,15 @@
 #include <http/parser/utility/lexer.hpp>
 #include <http/parser/utility/pushbackstring.hpp>
 
+#include <rest.hpp>
+
 namespace rest
 {
 
 namespace http
 {
 
-enum class media_type_type : int32_t
-{
-    CUSTOM = -1,
-    WILDCARD = 0,
-    APPLICATION = 1,
-    AUDIO = 2,
-    EXAMPLE = 3,
-    IMAGE = 4,
-    MESSAGE = 5,
-    MODEL = 6,
-    MULTIPART = 7,
-    TEXT = 8,
-    VIDEO = 9
-};
-
-enum class media_type_subtype : int32_t
-{
-    CUSTOM = -1,
-    WILDCARD = 0,
-    PLAIN = 1
-};
-
-class media_type
+class media_type: public media_type_interface
 {
 public:
     explicit media_type();
@@ -62,17 +42,13 @@ public:
 
     bool parse(const lexer & l, int32_t & character);
 
-    media_type_type type() const;
-    media_type_subtype subtype() const;
-    const char * custom_type() const;
-    const char * custom_subtype() const;
-    const std::map<std::string, std::string> & parameters() const;
-    uint8_t quality() const;
-
-    //! Returns a value, that defines how specific the media type is. The less the value, the more
-    //! unspecific the media type is. These values can be used to compare media types with each
-    //! other.
-    uint8_t specification_grade() const;
+    virtual media_type_interface::mime_type type() const;
+    virtual media_type_interface::mime_subtype subtype() const;
+    virtual const char * custom_type() const;
+    virtual const char * custom_subtype() const;
+    virtual const std::map<std::string, std::string> & parameters() const;
+    virtual uint8_t quality() const;
+    virtual uint8_t specification_grade() const;
 
 private:
     void parse_type(int32_t & character);
@@ -82,8 +58,8 @@ private:
     bool parse_quality_parameter(int32_t & character);
 
     const lexer * lexer_;
-    media_type_type type_;
-    media_type_subtype subtype_;
+    media_type_interface::mime_type type_;
+    media_type_interface::mime_subtype subtype_;
     push_back_string<32> custom_type_;
     push_back_string<64> custom_subtype_;
     std::map<std::string, std::string> parameters_;

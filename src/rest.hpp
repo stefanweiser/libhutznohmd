@@ -72,6 +72,57 @@ public:
     virtual const char * fragment() const = 0;
 };
 
+//! A media type is a MIME type as is used to declare how the content of some data is to be read.
+class media_type_interface
+{
+public:
+    enum class mime_type
+    {
+        CUSTOM = -1,
+        WILDCARD = 0,
+        APPLICATION = 1,
+        AUDIO = 2,
+        EXAMPLE = 3,
+        IMAGE = 4,
+        MESSAGE = 5,
+        MODEL = 6,
+        MULTIPART = 7,
+        TEXT = 8,
+        VIDEO = 9
+    };
+
+    enum class mime_subtype
+    {
+        CUSTOM = -1,
+        WILDCARD = 0,
+        PLAIN = 1
+    };
+
+    //! Returns the type, if the media type is known or media_type_type::CUSTOM if unknown.
+    virtual mime_type type() const = 0;
+
+    //! Returns the subtype, if the media type is known or media_type_subtype::CUSTOM if unknown.
+    virtual mime_subtype subtype() const = 0;
+
+    //! Returns the type, if the media type is not known or "" if it is known.
+    virtual const char * custom_type() const = 0;
+
+    //! Returns the subtype, if the media type is not known or "" if it is known.
+    virtual const char * custom_subtype() const = 0;
+
+    //! Contains all parameters, that are not parsed specifically (like e.g. "q").
+    virtual const std::map<std::string, std::string> & parameters() const = 0;
+
+    //! The quality is expressed by the parameter "q" of the media type. It defines, how much
+    //! desired this media type is.
+    virtual uint8_t quality() const = 0;
+
+    //! Returns a value, that defines how specific the media type is. The less the value, the more
+    //! unspecific the media type is. These values can be used to compare media types with each
+    //! other.
+    virtual uint8_t specification_grade() const = 0;
+};
+
 //! Every request of HTTP has a specific method.
 //! There are two properties to a subset of methods.
 //! 1. Idempotence: You can apply the identical request n times to the same URI
@@ -136,7 +187,7 @@ enum class version
 
 //! An request is answered with a response. These responses carry a status code
 //! to tell the client the request result.
-enum class status_code : int32_t
+enum class status_code
 {
     //! Since HTTP/1.1
     //! Used when dividing a request into several parts. After responding this

@@ -30,8 +30,8 @@ namespace http
 
 media_type::media_type()
     : lexer_(nullptr)
-    , type_(media_type_type::CUSTOM)
-    , subtype_(media_type_subtype::CUSTOM)
+    , type_(media_type_interface::mime_type::CUSTOM)
+    , subtype_(media_type_interface::mime_subtype::CUSTOM)
     , custom_type_()
     , custom_subtype_()
     , parameters_()
@@ -84,12 +84,12 @@ bool media_type::parse(const lexer & l, int32_t & character)
     return true;
 }
 
-media_type_type media_type::type() const
+media_type_interface::mime_type media_type::type() const
 {
     return type_;
 }
 
-media_type_subtype media_type::subtype() const
+media_type_interface::mime_subtype media_type::subtype() const
 {
     return subtype_;
 }
@@ -116,14 +116,14 @@ uint8_t media_type::quality() const
 
 uint8_t media_type::specification_grade() const
 {
-    if (media_type_type::WILDCARD == type_) {
-        if (media_type_subtype::WILDCARD == subtype_) {
+    if (media_type_interface::mime_type::WILDCARD == type_) {
+        if (media_type_interface::mime_subtype::WILDCARD == subtype_) {
             return 0;
         } else {
             return 1;
         }
     } else {
-        if (media_type_subtype::WILDCARD == subtype_) {
+        if (media_type_interface::mime_subtype::WILDCARD == subtype_) {
             return 2;
         } else {
             return 3;
@@ -133,58 +133,60 @@ uint8_t media_type::specification_grade() const
 
 void media_type::parse_type(int32_t & character)
 {
-    using value_info = trie<media_type_type>::value_info;
+    using value_info = trie<media_type_interface::mime_type>::value_info;
 
     // The index of the vector has to be the same as the value of the type, because this largely
     // boosts the conversion below.
     static const std::vector<value_info> types = {{
-            value_info{"*", media_type_type::WILDCARD},
-            value_info{"application", media_type_type::APPLICATION},
-            value_info{"audio", media_type_type::AUDIO},
-            value_info{"example", media_type_type::EXAMPLE},
-            value_info{"image", media_type_type::IMAGE},
-            value_info{"message", media_type_type::MESSAGE},
-            value_info{"model", media_type_type::MODEL},
-            value_info{"multipart", media_type_type::MULTIPART},
-            value_info{"text", media_type_type::TEXT},
-            value_info{"video", media_type_type::VIDEO}
+            value_info{"*", media_type_interface::mime_type::WILDCARD},
+            value_info{"application", media_type_interface::mime_type::APPLICATION},
+            value_info{"audio", media_type_interface::mime_type::AUDIO},
+            value_info{"example", media_type_interface::mime_type::EXAMPLE},
+            value_info{"image", media_type_interface::mime_type::IMAGE},
+            value_info{"message", media_type_interface::mime_type::MESSAGE},
+            value_info{"model", media_type_interface::mime_type::MODEL},
+            value_info{"multipart", media_type_interface::mime_type::MULTIPART},
+            value_info{"text", media_type_interface::mime_type::TEXT},
+            value_info{"video", media_type_interface::mime_type::VIDEO}
         }
     };
 
-    static const trie<media_type_type> t(types, media_type_type::CUSTOM);
+    static const trie<media_type_interface::mime_type> t(types,
+            media_type_interface::mime_type::CUSTOM);
     type_ = t.parse(character, custom_type_, *lexer_);
-    if ((media_type_type::CUSTOM != type_) &&
+    if ((media_type_interface::mime_type::CUSTOM != type_) &&
         (true == is_valid_token_character(static_cast<char>(character)))) {
         custom_type_.push_back(std::get<0>(types[static_cast<int32_t>(type_)]));
-        type_ = media_type_type::CUSTOM;
+        type_ = media_type_interface::mime_type::CUSTOM;
     }
 
-    if (media_type_type::CUSTOM == type_) {
+    if (media_type_interface::mime_type::CUSTOM == type_) {
         parse_word(character, custom_type_, &is_valid_token_character, *lexer_);
     }
 }
 
 void media_type::parse_subtype(int32_t & character)
 {
-    using value_info = trie<media_type_subtype>::value_info;
+    using value_info = trie<media_type_interface::mime_subtype>::value_info;
 
     // The index of the vector has to be the same as the value of the subtype, because this
     // largely boosts the conversion below.
     static const std::vector<value_info> types = {{
-            value_info{"*", media_type_subtype::WILDCARD},
-            value_info{"plain", media_type_subtype::PLAIN}
+            value_info{"*", media_type_interface::mime_subtype::WILDCARD},
+            value_info{"plain", media_type_interface::mime_subtype::PLAIN}
         }
     };
 
-    static const trie<media_type_subtype> t(types, media_type_subtype::CUSTOM);
+    static const trie<media_type_interface::mime_subtype> t(types,
+            media_type_interface::mime_subtype::CUSTOM);
     subtype_ = t.parse(character, custom_subtype_, *lexer_);
-    if ((media_type_subtype::CUSTOM != subtype_) &&
+    if ((media_type_interface::mime_subtype::CUSTOM != subtype_) &&
         (true == is_valid_token_character(static_cast<char>(character)))) {
         custom_subtype_.push_back(std::get<0>(types[static_cast<int32_t>(subtype_)]));
-        subtype_ = media_type_subtype::CUSTOM;
+        subtype_ = media_type_interface::mime_subtype::CUSTOM;
     }
 
-    if (media_type_subtype::CUSTOM == subtype_) {
+    if (media_type_interface::mime_subtype::CUSTOM == subtype_) {
         parse_word(character, custom_subtype_, &is_valid_token_character, *lexer_);
     }
 }

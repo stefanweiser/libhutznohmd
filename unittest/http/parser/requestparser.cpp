@@ -127,8 +127,8 @@ TEST(request_parser, post_request)
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().path(), std::string("/"));
     EXPECT_EQ(f.parser_.headers().empty(), true);
-    EXPECT_EQ(f.parser_.content_type().type(), media_type_type::TEXT);
-    EXPECT_EQ(f.parser_.content_type().subtype(), media_type_subtype::WILDCARD);
+    EXPECT_EQ(f.parser_.content_type().type(), media_type_interface::mime_type::TEXT);
+    EXPECT_EQ(f.parser_.content_type().subtype(), media_type_interface::mime_subtype::WILDCARD);
 }
 
 TEST(request_parser, put_request)
