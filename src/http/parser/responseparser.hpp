@@ -46,7 +46,7 @@ public:
                              const anonymous_int_function & peek_functor);
     void parse();
     const uint16_t & status_code() const;
-    const std::string reason_phrase() const;
+    const char * reason_phrase() const;
 
 private:
     bool parse_headers(int32_t & character);

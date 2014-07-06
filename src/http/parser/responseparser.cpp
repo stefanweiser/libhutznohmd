@@ -116,9 +116,9 @@ const uint16_t & response_parser::status_code() const
     return status_code_;
 }
 
-const std::string response_parser::reason_phrase() const
+const char * response_parser::reason_phrase() const
 {
-    return std::string(reason_phrase_.c_str());
+    return reason_phrase_.c_str();
 }
 
 bool response_parser::parse_headers(int32_t & character)
