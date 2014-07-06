@@ -46,11 +46,6 @@ int get_socket(const socket::connection_pointer & connection)
     return std::dynamic_pointer_cast<socket::connection_socket>(connection)->socket();
 }
 
-int get_socket(const socket::listener_pointer & listener)
-{
-    return std::dynamic_pointer_cast<socket::listener_socket>(listener)->socket();
-}
-
 }
 
 TEST(server, construction_destruction)
