@@ -18,11 +18,11 @@
 #ifndef LIBREST_COMMON_HPP
 #define LIBREST_COMMON_HPP
 
-namespace rest
-{
-
 //! This define can be used to declare a symbol as unused.
 #define UNUSED __attribute__((unused))
+
+namespace rest
+{
 
 template<typename type, type lower_bound, type upper_bound>
 bool check_range(const type & value)
