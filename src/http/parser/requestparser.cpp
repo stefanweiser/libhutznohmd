@@ -71,7 +71,7 @@ void request_parser::parse()
     }
 
     character = lexer_.get_non_whitespace();
-    if (false == request_uri_.parse(lexer_, character)) {
+    if (false == request_uri_.parse(lexer_, character, false)) {
         state_ = parser_state::ERROR;
         return;
     }
@@ -154,6 +154,27 @@ bool request_parser::parse_accept(int32_t & character)
     return true;
 }
 
+bool request_parser::parse_host(int32_t & character)
+{
+    uri host;
+    if (false == host.parse(lexer_, character, true)) {
+        return false;
+    }
+
+    // This URI is a HTTP URI.
+    if (0 == host.port()) {
+        host.set_port(80);
+    }
+
+    // Simply overwrite the scheme and the authority of the request URI.
+    request_uri_.set_scheme(uri_scheme::HTTP);
+    request_uri_.set_userinfo(host.userinfo());
+    request_uri_.set_host(host.host());
+    request_uri_.set_port(host.port());
+
+    return true;
+}
+
 bool request_parser::parse_headers(int32_t & character)
 {
     using trie_value_ = trie_value<request_parser>;
@@ -164,7 +185,8 @@ bool request_parser::parse_headers(int32_t & character)
             value_info{"content-type", trie_value_{&request_parser::parse_content_type, 2}},
             value_info{"date", trie_value_{&request_parser::parse_date, 3}},
             value_info{"connection", trie_value_{&request_parser::parse_connection, 4}},
-            value_info{"accept", trie_value_{&request_parser::parse_accept, 5}}
+            value_info{"accept", trie_value_{&request_parser::parse_accept, 5}},
+            value_info{"host", trie_value_{&request_parser::parse_host, 6}}
         }
     };
 

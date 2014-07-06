@@ -52,6 +52,7 @@ public:
 
 private:
     bool parse_accept(int32_t & character);
+    bool parse_host(int32_t & character);
     bool parse_headers(int32_t & character);
 
     rest::http::method method_;
