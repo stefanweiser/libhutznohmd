@@ -52,6 +52,7 @@ min_version_lcov="1.9"
 min_version_rpmbuild="4.9"
 min_version_valgrind="3.7.0"
 min_version_lizard="1.8.4"
+min_version_rats="2.4"
 
 script_path=$(dirname `readlink -f $0`)
 script_name=$(basename `readlink -f $0`)
@@ -81,6 +82,13 @@ function check_cppcheck()
 {
     local cppcheck_version=$(${binary_cppcheck} --version | tr ' ' '\n' | tail -n 1)
     check_version "${binary_cppcheck}" "${cppcheck_version}" "${min_version_cppcheck}"
+}
+
+function check_rats()
+{
+    local binary_rats="$(get_command_path rats)"
+    local rats_version=$(${binary_rats} --help | tr ' ' '\n' | head -n 2 | tail -n 1 | tr -d 'v')
+    check_version "${binary_rats}" "${rats_version}" "${min_version_rats}"
 }
 
 function check_astyle()
@@ -158,7 +166,9 @@ function usage()
     echo "   doc             : Builds documentation."
     echo "   install         : Installs the targets."
     echo "   integrationtest : Executes integration tests."
+    echo "   lizard          : Executes CCN calculation."
     echo "   package         : Builds packages."
+    echo "   rats            : Run Rough Auditing Tool for Security."
     echo "   test            : Executes unit and integration tests."
     echo "   unittest        : Executes unit tests."
     echo "   valgrind        : Check all tests with valgrind."
@@ -202,6 +212,14 @@ function exec_check()
 
     cd "${build_path}"
     make check
+}
+
+function exec_rats()
+{
+    check_rats
+echo ${build_path}
+    local binary_rats="$(get_command_path rats)"
+    ${binary_rats} --resultsonly -w 3 "${script_path}/examples" "${script_path}/integrationtest" "${script_path}/src" "${script_path}/unittest"
 }
 
 function exec_astyle()
@@ -335,6 +353,7 @@ opts_package=0
 opts_coverage=0
 opts_valgrind=0
 opts_lizard=0
+opts_rats=0
 opts_build_type="debug"
 opts_summary=0
 
@@ -432,6 +451,9 @@ for word in ${opts_words[*]} ; do
         lizard)
             opts_lizard=1
             ;;
+        rats)
+            opts_rats=1
+            ;;
 
         debug)
             opts_build_type="debug"
@@ -500,6 +522,10 @@ fi
 
 if [ ${opts_lizard} -ne 0 ]; then
     exec_lizard
+fi
+
+if [ ${opts_rats} -ne 0 ]; then
+    exec_rats
 fi
 
 exit 0
