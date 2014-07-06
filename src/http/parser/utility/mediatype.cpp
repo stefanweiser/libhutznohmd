@@ -28,8 +28,8 @@ namespace rest
 namespace http
 {
 
-media_type::media_type(const lexer & l)
-    : lexer_(l)
+media_type::media_type()
+    : lexer_(nullptr)
     , type_(media_type_type::CUSTOM)
     , subtype_(media_type_subtype::CUSTOM)
     , custom_type_()
@@ -38,16 +38,45 @@ media_type::media_type(const lexer & l)
     , quality_(10)
 {}
 
-bool media_type::parse(int32_t & character)
+media_type::media_type(const media_type & rhs)
+    : lexer_(rhs.lexer_)
+    , type_(rhs.type_)
+    , subtype_(rhs.subtype_)
+    , custom_type_()
+    , custom_subtype_()
+    , parameters_(rhs.parameters_)
+    , quality_(rhs.quality_)
 {
+    custom_type_.push_back(rhs.custom_type_.c_str());
+    custom_subtype_.push_back(rhs.custom_subtype_.c_str());
+}
+
+media_type & media_type::operator=(const media_type & rhs)
+{
+    lexer_ = rhs.lexer_;
+    type_ = rhs.type_;
+    subtype_ = rhs.subtype_;
+    custom_type_.clear();
+    custom_type_.push_back(rhs.custom_type_.c_str());
+    custom_subtype_.clear();
+    custom_subtype_.push_back(rhs.custom_subtype_.c_str());
+    parameters_ = rhs.parameters_;
+    quality_ = rhs.quality_;
+    return *this;
+}
+
+bool media_type::parse(const lexer & l, int32_t & character)
+{
+    lexer_ = &l;
+
     parse_type(character);
     if ('/' != character) {
         return false;
     }
-    character = lexer_.get_non_whitespace();
+    character = lexer_->get_non_whitespace();
     parse_subtype(character);
     while (';' == character) {
-        character = lexer_.get_non_whitespace();
+        character = lexer_->get_non_whitespace();
         if (false == parse_parameter(character)) {
             return false;
         }
@@ -127,7 +156,7 @@ void media_type::parse_type(int32_t & character)
     };
 
     static const trie<media_type_type> t(types, media_type_type::CUSTOM);
-    type_ = t.parse(character, custom_type_, lexer_);
+    type_ = t.parse(character, custom_type_, *lexer_);
     if ((media_type_type::CUSTOM != type_) &&
         (true == is_valid_token_character(static_cast<char>(character)))) {
         custom_type_.push_back(std::get<0>(types[static_cast<int32_t>(type_)]));
@@ -135,7 +164,7 @@ void media_type::parse_type(int32_t & character)
     }
 
     if (media_type_type::CUSTOM == type_) {
-        parse_word(character, custom_type_, &is_valid_token_character, lexer_);
+        parse_word(character, custom_type_, &is_valid_token_character, *lexer_);
     }
 }
 
@@ -152,7 +181,7 @@ void media_type::parse_subtype(int32_t & character)
     };
 
     static const trie<media_type_subtype> t(types, media_type_subtype::CUSTOM);
-    subtype_ = t.parse(character, custom_subtype_, lexer_);
+    subtype_ = t.parse(character, custom_subtype_, *lexer_);
     if ((media_type_subtype::CUSTOM != subtype_) &&
         (true == is_valid_token_character(static_cast<char>(character)))) {
         custom_subtype_.push_back(std::get<0>(types[static_cast<int32_t>(subtype_)]));
@@ -160,7 +189,7 @@ void media_type::parse_subtype(int32_t & character)
     }
 
     if (media_type_subtype::CUSTOM == subtype_) {
-        parse_word(character, custom_subtype_, &is_valid_token_character, lexer_);
+        parse_word(character, custom_subtype_, &is_valid_token_character, *lexer_);
     }
 }
 
@@ -180,9 +209,9 @@ bool media_type::parse_parameter(int32_t & character)
     push_back_string<16> key;
     push_back_string<16> value;
     static const trie<trie_value> t(types, trie_value {nullptr, -1});
-    trie_value v = t.parse(character, key, lexer_);
+    trie_value v = t.parse(character, key, *lexer_);
     if ('=' == character) {
-        character = lexer_.get_non_whitespace();
+        character = lexer_->get_non_whitespace();
         parsing_function functor = std::get<0>(v);
         if (nullptr != functor) {
             return (this->*functor)(character);
@@ -194,18 +223,18 @@ bool media_type::parse_parameter(int32_t & character)
         key.push_back(std::get<0>(types[index]));
     }
 
-    parse_word(character, key, &is_valid_token_character, lexer_);
+    parse_word(character, key, &is_valid_token_character, *lexer_);
 
     if ('=' != character) {
         return false;
     }
-    character = lexer_.get();
+    character = lexer_->get();
     if ('"' == character) {
-        if (false == parse_quoted_string(character, value, lexer_)) {
+        if (false == parse_quoted_string(character, value, *lexer_)) {
             return false;
         }
     } else {
-        parse_word(character, value, &is_valid_token_character, lexer_);
+        parse_word(character, value, &is_valid_token_character, *lexer_);
     }
     parameters_[key.c_str()] = value.c_str();
     return true;
@@ -218,19 +247,19 @@ bool media_type::parse_quality_parameter(int32_t & character)
         return false;
     }
 
-    character = lexer_.get();
+    character = lexer_->get();
     if ('.' != character) {
         return false;
     }
 
-    character = lexer_.get();
+    character = lexer_->get();
     const uint8_t lower = static_cast<uint8_t>(character - '0');
     if (lower > 9) {
         return false;
     }
 
     quality_ = static_cast<uint8_t>((upper * 10) + lower);
-    character = lexer_.get();
+    character = lexer_->get();
     return true;
 }
 

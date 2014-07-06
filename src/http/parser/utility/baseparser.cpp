@@ -41,7 +41,7 @@ base_parser::base_parser(const anonymous_int_function & get_functor,
     , version_(rest::http::version::HTTP_UNKNOWN)
     , headers_()
     , content_length_(0)
-    , content_type_(lexer_)
+    , content_type_()
     , date_(time(NULL))
     , connection_(connection_type::KEEP_ALIVE)
     , md5_()
@@ -149,7 +149,7 @@ bool base_parser::parse_content_md5(int32_t & character)
 
 bool base_parser::parse_content_type(int32_t & character)
 {
-    return content_type_.parse(character);
+    return content_type_.parse(lexer_, character);
 }
 
 bool base_parser::parse_date(int32_t & character)

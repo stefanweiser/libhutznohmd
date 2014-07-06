@@ -56,9 +56,11 @@ enum class media_type_subtype : int32_t
 class media_type
 {
 public:
-    explicit media_type(const lexer & l);
+    explicit media_type();
+    media_type(const media_type & rhs);
+    media_type & operator=(const media_type & rhs);
 
-    bool parse(int32_t & character);
+    bool parse(const lexer & l, int32_t & character);
 
     media_type_type type() const;
     media_type_subtype subtype() const;
@@ -79,7 +81,7 @@ private:
 
     bool parse_quality_parameter(int32_t & character);
 
-    const lexer & lexer_;
+    const lexer * lexer_;
     media_type_type type_;
     media_type_subtype subtype_;
     push_back_string<32> custom_type_;

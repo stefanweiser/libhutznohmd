@@ -132,8 +132,8 @@ const uri_interface & request_parser::request_uri() const
 bool request_parser::parse_accept(int32_t & character)
 {
     do {
-        accept_header_.push_back(std::unique_ptr<media_type>(new media_type(lexer_)));
-        if (false == accept_header_.back()->parse(character)) {
+        accept_header_.push_back(media_type());
+        if (false == accept_header_.back().parse(lexer_, character)) {
             return false;
         }
 

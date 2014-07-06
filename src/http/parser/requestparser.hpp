@@ -56,7 +56,7 @@ private:
     rest::http::method method_;
     uri request_uri_;
 
-    std::vector<std::unique_ptr<media_type>> accept_header_;
+    std::vector<media_type> accept_header_;
 };
 
 } // namespace http
