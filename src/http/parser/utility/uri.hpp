@@ -38,10 +38,12 @@ public:
     explicit uri(const uri & rhs) = delete;
     uri & operator=(const uri & rhs) = delete;
 
-    bool parse(const lexer & l, int32_t & character);
+    bool parse(const lexer & l, int32_t & character, const bool skip_scheme);
 
     void set_scheme(const uri_scheme & new_scheme);
-    void set_host(const char * new_host);
+    bool set_userinfo(const char * new_userinfo);
+    bool set_host(const char * new_host);
+    void set_port(const uint16_t & new_port);
 
     virtual bool valid() const;
     virtual const uri_scheme & scheme() const;
@@ -53,7 +55,7 @@ public:
     virtual const char * fragment() const;
 
 private:
-    bool parse_scheme_and_authority(int32_t & character);
+    bool parse_scheme_and_authority(int32_t & character, const bool skip_scheme);
     bool parse_scheme(int32_t & character);
     bool parse_authority(int32_t & character);
     bool parse_authority_1st_pass(int32_t & character);

@@ -74,7 +74,7 @@ uri::uri()
     , fragment_()
 {}
 
-bool uri::parse(const lexer & l, int32_t & character)
+bool uri::parse(const lexer & l, int32_t & character, const bool skip_scheme)
 {
     if (true == valid_) {
         return true;
@@ -82,7 +82,7 @@ bool uri::parse(const lexer & l, int32_t & character)
 
     lexer_ = &l;
 
-    if (false == parse_scheme_and_authority(character)) {
+    if (false == parse_scheme_and_authority(character, skip_scheme)) {
         return false;
     }
 
@@ -119,10 +119,37 @@ void uri::set_scheme(const uri_scheme & new_scheme)
     scheme_ = new_scheme;
 }
 
-void uri::set_host(const char * new_host)
+bool uri::set_userinfo(const char * new_userinfo)
 {
+    const char * c = new_userinfo;
+    while ('\0' != (*c)) {
+        if (false == is_valid_uri_authority_character(*c)) {
+            return false;
+        }
+    }
+
+    userinfo_.clear();
+    userinfo_.push_back(new_userinfo);
+    return true;
+}
+
+bool uri::set_host(const char * new_host)
+{
+    const char * c = new_host;
+    while ('\0' != (*c)) {
+        if (false == is_valid_uri_authority_character(*c)) {
+            return false;
+        }
+    }
+
     host_.clear();
     host_.push_back(new_host);
+    return true;
+}
+
+void uri::set_port(const uint16_t & new_port)
+{
+    port_ = new_port;
 }
 
 bool uri::valid() const
@@ -166,36 +193,42 @@ const char * uri::fragment() const
 }
 
 
-bool uri::parse_scheme_and_authority(int32_t & character)
+bool uri::parse_scheme_and_authority(int32_t & character, const bool skip_scheme)
 {
     // Check whether there is a scheme and authority or neither of them. This is not conform with
     // RFC 3986, but HTTP specifies request URIs without scheme and authority.
     if ('/' != character) {
-        if (false == parse_scheme(character)) {
-            return false;
-        }
+        if (false == skip_scheme) {
+            if (false == parse_scheme(character)) {
+                return false;
+            }
 
-        if (':' != character) {
-            return false;
-        }
+            if (':' != character) {
+                return false;
+            }
 
-        character = lexer_->get();
-        if (character < 0) {
-            return false;
-        }
-
-        if ('/' == character) {
-            const int32_t last_character = character;
-            path_.push_back(static_cast<char>(character));
             character = lexer_->get();
+            if (character < 0) {
+                return false;
+            }
 
-            if (('/' == last_character) && ('/' == character)) {
-                // It is no path. It is an authority.
-                path_.clear();
+            if ('/' == character) {
+                const int32_t last_character = character;
+                path_.push_back(static_cast<char>(character));
                 character = lexer_->get();
-                if (false == parse_authority(character)) {
-                    return false;
+
+                if (('/' == last_character) && ('/' == character)) {
+                    // It is no path. It is an authority.
+                    path_.clear();
+                    character = lexer_->get();
+                    if (false == parse_authority(character)) {
+                        return false;
+                    }
                 }
+            }
+        } else {
+            if (false == parse_authority(character)) {
+                return false;
             }
         }
     }

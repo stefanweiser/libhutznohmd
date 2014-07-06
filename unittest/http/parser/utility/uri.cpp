@@ -73,7 +73,7 @@ std::unique_ptr<uri> fixture::parse(const bool expect_sucess)
             anonymous_int_function(&peek_char, &p));
     std::unique_ptr<uri> m = std::unique_ptr<uri>(new uri());
     int32_t result = l.get();
-    EXPECT_EQ(expect_sucess, m->parse(l, result));
+    EXPECT_EQ(expect_sucess, m->parse(l, result, false));
     return m;
 }
 
@@ -111,6 +111,40 @@ TEST(uri, empty_then_set_host)
     u->set_host("localhost");
 
     EXPECT_EQ(u->host(), std::string("localhost"));
+}
+
+TEST(uri, empty_then_set_userinfo)
+{
+    fixture f("/");
+    const std::unique_ptr<uri> u = f.parse();
+    EXPECT_EQ(u->scheme(), uri_scheme::UNKNOWN);
+    EXPECT_EQ(u->userinfo(), std::string(""));
+    EXPECT_EQ(u->host(), std::string(""));
+    EXPECT_EQ(u->port(), 0);
+    EXPECT_EQ(u->path(), std::string("/"));
+    EXPECT_EQ(u->query(), std::string(""));
+    EXPECT_EQ(u->fragment(), std::string(""));
+
+    u->set_userinfo("user:pw");
+
+    EXPECT_EQ(u->userinfo(), std::string("user:pw"));
+}
+
+TEST(uri, empty_then_set_port)
+{
+    fixture f("/");
+    const std::unique_ptr<uri> u = f.parse();
+    EXPECT_EQ(u->scheme(), uri_scheme::UNKNOWN);
+    EXPECT_EQ(u->userinfo(), std::string(""));
+    EXPECT_EQ(u->host(), std::string(""));
+    EXPECT_EQ(u->port(), 0);
+    EXPECT_EQ(u->path(), std::string("/"));
+    EXPECT_EQ(u->query(), std::string(""));
+    EXPECT_EQ(u->fragment(), std::string(""));
+
+    u->set_port(88);
+
+    EXPECT_EQ(u->port(), 88);
 }
 
 TEST(uri, http_localhost)
