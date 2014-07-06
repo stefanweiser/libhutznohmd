@@ -49,7 +49,7 @@ public:
     //! allocates memory dynamically if the string runs out of memory.
     //! WARNING: This method may never return, if the argument is not finished by '\0'. Do not use
     //! it for user defined data. This may cause a buffer overflow.
-    void push_back(const char * s);
+    void append_string(const char * s);
 
     //! Returns the character at a given index.
     char & operator[](const size_t & index);
@@ -121,7 +121,7 @@ void push_back_string<maximum_size>::push_back(const char c)
 }
 
 template<size_t maximum_size>
-void push_back_string<maximum_size>::push_back(const char * s)
+void push_back_string<maximum_size>::append_string(const char * s)
 {
     while ((*s) != '\0') {
         push_back(*s);

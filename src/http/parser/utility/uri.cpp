@@ -130,7 +130,7 @@ bool uri::set_userinfo(const char * new_userinfo)
     }
 
     userinfo_.clear();
-    userinfo_.push_back(new_userinfo);
+    userinfo_.append_string(new_userinfo);
     return true;
 }
 
@@ -145,7 +145,7 @@ bool uri::set_host(const char * new_host)
     }
 
     host_.clear();
-    host_.push_back(new_host);
+    host_.append_string(new_host);
     return true;
 }
 
@@ -290,7 +290,7 @@ bool uri::parse_authority_1st_pass(int32_t & character)
     }
 
     if ('@' == character) {
-        userinfo_.push_back(host_.c_str());
+        userinfo_.append_string(host_.c_str());
         host_.clear();
         character = lexer_->get();
     }
@@ -325,9 +325,9 @@ bool uri::parse_authority_2nd_pass()
 
             push_back_string<32> tmp;
             host_[i] = '\0';
-            tmp.push_back(host_.c_str());
+            tmp.append_string(host_.c_str());
             host_.clear();
-            host_.push_back(tmp.c_str());
+            host_.append_string(tmp.c_str());
 
             break;
 

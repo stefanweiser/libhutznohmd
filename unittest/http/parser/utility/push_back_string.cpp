@@ -66,12 +66,12 @@ TEST(push_back_string, basic_usage)
     EXPECT_TRUE(s.empty());
     EXPECT_EQ(s.size(), 0);
 
-    s.push_back("abc");
+    s.append_string("abc");
     EXPECT_FALSE(s.empty());
     EXPECT_EQ(s.size(), 3);
     EXPECT_EQ(std::string(s.c_str()), "abc");
 
-    s.push_back("de");
+    s.append_string("de");
     EXPECT_FALSE(s.empty());
     EXPECT_EQ(s.size(), 5);
     EXPECT_EQ(std::string(s.c_str()), "abcde");

@@ -47,8 +47,8 @@ media_type::media_type(const media_type & rhs)
     , parameters_(rhs.parameters_)
     , quality_(rhs.quality_)
 {
-    custom_type_.push_back(rhs.custom_type_.c_str());
-    custom_subtype_.push_back(rhs.custom_subtype_.c_str());
+    custom_type_.append_string(rhs.custom_type_.c_str());
+    custom_subtype_.append_string(rhs.custom_subtype_.c_str());
 }
 
 media_type & media_type::operator=(const media_type & rhs)
@@ -57,9 +57,9 @@ media_type & media_type::operator=(const media_type & rhs)
     type_ = rhs.type_;
     subtype_ = rhs.subtype_;
     custom_type_.clear();
-    custom_type_.push_back(rhs.custom_type_.c_str());
+    custom_type_.append_string(rhs.custom_type_.c_str());
     custom_subtype_.clear();
-    custom_subtype_.push_back(rhs.custom_subtype_.c_str());
+    custom_subtype_.append_string(rhs.custom_subtype_.c_str());
     parameters_ = rhs.parameters_;
     quality_ = rhs.quality_;
     return *this;
@@ -156,7 +156,7 @@ void media_type::parse_type(int32_t & character)
     type_ = t.parse(character, custom_type_, *lexer_);
     if ((media_type_interface::mime_type::CUSTOM != type_) &&
         (true == is_valid_token_character(static_cast<char>(character)))) {
-        custom_type_.push_back(std::get<0>(types[static_cast<int32_t>(type_)]));
+        custom_type_.append_string(std::get<0>(types[static_cast<int32_t>(type_)]));
         type_ = media_type_interface::mime_type::CUSTOM;
     }
 
@@ -182,7 +182,7 @@ void media_type::parse_subtype(int32_t & character)
     subtype_ = t.parse(character, custom_subtype_, *lexer_);
     if ((media_type_interface::mime_subtype::CUSTOM != subtype_) &&
         (true == is_valid_token_character(static_cast<char>(character)))) {
-        custom_subtype_.push_back(std::get<0>(types[static_cast<int32_t>(subtype_)]));
+        custom_subtype_.append_string(std::get<0>(types[static_cast<int32_t>(subtype_)]));
         subtype_ = media_type_interface::mime_subtype::CUSTOM;
     }
 
@@ -218,7 +218,7 @@ bool media_type::parse_parameter(int32_t & character)
 
     size_t index = std::get<1>(v);
     if (index < types.size()) {
-        key.push_back(std::get<0>(types[index]));
+        key.append_string(std::get<0>(types[index]));
     }
 
     parse_word(character, key, &is_valid_token_character, *lexer_);

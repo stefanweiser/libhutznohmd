@@ -108,7 +108,7 @@ bool base_parser::parse_generic_header(
 
     size_t index = std::get<1>(value);
     if (index < types.size()) {
-        header_key_.push_back(std::get<0>(types[index]));
+        header_key_.append_string(std::get<0>(types[index]));
     }
 
     return parse_custom_header(character);
