@@ -47,7 +47,7 @@ class listener_socket_interface
 {
 public:
     virtual ~listener_socket_interface() {}
-    virtual connection_pointer accept() = 0;
+    virtual connection_pointer accept() const = 0;
     virtual bool listening() const = 0;
     virtual void stop() = 0;
 };

@@ -42,7 +42,7 @@ public:
 
     explicit listener_socket(const int & s);
     virtual ~listener_socket();
-    virtual connection_pointer accept();
+    virtual connection_pointer accept() const;
     virtual bool listening() const;
     virtual void stop();
 

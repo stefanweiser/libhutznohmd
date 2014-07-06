@@ -78,7 +78,7 @@ listener_socket::~listener_socket()
     close_signal_safe(socket_);
 }
 
-connection_pointer listener_socket::accept()
+connection_pointer listener_socket::accept() const
 {
     address_union address;
     ::socklen_t size = sizeof(address);
