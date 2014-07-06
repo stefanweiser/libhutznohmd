@@ -120,7 +120,7 @@ TEST(uri, http_localhost)
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
     EXPECT_EQ(u->userinfo(), std::string(""));
     EXPECT_EQ(u->host(), std::string("localhost"));
-    EXPECT_EQ(u->port(), 0);
+    EXPECT_EQ(u->port(), 80);
     EXPECT_EQ(u->path(), std::string("/"));
     EXPECT_EQ(u->query(), std::string(""));
     EXPECT_EQ(u->fragment(), std::string(""));
@@ -146,7 +146,7 @@ TEST(uri, erroneous_port)
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
     EXPECT_EQ(u->userinfo(), std::string(""));
     EXPECT_EQ(u->host(), std::string("localhost:80000"));
-    EXPECT_EQ(u->port(), 0);
+    EXPECT_EQ(u->port(), 80);
     EXPECT_EQ(u->path(), std::string(""));
     EXPECT_EQ(u->query(), std::string(""));
     EXPECT_EQ(u->fragment(), std::string(""));
@@ -172,7 +172,7 @@ TEST(uri, no_authority)
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
     EXPECT_EQ(u->userinfo(), std::string(""));
     EXPECT_EQ(u->host(), std::string(""));
-    EXPECT_EQ(u->port(), 0);
+    EXPECT_EQ(u->port(), 80);
     EXPECT_EQ(u->path(), std::string("/"));
     EXPECT_EQ(u->query(), std::string(""));
     EXPECT_EQ(u->fragment(), std::string(""));
@@ -185,7 +185,7 @@ TEST(uri, query_only)
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
     EXPECT_EQ(u->userinfo(), std::string(""));
     EXPECT_EQ(u->host(), std::string(""));
-    EXPECT_EQ(u->port(), 0);
+    EXPECT_EQ(u->port(), 80);
     EXPECT_EQ(u->path(), std::string(""));
     EXPECT_EQ(u->query(), std::string("a=b"));
     EXPECT_EQ(u->fragment(), std::string(""));
@@ -198,7 +198,7 @@ TEST(uri, fragment_only)
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
     EXPECT_EQ(u->userinfo(), std::string(""));
     EXPECT_EQ(u->host(), std::string(""));
-    EXPECT_EQ(u->port(), 0);
+    EXPECT_EQ(u->port(), 80);
     EXPECT_EQ(u->path(), std::string(""));
     EXPECT_EQ(u->query(), std::string(""));
     EXPECT_EQ(u->fragment(), std::string("anchor"));
@@ -224,7 +224,7 @@ TEST(uri, http_localhost_with_percent_encoding)
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
     EXPECT_EQ(u->userinfo(), std::string(""));
     EXPECT_EQ(u->host(), std::string("localhost"));
-    EXPECT_EQ(u->port(), 0);
+    EXPECT_EQ(u->port(), 80);
     EXPECT_EQ(u->path(), std::string("/Hello World!"));
     EXPECT_EQ(u->query(), std::string(""));
     EXPECT_EQ(u->fragment(), std::string(""));
@@ -237,7 +237,7 @@ TEST(uri, http_localhost_with_erroneous_percent_encoding)
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
     EXPECT_EQ(u->userinfo(), std::string(""));
     EXPECT_EQ(u->host(), std::string("localhost"));
-    EXPECT_EQ(u->port(), 0);
+    EXPECT_EQ(u->port(), 80);
     EXPECT_EQ(u->path(), std::string("/He"));
     EXPECT_EQ(u->query(), std::string(""));
     EXPECT_EQ(u->fragment(), std::string(""));
@@ -250,7 +250,7 @@ TEST(uri, http_localhost_with_erroneous_percent_encoding2)
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
     EXPECT_EQ(u->userinfo(), std::string(""));
     EXPECT_EQ(u->host(), std::string("localhost"));
-    EXPECT_EQ(u->port(), 0);
+    EXPECT_EQ(u->port(), 80);
     EXPECT_EQ(u->path(), std::string("/He"));
     EXPECT_EQ(u->query(), std::string(""));
     EXPECT_EQ(u->fragment(), std::string(""));
@@ -276,7 +276,7 @@ TEST(uri, erroneous_scheme2)
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
     EXPECT_EQ(u->userinfo(), std::string(""));
     EXPECT_EQ(u->host(), std::string(""));
-    EXPECT_EQ(u->port(), 0);
+    EXPECT_EQ(u->port(), 80);
     EXPECT_EQ(u->path(), std::string(""));
     EXPECT_EQ(u->query(), std::string(""));
     EXPECT_EQ(u->fragment(), std::string(""));
@@ -289,7 +289,7 @@ TEST(uri, erroneous_scheme3)
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
     EXPECT_EQ(u->userinfo(), std::string(""));
     EXPECT_EQ(u->host(), std::string(""));
-    EXPECT_EQ(u->port(), 0);
+    EXPECT_EQ(u->port(), 80);
     EXPECT_EQ(u->path(), std::string(""));
     EXPECT_EQ(u->query(), std::string(""));
     EXPECT_EQ(u->fragment(), std::string(""));
@@ -328,7 +328,7 @@ TEST(uri, erroneous_authority1)
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
     EXPECT_EQ(u->userinfo(), std::string(""));
     EXPECT_EQ(u->host(), std::string("loca"));
-    EXPECT_EQ(u->port(), 0);
+    EXPECT_EQ(u->port(), 80);
     EXPECT_EQ(u->path(), std::string(""));
     EXPECT_EQ(u->query(), std::string(""));
     EXPECT_EQ(u->fragment(), std::string(""));
@@ -341,7 +341,7 @@ TEST(uri, erroneous_authority2)
     EXPECT_EQ(u->scheme(), uri_scheme::HTTP);
     EXPECT_EQ(u->userinfo(), std::string("user"));
     EXPECT_EQ(u->host(), std::string("loca"));
-    EXPECT_EQ(u->port(), 0);
+    EXPECT_EQ(u->port(), 80);
     EXPECT_EQ(u->path(), std::string(""));
     EXPECT_EQ(u->query(), std::string(""));
     EXPECT_EQ(u->fragment(), std::string(""));

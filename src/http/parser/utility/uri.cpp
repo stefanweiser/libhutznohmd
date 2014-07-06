@@ -205,16 +205,17 @@ bool uri::parse_scheme_and_authority(int32_t & character)
 
 bool uri::parse_scheme(int32_t & character)
 {
-    using value_info = trie<rest::http::uri_scheme>::value_info;
+    using value_type = std::tuple<rest::http::uri_scheme, uint16_t>;
+    using value_info = trie<value_type>::value_info;
     static const std::vector<value_info> types = {{
-            value_info{"http", rest::http::uri_scheme::HTTP},
-            value_info{"mailto", rest::http::uri_scheme::MAILTO}
+            value_info{"http", value_type{rest::http::uri_scheme::HTTP, 80}},
+            value_info{"mailto", value_type{rest::http::uri_scheme::MAILTO, 0}}
         }
     };
 
-    static const trie<rest::http::uri_scheme> t(types, rest::http::uri_scheme::UNKNOWN);
+    static const trie<value_type> t(types, value_type {rest::http::uri_scheme::UNKNOWN, 0});
     push_back_string<8> tmp;
-    scheme_ = t.parse(character, tmp, *lexer_);
+    std::tie(scheme_, port_) = t.parse(character, tmp, *lexer_);
     return (uri_scheme::UNKNOWN != scheme_);
 }
 
