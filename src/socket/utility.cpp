@@ -16,8 +16,8 @@
  */
 
 #include <array>
+#include <cassert>
 
-#include <assert.h>
 #include <fcntl.h>
 #include <netdb.h>
 #include <netinet/in.h>
