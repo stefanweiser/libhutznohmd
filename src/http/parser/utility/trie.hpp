@@ -15,8 +15,8 @@
  * along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_HTTP_PARSER_UTILITY_TRIE_HPP__
-#define __LIBREST_HTTP_PARSER_UTILITY_TRIE_HPP__
+#ifndef LIBREST_HTTP_PARSER_UTILITY_TRIE_HPP
+#define LIBREST_HTTP_PARSER_UTILITY_TRIE_HPP
 
 #include <array>
 #include <memory>
@@ -155,4 +155,4 @@ trie<value_type>::trie(const std::vector<value_info> & values,
 
 } // namespace rest
 
-#endif // __LIBREST_HTTP_PARSER_UTILITY_TRIE_HPP__
+#endif // LIBREST_HTTP_PARSER_UTILITY_TRIE_HPP

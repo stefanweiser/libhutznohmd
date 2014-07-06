@@ -15,8 +15,8 @@
  * along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_HTTP_PARSER_UTILITY_MEDIATYPE_HPP__
-#define __LIBREST_HTTP_PARSER_UTILITY_MEDIATYPE_HPP__
+#ifndef LIBREST_HTTP_PARSER_UTILITY_MEDIATYPE_HPP
+#define LIBREST_HTTP_PARSER_UTILITY_MEDIATYPE_HPP
 
 #include <cstddef>
 #include <cstring>
@@ -71,4 +71,4 @@ private:
 
 } // namespace rest
 
-#endif // __LIBREST_HTTP_PARSER_UTILITY_MEDIATYPE_HPP__
+#endif // LIBREST_HTTP_PARSER_UTILITY_MEDIATYPE_HPP

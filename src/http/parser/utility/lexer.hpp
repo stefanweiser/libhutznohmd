@@ -15,8 +15,8 @@
  * along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_HTTP_PARSER_UTILITY_LEXER_HPP__
-#define __LIBREST_HTTP_PARSER_UTILITY_LEXER_HPP__
+#ifndef LIBREST_HTTP_PARSER_UTILITY_LEXER_HPP
+#define LIBREST_HTTP_PARSER_UTILITY_LEXER_HPP
 
 #include <cstddef>
 #include <string>
@@ -103,4 +103,4 @@ bool parse_comment(int32_t & character, const lexer & l);
 
 } // namespace rest
 
-#endif // __LIBREST_HTTP_PARSER_UTILITY_LEXER_HPP__
+#endif // LIBREST_HTTP_PARSER_UTILITY_LEXER_HPP

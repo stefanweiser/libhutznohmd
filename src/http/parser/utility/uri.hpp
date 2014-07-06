@@ -15,8 +15,8 @@
  * along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_HTTP_PARSER_UTILITY_URI_HPP__
-#define __LIBREST_HTTP_PARSER_UTILITY_URI_HPP__
+#ifndef LIBREST_HTTP_PARSER_UTILITY_URI_HPP
+#define LIBREST_HTTP_PARSER_UTILITY_URI_HPP
 
 #include <http/parser/utility/lexer.hpp>
 #include <http/parser/utility/pushbackstring.hpp>
@@ -78,4 +78,4 @@ private:
 
 } // namespace rest
 
-#endif // __LIBREST_HTTP_PARSER_UTILITY_URI_HPP__
+#endif // LIBREST_HTTP_PARSER_UTILITY_URI_HPP

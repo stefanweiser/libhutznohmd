@@ -15,8 +15,8 @@
  * along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_HTTP_REQUEST_HPP__
-#define __LIBREST_HTTP_REQUEST_HPP__
+#ifndef LIBREST_HTTP_REQUEST_HPP
+#define LIBREST_HTTP_REQUEST_HPP
 
 #include <ctime>
 #include <map>
@@ -70,4 +70,4 @@ private:
 
 } // namespace rest
 
-#endif // __LIBREST_HTTP_REQUEST_HPP__
+#endif // LIBREST_HTTP_REQUEST_HPP

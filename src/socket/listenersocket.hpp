@@ -15,8 +15,8 @@
  * along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_SOCKET_LISTENERSOCKET_HPP__
-#define __LIBREST_SOCKET_LISTENERSOCKET_HPP__
+#ifndef LIBREST_SOCKET_LISTENERSOCKET_HPP
+#define LIBREST_SOCKET_LISTENERSOCKET_HPP
 
 #include <cstdint>
 #include <memory>
@@ -57,4 +57,4 @@ private:
 
 } // namespace rest
 
-#endif // __LIBREST_SOCKET_LISTENERSOCKET_HPP__
+#endif // LIBREST_SOCKET_LISTENERSOCKET_HPP

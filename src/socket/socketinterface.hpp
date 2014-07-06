@@ -15,8 +15,8 @@
  * along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_SOCKET_SOCKETINTERFACE_HPP__
-#define __LIBREST_SOCKET_SOCKETINTERFACE_HPP__
+#ifndef LIBREST_SOCKET_SOCKETINTERFACE_HPP
+#define LIBREST_SOCKET_SOCKETINTERFACE_HPP
 
 #include <cstdint>
 #include <memory>
@@ -61,4 +61,4 @@ listener_pointer listen(const std::string & host, const uint16_t & port);
 
 } // namespace rest
 
-#endif // __LIBREST_SOCKET_SOCKETINTERFACE_HPP__
+#endif // LIBREST_SOCKET_SOCKETINTERFACE_HPP

@@ -15,8 +15,8 @@
  * along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_SOCKET_UTILITY_HPP__
-#define __LIBREST_SOCKET_UTILITY_HPP__
+#ifndef LIBREST_SOCKET_UTILITY_HPP
+#define LIBREST_SOCKET_UTILITY_HPP
 
 #include <cstdint>
 #include <memory>
@@ -50,4 +50,4 @@ ssize_t receive_signal_safe(int file_descriptor, void * buffer, size_t size, int
 
 } // namespace rest
 
-#endif // __LIBREST_SOCKET_UTILITY_HPP__
+#endif // LIBREST_SOCKET_UTILITY_HPP

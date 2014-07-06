@@ -15,8 +15,8 @@
  * along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_COMMON_HPP__
-#define __LIBREST_COMMON_HPP__
+#ifndef LIBREST_COMMON_HPP
+#define LIBREST_COMMON_HPP
 
 namespace rest
 {
@@ -36,4 +36,4 @@ bool check_range(const type & value)
 
 } // namespace rest
 
-#endif // __LIBREST_COMMON_HPP__
+#endif // LIBREST_COMMON_HPP

@@ -15,8 +15,8 @@
  * along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_HTTP_RESPONSE_HPP__
-#define __LIBREST_HTTP_RESPONSE_HPP__
+#ifndef LIBREST_HTTP_RESPONSE_HPP
+#define LIBREST_HTTP_RESPONSE_HPP
 
 #include <map>
 #include <memory>
@@ -58,4 +58,4 @@ private:
 
 } // namespace rest
 
-#endif // __LIBREST_HTTP_RESPONSE_HPP__
+#endif // LIBREST_HTTP_RESPONSE_HPP

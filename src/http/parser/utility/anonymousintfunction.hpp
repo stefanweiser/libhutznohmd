@@ -15,8 +15,8 @@
  * along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_HTTP_PARSER_UTILITY_ANONYMOUSINTFUNCTION_HPP__
-#define __LIBREST_HTTP_PARSER_UTILITY_ANONYMOUSINTFUNCTION_HPP__
+#ifndef LIBREST_HTTP_PARSER_UTILITY_ANONYMOUSINTFUNCTION_HPP
+#define LIBREST_HTTP_PARSER_UTILITY_ANONYMOUSINTFUNCTION_HPP
 
 #include <cstdint>
 
@@ -57,4 +57,4 @@ inline int32_t anonymous_int_function::operator()() const
 
 } // namespace rest
 
-#endif // __LIBREST_HTTP_PARSER_UTILITY_ANONYMOUSINTFUNCTION_HPP__
+#endif // LIBREST_HTTP_PARSER_UTILITY_ANONYMOUSINTFUNCTION_HPP

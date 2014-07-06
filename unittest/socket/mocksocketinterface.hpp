@@ -15,8 +15,8 @@
  * along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __LIBREST_SOCKET_MOCKSOCKETINTERFACE_HPP__
-#define __LIBREST_SOCKET_MOCKSOCKETINTERFACE_HPP__
+#ifndef LIBREST_SOCKET_MOCKSOCKETINTERFACE_HPP
+#define LIBREST_SOCKET_MOCKSOCKETINTERFACE_HPP
 
 #include <gmock/gmock.h>
 
@@ -51,4 +51,4 @@ public:
 
 } // namespace rest
 
-#endif // __LIBREST_SOCKET_MOCKSOCKETINTERFACE_HPP__
+#endif // LIBREST_SOCKET_MOCKSOCKETINTERFACE_HPP
