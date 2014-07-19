@@ -28,8 +28,7 @@ class Struct:
 
 def parse_arguments(steps):
     parser = ArgumentParser()
-    parser.add_argument('step',
-                        nargs='+')
+    parser.add_argument('step', nargs='+')
 
     mutual_target_group = parser.add_mutually_exclusive_group()
     mutual_target_group.add_argument('-d',
@@ -54,7 +53,6 @@ def parse_arguments(steps):
                                 action='store_true',
                                 help=steps[key].help)
 
-    parser.parse_args()
     return parser.parse_args()
 
 
