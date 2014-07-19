@@ -22,7 +22,7 @@ add_custom_target(doc
                   COMMENT "Generating documentation." VERBATIM)
 
 add_custom_target(cppcheck
-                  cppcheck --language=c++ --platform=unix64 --enable=all --std=c++11 --force -I ./src/ ./src/ ./integrationtest/ ./unittest/
+                  cppcheck --language=c++ --platform=unix64 --enable=all --std=c++11 --force --suppress=unusedFunction --suppress=missingIncludeSystem -I ./src/ ./src/
                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                   COMMENT "Checking source code." VERBATIM)
 
