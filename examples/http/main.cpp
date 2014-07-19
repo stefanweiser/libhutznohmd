@@ -52,11 +52,15 @@ void connection::close()
 
 bool connection::receive(rest::buffer & data, const size_t & max_size)
 {
-    size_t old_size = data.size();
-    data.resize(old_size + max_size);
-    stream_.read((char *) data.data() + old_size, max_size);
-    size_t read_bytes = stream_.gcount();
-    data.resize(old_size + read_bytes);
+    size_t read_bytes = 0;
+    int c = 0;
+    while ((c >= 0) && (read_bytes < max_size)) {
+        c = stream_.get();
+        if (c >= 0) {
+            data.push_back(static_cast<uint8_t>(c));
+            read_bytes++;
+        }
+    }
     std::cout << " read " << read_bytes << " bytes." << std::endl;
     return (read_bytes > 0);
 }
@@ -75,7 +79,7 @@ int main()
 {
     std::cout << "example_http" << std::endl;
 
-    auto connection = std::make_shared<::connection>("../examples/res/request0");
+    auto connection = std::make_shared<::connection>("./examples/res/request0");
     rest::http::request request(connection, rest::http::request::parameters {true});
     request.parse();
 
