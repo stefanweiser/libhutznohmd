@@ -6,12 +6,13 @@ get_filename_component(GMOCK_DIR ${PROJECT_DIR}/gmock REALPATH)
 
 
 
-add_custom_target(astyle)
 macro(style_files TARGET)
-    add_dependencies(${TARGET} astyle)
+    set(ASTYLE_COMMANDS)
     foreach(ARG ${ARGN})
-        add_custom_command(TARGET astyle COMMAND astyle --options=astyle.rc ${ARG} VERBATIM)
+        list(APPEND ASTYLE_COMMANDS COMMAND /usr/bin/astyle --options=${PROJECT_DIR}/astyle.rc -q ${ARG})
     endforeach()
+    add_custom_target(astyle___${TARGET} ${ASTYLE_COMMANDS} VERBATIM)
+    add_dependencies(${TARGET} astyle___${TARGET})
 endmacro(style_files)
 
 
