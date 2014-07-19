@@ -103,14 +103,9 @@ ssize_t receive_signal_safe(int file_descriptor, void * buffer, size_t size, int
 {
     ::sockaddr_in address;
 
-    if (!::inet_aton(host.c_str(), &address.sin_addr)) {
-        const ::hostent * hostname = ::gethostbyname(host.c_str());
-
-        if (!hostname) {
-            address.sin_family = AF_UNSPEC;
-            return address;
-        }
-        address.sin_addr = * (::in_addr *) hostname->h_addr;
+    if (0 == ::inet_aton(host.c_str(), &address.sin_addr)) {
+        address.sin_family = AF_UNSPEC;
+        return address;
     }
 
     address.sin_port = htons(port);

@@ -62,12 +62,12 @@ TEST(server, normal_use_case_http_1_1)
         called = true;
     };
 
-    auto server = http::create_server("localhost", 10000, transaction);
+    auto server = http::create_server("127.0.0.1", 10000, transaction);
     disable_time_wait(get_socket(server));
 
     std::thread thread(std::bind(&http::server_interface::run, server.get()));
 
-    socket::connection_pointer connection = socket::connect("localhost", 10000);
+    socket::connection_pointer connection = socket::connect("127.0.0.1", 10000);
     EXPECT_TRUE(connection->connect());
     disable_time_wait(get_socket(connection));
     std::string request = "GET / HTTP/1.1\r\n\r\n";
@@ -89,12 +89,12 @@ TEST(server, normal_use_case_http_1_0)
         called = true;
     };
 
-    auto server = http::create_server("localhost", 10000, transaction);
+    auto server = http::create_server("127.0.0.1", 10000, transaction);
     disable_time_wait(get_socket(server));
 
     std::thread thread(std::bind(&http::server_interface::run, server.get()));
 
-    socket::connection_pointer connection = socket::connect("localhost", 10000);
+    socket::connection_pointer connection = socket::connect("127.0.0.1", 10000);
     EXPECT_TRUE(connection->connect());
     disable_time_wait(get_socket(connection));
     std::string request = "GET / HTTP/1.0\r\n\r\n";
