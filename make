@@ -146,8 +146,7 @@ def execute_coverage(args):
 
     lcov.do_basic_trace()
 
-    execute_unittest(args)
-    execute_integrationtest(args)
+    execute_test(args)
 
     lcov.do_test_trace()
     lcov.generate_coverage()
@@ -184,12 +183,6 @@ def execute_install(args):
     make.execute(['install'], build_path)
 
 
-def execute_integrationtest(args):
-    check_is_bootstrapped()
-
-    check_call([integrationtest_path])
-
-
 def execute_lizard(args):
     lizard.check_availability()
     lizard.check_version()
@@ -215,12 +208,6 @@ def execute_rats(args):
     rats.execute()
 
 
-def execute_unittest(args):
-    check_is_bootstrapped()
-
-    check_call([unittest_path])
-
-
 def execute_valgrind(args):
     check_is_bootstrapped()
 
@@ -229,16 +216,17 @@ def execute_valgrind(args):
 
 
 def execute_test(args):
-    execute_unittest(args)
-    execute_integrationtest(args)
+    make.check_availability()
+    make.check_version()
+    check_is_bootstrapped()
+
+    make.execute(['test'], build_path)
 
 
 def execute_all(args):
     execute_clean(args)
     execute_bootstrap(args)
     execute_build(args)
-    execute_unittest(args)
-    execute_integrationtest(args)
     execute_install(args)
     execute_package(args)
 
@@ -263,8 +251,6 @@ if __name__ == "__main__":
                           help='compiles documentation'),
             'install': Struct(fn=execute_install,
                               help='installs the targets'),
-            'integrationtest': Struct(fn=execute_integrationtest,
-                                      help='executes integration tests'),
             'lizard': Struct(fn=execute_lizard,
                              help='checks for cyclic complexity violations'),
             'package': Struct(fn=execute_package,
@@ -273,8 +259,6 @@ if __name__ == "__main__":
                            help='searches for security issues'),
             'test': Struct(fn=execute_test,
                            help='executes unit and integration tests'),
-            'unittest': Struct(fn=execute_unittest,
-                               help='executes unit tests'),
             'valgrind': Struct(fn=execute_valgrind,
                                help='searches for memory leaks')
         }
