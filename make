@@ -60,7 +60,6 @@ build_path = os.path.join(script_path, 'build')
 install_path = os.path.join(script_path, 'install')
 html_path = os.path.join(build_path, 'html')
 
-astyle_rc = os.path.join(script_path, 'astyle.rc')
 source_paths = [os.path.join(script_path, 'examples'),
                 os.path.join(script_path, 'integrationtest'),
                 os.path.join(script_path, 'src'),
@@ -73,7 +72,7 @@ integrationtest_path = os.path.join(build_path,
                                     'integrationtest',
                                     'integrationtest_restsrv')
 
-astyle = tools.AStyleTool('astyle', '2.03', astyle_rc)
+astyle = tools.Tool('astyle', '2.03')
 cmake = tools.CMakeTool('cmake', '2.8', script_path, build_path, install_path)
 cppcheck = tools.Tool('cppcheck', '1.60')
 dot = tools.DotTool('dot', '2.26')
@@ -101,19 +100,6 @@ def check_is_bootstrapped():
         raise IsNotBootstrappedError()
 
 
-def execute_astyle(args):
-    astyle.check_availability()
-    astyle.check_version()
-
-    files = (os.walk(p) for p in source_paths)
-    for root, dirs, files in chain.from_iterable(files):
-        for name in files:
-            filename = os.path.join(root, name)
-            if (filename.endswith('.h') or filename.endswith('.hpp') or
-                    filename.endswith('.c') or filename.endswith('.cpp')):
-                astyle.execute(filename)
-
-
 def execute_bootstrap(args):
     cmake.check_availability()
     cmake.check_version()
@@ -127,6 +113,8 @@ def execute_build(args):
     make.check_version()
     gpp.check_availability()
     gpp.check_version()
+    astyle.check_availability()
+    astyle.check_version()
     check_is_bootstrapped()
 
     make.execute(['-j' + str(cpu_count()), 'all'], build_path)
@@ -256,7 +244,6 @@ def execute_all(args):
     execute_clean(args)
     execute_bootstrap(args)
     execute_cppcheck(args)
-    execute_astyle(args)
     execute_build(args)
     execute_unittest(args)
     execute_integrationtest(args)
@@ -272,8 +259,6 @@ if __name__ == "__main__":
         steps = {
             'all': Struct(fn=execute_all,
                           help='builds all steps to make a package'),
-            'astyle': Struct(fn=execute_astyle,
-                             help='formats all sources'),
             'bootstrap': Struct(fn=execute_bootstrap,
                                 help='bootstraps the build'),
             'build': Struct(fn=execute_build,

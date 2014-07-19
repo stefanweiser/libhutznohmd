@@ -105,16 +105,6 @@ def get_command_output(command):
     return result[0].decode(encoding)
 
 
-class AStyleTool(Tool):
-    def __init__(self, executable_name, minimum_version, options_path):
-        Tool.__init__(self, executable_name, minimum_version)
-        self.options_path = options_path
-
-    def execute(self, filename):
-        check_call([self.executable_name, '--options=' + self.options_path,
-                    filename])
-
-
 class CMakeTool(Tool):
     def __init__(self, executable_name, minimum_version, script_path,
                  build_path, install_path):
