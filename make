@@ -217,7 +217,7 @@ function exec_check()
 function exec_rats()
 {
     check_rats
-echo ${build_path}
+
     local binary_rats="$(get_command_path rats)"
     ${binary_rats} --resultsonly -w 3 "${script_path}/examples" "${script_path}/integrationtest" "${script_path}/src" "${script_path}/unittest"
 }
