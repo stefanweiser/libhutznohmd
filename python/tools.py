@@ -124,18 +124,12 @@ class CMakeTool(Tool):
 
 
 class DotTool(Tool):
-    def __init__(self, executable_name, minimum_version):
-        Tool.__init__(self, executable_name, minimum_version)
-
     def get_version(self):
         s = get_command_output([self.executable_name, '-V'])
         return s.strip().split()[-2]
 
 
 class JavaTool(Tool):
-    def __init__(self, executable_name, minimum_version):
-        Tool.__init__(self, executable_name, minimum_version)
-
     def get_version(self):
         s = get_command_output([self.executable_name, '-version'])
         return s.split('\n')[0].split()[-1][1:-1].replace('_', '.')
@@ -194,9 +188,6 @@ class RATSTool(Tool):
 
 
 class ValgrindTool(Tool):
-    def __init__(self, executable_name, minimum_version):
-        Tool.__init__(self, executable_name, minimum_version)
-
     def get_version(self):
         s = get_command_output([self.executable_name, '--version'])
         return s.strip().split('-')[-1]
@@ -206,9 +197,6 @@ class ValgrindTool(Tool):
 
 
 class WGetTool(Tool):
-    def __init__(self, executable_name, minimum_version):
-        Tool.__init__(self, executable_name, minimum_version)
-
     def get_version(self):
         s = get_command_output([self.executable_name, '--version'])
         return s.split('\n')[0].split()[2]
