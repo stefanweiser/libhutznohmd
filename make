@@ -75,7 +75,6 @@ integrationtest_path = os.path.join(build_path,
 astyle = tools.Tool('astyle', '2.03')
 cmake = tools.CMakeTool('cmake', '2.8', script_path, build_path, install_path)
 cppcheck = tools.Tool('cppcheck', '1.60')
-dot = tools.DotTool('dot', '2.26')
 gcov = tools.Tool('gcov', '4.8')
 gpp = tools.Tool('g++', '4.8')
 lcov = tools.LCOVTool('lcov', 'genhtml', '1.9', build_path)
@@ -144,8 +143,6 @@ def execute_coverage(args):
 
 
 def execute_doc(args):
-    dot.check_availability()
-    dot.check_version()
     check_is_bootstrapped()
 
     check_call(['make', 'doc'], cwd=build_path)

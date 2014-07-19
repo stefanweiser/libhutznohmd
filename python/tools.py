@@ -119,12 +119,6 @@ class CMakeTool(Tool):
                     '-DCMAKE_BUILD_TYPE=' + target], cwd=self.build_path)
 
 
-class DotTool(Tool):
-    def get_version(self):
-        s = get_command_output([self.executable_name, '-V'])
-        return s.strip().split()[-2]
-
-
 class LCOVTool(Tool):
     def __init__(self, executable_name, html_generator_name, minimum_version,
                  build_path):
