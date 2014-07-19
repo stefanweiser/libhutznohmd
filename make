@@ -115,6 +115,8 @@ def execute_build(args):
     gpp.check_version()
     astyle.check_availability()
     astyle.check_version()
+    cppcheck.check_availability()
+    cppcheck.check_version()
     check_is_bootstrapped()
 
     make.execute(['-j' + str(cpu_count()), 'all'], build_path)
@@ -243,7 +245,6 @@ def execute_test(args):
 def execute_all(args):
     execute_clean(args)
     execute_bootstrap(args)
-    execute_cppcheck(args)
     execute_build(args)
     execute_unittest(args)
     execute_integrationtest(args)

@@ -15,6 +15,13 @@ macro(style_files TARGET)
     add_dependencies(${TARGET} astyle___${TARGET})
 endmacro(style_files)
 
+add_custom_target(cppcheck
+                  cppcheck --quiet --language=c++ --platform=unix64
+                      --enable=all --std=c++11 --force
+                      --suppress=unusedFunction --suppress=missingIncludeSystem
+                      -I ./src/ ./src/
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} VERBATIM)
+
 
 
 add_subdirectory(src)
@@ -33,11 +40,6 @@ add_custom_target(doc
                   doxygen ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                   COMMENT "Generating documentation." VERBATIM)
-
-add_custom_target(cppcheck
-                  cppcheck --language=c++ --platform=unix64 --enable=all --std=c++11 --force --suppress=unusedFunction --suppress=missingIncludeSystem -I ./src/ ./src/
-                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                  COMMENT "Checking source code." VERBATIM)
 
 add_custom_target(lizard
                   lizard --warnings_only --CCN 10 --sort cyclomatic_complexity ./src/

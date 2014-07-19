@@ -7,6 +7,7 @@ file(GLOB_RECURSE HEADERS *.hpp *.h)
 
 add_library(restsrv SHARED ${SOURCES} ${HEADERS})
 style_files(restsrv ${SOURCES} ${HEADERS})
+add_dependencies(restsrv cppcheck)
 
 include_directories("${PROJECT_DIR}/src")
 
