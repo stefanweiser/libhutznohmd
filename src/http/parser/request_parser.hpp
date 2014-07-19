@@ -58,6 +58,7 @@ public:
     bool has_md5() const;
     const rest::http::method & method() const;
     const uri_interface & request_uri() const;
+    const uri_interface & from_uri() const;
     std::vector<const media_type_interface *> accept_header() const;
 
 private:
@@ -67,6 +68,7 @@ private:
     bool parse_content_md5(int32_t & character);
     bool parse_content_type(int32_t & character);
     bool parse_date(int32_t & character);
+    bool parse_from(int32_t & character);
     bool parse_host(int32_t & character);
     bool parse_headers(int32_t & character);
 
@@ -74,6 +76,7 @@ private:
 
     rest::http::method method_;
     uri request_uri_;
+    uri from_uri_;
 
     std::vector<media_type> accept_header_;
 };

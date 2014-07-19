@@ -123,8 +123,12 @@ Date: Wed, 13 May 2014 22:10:48 GMT
 
 @subsection sub_from From
 
-<td>TBD</td>
-<td><pre>From: user@example.com</pre></td>
+Contains an e-mail address of a human, that controls the requesting user agent.
+
+@a Example:
+@code
+From: user@example.com
+@endcode
 
 @subsection sub_host Host
 

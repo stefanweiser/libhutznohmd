@@ -36,6 +36,7 @@ request_parser::request_parser(const anonymous_int_function & get_functor,
     : common_(get_functor, peek_functor)
     , method_(rest::http::method::UNKNOWN)
     , request_uri_()
+    , from_uri_()
     , accept_header_()
 {}
 
@@ -174,6 +175,11 @@ const uri_interface & request_parser::request_uri() const
     return request_uri_;
 }
 
+const uri_interface & request_parser::from_uri() const
+{
+    return from_uri_;
+}
+
 std::vector<const media_type_interface *> request_parser::accept_header() const
 {
     std::vector<const media_type_interface *> result;
@@ -224,6 +230,16 @@ bool request_parser::parse_date(int32_t & character)
     return common_.parse_date(character);
 }
 
+bool request_parser::parse_from(int32_t & character)
+{
+    from_uri_.set_scheme(uri_scheme::MAILTO);
+    if (false == from_uri_.parse(common_.lexer_, character, true)) {
+        return false;
+    }
+
+    return true;
+}
+
 bool request_parser::parse_host(int32_t & character)
 {
     uri host;
@@ -256,7 +272,8 @@ bool request_parser::parse_headers(int32_t & character)
             value_info{"date", trie_value_{&request_parser::parse_date, 3}},
             value_info{"connection", trie_value_{&request_parser::parse_connection, 4}},
             value_info{"accept", trie_value_{&request_parser::parse_accept, 5}},
-            value_info{"host", trie_value_{&request_parser::parse_host, 6}}
+            value_info{"host", trie_value_{&request_parser::parse_host, 6}},
+            value_info{"from", trie_value_{&request_parser::parse_from, 7}}
         }
     };
 
