@@ -4,6 +4,18 @@ project(librestsrv)
 get_filename_component(PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR} REALPATH)
 get_filename_component(GMOCK_DIR ${PROJECT_DIR}/gmock REALPATH)
 
+
+
+add_custom_target(astyle)
+macro(style_files TARGET)
+    add_dependencies(${TARGET} astyle)
+    foreach(ARG ${ARGN})
+        add_custom_command(TARGET astyle COMMAND astyle --options=astyle.rc ${ARG} VERBATIM)
+    endforeach()
+endmacro(style_files)
+
+
+
 add_subdirectory(src)
 add_subdirectory(unittest)
 add_subdirectory(integrationtest)
