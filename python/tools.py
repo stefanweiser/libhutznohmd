@@ -3,7 +3,7 @@
 from locale import getdefaultlocale
 from os.path import exists, isdir, join, normcase
 from os import curdir, defpath, environ, pathsep
-from subprocess import call, PIPE, Popen
+from subprocess import call, PIPE, Popen, STDOUT
 from sys import platform
 
 
@@ -33,7 +33,8 @@ class Tool:
         self.minimum_version = minimum_version.split('.')
 
     def get_version(self):
-        pass
+        s = get_command_output([self.executable_name, '--version'])
+        return s.strip().split()[-1].split('.')
 
     def check_availability(self):
         if which(self.executable_name) is None:
@@ -96,19 +97,15 @@ def which(cmd):
 
 def get_command_output(command):
     encoding = getdefaultlocale()[1]
-    p = Popen(command, stdout=PIPE, stderr=PIPE)
+    p = Popen(command, stdout=PIPE, stderr=STDOUT)
     result = p.communicate()
-    return [result[0].decode(encoding), result[1].decode(encoding)]
+    return result[0].decode(encoding)
 
 
 class AStyleTool(Tool):
     def __init__(self, executable_name, minimum_version, options_path):
         Tool.__init__(self, executable_name, minimum_version)
         self.options_path = options_path
-
-    def get_version(self):
-        s = get_command_output([self.executable_name, '--version'])
-        return s[1].strip().split()[-1].split('.')
 
     def execute(self, filename):
         call([self.executable_name, '--options=' + self.options_path,
@@ -123,10 +120,6 @@ class CMakeTool(Tool):
         self.build_path = build_path
         self.install_path = install_path
 
-    def get_version(self):
-        s = get_command_output([self.executable_name, '--version'])
-        return s[0].strip().split()[-1].split('.')
-
     def execute(self, target):
         call([self.executable_name, self.script_path,
               '-DCMAKE_INSTALL_PREFIX=' + self.install_path,
@@ -137,10 +130,6 @@ class CPPCheckTool(Tool):
     def __init__(self, executable_name, minimum_version):
         Tool.__init__(self, executable_name, minimum_version)
 
-    def get_version(self):
-        s = get_command_output([self.executable_name, '--version'])
-        return s[0].strip().split()[-1].split('.')
-
 
 class DoxygenTool(Tool):
     def __init__(self, executable_name, minimum_version):
@@ -148,7 +137,7 @@ class DoxygenTool(Tool):
 
     def get_version(self):
         s = get_command_output([self.executable_name, '--version'])
-        return s[0].strip().split('.')
+        return s.strip().split('.')
 
 
 class DotTool(Tool):
@@ -157,7 +146,7 @@ class DotTool(Tool):
 
     def get_version(self):
         s = get_command_output([self.executable_name, '-V'])
-        return s[1].strip().split()[-2].split('.')
+        return s.strip().split()[-2].split('.')
 
 
 class GCCTool(Tool):
@@ -166,7 +155,7 @@ class GCCTool(Tool):
 
     def get_version(self):
         s = get_command_output([self.executable_name, '--version'])
-        return s[0].split('\n')[0].split()[-1].split('.')
+        return s.split('\n')[0].split()[-1].split('.')
 
 
 class JavaTool(Tool):
@@ -175,7 +164,7 @@ class JavaTool(Tool):
 
     def get_version(self):
         s = get_command_output([self.executable_name, '-version'])
-        return s[1].split('\n')[0].split()[-1][1:-1].split('.')
+        return s.split('\n')[0].split()[-1][1:-1].split('.')
 
 
 class LCOVTool(Tool):
@@ -186,10 +175,6 @@ class LCOVTool(Tool):
         self.target_path = join(build_path, 'src')
         self.tracefile = join(self.target_path, 'coverage.info')
         self.output_path = join(build_path, 'lcov')
-
-    def get_version(self):
-        s = get_command_output([self.executable_name, '--version'])
-        return s[0].strip().split()[-1].split('.')
 
     def do_basic_trace(self):
         call([self.executable_name, '-c', '-i', '-d', self.target_path, '-o',
@@ -216,7 +201,7 @@ class LizardTool(Tool):
 
     def get_version(self):
         s = get_command_output([self.executable_name, '--version'])
-        return s[1].strip().split('.')
+        return s.strip().split('.')
 
 
 class MakeTool(Tool):
@@ -226,8 +211,7 @@ class MakeTool(Tool):
 
     def get_version(self):
         s = get_command_output([self.executable_name, '--version'])
-        print(s[0].split('\n')[0].split()[-1].split('.'))
-        return s[0].split('\n')[0].split()[-1].split('.')
+        return s.split('\n')[0].split()[-1].split('.')
 
     def execute(self, args, working_path='.'):
         call([self.executable_name] + args, cwd=working_path)
@@ -237,18 +221,10 @@ class PythonTool(Tool):
     def __init__(self, executable_name, minimum_version):
         Tool.__init__(self, executable_name, minimum_version)
 
-    def get_version(self):
-        s = get_command_output([self.executable_name, '--version'])
-        return s[1].strip().split()[-1].split('.')
-
 
 class RPMBuildTool(Tool):
     def __init__(self, executable_name, minimum_version):
         Tool.__init__(self, executable_name, minimum_version)
-
-    def get_version(self):
-        s = get_command_output([self.executable_name, '--version'])
-        return s[0].strip().split()[-1].split('.')
 
 
 class RATSTool(Tool):
@@ -258,7 +234,7 @@ class RATSTool(Tool):
 
     def get_version(self):
         s = get_command_output([self.executable_name, '-h'])
-        return s[0].split('\n')[0].split()[1][1:].split('.')
+        return s.split('\n')[0].split()[1][1:].split('.')
 
     def execute(self):
         call([self.executable_name, '--resultsonly', '-w', '3'] +
@@ -271,7 +247,7 @@ class ValgrindTool(Tool):
 
     def get_version(self):
         s = get_command_output([self.executable_name, '--version'])
-        return s[0].strip().split('-')[-1].split('.')
+        return s.strip().split('-')[-1].split('.')
 
     def execute(self, application):
         call([self.executable_name, application])
