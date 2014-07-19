@@ -180,7 +180,7 @@ class RATSTool(Tool):
 
     def execute(self):
         check_call([self.executable_name, '--resultsonly', '-w', '3'] +
-                    self.source_paths)
+                   self.source_paths)
 
 
 class ValgrindTool(Tool):

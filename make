@@ -119,7 +119,7 @@ def execute_build(args):
     cppcheck.check_version()
     check_is_bootstrapped()
 
-    make.execute(['-j' + str(cpu_count()), 'all'], build_path)
+    make.execute(['-j' + str(cpu_count())], build_path)
 
 
 def execute_clean(args):
@@ -208,13 +208,6 @@ def execute_rats(args):
     rats.execute()
 
 
-def execute_valgrind(args):
-    check_is_bootstrapped()
-
-    valgrind.execute(unittest_path)
-    valgrind.execute(integrationtest_path)
-
-
 def execute_test(args):
     make.check_availability()
     make.check_version()
@@ -223,10 +216,18 @@ def execute_test(args):
     make.execute(['test'], build_path)
 
 
+def execute_valgrind(args):
+    check_is_bootstrapped()
+
+    valgrind.execute(unittest_path)
+    valgrind.execute(integrationtest_path)
+
+
 def execute_all(args):
     execute_clean(args)
     execute_bootstrap(args)
     execute_build(args)
+    execute_test(args)
     execute_install(args)
     execute_package(args)
 

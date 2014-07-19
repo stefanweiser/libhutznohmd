@@ -6,15 +6,7 @@ get_filename_component(GMOCK_DIR "${PROJECT_DIR}/gmock" REALPATH)
 
 
 
-add_custom_target(test)
-macro(run_test TARGET)
-  add_custom_target(test___${TARGET}
-      COMMAND ${TARGET}
-      DEPENDS ${TARGET}
-      WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
-  add_dependencies(test test___${TARGET})
-  add_custom_command(TARGET ${TARGET} POST_BUILD COMMAND ${TARGET} VERBATIM)
-endmacro(run_test)
+enable_testing()
 
 macro(style_files TARGET)
     set(ASTYLE_COMMANDS)

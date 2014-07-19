@@ -8,7 +8,7 @@ file(GLOB_RECURSE GMOCK ${GMOCK_DIR}/*.cc ${GMOCK_DIR}/*.h)
 
 add_executable(integrationtest_restsrv ${SOURCES} ${HEADERS} ${GMOCK})
 style_files(integrationtest_restsrv ${SOURCES} ${HEADERS})
-run_test(integrationtest_restsrv)
+add_test(integrationtest "${CMAKE_CURRENT_BINARY_DIR}/integrationtest_restsrv")
 
 link_directories(${CMAKE_BINARY_DIR}/lib)
 target_link_libraries(integrationtest_restsrv restsrv)
