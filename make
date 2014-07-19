@@ -100,7 +100,8 @@ def execute_bootstrap(args):
     cmake.check_availability()
     cmake.check_version()
 
-    os.makedirs(build_path)
+    if not os.path.exists(build_path):
+        os.makedirs(build_path)
     cmake.execute(args.target)
 
 
@@ -117,11 +118,7 @@ def execute_build(args):
 
 
 def execute_clean(args):
-    if os.path.exists(build_path):
-        rmtree(build_path)
-
-    if os.path.exists(install_path):
-        rmtree(install_path)
+    check_call(['make', 'clean'], cwd=build_path)
 
 
 def execute_coverage(args):
