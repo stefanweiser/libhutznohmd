@@ -185,7 +185,7 @@ def execute_doc(args):
     doxygen.check_version()
     java.check_availability()
     java.check_version()
-    check_is_bootstrapped
+    check_is_bootstrapped()
 
     plantuml_jar = os.path.join(gettempdir(), 'plantuml.jar')
     if os.path.exists(plantuml_jar) is False:
