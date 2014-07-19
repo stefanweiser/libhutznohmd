@@ -3,7 +3,7 @@
 from locale import getdefaultlocale
 from os.path import exists, isdir, join, normcase
 from os import curdir, defpath, environ, pathsep
-from subprocess import call, PIPE, Popen, STDOUT
+from subprocess import CalledProcessError, check_call, PIPE, Popen, STDOUT
 from sys import platform
 from termcolor import colorize, GREEN, RED
 
@@ -11,7 +11,9 @@ from termcolor import colorize, GREEN, RED
 class ToolNotAvailableError(Exception):
     def __init__(self, executable_name):
         self.executable_name = executable_name
-        print(colorize('[FAIL]: ' + self.executable_name + ' not found.', RED))
+
+    def __str__(self):
+        return colorize('[FAIL]: ' + self.executable_name + ' not found.', RED)
 
 
 class VersionDoesNotFitError(Exception):
@@ -19,9 +21,11 @@ class VersionDoesNotFitError(Exception):
         self.executable_name = executable_name
         self.minimum_version = minimum_version
         self.found_version = found_version
-        print(colorize('[FAIL]: ' + self.executable_name + ' (>= ' +
-                       self.minimum_version + ') == ' + self.found_version +
-                       '.', RED))
+
+    def __str__(self):
+        return colorize('[FAIL]: ' + self.executable_name + ' (>= ' +
+                        self.minimum_version + ') == ' + self.found_version +
+                        '.', RED)
 
 
 def versiontuple(v):
@@ -48,9 +52,9 @@ class Tool:
                                          self.minimum_version,
                                          found_version)
 
-        print(colorize('[ OK ]: ' + self.executable_name + ' (>= ' +
-                       self.minimum_version + ') == ' + found_version + '.',
-                       GREEN))
+        return colorize('[ OK ]: ' + self.executable_name + ' (>= ' +
+                        self.minimum_version + ') == ' + found_version + '.',
+                        GREEN)
 
 
 def which(cmd):
@@ -96,6 +100,8 @@ def get_command_output(command):
     encoding = getdefaultlocale()[1]
     p = Popen(command, stdout=PIPE, stderr=STDOUT)
     result = p.communicate()
+    if p.returncode != 0:
+        raise CalledProcessError(p.returncode, command[0])
     return result[0].decode(encoding)
 
 
@@ -105,8 +111,8 @@ class AStyleTool(Tool):
         self.options_path = options_path
 
     def execute(self, filename):
-        call([self.executable_name, '--options=' + self.options_path,
-              filename])
+        check_call([self.executable_name, '--options=' + self.options_path,
+                    filename])
 
 
 class CMakeTool(Tool):
@@ -118,9 +124,9 @@ class CMakeTool(Tool):
         self.install_path = install_path
 
     def execute(self, target):
-        call([self.executable_name, self.script_path,
-              '-DCMAKE_INSTALL_PREFIX=' + self.install_path,
-              '-DCMAKE_BUILD_TYPE=' + target], cwd=self.build_path)
+        check_call([self.executable_name, self.script_path,
+                    '-DCMAKE_INSTALL_PREFIX=' + self.install_path,
+                    '-DCMAKE_BUILD_TYPE=' + target], cwd=self.build_path)
 
 
 class DotTool(Tool):
@@ -146,22 +152,22 @@ class LCOVTool(Tool):
         self.output_path = join(build_path, 'lcov')
 
     def do_basic_trace(self):
-        call([self.executable_name, '-c', '-i', '-d', self.target_path, '-o',
-              self.tracefile + '.base'], cwd=self.build_path)
+        check_call([self.executable_name, '-c', '-i', '-d', self.target_path,
+                    '-o', self.tracefile + '.base'], cwd=self.build_path)
 
     def do_test_trace(self):
-        call([self.executable_name, '-c', '-d', self.target_path, '-o',
-              self.tracefile + '.test'], cwd=self.build_path)
+        check_call([self.executable_name, '-c', '-d', self.target_path, '-o',
+                    self.tracefile + '.test'], cwd=self.build_path)
 
     def generate_coverage(self):
-        call([self.executable_name, '-c', '-d', self.target_path, '-o',
-              self.tracefile + '.test'])
-        call([self.executable_name, '-a', self.tracefile + '.base', '-a',
-              self.tracefile + '.test', '-o', self.tracefile])
-        call([self.executable_name, '-r', self.tracefile + '.test',
-              '/usr/include/*', '-o', self.tracefile])
-        call([self.html_generator_name, self.tracefile, '--output-directory',
-              self.output_path])
+        check_call([self.executable_name, '-c', '-d', self.target_path, '-o',
+                    self.tracefile + '.test'])
+        check_call([self.executable_name, '-a', self.tracefile + '.base', '-a',
+                    self.tracefile + '.test', '-o', self.tracefile])
+        check_call([self.executable_name, '-r', self.tracefile + '.test',
+                    '/usr/include/*', '-o', self.tracefile])
+        check_call([self.html_generator_name, self.tracefile,
+                    '--output-directory', self.output_path])
 
 
 class MakeTool(Tool):
@@ -170,7 +176,7 @@ class MakeTool(Tool):
         self.build_path = build_path
 
     def execute(self, args, working_path='.'):
-        call([self.executable_name] + args, cwd=working_path)
+        check_call([self.executable_name] + args, cwd=working_path)
 
 
 class RATSTool(Tool):
@@ -183,8 +189,8 @@ class RATSTool(Tool):
         return s.split('\n')[0].split()[1][1:]
 
     def execute(self):
-        call([self.executable_name, '--resultsonly', '-w', '3'] +
-             self.source_paths)
+        check_call([self.executable_name, '--resultsonly', '-w', '3'] +
+                    self.source_paths)
 
 
 class ValgrindTool(Tool):
@@ -193,7 +199,7 @@ class ValgrindTool(Tool):
         return s.strip().split('-')[-1]
 
     def execute(self, application):
-        call([self.executable_name, application])
+        check_call([self.executable_name, application])
 
 
 class WGetTool(Tool):

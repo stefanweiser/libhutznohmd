@@ -14,7 +14,7 @@ from argparse import ArgumentParser
 from itertools import chain
 from multiprocessing import cpu_count
 from shutil import rmtree
-from subprocess import call
+from subprocess import CalledProcessError, check_call
 from tempfile import gettempdir
 from termcolor import colorize, RED
 
@@ -92,8 +92,8 @@ wget = tools.WGetTool('wget', '1.13')
 
 
 class IsNotBootstrappedError(Exception):
-    def __init__(self):
-        print(colorize('[FAIL]: Project is not bootstrapped.', RED))
+    def __str__(self):
+        return colorize('[FAIL]: Project is not bootstrapped.', RED)
 
 
 def check_is_bootstrapped():
@@ -187,11 +187,11 @@ def execute_doc(args):
 
     plantuml_jar = os.path.join(gettempdir(), 'plantuml.jar')
     if os.path.exists(plantuml_jar) is False:
-        call(['wget', 'http://sourceforge.net/projects/plantuml/' +
-              'files/plantuml.jar/download', '-O', plantuml_jar])
+        check_call(['wget', 'http://sourceforge.net/projects/plantuml/' +
+                    'files/plantuml.jar/download', '-O', plantuml_jar])
 
-    call(['java', '-Djava.awt.headless=true', '-jar', plantuml_jar, '-v', '-o',
-          html_path, script_path + '/src/**.(c|cpp|h|hpp)'])
+    check_call(['java', '-Djava.awt.headless=true', '-jar', plantuml_jar, '-v',
+                '-o', html_path, script_path + '/src/**.(c|cpp|h|hpp)'])
     make.execute(['doc'], build_path)
 
 
@@ -206,7 +206,7 @@ def execute_install(args):
 def execute_integrationtest(args):
     check_is_bootstrapped()
 
-    call([integrationtest_path])
+    check_call([integrationtest_path])
 
 
 def execute_lizard(args):
@@ -237,7 +237,7 @@ def execute_rats(args):
 def execute_unittest(args):
     check_is_bootstrapped()
 
-    call([unittest_path])
+    check_call([unittest_path])
 
 
 def execute_valgrind(args):
@@ -265,50 +265,55 @@ def execute_all(args):
 
 
 if __name__ == "__main__":
-    python3.check_availability()
-    python3.check_version()
-
-    steps = {
-        'all': Struct(fn=execute_all,
-                      help='builds all steps to make a package'),
-        'astyle': Struct(fn=execute_astyle,
-                         help='formats all sources'),
-        'bootstrap': Struct(fn=execute_bootstrap,
-                            help='bootstraps the build'),
-        'build': Struct(fn=execute_build,
-                        help='compiles the targets'),
-        'cppcheck': Struct(fn=execute_cppcheck,
-                        help='checks all sources with cppcheck'),
-        'clean': Struct(fn=execute_clean,
-                        help='removes all built output'),
-        'coverage': Struct(fn=execute_coverage,
-                           help='generates lcov output'),
-        'doc': Struct(fn=execute_doc,
-                      help='compiles documentation'),
-        'install': Struct(fn=execute_install,
-                          help='installs the targets'),
-        'integrationtest': Struct(fn=execute_integrationtest,
-                                  help='executes integration tests'),
-        'lizard': Struct(fn=execute_lizard,
-                         help='checks for cyclic complexity violations'),
-        'package': Struct(fn=execute_package,
-                          help='builds packages'),
-        'rats': Struct(fn=execute_rats,
-                       help='searches for security issues'),
-        'test': Struct(fn=execute_test,
-                       help='executes unit and integration tests'),
-        'unittest': Struct(fn=execute_unittest,
-                           help='executes unit tests'),
-        'valgrind': Struct(fn=execute_valgrind,
-                           help='searches for memory leaks')
-    }
-
-    args = parse_arguments(steps)
-
     try:
-        for step in args.step:
-            steps[step].fn(args)
-    except (tools.ToolNotAvailableError,
-            tools.VersionDoesNotFitError,
-            IsNotBootstrappedError):
-        pass
+        python3.check_availability()
+        python3.check_version()
+
+        steps = {
+            'all': Struct(fn=execute_all,
+                          help='builds all steps to make a package'),
+            'astyle': Struct(fn=execute_astyle,
+                             help='formats all sources'),
+            'bootstrap': Struct(fn=execute_bootstrap,
+                                help='bootstraps the build'),
+            'build': Struct(fn=execute_build,
+                            help='compiles the targets'),
+            'cppcheck': Struct(fn=execute_cppcheck,
+                            help='checks all sources with cppcheck'),
+            'clean': Struct(fn=execute_clean,
+                            help='removes all built output'),
+            'coverage': Struct(fn=execute_coverage,
+                               help='generates lcov output'),
+            'doc': Struct(fn=execute_doc,
+                          help='compiles documentation'),
+            'install': Struct(fn=execute_install,
+                              help='installs the targets'),
+            'integrationtest': Struct(fn=execute_integrationtest,
+                                      help='executes integration tests'),
+            'lizard': Struct(fn=execute_lizard,
+                             help='checks for cyclic complexity violations'),
+            'package': Struct(fn=execute_package,
+                              help='builds packages'),
+            'rats': Struct(fn=execute_rats,
+                           help='searches for security issues'),
+            'test': Struct(fn=execute_test,
+                           help='executes unit and integration tests'),
+            'unittest': Struct(fn=execute_unittest,
+                               help='executes unit tests'),
+            'valgrind': Struct(fn=execute_valgrind,
+                               help='searches for memory leaks')
+        }
+
+        args = parse_arguments(steps)
+
+        try:
+            for step in args.step:
+                steps[step].fn(args)
+        except (tools.ToolNotAvailableError,
+                tools.VersionDoesNotFitError,
+                IsNotBootstrappedError) as e:
+            print(e)
+
+    except CalledProcessError as e:
+        print(colorize('[FAIL]: ' + e.cmd + ' failed (exit code ' +
+                       str(e.returncode) + ').', RED))
