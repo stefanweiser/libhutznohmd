@@ -1,3 +1,4 @@
 build
 install
 *.user
+python/__pycache__/**
