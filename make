@@ -76,18 +76,14 @@ astyle = tools.Tool('astyle', '2.03')
 cmake = tools.CMakeTool('cmake', '2.8', script_path, build_path, install_path)
 cppcheck = tools.Tool('cppcheck', '1.60')
 dot = tools.DotTool('dot', '2.26')
-doxygen = tools.Tool('doxygen', '1.7.6')
 gcov = tools.Tool('gcov', '4.8')
 gpp = tools.Tool('g++', '4.8')
-java = tools.JavaTool('java', '1.6')
 lcov = tools.LCOVTool('lcov', 'genhtml', '1.9', build_path)
 lizard = tools.Tool('lizard', '1.8.4')
-make = tools.MakeTool('make', '3.81', build_path)
 python3 = tools.Tool('python3', '3.2')
 rats = tools.RATSTool('rats', '2.4', source_paths)
 rpmbuild = tools.Tool('rpmbuild', '4.9')
 valgrind = tools.ValgrindTool('valgrind', '3.7.0')
-wget = tools.WGetTool('wget', '1.13')
 
 
 class IsNotBootstrappedError(Exception):
@@ -109,8 +105,6 @@ def execute_bootstrap(args):
 
 
 def execute_build(args):
-    make.check_availability()
-    make.check_version()
     gpp.check_availability()
     gpp.check_version()
     astyle.check_availability()
@@ -119,7 +113,7 @@ def execute_build(args):
     cppcheck.check_version()
     check_is_bootstrapped()
 
-    make.execute(['-j' + str(cpu_count())], build_path)
+    check_call(['make', '-j' + str(cpu_count())], cwd=build_path)
 
 
 def execute_clean(args):
@@ -153,34 +147,17 @@ def execute_coverage(args):
 
 
 def execute_doc(args):
-    wget.check_availability()
-    wget.check_version()
-    make.check_availability()
-    make.check_version()
     dot.check_availability()
     dot.check_version()
-    doxygen.check_availability()
-    doxygen.check_version()
-    java.check_availability()
-    java.check_version()
     check_is_bootstrapped()
 
-    plantuml_jar = os.path.join(gettempdir(), 'plantuml.jar')
-    if os.path.exists(plantuml_jar) is False:
-        check_call(['wget', 'http://sourceforge.net/projects/plantuml/' +
-                    'files/plantuml.jar/download', '-O', plantuml_jar])
-
-    check_call(['java', '-Djava.awt.headless=true', '-jar', plantuml_jar, '-v',
-                '-o', html_path, script_path + '/src/**.(c|cpp|h|hpp)'])
-    make.execute(['doc'], build_path)
+    check_call(['make', 'doc'], cwd=build_path)
 
 
 def execute_install(args):
-    make.check_availability()
-    make.check_version()
     check_is_bootstrapped()
 
-    make.execute(['install'], build_path)
+    check_call(['make', 'install'], cwd=build_path)
 
 
 def execute_lizard(args):
@@ -188,17 +165,15 @@ def execute_lizard(args):
     lizard.check_version()
     check_is_bootstrapped()
 
-    make.execute(['lizard'], build_path)
+    check_call(['make', 'lizard'], cwd=build_path)
 
 
 def execute_package(args):
-    make.check_availability()
-    make.check_version()
     rpmbuild.check_availability()
     rpmbuild.check_version()
     check_is_bootstrapped()
 
-    make.execute(['package'], build_path)
+    check_call(['make', 'package'], cwd=build_path)
 
 
 def execute_rats(args):
@@ -209,11 +184,9 @@ def execute_rats(args):
 
 
 def execute_test(args):
-    make.check_availability()
-    make.check_version()
     check_is_bootstrapped()
 
-    make.execute(['test'], build_path)
+    check_call(['make', 'test'], cwd=build_path)
 
 
 def execute_valgrind(args):

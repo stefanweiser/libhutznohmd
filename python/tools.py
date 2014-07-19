@@ -125,12 +125,6 @@ class DotTool(Tool):
         return s.strip().split()[-2]
 
 
-class JavaTool(Tool):
-    def get_version(self):
-        s = get_command_output([self.executable_name, '-version'])
-        return s.split('\n')[0].split()[-1][1:-1].replace('_', '.')
-
-
 class LCOVTool(Tool):
     def __init__(self, executable_name, html_generator_name, minimum_version,
                  build_path):

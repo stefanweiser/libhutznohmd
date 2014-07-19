@@ -4,7 +4,16 @@ project(librestsrv)
 get_filename_component(PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" REALPATH)
 get_filename_component(GMOCK_DIR "${PROJECT_DIR}/gmock" REALPATH)
 
+find_package(Doxygen 1.7.6 REQUIRED)
+find_package(Java 1.6 REQUIRED)
+find_package(Wget 1.13 REQUIRED)
 
+
+
+set(PLANTUML_JAR "${CMAKE_CURRENT_BINARY_DIR}/plantuml.jar")
+if(NOT EXISTS "${PLANTUML_JAR}")
+    execute_process(COMMAND ${WGET_EXECUTABLE} http://sourceforge.net/projects/plantuml/files/plantuml.jar/download -O ${PLANTUML_JAR})
+endif()
 
 enable_testing()
 
@@ -29,7 +38,8 @@ add_custom_target(cppcheck
                   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" VERBATIM)
 
 add_custom_target(doc
-                  doxygen ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
+                  java -Djava.awt.headless=true -jar "${PLANTUML_JAR}" -v -o "${CMAKE_CURRENT_BINARY_DIR}/html" "${CMAKE_CURRENT_SOURCE_DIR}/src/**.(c|cpp|h|hpp)"
+                  COMMAND doxygen ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
                   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}" VERBATIM)
 
 add_custom_target(lizard
