@@ -4,6 +4,8 @@ project(librestsrv)
 get_filename_component(PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" REALPATH)
 get_filename_component(GMOCK_DIR "${PROJECT_DIR}/gmock" REALPATH)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
 find_package(Doxygen 1.7.6 REQUIRED)
 find_package(Java 1.6 REQUIRED)
 find_package(Wget 1.13 REQUIRED)
