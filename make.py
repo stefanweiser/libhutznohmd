@@ -15,7 +15,7 @@ from itertools import chain
 from multiprocessing import cpu_count
 from shutil import rmtree
 from subprocess import call
-from termcolor import colorize
+from termcolor import colorize, RED
 
 import tools
 
@@ -92,13 +92,12 @@ valgrind = tools.ValgrindTool('valgrind', '3.7.0')
 
 
 class IsNotBootstrappedError(Exception):
-    def __str__(self):
-        return colorize('ERROR: Unable to find build directory. ' +
-                        'Project is not bootstrapped.', RED)
+    def __init__(self):
+        print(colorize('[FAIL]: Project is not bootstrapped.', RED))
 
 
 def check_is_bootstrapped():
-    if os.path.exists(build_path) is None:
+    if not os.path.exists(build_path):
         raise IsNotBootstrappedError()
 
 
@@ -297,5 +296,7 @@ if __name__ == "__main__":
     try:
         for step in args.step:
             steps[step].fn(args)
-    except (tools.ToolNotAvailableError, tools.VersionDoesNotFitError):
+    except (tools.ToolNotAvailableError,
+            tools.VersionDoesNotFitError,
+            IsNotBootstrappedError):
         pass
