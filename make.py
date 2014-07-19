@@ -15,6 +15,7 @@ from itertools import chain
 from multiprocessing import cpu_count
 from shutil import rmtree
 from subprocess import call
+from tempfile import gettempdir
 from termcolor import colorize, RED
 
 import tools
@@ -89,6 +90,7 @@ python3 = tools.Tool('python3', '3.2')
 rats = tools.RATSTool('rats', '2.4', source_paths)
 rpmbuild = tools.Tool('rpmbuild', '4.9')
 valgrind = tools.ValgrindTool('valgrind', '3.7.0')
+wget = tools.WGetTool('wget', '1.13')
 
 
 class IsNotBootstrappedError(Exception):
@@ -123,6 +125,8 @@ def execute_bootstrap(args):
 
 
 def execute_build(args):
+    make.check_availability()
+    make.check_version()
     gpp.check_availability()
     gpp.check_version()
     check_is_bootstrapped()
@@ -131,6 +135,8 @@ def execute_build(args):
 
 
 def execute_check(args):
+    make.check_availability()
+    make.check_version()
     cppcheck.check_availability()
     cppcheck.check_version()
 
@@ -155,20 +161,24 @@ def execute_coverage(args):
     tracefile = os.path.join(target_path, 'coverage.info')
     lcov_output_path = os.path.join(build_path, 'lcov')
 
-    exec_clean(args)
-    exec_bootstrap(Struct(target='coverage'))
-    exec_build(args)
+    execute_clean(args)
+    execute_bootstrap(Struct(target='coverage'))
+    execute_build(args)
 
     lcov.do_basic_trace()
 
-    exec_unittest(args)
-    exec_integrationtest(args)
+    execute_unittest(args)
+    execute_integrationtest(args)
 
     lcov.do_test_trace()
     lcov.generate_coverage()
 
 
 def execute_doc(args):
+    wget.check_availability()
+    wget.check_version()
+    make.check_availability()
+    make.check_version()
     dot.check_availability()
     dot.check_version()
     doxygen.check_availability()
@@ -177,7 +187,7 @@ def execute_doc(args):
     java.check_version()
     check_is_bootstrapped
 
-    plantuml_jar = '/tmp/plantuml.jar'
+    plantuml_jar = os.path.join(gettempdir(), 'plantuml.jar')
     if os.path.exists(plantuml_jar) is False:
         call(['wget', 'http://sourceforge.net/projects/plantuml/' +
               'files/plantuml.jar/download', '-O', plantuml_jar])
@@ -188,6 +198,8 @@ def execute_doc(args):
 
 
 def execute_install(args):
+    make.check_availability()
+    make.check_version()
     check_is_bootstrapped()
 
     make.execute(['install'], build_path)
@@ -208,6 +220,8 @@ def execute_lizard(args):
 
 
 def execute_package(args):
+    make.check_availability()
+    make.check_version()
     rpmbuild.check_availability()
     rpmbuild.check_version()
     check_is_bootstrapped()

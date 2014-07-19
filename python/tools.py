@@ -138,13 +138,14 @@ class JavaTool(Tool):
 
     def get_version(self):
         s = get_command_output([self.executable_name, '-version'])
-        return s.split('\n')[0].split()[-1][1:-1]
+        return s.split('\n')[0].split()[-1][1:-1].replace('_', '.')
 
 
 class LCOVTool(Tool):
     def __init__(self, executable_name, html_generator_name, minimum_version,
                  build_path):
         Tool.__init__(self, executable_name, minimum_version)
+        self.build_path = build_path
         self.html_generator_name = html_generator_name
         self.target_path = join(build_path, 'src')
         self.tracefile = join(self.target_path, 'coverage.info')
@@ -164,7 +165,7 @@ class LCOVTool(Tool):
         call([self.executable_name, '-a', self.tracefile + '.base', '-a',
               self.tracefile + '.test', '-o', self.tracefile])
         call([self.executable_name, '-r', self.tracefile + '.test',
-              '/usr/include/', '-o', self.tracefile])
+              '/usr/include/*', '-o', self.tracefile])
         call([self.html_generator_name, self.tracefile, '--output-directory',
               self.output_path])
 
@@ -202,3 +203,12 @@ class ValgrindTool(Tool):
 
     def execute(self, application):
         call([self.executable_name, application])
+
+
+class WGetTool(Tool):
+    def __init__(self, executable_name, minimum_version):
+        Tool.__init__(self, executable_name, minimum_version)
+
+    def get_version(self):
+        s = get_command_output([self.executable_name, '--version'])
+        return s.split('\n')[0].split()[2]
