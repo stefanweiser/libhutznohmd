@@ -93,7 +93,7 @@ TEST(request_parser, options_request)
 
 TEST(request_parser, get_request)
 {
-    fixture f("GET / HTTP/1.0\r\r\n");
+    fixture f("GET / HTTP/1.0\r\nfrom: user@example.com\r\r\n");
     for (size_t i = 0; i < 2; i++) {
         f.parser_.parse();
         EXPECT_TRUE(f.parser_.valid());
@@ -102,6 +102,13 @@ TEST(request_parser, get_request)
         EXPECT_EQ(f.parser_.version(), version::HTTP_1_0);
         EXPECT_EQ(f.parser_.request_uri().path(), std::string("/"));
         EXPECT_EQ(f.parser_.headers().empty(), true);
+        EXPECT_EQ(f.parser_.from_uri().scheme(), uri_scheme::MAILTO);
+        EXPECT_EQ(f.parser_.from_uri().userinfo(), std::string("user"));
+        EXPECT_EQ(f.parser_.from_uri().host(), std::string("example.com"));
+        EXPECT_EQ(f.parser_.from_uri().port(), 0);
+        EXPECT_EQ(f.parser_.from_uri().path(), std::string(""));
+        EXPECT_EQ(f.parser_.from_uri().query(), std::string());
+        EXPECT_EQ(f.parser_.from_uri().fragment(), std::string());
     }
 }
 
