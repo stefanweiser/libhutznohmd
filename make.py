@@ -84,6 +84,7 @@ java = tools.JavaTool('java', '1.6')
 lcov = tools.LCOVTool('lcov', 'genhtml', '1.9', build_path)
 lizard = tools.LizardTool('lizard', '1.8.4')
 make = tools.MakeTool('make', '3.81', build_path)
+python3 = tools.PythonTool('python3', '3.2')
 rats = tools.RATSTool('rats', '2.4', source_paths)
 rpmbuild = tools.RPMBuildTool('rpmbuild', '4.9')
 valgrind = tools.ValgrindTool('valgrind', '3.7.0')
@@ -137,15 +138,11 @@ def execute_check(args):
 
 
 def execute_clean(args):
-    try:
+    if os.path.exists(build_path):
         rmtree(build_path)
-    except FileNotFoundError:
-        pass
 
-    try:
+    if os.path.exists(install_path):
         rmtree(install_path)
-    except FileNotFoundError:
-        pass
 
 
 def execute_coverage(args):
@@ -256,6 +253,9 @@ def execute_all(args):
 
 
 if __name__ == "__main__":
+    python3.check_availability()
+    python3.check_version()
+
     steps = {
         'all': Struct(fn=execute_all,
                       help='builds all steps to make a package'),

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 from locale import getdefaultlocale
-from os.path import join
-from shutil import which
+from os.path import exists, isdir, join, normcase
+from os import curdir, defpath, environ, pathsep
 from subprocess import call, PIPE, Popen
+from sys import platform
 
 
 class ToolNotAvailableError(Exception):
@@ -54,6 +55,45 @@ class Tool:
               '.'.join(found_version) + '.')
 
 
+def which(cmd):
+    path = environ.get("PATH", defpath)
+    if not path:
+        return None
+    path = path.split(pathsep)
+
+    if platform == "win32":
+        # The current directory takes precedence on Windows.
+        if not curdir in path:
+            path.insert(0, curdir)
+
+        # PATHEXT is necessary to check on Windows.
+        pathext = environ.get("PATHEXT", "").split(pathsep)
+
+        # See if the given file matches any of the expected path extensions.
+        # This will allow us to short circuit when given "python.exe".
+        # If it does match, only test that one, otherwise we have to try
+        # others.
+        if any(cmd.lower().endswith(ext.lower()) for ext in pathext):
+            files = [cmd]
+        else:
+            files = [cmd + ext for ext in pathext]
+    else:
+        # On other platforms you don't have things like PATHEXT to tell you
+        # what file suffixes are executable, so just pass on cmd as-is.
+        files = [cmd]
+
+    seen = set()
+    for dir in path:
+        normdir = normcase(dir)
+        if not normdir in seen:
+            seen.add(normdir)
+            for thefile in files:
+                name = join(dir, thefile)
+                if exists(name) and not isdir(name):
+                    return name
+    return None
+
+
 def get_command_output(command):
     encoding = getdefaultlocale()[1]
     p = Popen(command, stdout=PIPE, stderr=PIPE)
@@ -99,7 +139,7 @@ class CPPCheckTool(Tool):
 
     def get_version(self):
         s = get_command_output([self.executable_name, '--version'])
-        return s[0].split()[-1].split('.')
+        return s[0].strip().split()[-1].split('.')
 
 
 class DoxygenTool(Tool):
@@ -191,6 +231,15 @@ class MakeTool(Tool):
 
     def execute(self, args, working_path='.'):
         call([self.executable_name] + args, cwd=working_path)
+
+
+class PythonTool(Tool):
+    def __init__(self, executable_name, minimum_version):
+        Tool.__init__(self, executable_name, minimum_version)
+
+    def get_version(self):
+        s = get_command_output([self.executable_name, '--version'])
+        return s[1].strip().split()[-1].split('.')
 
 
 class RPMBuildTool(Tool):
