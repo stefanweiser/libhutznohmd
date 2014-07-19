@@ -1,118 +1,27 @@
-#!/bin/bash -ue
+#!/usr/bin/env python3
 
-script_path=$(dirname `readlink -f $0`)
-script_name=$(basename `readlink -f $0`)
+import os
+import sys
+from argparse import ArgumentParser
+from subprocess import call
 
-build_path="${script_path}/build"
 
-function usage()
-{
-	echo ""
-	echo "  This script assists you to execute examples."
-	echo ""
-	echo "  usage: ${script_name} [name] [options]"
-	echo ""
-	echo "  Examples:"
-	echo "   http        : HTTP examples."
-	echo "   socket      : Socket examples."
-	echo "   performance : Performance test."
-	echo ""
-	echo "  Options:"
-	echo "   -h"
-	echo "   --help        : Displays this help information"
-	echo ""
-	echo "  Example:"
-	echo "    ${script_name} http"
-	echo ""
-}
+if __name__ == "__main__":
+    parser = ArgumentParser()
+    parser.add_argument('example', nargs='+')
+    example_group = parser.add_argument_group(
+        'examples')
+    example_group.add_argument('http', action='store_true')
+    example_group.add_argument('socket', action='store_true')
+    example_group.add_argument('performance', action='store_true')
+    args = parser.parse_args()
 
-function exec_http()
-{
-	cd "${build_path}"
-	LD_LIBRARY_PATH="${build_path}/src" "${build_path}/examples/http/example_http"
-}
+    script_path = os.path.dirname(os.path.realpath(__file__))
+    build_path = os.path.join(script_path, 'build')
 
-function exec_socket()
-{
-	cd "${build_path}"
-	LD_LIBRARY_PATH="${build_path}/src" "${build_path}/examples/socket/example_socket"
-}
-
-function exec_performance()
-{
-	cd "${build_path}"
-	LD_LIBRARY_PATH="${build_path}/src" "${build_path}/examples/performance/example_performance"
-}
-
-opts_words=()
-opts_http=0
-opts_socket=0
-opts_performance=0
-
-args=$(getopt \
-	--options "h" \
-	--longopt "help" \
-	-- "$@")
-if [ $? != 0 ]; then
-	usage
-	exit 1
-fi
-
-eval set -- ${args}
-while [ $# -ne 0 ]; do
-	case "$1" in
-		-h)
-			usage
-			exit 1
-			;;
-		--help)
-			usage
-			exit 1
-			;;
-		*)
-			if [ $# -gt 1 ] ; then
-				opts_words[${#opts_words[*]}]=$2
-			fi
-			;;
-	esac
-	shift
-done
-
-if [ ${#opts_words[@]} -gt 0 ]; then
-	for word in ${opts_words[*]} ; do
-		case "${word}" in
-			http)
-				opts_http=1
-				;;
-			socket)
-				opts_socket=1
-				;;
-			performance)
-				opts_performance=1
-				;;
-
-			*)
-				echo "ERROR: Found invalid argument. (${word})"
-				exit 1
-				;;
-		esac
-	done
-else
-	usage
-	exit 1
-fi
-
-if [ ${opts_http} -ne 0 ]; then
-	exec_http
-fi
-
-if [ ${opts_socket} -ne 0 ]; then
-	exec_socket
-fi
-
-if [ ${opts_performance} -ne 0 ]; then
-	exec_performance
-fi
-
-exit 0
-
+    for example in args.example:
+        bin = os.path.join(build_path,
+                           'examples',
+                           example,
+                           'example_' + example)
+        call([bin])
