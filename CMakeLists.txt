@@ -22,6 +22,17 @@ add_custom_target(cppcheck
                       -I ./src/ ./src/
                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} VERBATIM)
 
+add_custom_target(doc
+                  doxygen ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                  VERBATIM)
+
+add_custom_target(lizard
+                  lizard --warnings_only --CCN 10 --sort cyclomatic_complexity
+                      ./src/
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                  VERBATIM)
+
 
 
 add_subdirectory(src)
@@ -33,15 +44,3 @@ set(CPACK_GENERATOR "DEB;RPM;TBZ2;TGZ")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Stefan Weiser <stefan.weiser@bluewin.ch>")
  
 include(CPack)
-
-
-
-add_custom_target(doc
-                  doxygen ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
-                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                  COMMENT "Generating documentation." VERBATIM)
-
-add_custom_target(lizard
-                  lizard --warnings_only --CCN 10 --sort cyclomatic_complexity ./src/
-                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                  COMMENT "Checking for high cyclomatic complexity." VERBATIM)
