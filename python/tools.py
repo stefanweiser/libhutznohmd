@@ -101,7 +101,7 @@ def get_command_output(command):
     p = Popen(command, stdout=PIPE, stderr=STDOUT)
     result = p.communicate()
     if p.returncode != 0:
-        raise CalledProcessError(p.returncode, command[0])
+        raise CalledProcessError(p.returncode, command)
     return result[0].decode(encoding)
 
 

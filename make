@@ -315,5 +315,5 @@ if __name__ == "__main__":
             print(e)
 
     except CalledProcessError as e:
-        print(colorize('[FAIL]: ' + e.cmd + ' failed (exit code ' +
+        print(colorize('[FAIL]: <' + ' '.join(e.cmd) + '> failed (exit code ' +
                        str(e.returncode) + ').', RED))
