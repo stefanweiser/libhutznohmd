@@ -5,36 +5,37 @@ from os.path import exists, isdir, join, normcase
 from os import curdir, defpath, environ, pathsep
 from subprocess import call, PIPE, Popen, STDOUT
 from sys import platform
+from termcolor import colorize, GREEN, RED
 
 
 class ToolNotAvailableError(Exception):
-    def __init__(self, tool_name):
-        self.tool_name = tool_name
-
-    def __str__(self):
-        return 'ERROR: Unable to find program ' + self.tool_name + '.'
+    def __init__(self, executable_name):
+        self.executable_name = executable_name
+        print(colorize('[FAIL]: ' + self.executable_name + ' not found.', RED))
 
 
 class VersionDoesNotFitError(Exception):
-    def __init__(self, tool_name, min_version, found_version):
-        self.tool_name = tool_name
-        self.min_version = min_version
+    def __init__(self, executable_name, minimum_version, found_version):
+        self.executable_name = executable_name
+        self.minimum_version = minimum_version
         self.found_version = found_version
+        print(colorize('[FAIL]: ' + self.executable_name + ' (>= ' +
+                       self.minimum_version + ') == ' + self.found_version +
+                       '.', RED))
 
-    def __str__(self):
-        return 'ERROR: Need at least version ' + min_version + \
-               ' of program ' + command + ', but only ' + found_version + \
-               ' was found.'
+
+def versiontuple(v):
+    return tuple(map(int, (v.split("."))))
 
 
 class Tool:
     def __init__(self, executable_name, minimum_version):
         self.executable_name = executable_name
-        self.minimum_version = minimum_version.split('.')
+        self.minimum_version = minimum_version
 
     def get_version(self):
         s = get_command_output([self.executable_name, '--version'])
-        return s.strip().split()[-1].split('.')
+        return s.split('\n')[0].split()[-1]
 
     def check_availability(self):
         if which(self.executable_name) is None:
@@ -42,18 +43,14 @@ class Tool:
 
     def check_version(self):
         found_version = self.get_version()
-        for i, v in enumerate(self.minimum_version):
-            if found_version[i] < v:
-                VersionDoesNotFitError(self.executable_name,
-                                       self.minimum_version,
-                                       found_version)
-            elif found_version[i] > v:
-                break
+        if versiontuple(found_version) < versiontuple(self.minimum_version):
+            raise VersionDoesNotFitError(self.executable_name,
+                                         self.minimum_version,
+                                         found_version)
 
-        print('INFO: Fulfilling need for version ' +
-              '.'.join(self.minimum_version) +
-              ' of program ' + self.executable_name + ' with version ' +
-              '.'.join(found_version) + '.')
+        print(colorize('[ OK ]: ' + self.executable_name + ' (>= ' +
+                       self.minimum_version + ') == ' + found_version + '.',
+                       GREEN))
 
 
 def which(cmd):
@@ -126,36 +123,13 @@ class CMakeTool(Tool):
               '-DCMAKE_BUILD_TYPE=' + target], cwd=self.build_path)
 
 
-class CPPCheckTool(Tool):
-    def __init__(self, executable_name, minimum_version):
-        Tool.__init__(self, executable_name, minimum_version)
-
-
-class DoxygenTool(Tool):
-    def __init__(self, executable_name, minimum_version):
-        Tool.__init__(self, executable_name, minimum_version)
-
-    def get_version(self):
-        s = get_command_output([self.executable_name, '--version'])
-        return s.strip().split('.')
-
-
 class DotTool(Tool):
     def __init__(self, executable_name, minimum_version):
         Tool.__init__(self, executable_name, minimum_version)
 
     def get_version(self):
         s = get_command_output([self.executable_name, '-V'])
-        return s.strip().split()[-2].split('.')
-
-
-class GCCTool(Tool):
-    def __init__(self, executable_name, minimum_version):
-        Tool.__init__(self, executable_name, minimum_version)
-
-    def get_version(self):
-        s = get_command_output([self.executable_name, '--version'])
-        return s.split('\n')[0].split()[-1].split('.')
+        return s.strip().split()[-2]
 
 
 class JavaTool(Tool):
@@ -164,7 +138,7 @@ class JavaTool(Tool):
 
     def get_version(self):
         s = get_command_output([self.executable_name, '-version'])
-        return s.split('\n')[0].split()[-1][1:-1].split('.')
+        return s.split('\n')[0].split()[-1][1:-1]
 
 
 class LCOVTool(Tool):
@@ -195,36 +169,13 @@ class LCOVTool(Tool):
               self.output_path])
 
 
-class LizardTool(Tool):
-    def __init__(self, executable_name, minimum_version):
-        Tool.__init__(self, executable_name, minimum_version)
-
-    def get_version(self):
-        s = get_command_output([self.executable_name, '--version'])
-        return s.strip().split('.')
-
-
 class MakeTool(Tool):
     def __init__(self, executable_name, minimum_version, build_path):
         Tool.__init__(self, executable_name, minimum_version)
         self.build_path = build_path
 
-    def get_version(self):
-        s = get_command_output([self.executable_name, '--version'])
-        return s.split('\n')[0].split()[-1].split('.')
-
     def execute(self, args, working_path='.'):
         call([self.executable_name] + args, cwd=working_path)
-
-
-class PythonTool(Tool):
-    def __init__(self, executable_name, minimum_version):
-        Tool.__init__(self, executable_name, minimum_version)
-
-
-class RPMBuildTool(Tool):
-    def __init__(self, executable_name, minimum_version):
-        Tool.__init__(self, executable_name, minimum_version)
 
 
 class RATSTool(Tool):
@@ -234,7 +185,7 @@ class RATSTool(Tool):
 
     def get_version(self):
         s = get_command_output([self.executable_name, '-h'])
-        return s.split('\n')[0].split()[1][1:].split('.')
+        return s.split('\n')[0].split()[1][1:]
 
     def execute(self):
         call([self.executable_name, '--resultsonly', '-w', '3'] +
@@ -247,7 +198,7 @@ class ValgrindTool(Tool):
 
     def get_version(self):
         s = get_command_output([self.executable_name, '--version'])
-        return s.strip().split('-')[-1].split('.')
+        return s.strip().split('-')[-1]
 
     def execute(self, application):
         call([self.executable_name, application])

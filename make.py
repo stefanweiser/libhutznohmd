@@ -15,6 +15,7 @@ from itertools import chain
 from multiprocessing import cpu_count
 from shutil import rmtree
 from subprocess import call
+from termcolor import colorize
 
 import tools
 
@@ -75,25 +76,25 @@ integrationtest_path = os.path.join(build_path,
 
 astyle = tools.AStyleTool('astyle', '2.03', astyle_rc)
 cmake = tools.CMakeTool('cmake', '2.8', script_path, build_path, install_path)
-cppcheck = tools.CPPCheckTool('cppcheck', '1.60')
+cppcheck = tools.Tool('cppcheck', '1.60')
 dot = tools.DotTool('dot', '2.26')
-doxygen = tools.DoxygenTool('doxygen', '1.7.6')
-gcov = tools.GCCTool('gcov', '4.8')
-gpp = tools.GCCTool('g++', '4.8')
+doxygen = tools.Tool('doxygen', '1.7.6')
+gcov = tools.Tool('gcov', '4.8')
+gpp = tools.Tool('g++', '4.8')
 java = tools.JavaTool('java', '1.6')
 lcov = tools.LCOVTool('lcov', 'genhtml', '1.9', build_path)
-lizard = tools.LizardTool('lizard', '1.8.4')
+lizard = tools.Tool('lizard', '1.8.4')
 make = tools.MakeTool('make', '3.81', build_path)
-python3 = tools.PythonTool('python3', '3.2')
+python3 = tools.Tool('python3', '3.2')
 rats = tools.RATSTool('rats', '2.4', source_paths)
-rpmbuild = tools.RPMBuildTool('rpmbuild', '4.9')
+rpmbuild = tools.Tool('rpmbuild', '4.9')
 valgrind = tools.ValgrindTool('valgrind', '3.7.0')
 
 
 class IsNotBootstrappedError(Exception):
     def __str__(self):
-        return 'ERROR: Unable to find build directory. ' + \
-               'Project is not bootstrapped.'
+        return colorize('ERROR: Unable to find build directory. ' +
+                        'Project is not bootstrapped.', RED)
 
 
 def check_is_bootstrapped():
@@ -292,5 +293,9 @@ if __name__ == "__main__":
     }
 
     args = parse_arguments(steps)
-    for step in args.step:
-        steps[step].fn(args)
+
+    try:
+        for step in args.step:
+            steps[step].fn(args)
+    except (tools.ToolNotAvailableError, tools.VersionDoesNotFitError):
+        pass
