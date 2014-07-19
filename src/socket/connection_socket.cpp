@@ -136,18 +136,18 @@ bool connection_socket::send(const char * buffer, const size_t & size)
         return false;
     }
 
-    ::ssize_t sent_size = 0;
+    ::ssize_t total_sent_size = 0;
 
     do {
-        const void * block = buffer + sent_size;
-        const size_t block_size = size - sent_size;
-        const ::ssize_t sent_block_size = send_signal_safe(socket_, block, block_size, 0);
+        const size_t block_size = size - total_sent_size;
+        const ::ssize_t sent_block_size =
+            send_signal_safe(socket_, buffer + total_sent_size, block_size, 0);
 
         if (sent_block_size <= 0) {
             return false;
         }
-        sent_size += sent_block_size;
-    } while (sent_size < static_cast<::ssize_t>(size));
+        total_sent_size += sent_block_size;
+    } while (total_sent_size < static_cast<::ssize_t>(size));
 
     return true;
 }
