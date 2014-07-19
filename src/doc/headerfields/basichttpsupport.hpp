@@ -132,8 +132,14 @@ From: user@example.com
 
 @subsection sub_host Host
 
-<td>TBD</td>
-<td><pre>Host: example.com</pre></td>
+Refers to the requested host on the server in case of multiple domains hosted on the server.
+Therefore it is part of the request URI. If the header is present, the content may overwrite the
+content of the request URI.
+
+@a Example:
+@code
+Host: example.com
+@endcode
 
 @subsection sub_referer Referer
 
