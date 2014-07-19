@@ -132,13 +132,13 @@ def execute_build(args):
     make.execute(['-j' + str(cpu_count()), 'all'], build_path)
 
 
-def execute_check(args):
+def execute_cppcheck(args):
     make.check_availability()
     make.check_version()
     cppcheck.check_availability()
     cppcheck.check_version()
 
-    make.execute(['check'], build_path)
+    make.execute(['cppcheck'], build_path)
 
 
 def execute_clean(args):
@@ -255,7 +255,7 @@ def execute_test(args):
 def execute_all(args):
     execute_clean(args)
     execute_bootstrap(args)
-    execute_check(args)
+    execute_cppcheck(args)
     execute_astyle(args)
     execute_build(args)
     execute_unittest(args)
@@ -277,8 +277,8 @@ if __name__ == "__main__":
                             help='bootstraps the build'),
         'build': Struct(fn=execute_build,
                         help='compiles the targets'),
-        'check': Struct(fn=execute_check,
-                        help='checks all sources'),
+        'cppcheck': Struct(fn=execute_cppcheck,
+                        help='checks all sources with cppcheck'),
         'clean': Struct(fn=execute_clean,
                         help='removes all built output'),
         'coverage': Struct(fn=execute_coverage,
