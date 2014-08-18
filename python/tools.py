@@ -105,20 +105,6 @@ def get_command_output(command):
     return result[0].decode(encoding)
 
 
-class CMakeTool(Tool):
-    def __init__(self, executable_name, minimum_version, script_path,
-                 build_path, install_path):
-        Tool.__init__(self, executable_name, minimum_version)
-        self.script_path = script_path
-        self.build_path = build_path
-        self.install_path = install_path
-
-    def execute(self, target):
-        check_call([self.executable_name, self.script_path,
-                    '-DCMAKE_INSTALL_PREFIX=' + self.install_path,
-                    '-DCMAKE_BUILD_TYPE=' + target], cwd=self.build_path)
-
-
 class LCOVTool(Tool):
     def __init__(self, executable_name, html_generator_name, minimum_version,
                  build_path):

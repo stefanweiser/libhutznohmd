@@ -73,7 +73,6 @@ integrationtest_path = os.path.join(build_path,
                                     'integrationtest',
                                     'integrationtest_restsrv')
 
-cmake = tools.CMakeTool('cmake', '2.8', script_path, build_path, install_path)
 gcov = tools.Tool('gcov', '4.8')
 gpp = tools.Tool('g++', '4.8')
 lcov = tools.LCOVTool('lcov', 'genhtml', '1.9', build_path)
@@ -94,10 +93,8 @@ def check_is_bootstrapped():
 
 
 def execute_bootstrap(args):
-    cmake.check_availability()
-    cmake.check_version()
-
-    cmake.execute(args.target)
+    check_call(['cmake', script_path, '-DCMAKE_INSTALL_PREFIX=' + install_path,
+                '-DCMAKE_BUILD_TYPE=' + args.target], cwd=build_path)
 
 
 def execute_build(args):
@@ -193,7 +190,7 @@ def execute_all(args):
 
 if __name__ == "__main__":
     try:
-        if version_info < (3, 5):
+        if version_info < (3, 2):
             print(colorize('[FAIL]: At least python 3.2 expected, but found:\n',
                            RED))
             print(colorize('python ' + version, RED))
