@@ -1,13 +1,13 @@
-include(${PROJECT_DIR}/cmake/toolchain.cmake)
+INCLUDE(toolchain)
 
-file(GLOB_RECURSE SOURCES *.cpp *.c)
-file(GLOB_RECURSE HEADERS *.hpp *.h)
+FILE(GLOB_RECURSE SOURCES *.cpp *.c)
+FILE(GLOB_RECURSE HEADERS *.hpp *.h)
 
-add_executable(example_performance ${SOURCES} ${HEADERS})
-style_files(example_performance ${SOURCES} ${HEADERS})
+ADD_EXECUTABLE(example_performance ${SOURCES} ${HEADERS})
+STYLE_FILES(example_performance ${SOURCES} ${HEADERS})
 
-link_directories(${CMAKE_BINARY_DIR}/lib)
-target_link_libraries(example_performance restsrv)
+LINK_DIRECTORIES("${CMAKE_BINARY_DIR}/lib")
+TARGET_LINK_LIBRARIES(example_performance restsrv)
 
-include_directories("${PROJECT_DIR}/examples/performance")
-include_directories("${PROJECT_DIR}/src")
+INCLUDE_DIRECTORIES("${PROJECT_DIR}/examples/performance")
+INCLUDE_DIRECTORIES("${PROJECT_DIR}/src")

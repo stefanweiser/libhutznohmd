@@ -1,53 +1,55 @@
-cmake_minimum_required(VERSION 2.8)
-project(librestsrv)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+PROJECT(librestsrv)
 
-get_filename_component(PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" REALPATH)
-get_filename_component(GMOCK_DIR "${PROJECT_DIR}/gmock" REALPATH)
+GET_FILENAME_COMPONENT(PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}" REALPATH)
+GET_FILENAME_COMPONENT(GMOCK_DIR "${PROJECT_DIR}/gmock" REALPATH)
 
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
-find_package(AStyle 2.03 REQUIRED)
-find_package(CPPCheck 1.60 REQUIRED)
-find_package(Doxygen 1.7.6 REQUIRED)
-find_package(Java 1.6 REQUIRED)
+FIND_PACKAGE(AStyle 2.03 REQUIRED)
+FIND_PACKAGE(CPPCheck 1.60 REQUIRED)
+FIND_PACKAGE(Doxygen 1.7.6 REQUIRED)
+FIND_PACKAGE(Java 1.6 REQUIRED)
 FIND_PACKAGE(LCOV 1.9)
-find_package(Lizard 1.8.4)
-find_package(RATS 2.4)
-find_package(Valgrind 3.7)
-find_package(Wget 1.13 REQUIRED)
+FIND_PACKAGE(Lizard 1.8.4)
+FIND_PACKAGE(RATS 2.4)
+FIND_PACKAGE(Valgrind 3.7)
+FIND_PACKAGE(Wget 1.13 REQUIRED)
 
-include(Coverage)
+INCLUDE(Coverage)
 
 
 
-set(PLANTUML_JAR "${CMAKE_CURRENT_BINARY_DIR}/plantuml.jar")
-if(NOT EXISTS "${PLANTUML_JAR}")
-    execute_process(COMMAND ${WGET_EXECUTABLE} http://sourceforge.net/projects/plantuml/files/plantuml.jar/download -O ${PLANTUML_JAR})
-endif()
+SET(PLANTUML_JAR "${CMAKE_CURRENT_BINARY_DIR}/plantuml.jar")
+IF(NOT EXISTS "${PLANTUML_JAR}")
+    EXECUTE_PROCESS(COMMAND ${WGET_EXECUTABLE}
+      http://sourceforge.net/projects/plantuml/files/plantuml.jar/download -O
+      "${PLANTUML_JAR}")
+ENDIF()
 
-enable_testing()
+ENABLE_TESTING()
 
-macro(style_files TARGET)
-    set(ASTYLE_COMMANDS)
-    foreach(ARG ${ARGN})
-        list(APPEND ASTYLE_COMMANDS COMMAND ${AStyle_ASTYLE_EXECUTABLE}
+MACRO(STYLE_FILES TARGET)
+    SET(ASTYLE_COMMANDS)
+    FOREACH(ARG ${ARGN})
+        LIST(APPEND ASTYLE_COMMANDS COMMAND ${AStyle_ASTYLE_EXECUTABLE}
                                     --options=astyle.rc -q ${ARG})
-    endforeach()
-    add_custom_target(astyle___${TARGET} ${ASTYLE_COMMANDS}
+    ENDFOREACH()
+    ADD_CUSTOM_TARGET(astyle___${TARGET} ${ASTYLE_COMMANDS}
                       WORKING_DIRECTORY "${PROJECT_DIR}" VERBATIM)
-    add_dependencies(${TARGET} astyle___${TARGET})
-endmacro(style_files)
+    ADD_DEPENDENCIES(${TARGET} astyle___${TARGET})
+ENDMACRO()
 
 
 
-add_custom_target(cppcheck
+ADD_CUSTOM_TARGET(cppcheck
                   ${CPPCheck_CPPCHECK_EXECUTABLE} --quiet --language=c++
                       --platform=unix64 --enable=all --std=c++11 --force
                       --suppress=unusedFunction --suppress=missingIncludeSystem
                       -I ./src/ ./src/
                   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" VERBATIM)
 
-add_custom_target(doc
+ADD_CUSTOM_TARGET(doc
                   ${Java_JAVA_EXECUTABLE} -Djava.awt.headless=true -jar
                       "${PLANTUML_JAR}" -v -o
                       "${CMAKE_CURRENT_BINARY_DIR}/html"
@@ -56,43 +58,43 @@ add_custom_target(doc
                       "${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile"
                   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}" VERBATIM)
 
-if(LIZARD_FOUND)
-    add_custom_target(lizard
+IF(LIZARD_FOUND)
+    ADD_CUSTOM_TARGET(lizard
                       ${Lizard_LIZARD_EXECUTABLE} --warnings_only --CCN 10
                           --sort cyclomatic_complexity ./src/
                       WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" VERBATIM)
-else()
+ELSE()
     MESSAGE(WARNING "Target lizard not available, because lizard is missing.")
-endif()
+ENDIF()
 
-if(RATS_FOUND)
-    add_custom_target(rats
+IF(RATS_FOUND)
+    ADD_CUSTOM_TARGET(rats
                       rats --resultsonly -w 3 ./examples ./integrationtest ./src
                           ./unittest
                       WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" VERBATIM)
-else()
+ELSE()
     MESSAGE(WARNING "Target rats not available, because rats is missing.")
-endif()
+ENDIF()
 
-if(VALGRIND_FOUND)
-    add_custom_target(valgrind
+IF(VALGRIND_FOUND)
+    ADD_CUSTOM_TARGET(valgrind
                       ${Valgrind_VALGRIND_EXECUTABLE} "${CMAKE_BINARY_DIR}/unittest/unittest_restsrv"
                       COMMAND ${Valgrind_VALGRIND_EXECUTABLE} "${CMAKE_BINARY_DIR}/integrationtest/integrationtest_restsrv"
-                      WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-else()
+                      WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
+ELSE()
     MESSAGE(WARNING "Target valgrind not available," +
       " because valgrind is missing.")
-endif()
+ENDIF()
 
 
 
-add_subdirectory(src)
-add_subdirectory(unittest)
-add_subdirectory(integrationtest)
-add_subdirectory(examples)
+ADD_SUBDIRECTORY(src)
+ADD_SUBDIRECTORY(unittest)
+ADD_SUBDIRECTORY(integrationtest)
+ADD_SUBDIRECTORY(examples)
 
-set(CPACK_GENERATOR "DEB;RPM;TBZ2;TGZ")
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Stefan Weiser <stefan.weiser@bluewin.ch>")
+SET(CPACK_GENERATOR "DEB;RPM;TBZ2;TGZ")
+SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Stefan Weiser <stefan.weiser@bluewin.ch>")
 
-include(CPack)
+INCLUDE(CPack)
 

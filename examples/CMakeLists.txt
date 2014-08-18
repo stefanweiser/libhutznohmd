@@ -1,3 +1,3 @@
-add_subdirectory(socket)
-add_subdirectory(http)
-add_subdirectory(performance)
+ADD_SUBDIRECTORY(socket)
+ADD_SUBDIRECTORY(http)
+ADD_SUBDIRECTORY(performance)

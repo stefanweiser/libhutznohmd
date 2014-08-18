@@ -1,15 +1,18 @@
-include(${PROJECT_DIR}/cmake/toolchain.cmake)
+INCLUDE(toolchain)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wconversion -Weffc++ -Winline -Wlong-long -Wmissing-field-initializers -Wswitch-enum")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wconversion -Weffc++ -Winline")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wlong-long")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wmissing-field-initializers")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wswitch-enum")
 
-file(GLOB_RECURSE SOURCES *.cpp *.c)
-file(GLOB_RECURSE HEADERS *.hpp *.h)
+FILE(GLOB_RECURSE SOURCES *.cpp *.c)
+FILE(GLOB_RECURSE HEADERS *.hpp *.h)
 
-add_library(restsrv SHARED ${SOURCES} ${HEADERS})
-style_files(restsrv ${SOURCES} ${HEADERS})
-add_dependencies(restsrv cppcheck)
+ADD_LIBRARY(restsrv SHARED ${SOURCES} ${HEADERS})
+STYLE_FILES(restsrv ${SOURCES} ${HEADERS})
+ADD_DEPENDENCIES(restsrv cppcheck)
 
-include_directories("${PROJECT_DIR}/src")
+INCLUDE_DIRECTORIES("${PROJECT_DIR}/src")
 
-install(TARGETS restsrv DESTINATION lib)
-install(FILES rest.hpp DESTINATION include)
+INSTALL(TARGETS restsrv DESTINATION lib)
+INSTALL(FILES rest.hpp DESTINATION INCLUDE)

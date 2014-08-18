@@ -1,18 +1,20 @@
-include(${PROJECT_DIR}/cmake/toolchain.cmake)
+INCLUDE(toolchain)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-missing-field-initializers -Wno-suggest-attribute=format -Wno-suggest-attribute=noreturn")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-missing-field-initializers")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-suggest-attribute=format")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-suggest-attribute=noreturn")
 
-file(GLOB_RECURSE SOURCES *.cpp *.c)
-file(GLOB_RECURSE HEADERS *.hpp *.h)
-file(GLOB_RECURSE GMOCK ${GMOCK_DIR}/*.cc ${GMOCK_DIR}/*.h)
+FILE(GLOB_RECURSE SOURCES *.cpp *.c)
+FILE(GLOB_RECURSE HEADERS *.hpp *.h)
+FILE(GLOB_RECURSE GMOCK ${GMOCK_DIR}/*.cc ${GMOCK_DIR}/*.h)
 
-add_executable(integrationtest_restsrv ${SOURCES} ${HEADERS} ${GMOCK})
-style_files(integrationtest_restsrv ${SOURCES} ${HEADERS})
-add_test(integrationtest "${CMAKE_CURRENT_BINARY_DIR}/integrationtest_restsrv")
+ADD_EXECUTABLE(integrationtest_restsrv ${SOURCES} ${HEADERS} ${GMOCK})
+STYLE_FILES(integrationtest_restsrv ${SOURCES} ${HEADERS})
+ADD_TEST(integrationtest "${CMAKE_CURRENT_BINARY_DIR}/integrationtest_restsrv")
 
-link_directories(${CMAKE_BINARY_DIR}/lib)
-target_link_libraries(integrationtest_restsrv restsrv)
+LINK_DIRECTORIES("${CMAKE_BINARY_DIR}/lib")
+TARGET_LINK_LIBRARIES(integrationtest_restsrv restsrv)
 
-include_directories("${PROJECT_DIR}/src")
-include_directories("${PROJECT_DIR}/integrationtest")
-include_directories(SYSTEM "${PROJECT_DIR}/gmock")
+INCLUDE_DIRECTORIES("${PROJECT_DIR}/src")
+INCLUDE_DIRECTORIES("${PROJECT_DIR}/integrationtest")
+INCLUDE_DIRECTORIES(SYSTEM "${PROJECT_DIR}/gmock")
