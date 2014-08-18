@@ -99,8 +99,6 @@ def execute_bootstrap(args):
     cmake.check_availability()
     cmake.check_version()
 
-    if not os.path.exists(build_path):
-        os.makedirs(build_path)
     cmake.execute(args.target)
 
 
@@ -202,7 +200,10 @@ def execute_all(args):
 if __name__ == "__main__":
     try:
         python3.check_availability()
-        python3.check_version()
+
+        if not os.path.exists(build_path):
+            os.makedirs(build_path)
+            execute_bootstrap(Struct(target='debug'))
 
         steps = {
             'all': Struct(fn=execute_all,
