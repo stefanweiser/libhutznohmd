@@ -34,7 +34,7 @@
 #
 # For these components the following variables are set:
 #
-#  Doxygen_FOUND             - TRUE if all components are found.
+#  DOXYGEN_FOUND             - TRUE if all components are found.
 #
 # Example Usages:
 #  FIND_PACKAGE(Doxygen)

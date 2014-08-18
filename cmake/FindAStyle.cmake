@@ -31,7 +31,7 @@
 #
 # For these components the following variables are set:
 #
-#  AStyle_FOUND             - TRUE if all components are found.
+#  ASTYLE_FOUND             - TRUE if all components are found.
 #
 # Example Usages:
 #  FIND_PACKAGE(AStyle)

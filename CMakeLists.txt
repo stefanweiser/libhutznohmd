@@ -13,6 +13,7 @@ find_package(Java 1.6 REQUIRED)
 FIND_PACKAGE(LCOV 1.9)
 find_package(Lizard 1.8.4)
 find_package(RATS 2.4)
+find_package(Valgrind 3.7)
 find_package(Wget 1.13 REQUIRED)
 
 include(Coverage)
@@ -67,6 +68,13 @@ if(RATS_FOUND)
                       rats --resultsonly -w 3 ./examples ./integrationtest ./src
                           ./unittest
                       WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" VERBATIM)
+endif()
+
+if(VALGRIND_FOUND)
+    add_custom_target(valgrind
+                      ${Valgrind_VALGRIND_EXECUTABLE} "${CMAKE_BINARY_DIR}/unittest/unittest_restsrv"
+                      COMMAND ${Valgrind_VALGRIND_EXECUTABLE} "${CMAKE_BINARY_DIR}/integrationtest/integrationtest_restsrv"
+                      WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 endif()
 
 

@@ -103,12 +103,3 @@ def get_command_output(command):
     if p.returncode != 0:
         raise CalledProcessError(p.returncode, command)
     return result[0].decode(encoding)
-
-
-class ValgrindTool(Tool):
-    def get_version(self):
-        s = get_command_output([self.executable_name, '--version'])
-        return s.strip().split('-')[-1]
-
-    def execute(self, application):
-        check_call([self.executable_name, application])

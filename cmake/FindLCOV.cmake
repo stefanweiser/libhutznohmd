@@ -21,7 +21,7 @@
 # variables:
 #
 #  LCOV_LCOV_EXECUTABLE = the full path to LCOV
-#  LCOV_VERSION_STRING  = Version of the package found (LCOV version), eg. 1.10
+#  LCOV_VERSION_STRING  = Version of the package found (lcov version), eg. 1.10
 #  LCOV_VERSION_MAJOR   = The major version of the package found.
 #  LCOV_VERSION_MINOR   = The minor version of the package found.
 #  LCOV_VERSION         = This is set to: $major.$minor
@@ -79,5 +79,6 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(LCOV
 
 MARK_AS_ADVANCED(
   LCOV_LCOV_EXECUTABLE
+  LCOV_GENHTML_EXECUTABLE
 )
 

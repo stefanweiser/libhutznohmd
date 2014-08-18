@@ -31,7 +31,7 @@
 #
 # For these components the following variables are set:
 #
-#  CPPCheck_FOUND             - TRUE if all components are found.
+#  CPPCHECK_FOUND             - TRUE if all components are found.
 #
 # Example Usages:
 #  FIND_PACKAGE(CPPCheck)

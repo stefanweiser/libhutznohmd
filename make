@@ -70,7 +70,6 @@ integrationtest_path = os.path.join(build_path,
 
 gpp = tools.Tool('g++', '4.8')
 rpmbuild = tools.Tool('rpmbuild', '4.9')
-valgrind = tools.ValgrindTool('valgrind', '3.7.0')
 
 
 class IsNotBootstrappedError(Exception):
@@ -146,9 +145,8 @@ def execute_test(args):
 
 def execute_valgrind(args):
     check_is_bootstrapped()
-
-    valgrind.execute(unittest_path)
-    valgrind.execute(integrationtest_path)
+    
+    check_call(['make', 'valgrind'], cwd=build_path)
 
 
 def execute_all(args):

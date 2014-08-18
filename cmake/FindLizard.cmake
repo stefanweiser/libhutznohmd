@@ -32,7 +32,7 @@
 #
 # For these components the following variables are set:
 #
-#  Lizard_FOUND             - TRUE if all components are found.
+#  LIZARD_FOUND             - TRUE if all components are found.
 #
 # Example Usages:
 #  FIND_PACKAGE(Lizard)
