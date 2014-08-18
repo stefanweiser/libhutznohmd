@@ -20,7 +20,7 @@
 # This module finds if AStyle is installed. This code sets the following
 # variables:
 #
-#  AStyle_ASTYLE_EXECUTABLE = the full path to Doxygen
+#  AStyle_ASTYLE_EXECUTABLE = the full path to AStyle
 #  AStyle_VERSION_STRING    = Version of the package found (astyle version), eg. 2.03
 #  AStyle_VERSION_MAJOR     = The major version of the package found.
 #  AStyle_VERSION_MINOR     = The minor version of the package found.

@@ -20,7 +20,7 @@
 # This module finds if CPPCheck is installed. This code sets the following
 # variables:
 #
-#  CPPCheck_CPPCHECK_EXECUTABLE = the full path to Doxygen
+#  CPPCheck_CPPCHECK_EXECUTABLE = the full path to CPPCheck
 #  CPPCheck_VERSION_STRING      = Version of the package found (cppcheck version), eg. 1.60
 #  CPPCheck_VERSION_MAJOR       = The major version of the package found.
 #  CPPCheck_VERSION_MINOR       = The minor version of the package found.

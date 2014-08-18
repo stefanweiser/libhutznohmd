@@ -76,7 +76,6 @@ integrationtest_path = os.path.join(build_path,
 gcov = tools.Tool('gcov', '4.8')
 gpp = tools.Tool('g++', '4.8')
 lcov = tools.LCOVTool('lcov', 'genhtml', '1.9', build_path)
-lizard = tools.Tool('lizard', '1.8.4')
 rats = tools.RATSTool('rats', '2.4', source_paths)
 rpmbuild = tools.Tool('rpmbuild', '4.9')
 valgrind = tools.ValgrindTool('valgrind', '3.7.0')
@@ -144,8 +143,6 @@ def execute_install(args):
 
 
 def execute_lizard(args):
-    lizard.check_availability()
-    lizard.check_version()
     check_is_bootstrapped()
 
     check_call(['make', 'lizard'], cwd=build_path)
