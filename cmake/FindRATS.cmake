@@ -21,7 +21,7 @@
 # variables:
 #
 #  RATS_RATS_EXECUTABLE = the full path to RATS
-#  RATS_VERSION_STRING  = Version of the package found (rats version), eg. 2.4
+#  RATS_VERSION_STRING  = Version of the package found (rats version)
 #  RATS_VERSION_MAJOR   = The major version of the package found.
 #  RATS_VERSION_MINOR   = The minor version of the package found.
 #  RATS_VERSION         = This is set to: $major.$minor
@@ -38,7 +38,8 @@
 
 FIND_PROGRAM(RATS_RATS_EXECUTABLE
   NAMES rats
-  DOC "Rough Auditing Tool for Security (https://code.google.com/p/rough-auditing-tool-for-security)"
+  DOC "Rough Auditing Tool for Security " +
+      "(https://code.google.com/p/rough-auditing-tool-for-security)"
 )
 
 IF(RATS_RATS_EXECUTABLE)
@@ -49,23 +50,25 @@ IF(RATS_RATS_EXECUTABLE)
       OUTPUT_STRIP_TRAILING_WHITESPACE
       ERROR_STRIP_TRAILING_WHITESPACE)
     IF(NOT res EQUAL 1)
-      IF(${RATS_FIND_REQUIRED})
-        MESSAGE(FATAL_ERROR "Error executing rats -h")
-      ELSE()
-        MESSAGE(STATUS "Warning, could not run rats -h")
-      ENDIF()
+        IF(${RATS_FIND_REQUIRED})
+            MESSAGE(FATAL_ERROR "Error executing rats -h")
+        ELSE()
+            MESSAGE(STATUS "Warning, could not run rats -h")
+        ENDIF()
     ELSE()
-      IF(var MATCHES "RATS v[0-9]+\\.[0-9]+\\.*")
-        STRING(REGEX REPLACE "RATS v([0-9]+\\.[0-9]+).*" "\\1"
-               RATS_VERSION_STRING "${var}")
-      ELSE()
-        IF(NOT RATS_FIND_QUIETLY)
-          MESSAGE(WARNING "regex not supported: ${var}. Please report")
-        ENDIF(NOT RATS_FIND_QUIETLY)
-      ENDIF()
-      STRING(REGEX REPLACE "([0-9]+).*" "\\1" RATS_VERSION_MAJOR "${RATS_VERSION_STRING}")
-      STRING(REGEX REPLACE "[0-9]+\\.([0-9]+).*" "\\1" RATS_VERSION_MINOR "${RATS_VERSION_STRING}")
-      SET(RATS_VERSION ${RATS_VERSION_MAJOR}.${RATS_VERSION_MINOR})
+        IF(var MATCHES "RATS v[0-9]+\\.[0-9]+\\.*")
+            STRING(REGEX REPLACE "RATS v([0-9]+\\.[0-9]+).*" "\\1"
+                   RATS_VERSION_STRING "${var}")
+        ELSE()
+            IF(NOT RATS_FIND_QUIETLY)
+                MESSAGE(WARNING "regex not supported: ${var}. Please report")
+            ENDIF()
+        ENDIF()
+        STRING(REGEX REPLACE "([0-9]+).*" "\\1" RATS_VERSION_MAJOR
+               "${RATS_VERSION_STRING}")
+        STRING(REGEX REPLACE "[0-9]+\\.([0-9]+).*" "\\1" RATS_VERSION_MINOR
+               "${RATS_VERSION_STRING}")
+        SET(RATS_VERSION ${RATS_VERSION_MAJOR}.${RATS_VERSION_MINOR})
     ENDIF()
 ENDIF()
 

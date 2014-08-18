@@ -21,7 +21,7 @@
 # variables:
 #
 #  Lizard_LIZARD_EXECUTABLE = the full path to Lizard
-#  Lizard_VERSION_STRING    = Version of the package found (lizard version), eg. 1.8.4
+#  Lizard_VERSION_STRING    = Version of the package found (lizard version)
 #  Lizard_VERSION_MAJOR     = The major version of the package found.
 #  Lizard_VERSION_MINOR     = The minor version of the package found.
 #  Lizard_VERSION_PATCH     = The patch version of the package found.
@@ -50,24 +50,28 @@ IF(Lizard_LIZARD_EXECUTABLE)
       OUTPUT_STRIP_TRAILING_WHITESPACE
       ERROR_STRIP_TRAILING_WHITESPACE)
     IF(res)
-      IF(${Lizard_FIND_REQUIRED})
-        MESSAGE(FATAL_ERROR "Error executing lizard --version")
-      ELSE()
-        MESSAGE(STATUS "Warning, could not run lizard --version")
-      ENDIF()
+        IF(${Lizard_FIND_REQUIRED})
+            MESSAGE(FATAL_ERROR "Error executing lizard --version")
+        ELSE()
+            MESSAGE(STATUS "Warning, could not run lizard --version")
+        ENDIF()
     ELSE()
-      IF(var MATCHES "[0-9]+\\.[0-9]+\\.[0-9]+\\.*")
-        STRING(REGEX REPLACE "([0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1"
-               Lizard_VERSION_STRING "${var}")
-      ELSE()
-        IF(NOT Lizard_FIND_QUIETLY)
-          MESSAGE(WARNING "regex not supported: ${var}. Please report")
-        ENDIF(NOT Lizard_FIND_QUIETLY)
-      ENDIF()
-      STRING(REGEX REPLACE "([0-9]+).*" "\\1" Lizard_VERSION_MAJOR "${Lizard_VERSION_STRING}")
-      STRING(REGEX REPLACE "[0-9]+\\.([0-9]+).*" "\\1" Lizard_VERSION_MINOR "${Lizard_VERSION_STRING}")
-      STRING(REGEX REPLACE "[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" Lizard_VERSION_PATCH "${Lizard_VERSION_STRING}")
-      SET(Lizard_VERSION ${Lizard_VERSION_MAJOR}.${Lizard_VERSION_MINOR}.${Lizard_VERSION_PATCH})
+        IF(var MATCHES "[0-9]+\\.[0-9]+\\.[0-9]+\\.*")
+            STRING(REGEX REPLACE "([0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1"
+                   Lizard_VERSION_STRING "${var}")
+        ELSE()
+            IF(NOT Lizard_FIND_QUIETLY)
+                MESSAGE(WARNING "regex not supported: ${var}. Please report")
+            ENDIF()
+        ENDIF()
+        STRING(REGEX REPLACE "([0-9]+).*" "\\1" Lizard_VERSION_MAJOR
+               "${Lizard_VERSION_STRING}")
+        STRING(REGEX REPLACE "[0-9]+\\.([0-9]+).*" "\\1" Lizard_VERSION_MINOR
+               "${Lizard_VERSION_STRING}")
+        STRING(REGEX REPLACE "[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1"
+               Lizard_VERSION_PATCH "${Lizard_VERSION_STRING}")
+        SET(Lizard_VERSION ${Lizard_VERSION_MAJOR}.${Lizard_VERSION_MINOR})
+        SET(Lizard_VERSION ${Lizard_VERSION}.${Lizard_VERSION_PATCH})
     ENDIF()
 ENDIF()
 

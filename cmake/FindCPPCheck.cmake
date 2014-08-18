@@ -21,7 +21,8 @@
 # variables:
 #
 #  CPPCheck_CPPCHECK_EXECUTABLE = the full path to CPPCheck
-#  CPPCheck_VERSION_STRING      = Version of the package found (cppcheck version), eg. 1.60
+#  CPPCheck_VERSION_STRING      = Version of the package found
+#                                 (cppcheck version)
 #  CPPCheck_VERSION_MAJOR       = The major version of the package found.
 #  CPPCheck_VERSION_MINOR       = The minor version of the package found.
 #  CPPCheck_VERSION             = This is set to: $major.$minor
@@ -49,23 +50,26 @@ IF(CPPCheck_CPPCHECK_EXECUTABLE)
       OUTPUT_STRIP_TRAILING_WHITESPACE
       ERROR_STRIP_TRAILING_WHITESPACE)
     IF(res)
-      IF(${CPPCheck_FIND_REQUIRED})
-        MESSAGE(FATAL_ERROR "Error executing cppcheck --version")
-      ELSE()
-        MESSAGE(STATUS "Warning, could not run cppcheck --version")
-      ENDIF()
+        IF(${CPPCheck_FIND_REQUIRED})
+            MESSAGE(FATAL_ERROR "Error executing cppcheck --version")
+        ELSE()
+            MESSAGE(STATUS "Warning, could not run cppcheck --version")
+        ENDIF()
     ELSE()
-      IF(var MATCHES ".* [0-9]+\\.[0-9]+\\.*")
-        STRING(REGEX REPLACE ".* ([0-9]+\\.[0-9]+).*" "\\1"
-               CPPCheck_VERSION_STRING "${var}")
-      ELSE()
-        IF(NOT CPPCheck_FIND_QUIETLY)
-          MESSAGE(WARNING "regex not supported: ${var}. Please report")
-        ENDIF(NOT CPPCheck_FIND_QUIETLY)
-      ENDIF()
-      STRING(REGEX REPLACE "([0-9]+).*" "\\1" CPPCheck_VERSION_MAJOR "${CPPCheck_VERSION_STRING}")
-      STRING(REGEX REPLACE "[0-9]+\\.([0-9]+).*" "\\1" CPPCheck_VERSION_MINOR "${CPPCheck_VERSION_STRING}")
-      SET(CPPCheck_VERSION ${CPPCheck_VERSION_MAJOR}.${CPPCheck_VERSION_MINOR})
+        IF(var MATCHES ".* [0-9]+\\.[0-9]+\\.*")
+            STRING(REGEX REPLACE ".* ([0-9]+\\.[0-9]+).*" "\\1"
+                   CPPCheck_VERSION_STRING "${var}")
+        ELSE()
+            IF(NOT CPPCheck_FIND_QUIETLY)
+                MESSAGE(WARNING "regex not supported: ${var}. Please report")
+            ENDIF()
+        ENDIF()
+        STRING(REGEX REPLACE "([0-9]+).*" "\\1" CPPCheck_VERSION_MAJOR
+               "${CPPCheck_VERSION_STRING}")
+        STRING(REGEX REPLACE "[0-9]+\\.([0-9]+).*" "\\1" CPPCheck_VERSION_MINOR
+               "${CPPCheck_VERSION_STRING}")
+        SET(CPPCheck_VERSION
+            ${CPPCheck_VERSION_MAJOR}.${CPPCheck_VERSION_MINOR})
     ENDIF()
 ENDIF()
 

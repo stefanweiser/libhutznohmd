@@ -22,7 +22,7 @@
 #
 #  Doxygen_DOXYGEN_EXECUTABLE = the full path to Doxygen
 #  Doxygen_DOT_EXECUTABLE     = the full path to Dot
-#  Doxygen_VERSION_STRING     = Version of the package found (doxygen version), eg. 1.7.6.1
+#  Doxygen_VERSION_STRING     = Version of the package found (doxygen version)
 #  Doxygen_VERSION_MAJOR      = The major version of the package found.
 #  Doxygen_VERSION_MINOR      = The minor version of the package found.
 #  Doxygen_VERSION_PATCH      = The patch version of the package found.
@@ -41,10 +41,6 @@
 
 FIND_PROGRAM(Doxygen_DOXYGEN_EXECUTABLE
   NAMES doxygen
-  PATHS
-    "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\doxygen_is1;Inno Setup: App Path]/bin"
-    /Applications/Doxygen.app/Contents/Resources
-    /Applications/Doxygen.app/Contents/MacOS
   DOC "Doxygen documentation generation tool (http://www.doxygen.org)"
 )
 
@@ -56,25 +52,31 @@ IF(Doxygen_DOXYGEN_EXECUTABLE)
       OUTPUT_STRIP_TRAILING_WHITESPACE
       ERROR_STRIP_TRAILING_WHITESPACE)
     IF(res)
-      IF(${Doxygen_FIND_REQUIRED})
-        MESSAGE(FATAL_ERROR "Error executing doxygen --version")
-      ELSE()
-        MESSAGE(STATUS "Warning, could not run doxygen --version")
-      ENDIF()
+        IF(${Doxygen_FIND_REQUIRED})
+            MESSAGE(FATAL_ERROR "Error executing doxygen --version")
+        ELSE()
+            MESSAGE(STATUS "Warning, could not run doxygen --version")
+        ENDIF()
     ELSE()
-      IF(var MATCHES "[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+.*")
-        STRING(REGEX REPLACE "([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1"
-               Doxygen_VERSION_STRING "${var}")
-      ELSE()
-        IF(NOT Doxygen_FIND_QUIETLY)
-          MESSAGE(WARNING "regex not supported: ${var}. Please report")
-        ENDIF(NOT Doxygen_FIND_QUIETLY)
-      ENDIF()
-      STRING(REGEX REPLACE "([0-9]+).*" "\\1" Doxygen_VERSION_MAJOR "${Doxygen_VERSION_STRING}")
-      STRING(REGEX REPLACE "[0-9]+\\.([0-9]+).*" "\\1" Doxygen_VERSION_MINOR "${Doxygen_VERSION_STRING}")
-      STRING(REGEX REPLACE "[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" Doxygen_VERSION_PATCH "${Doxygen_VERSION_STRING}")
-      STRING(REGEX REPLACE "[0-9]+\\.[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" Doxygen_VERSION_TWEAK "${Doxygen_VERSION_STRING}")
-      SET(Doxygen_VERSION ${Doxygen_VERSION_MAJOR}.${Doxygen_VERSION_MINOR}.${Doxygen_VERSION_PATCH}.${Doxygen_VERSION_TWEAK})
+        IF(var MATCHES "[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+.*")
+            STRING(REGEX REPLACE "([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1"
+                   Doxygen_VERSION_STRING "${var}")
+        ELSE()
+            IF(NOT Doxygen_FIND_QUIETLY)
+                MESSAGE(WARNING "regex not supported: ${var}. Please report")
+            ENDIF()
+        ENDIF()
+        STRING(REGEX REPLACE "([0-9]+).*" "\\1" Doxygen_VERSION_MAJOR
+               "${Doxygen_VERSION_STRING}")
+        STRING(REGEX REPLACE "[0-9]+\\.([0-9]+).*" "\\1" Doxygen_VERSION_MINOR
+               "${Doxygen_VERSION_STRING}")
+        STRING(REGEX REPLACE "[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1"
+               Doxygen_VERSION_PATCH "${Doxygen_VERSION_STRING}")
+        STRING(REGEX REPLACE "[0-9]+\\.[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1"
+               Doxygen_VERSION_TWEAK "${Doxygen_VERSION_STRING}")
+        SET(Doxygen_VERSION ${Doxygen_VERSION_MAJOR}.${Doxygen_VERSION_MINOR})
+        SET(Doxygen_VERSION ${Doxygen_VERSION}.${Doxygen_VERSION_PATCH})
+        SET(Doxygen_VERSION ${Doxygen_VERSION}.${Doxygen_VERSION_TWEAK})
     ENDIF()
 ENDIF()
 

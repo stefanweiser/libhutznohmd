@@ -21,7 +21,7 @@
 # variables:
 #
 #  LCOV_LCOV_EXECUTABLE = the full path to LCOV
-#  LCOV_VERSION_STRING  = Version of the package found (lcov version), eg. 1.10
+#  LCOV_VERSION_STRING  = Version of the package found (lcov version)
 #  LCOV_VERSION_MAJOR   = The major version of the package found.
 #  LCOV_VERSION_MINOR   = The minor version of the package found.
 #  LCOV_VERSION         = This is set to: $major.$minor
@@ -49,23 +49,25 @@ IF(LCOV_LCOV_EXECUTABLE)
       OUTPUT_STRIP_TRAILING_WHITESPACE
       ERROR_STRIP_TRAILING_WHITESPACE)
     IF(res)
-      IF(${LCOV_FIND_REQUIRED})
-        MESSAGE(FATAL_ERROR "Error executing lcov --version")
-      ELSE()
-        MESSAGE(STATUS "Warning, could not run lcov --version")
-      ENDIF()
+        IF(${LCOV_FIND_REQUIRED})
+            MESSAGE(FATAL_ERROR "Error executing lcov --version")
+        ELSE()
+            MESSAGE(STATUS "Warning, could not run lcov --version")
+        ENDIF()
     ELSE()
-      IF(var MATCHES ".*version [0-9]+\\.[0-9]+\\.*")
-        STRING(REGEX REPLACE ".*version ([0-9]+\\.[0-9]+).*" "\\1"
-               LCOV_VERSION_STRING "${var}")
-      ELSE()
-        IF(NOT LCOV_FIND_QUIETLY)
-          MESSAGE(WARNING "regex not supported: ${var}. Please report")
-        ENDIF(NOT LCOV_FIND_QUIETLY)
-      ENDIF()
-      STRING(REGEX REPLACE "([0-9]+).*" "\\1" LCOV_VERSION_MAJOR "${LCOV_VERSION_STRING}")
-      STRING(REGEX REPLACE "[0-9]+\\.([0-9]+).*" "\\1" LCOV_VERSION_MINOR "${LCOV_VERSION_STRING}")
-      SET(LCOV_VERSION ${LCOV_VERSION_MAJOR}.${LCOV_VERSION_MINOR})
+        IF(var MATCHES ".*version [0-9]+\\.[0-9]+\\.*")
+            STRING(REGEX REPLACE ".*version ([0-9]+\\.[0-9]+).*" "\\1"
+                   LCOV_VERSION_STRING "${var}")
+        ELSE()
+            IF(NOT LCOV_FIND_QUIETLY)
+                MESSAGE(WARNING "regex not supported: ${var}. Please report")
+            ENDIF()
+        ENDIF()
+        STRING(REGEX REPLACE "([0-9]+).*" "\\1" LCOV_VERSION_MAJOR
+               "${LCOV_VERSION_STRING}")
+        STRING(REGEX REPLACE "[0-9]+\\.([0-9]+).*" "\\1" LCOV_VERSION_MINOR
+               "${LCOV_VERSION_STRING}")
+        SET(LCOV_VERSION ${LCOV_VERSION_MAJOR}.${LCOV_VERSION_MINOR})
     ENDIF()
 ENDIF()
 

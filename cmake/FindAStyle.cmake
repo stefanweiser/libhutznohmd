@@ -21,7 +21,7 @@
 # variables:
 #
 #  AStyle_ASTYLE_EXECUTABLE = the full path to AStyle
-#  AStyle_VERSION_STRING    = Version of the package found (astyle version), eg. 2.03
+#  AStyle_VERSION_STRING    = Version of the package found (astyle version)
 #  AStyle_VERSION_MAJOR     = The major version of the package found.
 #  AStyle_VERSION_MINOR     = The minor version of the package found.
 #  AStyle_VERSION           = This is set to: $major.$minor
@@ -49,23 +49,25 @@ IF(AStyle_ASTYLE_EXECUTABLE)
       OUTPUT_STRIP_TRAILING_WHITESPACE
       ERROR_STRIP_TRAILING_WHITESPACE)
     IF(res)
-      IF(${AStyle_FIND_REQUIRED})
-        MESSAGE(FATAL_ERROR "Error executing astyle --version")
-      ELSE()
-        MESSAGE(STATUS "Warning, could not run astyle --version")
-      ENDIF()
+        IF(${AStyle_FIND_REQUIRED})
+            MESSAGE(FATAL_ERROR "Error executing astyle --version")
+        ELSE()
+            MESSAGE(STATUS "Warning, could not run astyle --version")
+        ENDIF()
     ELSE()
-      IF(var MATCHES ".* Version [0-9]+\\.[0-9]+\\.*")
-        STRING(REGEX REPLACE ".* Version ([0-9]+\\.[0-9]+).*" "\\1"
-               AStyle_VERSION_STRING "${var}")
-      ELSE()
-        IF(NOT AStyle_FIND_QUIETLY)
-          MESSAGE(WARNING "regex not supported: ${var}. Please report")
-        ENDIF(NOT AStyle_FIND_QUIETLY)
-      ENDIF()
-      STRING(REGEX REPLACE "([0-9]+).*" "\\1" AStyle_VERSION_MAJOR "${AStyle_VERSION_STRING}")
-      STRING(REGEX REPLACE "[0-9]+\\.([0-9]+).*" "\\1" AStyle_VERSION_MINOR "${AStyle_VERSION_STRING}")
-      SET(AStyle_VERSION ${AStyle_VERSION_MAJOR}.${AStyle_VERSION_MINOR})
+        IF(var MATCHES ".* Version [0-9]+\\.[0-9]+\\.*")
+            STRING(REGEX REPLACE ".* Version ([0-9]+\\.[0-9]+).*" "\\1"
+                   AStyle_VERSION_STRING "${var}")
+        ELSE()
+            IF(NOT AStyle_FIND_QUIETLY)
+              MESSAGE(WARNING "regex not supported: ${var}. Please report")
+            ENDIF()
+        ENDIF()
+        STRING(REGEX REPLACE "([0-9]+).*" "\\1" AStyle_VERSION_MAJOR
+               "${AStyle_VERSION_STRING}")
+        STRING(REGEX REPLACE "[0-9]+\\.([0-9]+).*" "\\1" AStyle_VERSION_MINOR
+               "${AStyle_VERSION_STRING}")
+        SET(AStyle_VERSION ${AStyle_VERSION_MAJOR}.${AStyle_VERSION_MINOR})
     ENDIF()
 ENDIF()
 

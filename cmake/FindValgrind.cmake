@@ -21,7 +21,7 @@
 # variables:
 #
 #  Valgrind_VALGRIND_EXECUTABLE = the full path to Valgrind
-#  Valgrind_VERSION_STRING  = Version of the package found (valgrind version), eg. 3.7.0
+#  Valgrind_VERSION_STRING  = Version of the package found (valgrind version)
 #  Valgrind_VERSION_MAJOR   = The major version of the package found.
 #  Valgrind_VERSION_MINOR   = The minor version of the package found.
 #  Valgrind_VERSION_PATCH   = The patch version of the package found.
@@ -50,24 +50,28 @@ IF(Valgrind_VALGRIND_EXECUTABLE)
       OUTPUT_STRIP_TRAILING_WHITESPACE
       ERROR_STRIP_TRAILING_WHITESPACE)
     IF(res)
-      IF(${Valgrind_FIND_REQUIRED})
-        MESSAGE(FATAL_ERROR "Error executing Valgrind --version")
-      ELSE()
-        MESSAGE(STATUS "Warning, could not run Valgrind --version")
-      ENDIF()
+        IF(${Valgrind_FIND_REQUIRED})
+            MESSAGE(FATAL_ERROR "Error executing Valgrind --version")
+        ELSE()
+            MESSAGE(STATUS "Warning, could not run Valgrind --version")
+        ENDIF()
     ELSE()
-      IF(var MATCHES "valgrind-[0-9]+\\.[0-9]+\\.[0-9]+\\.*")
-        STRING(REGEX REPLACE "valgrind-([0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1"
-               Valgrind_VERSION_STRING "${var}")
-      ELSE()
-        IF(NOT Valgrind_FIND_QUIETLY)
-          MESSAGE(WARNING "regex not supported: ${var}. Please report")
-        ENDIF(NOT Valgrind_FIND_QUIETLY)
-      ENDIF()
-      STRING(REGEX REPLACE "([0-9]+).*" "\\1" Valgrind_VERSION_MAJOR "${Valgrind_VERSION_STRING}")
-      STRING(REGEX REPLACE "[0-9]+\\.([0-9]+).*" "\\1" Valgrind_VERSION_MINOR "${Valgrind_VERSION_STRING}")
-      STRING(REGEX REPLACE "[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" Valgrind_VERSION_PATCH "${Valgrind_VERSION_STRING}")
-      SET(Valgrind_VERSION ${Valgrind_VERSION_MAJOR}.${Valgrind_VERSION_MINOR}.${Valgrind_VERSION_PATCH})
+        IF(var MATCHES "valgrind-[0-9]+\\.[0-9]+\\.[0-9]+\\.*")
+            STRING(REGEX REPLACE "valgrind-([0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1"
+                   Valgrind_VERSION_STRING "${var}")
+        ELSE()
+            IF(NOT Valgrind_FIND_QUIETLY)
+                MESSAGE(WARNING "regex not supported: ${var}. Please report")
+            ENDIF()
+        ENDIF()
+        STRING(REGEX REPLACE "([0-9]+).*" "\\1" Valgrind_VERSION_MAJOR
+               "${Valgrind_VERSION_STRING}")
+        STRING(REGEX REPLACE "[0-9]+\\.([0-9]+).*" "\\1" Valgrind_VERSION_MINOR
+               "${Valgrind_VERSION_STRING}")
+        STRING(REGEX REPLACE "[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1"
+               Valgrind_VERSION_PATCH "${Valgrind_VERSION_STRING}")
+        SET(Valgrind_VERSION ${Valgrind_VERSION_MAJOR}.${Valgrind_VERSION_MINOR})
+        SET(Valgrind_VERSION ${Valgrind_VERSION}.${Valgrind_VERSION_PATCH})
     ENDIF()
 ENDIF()
 
