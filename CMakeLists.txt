@@ -10,9 +10,12 @@ find_package(AStyle 2.03 REQUIRED)
 find_package(CPPCheck 1.60 REQUIRED)
 find_package(Doxygen 1.7.6 REQUIRED)
 find_package(Java 1.6 REQUIRED)
+FIND_PACKAGE(LCOV 1.9)
 find_package(Lizard 1.8.4)
 find_package(RATS 2.4)
 find_package(Wget 1.13 REQUIRED)
+
+include(Coverage)
 
 
 

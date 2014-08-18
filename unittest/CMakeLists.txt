@@ -9,6 +9,7 @@ file(GLOB_RECURSE GMOCK ${GMOCK_DIR}/*.cc ${GMOCK_DIR}/*.h)
 add_executable(unittest_restsrv ${SOURCES} ${HEADERS} ${GMOCK})
 style_files(unittest_restsrv ${SOURCES} ${HEADERS})
 add_test(unittest "${CMAKE_CURRENT_BINARY_DIR}/unittest_restsrv")
+setup_target_for_coverage(coverage unittest_restsrv 'unittest/*')
 
 link_directories(${CMAKE_BINARY_DIR}/lib)
 target_link_libraries(unittest_restsrv restsrv)

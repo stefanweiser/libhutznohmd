@@ -105,35 +105,6 @@ def get_command_output(command):
     return result[0].decode(encoding)
 
 
-class LCOVTool(Tool):
-    def __init__(self, executable_name, html_generator_name, minimum_version,
-                 build_path):
-        Tool.__init__(self, executable_name, minimum_version)
-        self.build_path = build_path
-        self.html_generator_name = html_generator_name
-        self.target_path = join(build_path, 'src')
-        self.tracefile = join(self.target_path, 'coverage.info')
-        self.output_path = join(build_path, 'lcov')
-
-    def do_basic_trace(self):
-        check_call([self.executable_name, '-c', '-i', '-d', self.target_path,
-                    '-o', self.tracefile + '.base'], cwd=self.build_path)
-
-    def do_test_trace(self):
-        check_call([self.executable_name, '-c', '-d', self.target_path, '-o',
-                    self.tracefile + '.test'], cwd=self.build_path)
-
-    def generate_coverage(self):
-        check_call([self.executable_name, '-c', '-d', self.target_path, '-o',
-                    self.tracefile + '.test'])
-        check_call([self.executable_name, '-a', self.tracefile + '.base', '-a',
-                    self.tracefile + '.test', '-o', self.tracefile])
-        check_call([self.executable_name, '-r', self.tracefile + '.test',
-                    '/usr/include/*', '-o', self.tracefile])
-        check_call([self.html_generator_name, self.tracefile,
-                    '--output-directory', self.output_path])
-
-
 class ValgrindTool(Tool):
     def get_version(self):
         s = get_command_output([self.executable_name, '--version'])

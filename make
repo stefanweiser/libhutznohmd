@@ -68,9 +68,7 @@ integrationtest_path = os.path.join(build_path,
                                     'integrationtest',
                                     'integrationtest_restsrv')
 
-gcov = tools.Tool('gcov', '4.8')
 gpp = tools.Tool('g++', '4.8')
-lcov = tools.LCOVTool('lcov', 'genhtml', '1.9', build_path)
 rpmbuild = tools.Tool('rpmbuild', '4.9')
 valgrind = tools.ValgrindTool('valgrind', '3.7.0')
 
@@ -103,25 +101,9 @@ def execute_clean(args):
 
 
 def execute_coverage(args):
-    gcov.check_availability()
-    gcov.check_version()
-    lcov.check_availability()
-    lcov.check_version()
-
-    target_path = os.path.join(build_path, 'src')
-    tracefile = os.path.join(target_path, 'coverage.info')
-    lcov_output_path = os.path.join(build_path, 'lcov')
-
     execute_clean(args)
     execute_bootstrap(Struct(target='coverage'))
-    execute_build(args)
-
-    lcov.do_basic_trace()
-
-    execute_test(args)
-
-    lcov.do_test_trace()
-    lcov.generate_coverage()
+    check_call(['make', '-j' + str(cpu_count()), 'coverage'], cwd=build_path)
 
 
 def execute_doc(args):
