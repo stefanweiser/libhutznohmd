@@ -15,6 +15,7 @@ from itertools import chain
 from multiprocessing import cpu_count
 from shutil import rmtree
 from subprocess import CalledProcessError, check_call
+from sys import version, version_info
 from tempfile import gettempdir
 from termcolor import colorize, RED
 
@@ -77,7 +78,6 @@ gcov = tools.Tool('gcov', '4.8')
 gpp = tools.Tool('g++', '4.8')
 lcov = tools.LCOVTool('lcov', 'genhtml', '1.9', build_path)
 lizard = tools.Tool('lizard', '1.8.4')
-python3 = tools.Tool('python3', '3.2')
 rats = tools.RATSTool('rats', '2.4', source_paths)
 rpmbuild = tools.Tool('rpmbuild', '4.9')
 valgrind = tools.ValgrindTool('valgrind', '3.7.0')
@@ -193,48 +193,51 @@ def execute_all(args):
 
 if __name__ == "__main__":
     try:
-        python3.check_availability()
+        if version_info < (3, 5):
+            print(colorize('[FAIL]: At least python 3.2 expected, but found:\n',
+                           RED))
+            print(colorize('python ' + version, RED))
+        else:
+            if not os.path.exists(build_path):
+                os.makedirs(build_path)
+                execute_bootstrap(Struct(target='debug'))
 
-        if not os.path.exists(build_path):
-            os.makedirs(build_path)
-            execute_bootstrap(Struct(target='debug'))
+            steps = {
+                'all': Struct(fn=execute_all,
+                              help='builds all steps to make a package'),
+                'bootstrap': Struct(fn=execute_bootstrap,
+                                    help='bootstraps the build'),
+                'build': Struct(fn=execute_build,
+                                help='compiles the targets'),
+                'clean': Struct(fn=execute_clean,
+                                help='removes all built output'),
+                'coverage': Struct(fn=execute_coverage,
+                                   help='generates lcov output'),
+                'doc': Struct(fn=execute_doc,
+                              help='compiles documentation'),
+                'install': Struct(fn=execute_install,
+                                  help='installs the targets'),
+                'lizard': Struct(fn=execute_lizard,
+                                 help='checks for cyclic complexity violations'),
+                'package': Struct(fn=execute_package,
+                                  help='builds packages'),
+                'rats': Struct(fn=execute_rats,
+                               help='searches for security issues'),
+                'test': Struct(fn=execute_test,
+                               help='executes unit and integration tests'),
+                'valgrind': Struct(fn=execute_valgrind,
+                                   help='searches for memory leaks')
+            }
 
-        steps = {
-            'all': Struct(fn=execute_all,
-                          help='builds all steps to make a package'),
-            'bootstrap': Struct(fn=execute_bootstrap,
-                                help='bootstraps the build'),
-            'build': Struct(fn=execute_build,
-                            help='compiles the targets'),
-            'clean': Struct(fn=execute_clean,
-                            help='removes all built output'),
-            'coverage': Struct(fn=execute_coverage,
-                               help='generates lcov output'),
-            'doc': Struct(fn=execute_doc,
-                          help='compiles documentation'),
-            'install': Struct(fn=execute_install,
-                              help='installs the targets'),
-            'lizard': Struct(fn=execute_lizard,
-                             help='checks for cyclic complexity violations'),
-            'package': Struct(fn=execute_package,
-                              help='builds packages'),
-            'rats': Struct(fn=execute_rats,
-                           help='searches for security issues'),
-            'test': Struct(fn=execute_test,
-                           help='executes unit and integration tests'),
-            'valgrind': Struct(fn=execute_valgrind,
-                               help='searches for memory leaks')
-        }
+            args = parse_arguments(steps)
 
-        args = parse_arguments(steps)
-
-        try:
-            for step in args.step:
-                steps[step].fn(args)
-        except (tools.ToolNotAvailableError,
-                tools.VersionDoesNotFitError,
-                IsNotBootstrappedError) as e:
-            print(e)
+            try:
+                for step in args.step:
+                    steps[step].fn(args)
+            except (tools.ToolNotAvailableError,
+                    tools.VersionDoesNotFitError,
+                    IsNotBootstrappedError) as e:
+                print(e)
 
     except CalledProcessError as e:
         print(colorize('[FAIL]: <' + ' '.join(e.cmd) + '> failed (exit code ' +
