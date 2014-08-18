@@ -1,4 +1,4 @@
-INCLUDE(toolchain)
+INCLUDE(Toolchain)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wconversion -Weffc++ -Winline")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wlong-long")

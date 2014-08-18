@@ -1,4 +1,4 @@
-INCLUDE(toolchain)
+INCLUDE(Toolchain)
 
 FILE(GLOB_RECURSE SOURCES *.cpp *.c)
 FILE(GLOB_RECURSE HEADERS *.hpp *.h)
