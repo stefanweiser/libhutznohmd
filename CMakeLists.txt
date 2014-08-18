@@ -10,6 +10,9 @@ find_package(Doxygen 1.7.6 REQUIRED)
 find_package(Java 1.6 REQUIRED)
 find_package(Wget 1.13 REQUIRED)
 
+find_package(AStyle 2.03 REQUIRED)
+find_package(CPPCheck 1.60 REQUIRED)
+
 
 
 set(PLANTUML_JAR "${CMAKE_CURRENT_BINARY_DIR}/plantuml.jar")
@@ -22,8 +25,8 @@ enable_testing()
 macro(style_files TARGET)
     set(ASTYLE_COMMANDS)
     foreach(ARG ${ARGN})
-        list(APPEND ASTYLE_COMMANDS COMMAND astyle --options=astyle.rc
-                                    -q ${ARG})
+        list(APPEND ASTYLE_COMMANDS COMMAND ${AStyle_ASTYLE_EXECUTABLE}
+                                    --options=astyle.rc -q ${ARG})
     endforeach()
     add_custom_target(astyle___${TARGET} ${ASTYLE_COMMANDS}
                       WORKING_DIRECTORY "${PROJECT_DIR}" VERBATIM)
@@ -33,15 +36,19 @@ endmacro(style_files)
 
 
 add_custom_target(cppcheck
-                  cppcheck --quiet --language=c++ --platform=unix64
-                      --enable=all --std=c++11 --force
+                  ${CPPCheck_CPPCHECK_EXECUTABLE} --quiet --language=c++
+                      --platform=unix64 --enable=all --std=c++11 --force
                       --suppress=unusedFunction --suppress=missingIncludeSystem
                       -I ./src/ ./src/
                   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" VERBATIM)
 
 add_custom_target(doc
-                  java -Djava.awt.headless=true -jar "${PLANTUML_JAR}" -v -o "${CMAKE_CURRENT_BINARY_DIR}/html" "${CMAKE_CURRENT_SOURCE_DIR}/src/**.(c|cpp|h|hpp)"
-                  COMMAND doxygen ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
+                  ${Java_JAVA_EXECUTABLE} -Djava.awt.headless=true -jar
+                      "${PLANTUML_JAR}" -v -o
+                      "${CMAKE_CURRENT_BINARY_DIR}/html"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/src/**.(c|cpp|h|hpp)"
+                  COMMAND ${Doxygen_DOXYGEN_EXECUTABLE}
+                      "${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile"
                   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}" VERBATIM)
 
 add_custom_target(lizard
