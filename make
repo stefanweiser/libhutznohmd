@@ -11,15 +11,11 @@ python_script_path = os.path.join(script_path, 'python')
 sys.path.insert(0, python_script_path)
 
 from argparse import ArgumentParser
-from itertools import chain
 from multiprocessing import cpu_count
 from shutil import rmtree
 from subprocess import CalledProcessError, check_call
 from sys import version, version_info
-from tempfile import gettempdir
 from termcolor import colorize, RED
-
-import tools
 
 
 class Struct:
@@ -59,17 +55,6 @@ def parse_arguments(steps):
 
 build_path = os.path.join(script_path, 'build')
 install_path = os.path.join(script_path, 'install')
-html_path = os.path.join(build_path, 'html')
-
-unittest_path = os.path.join(build_path,
-                             'unittest',
-                             'unittest_restsrv')
-integrationtest_path = os.path.join(build_path,
-                                    'integrationtest',
-                                    'integrationtest_restsrv')
-
-gpp = tools.Tool('g++', '4.8')
-rpmbuild = tools.Tool('rpmbuild', '4.9')
 
 
 class IsNotBootstrappedError(Exception):
@@ -88,8 +73,6 @@ def execute_bootstrap(args):
 
 
 def execute_build(args):
-    gpp.check_availability()
-    gpp.check_version()
     check_is_bootstrapped()
 
     check_call(['make', '-j' + str(cpu_count())], cwd=build_path)
@@ -124,8 +107,6 @@ def execute_lizard(args):
 
 
 def execute_package(args):
-    rpmbuild.check_availability()
-    rpmbuild.check_version()
     check_is_bootstrapped()
 
     check_call(['make', 'package'], cwd=build_path)
@@ -145,7 +126,7 @@ def execute_test(args):
 
 def execute_valgrind(args):
     check_is_bootstrapped()
-    
+
     check_call(['make', 'valgrind'], cwd=build_path)
 
 
@@ -161,7 +142,8 @@ def execute_all(args):
 if __name__ == "__main__":
     try:
         if version_info < (3, 2):
-            print(colorize('[FAIL]: At least python 3.2 expected, but found:\n',
+            print(colorize('[FAIL]: At least python 3.2 expected,' +
+                           ' but found:\n',
                            RED))
             print(colorize('python ' + version, RED))
         else:
@@ -185,7 +167,7 @@ if __name__ == "__main__":
                 'install': Struct(fn=execute_install,
                                   help='installs the targets'),
                 'lizard': Struct(fn=execute_lizard,
-                                 help='checks for cyclic complexity violations'),
+                                 help='checks for high cyclic complexity'),
                 'package': Struct(fn=execute_package,
                                   help='builds packages'),
                 'rats': Struct(fn=execute_rats,
@@ -197,14 +179,8 @@ if __name__ == "__main__":
             }
 
             args = parse_arguments(steps)
-
-            try:
-                for step in args.step:
-                    steps[step].fn(args)
-            except (tools.ToolNotAvailableError,
-                    tools.VersionDoesNotFitError,
-                    IsNotBootstrappedError) as e:
-                print(e)
+            for step in args.step:
+                steps[step].fn(args)
 
     except CalledProcessError as e:
         print(colorize('[FAIL]: <' + ' '.join(e.cmd) + '> failed (exit code ' +

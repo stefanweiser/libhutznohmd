@@ -61,6 +61,8 @@ if(LIZARD_FOUND)
                       ${Lizard_LIZARD_EXECUTABLE} --warnings_only --CCN 10
                           --sort cyclomatic_complexity ./src/
                       WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" VERBATIM)
+else()
+    MESSAGE(WARNING "Target lizard not available, because lizard is missing.")
 endif()
 
 if(RATS_FOUND)
@@ -68,6 +70,8 @@ if(RATS_FOUND)
                       rats --resultsonly -w 3 ./examples ./integrationtest ./src
                           ./unittest
                       WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" VERBATIM)
+else()
+    MESSAGE(WARNING "Target rats not available, because rats is missing.")
 endif()
 
 if(VALGRIND_FOUND)
@@ -75,6 +79,9 @@ if(VALGRIND_FOUND)
                       ${Valgrind_VALGRIND_EXECUTABLE} "${CMAKE_BINARY_DIR}/unittest/unittest_restsrv"
                       COMMAND ${Valgrind_VALGRIND_EXECUTABLE} "${CMAKE_BINARY_DIR}/integrationtest/integrationtest_restsrv"
                       WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+else()
+    MESSAGE(WARNING "Target valgrind not available," +
+      " because valgrind is missing.")
 endif()
 
 

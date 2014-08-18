@@ -21,15 +21,19 @@ FUNCTION(SETUP_TARGET_FOR_COVERAGE TARGET TEST EXCLUDE)
         SET(OUTPUT "${TEST}_cov")
 
         ADD_CUSTOM_TARGET(${TARGET}
-                          ${LCOV_LCOV_EXECUTABLE} -d . -z
-                          COMMAND ${TEST}
-                          COMMAND ${LCOV_LCOV_EXECUTABLE} -d . -c -o ${OUTPUT}.info
-                          COMMAND ${LCOV_LCOV_EXECUTABLE} -r ${OUTPUT}.info ${EXCLUDE} 'gmock/*' '/usr/*' -o ${OUTPUT}.info.cleaned
-                          COMMAND ${LCOV_GENHTML_EXECUTABLE} -o ${OUTPUT} ${OUTPUT}.info.cleaned
-                          COMMAND ${CMAKE_COMMAND} -E remove ${OUTPUT}.info ${OUTPUT}.info.cleaned
-                          WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+          ${LCOV_LCOV_EXECUTABLE} -d . -z
+          COMMAND ${TEST}
+          COMMAND ${LCOV_LCOV_EXECUTABLE} -d . -c -o ${OUTPUT}.info
+          COMMAND ${LCOV_LCOV_EXECUTABLE} -r ${OUTPUT}.info ${EXCLUDE}
+            'gmock/*' '/usr/*' -o ${OUTPUT}.info.cleaned
+          COMMAND ${LCOV_GENHTML_EXECUTABLE} -o ${OUTPUT}
+            ${OUTPUT}.info.cleaned
+          COMMAND ${CMAKE_COMMAND} -E remove ${OUTPUT}.info
+            ${OUTPUT}.info.cleaned
+          WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
     ELSE()
-        MESSAGE(WARNING "Target ${TARGET} not available, because lcov is missing.")
+        MESSAGE(WARNING "Target ${TARGET} not available," +
+          " because lcov is missing.")
     ENDIF()
 ENDFUNCTION()
 
