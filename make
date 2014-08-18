@@ -61,11 +61,6 @@ build_path = os.path.join(script_path, 'build')
 install_path = os.path.join(script_path, 'install')
 html_path = os.path.join(build_path, 'html')
 
-source_paths = [os.path.join(script_path, 'examples'),
-                os.path.join(script_path, 'integrationtest'),
-                os.path.join(script_path, 'src'),
-                os.path.join(script_path, 'unittest')]
-
 unittest_path = os.path.join(build_path,
                              'unittest',
                              'unittest_restsrv')
@@ -76,7 +71,6 @@ integrationtest_path = os.path.join(build_path,
 gcov = tools.Tool('gcov', '4.8')
 gpp = tools.Tool('g++', '4.8')
 lcov = tools.LCOVTool('lcov', 'genhtml', '1.9', build_path)
-rats = tools.RATSTool('rats', '2.4', source_paths)
 rpmbuild = tools.Tool('rpmbuild', '4.9')
 valgrind = tools.ValgrindTool('valgrind', '3.7.0')
 
@@ -157,10 +151,9 @@ def execute_package(args):
 
 
 def execute_rats(args):
-    rats.check_availability()
-    rats.check_version()
+    check_is_bootstrapped()
 
-    rats.execute()
+    check_call(['make', 'rats'], cwd=build_path)
 
 
 def execute_test(args):

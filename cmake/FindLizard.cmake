@@ -21,14 +21,14 @@
 # variables:
 #
 #  Lizard_LIZARD_EXECUTABLE = the full path to Lizard
-#  Lizard_VERSION_STRING    = Version of the package found (cppcheck version), eg. 1.60
+#  Lizard_VERSION_STRING    = Version of the package found (lizard version), eg. 1.8.4
 #  Lizard_VERSION_MAJOR     = The major version of the package found.
 #  Lizard_VERSION_MINOR     = The minor version of the package found.
 #  Lizard_VERSION_PATCH     = The patch version of the package found.
-#  Lizard_VERSION           = This is set to: $major.$minor
+#  Lizard_VERSION           = This is set to: $major.$minor.$patch
 #
 # The minimum required version of Lizard can be specified using the
-# standard CMake syntax, e.g. FIND_PACKAGE(Lizard 1.60)
+# standard CMake syntax, e.g. FIND_PACKAGE(Lizard 1.8.4)
 #
 # For these components the following variables are set:
 #
@@ -51,9 +51,9 @@ IF(Lizard_LIZARD_EXECUTABLE)
       ERROR_STRIP_TRAILING_WHITESPACE)
     IF(res)
       IF(${Lizard_FIND_REQUIRED})
-        MESSAGE(FATAL_ERROR "Error executing astyle --version")
+        MESSAGE(FATAL_ERROR "Error executing lizard --version")
       ELSE()
-        MESSAGE(STATUS "Warning, could not run astyle --version")
+        MESSAGE(STATUS "Warning, could not run lizard --version")
       ENDIF()
     ELSE()
       IF(var MATCHES "[0-9]+\\.[0-9]+\\.[0-9]+\\.*")

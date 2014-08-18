@@ -134,20 +134,6 @@ class LCOVTool(Tool):
                     '--output-directory', self.output_path])
 
 
-class RATSTool(Tool):
-    def __init__(self, executable_name, minimum_version, source_paths):
-        Tool.__init__(self, executable_name, minimum_version)
-        self.source_paths = source_paths
-
-    def get_version(self):
-        s = get_command_output([self.executable_name, '-h'])
-        return s.split('\n')[0].split()[1][1:]
-
-    def execute(self):
-        check_call([self.executable_name, '--resultsonly', '-w', '3'] +
-                   self.source_paths)
-
-
 class ValgrindTool(Tool):
     def get_version(self):
         s = get_command_output([self.executable_name, '--version'])

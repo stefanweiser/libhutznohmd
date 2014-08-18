@@ -10,7 +10,8 @@ find_package(AStyle 2.03 REQUIRED)
 find_package(CPPCheck 1.60 REQUIRED)
 find_package(Doxygen 1.7.6 REQUIRED)
 find_package(Java 1.6 REQUIRED)
-find_package(Lizard 1.8.4 REQUIRED)
+find_package(Lizard 1.8.4)
+find_package(RATS 2.4)
 find_package(Wget 1.13 REQUIRED)
 
 
@@ -51,10 +52,19 @@ add_custom_target(doc
                       "${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile"
                   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}" VERBATIM)
 
-add_custom_target(lizard
-                  ${Lizard_LIZARD_EXECUTABLE} --warnings_only --CCN 10
-                      --sort cyclomatic_complexity ./src/
-                  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" VERBATIM)
+if(LIZARD_FOUND)
+    add_custom_target(lizard
+                      ${Lizard_LIZARD_EXECUTABLE} --warnings_only --CCN 10
+                          --sort cyclomatic_complexity ./src/
+                      WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" VERBATIM)
+endif()
+
+if(RATS_FOUND)
+    add_custom_target(rats
+                      rats --resultsonly -w 3 ./examples ./integrationtest ./src
+                          ./unittest
+                      WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" VERBATIM)
+endif()
 
 
 
