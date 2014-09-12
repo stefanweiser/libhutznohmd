@@ -21,7 +21,7 @@ IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -fsigned-char -pipe -pthread -std=c99 -D_POSIX_C_SOURCE=200809L -pedantic -Weverything -Wno-padded")
 SET(CMAKE_C_FLAGS_COVERAGE "${CMAKE_C_FLAGS_DEBUG} --coverage -fno-inline -fno-inline-small-functions -fno-default-inline")
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -fPIC -fsigned-char -pipe -pthread -std=c++11 -pedantic -pedantic-errors -Weverything -Wno-c++98-compat -Wno-padded")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -fPIC -fsigned-char -pipe -pthread -std=c++11 -pedantic -pedantic-errors -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-unused-function -Wno-sign-conversion -Wno-exit-time-destructors -Wno-missing-prototypes")
 SET(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_COVERAGE} --coverage -fno-inline -fno-inline-small-functions -fno-default-inline")
 
 ELSEIF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")

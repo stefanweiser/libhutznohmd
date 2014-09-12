@@ -93,7 +93,7 @@ TEST(character_handling, from_hex)
 
     // Check
     for (size_t i = 0; i < validity_map.size(); i++) {
-        EXPECT_EQ(from_hex(i), validity_map[i]);
+        EXPECT_EQ(from_hex(static_cast<char>(i)), validity_map[i]);
     }
 }
 

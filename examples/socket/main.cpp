@@ -23,10 +23,10 @@
 
 #include <socket/socket_interface.hpp>
 
-rest::buffer data = {0, 1, 2, 3};
-
 void client()
 {
+    static const rest::buffer data = {0, 1, 2, 3};
+
     std::cout << "  connecting" << std::endl;
     rest::socket::connection_pointer c =
         rest::socket::connect("127.0.0.1", 30000);
@@ -57,6 +57,8 @@ void client()
 
 int main()
 {
+    static const rest::buffer data = {0, 1, 2, 3};
+
     std::cout << "example_socket" << std::endl;
 
     std::cout << "  listening" << std::endl;

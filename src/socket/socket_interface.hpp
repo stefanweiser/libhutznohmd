@@ -34,9 +34,7 @@ namespace socket
 class connection_socket_interface
 {
 public:
-    virtual ~connection_socket_interface()
-    {
-    }
+    virtual ~connection_socket_interface();
     virtual bool connect() = 0;
     virtual void close() = 0;
     virtual bool receive(rest::buffer& data, const size_t& max_size) = 0;
@@ -49,9 +47,7 @@ typedef std::shared_ptr<connection_socket_interface> connection_pointer;
 class listener_socket_interface
 {
 public:
-    virtual ~listener_socket_interface()
-    {
-    }
+    virtual ~listener_socket_interface();
     virtual connection_pointer accept() const = 0;
     virtual bool listening() const = 0;
     virtual void stop() = 0;

@@ -32,6 +32,10 @@ namespace rest
 namespace socket
 {
 
+listener_socket_interface::~listener_socket_interface()
+{
+}
+
 listener_pointer listen(const std::string& host, const uint16_t& port)
 {
     return listener_socket::create(host, port);

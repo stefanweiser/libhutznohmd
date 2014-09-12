@@ -18,7 +18,12 @@
 
 INCLUDE(Toolchain)
 
-IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-global-constructors")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-weak-vtables")
+
+ELSEIF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-missing-field-initializers")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-suggest-attribute=format")
@@ -33,6 +38,7 @@ FILE(GLOB_RECURSE GMOCK ${GMOCK_DIR}/*.cc ${GMOCK_DIR}/*.h)
 ADD_EXECUTABLE(integrationtest_restsrv ${SOURCES} ${HEADERS} ${GMOCK})
 STYLE_FILES(integrationtest_restsrv ${SOURCES} ${HEADERS})
 ADD_TEST(integrationtest "${CMAKE_CURRENT_BINARY_DIR}/integrationtest_restsrv")
+SET_SOURCE_FILES_PROPERTIES(${GMOCK} PROPERTIES COMPILE_FLAGS -w)
 
 LINK_DIRECTORIES("${CMAKE_BINARY_DIR}/lib")
 TARGET_LINK_LIBRARIES(integrationtest_restsrv restsrv)
