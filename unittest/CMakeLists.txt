@@ -31,7 +31,7 @@ FILE(GLOB_RECURSE HEADERS *.hpp *.h)
 FILE(GLOB_RECURSE GMOCK ${GMOCK_DIR}/*.cc ${GMOCK_DIR}/*.h)
 
 ADD_EXECUTABLE(unittest_restsrv ${SOURCES} ${HEADERS} ${GMOCK})
-#STYLE_FILES(unittest_restsrv ${SOURCES} ${HEADERS})
+STYLE_FILES(unittest_restsrv ${SOURCES} ${HEADERS})
 ADD_TEST(unittest "${CMAKE_CURRENT_BINARY_DIR}/unittest_restsrv")
 COVERAGE_TARGET(coverage unittest_restsrv 'unittest/*')
 

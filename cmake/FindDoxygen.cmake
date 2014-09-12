@@ -26,7 +26,7 @@
 #  Doxygen_VERSION_MAJOR      = The major version of the package found.
 #  Doxygen_VERSION_MINOR      = The minor version of the package found.
 #  Doxygen_VERSION_PATCH      = The patch version of the package found.
-#  Doxygen_VERSION            = This is set to: $major.$minor.$patch.$tweak
+#  Doxygen_VERSION            = This is set to: $major.$minor.$patch
 #
 # The minimum required version of Doxygen can be specified using the
 # standard CMake syntax, e.g. FIND_PACKAGE(Doxygen 1.5)

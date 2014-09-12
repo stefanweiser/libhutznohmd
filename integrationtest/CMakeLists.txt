@@ -31,7 +31,7 @@ FILE(GLOB_RECURSE HEADERS *.hpp *.h)
 FILE(GLOB_RECURSE GMOCK ${GMOCK_DIR}/*.cc ${GMOCK_DIR}/*.h)
 
 ADD_EXECUTABLE(integrationtest_restsrv ${SOURCES} ${HEADERS} ${GMOCK})
-#STYLE_FILES(integrationtest_restsrv ${SOURCES} ${HEADERS})
+STYLE_FILES(integrationtest_restsrv ${SOURCES} ${HEADERS})
 ADD_TEST(integrationtest "${CMAKE_CURRENT_BINARY_DIR}/integrationtest_restsrv")
 
 LINK_DIRECTORIES("${CMAKE_BINARY_DIR}/lib")
