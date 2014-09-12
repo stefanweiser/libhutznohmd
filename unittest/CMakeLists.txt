@@ -18,16 +18,20 @@
 
 INCLUDE(Toolchain)
 
+IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-missing-field-initializers")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-suggest-attribute=format")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-suggest-attribute=noreturn")
+
+ENDIF()
 
 FILE(GLOB_RECURSE SOURCES *.cpp *.c)
 FILE(GLOB_RECURSE HEADERS *.hpp *.h)
 FILE(GLOB_RECURSE GMOCK ${GMOCK_DIR}/*.cc ${GMOCK_DIR}/*.h)
 
 ADD_EXECUTABLE(unittest_restsrv ${SOURCES} ${HEADERS} ${GMOCK})
-STYLE_FILES(unittest_restsrv ${SOURCES} ${HEADERS})
+#STYLE_FILES(unittest_restsrv ${SOURCES} ${HEADERS})
 ADD_TEST(unittest "${CMAKE_CURRENT_BINARY_DIR}/unittest_restsrv")
 COVERAGE_TARGET(coverage unittest_restsrv 'unittest/*')
 

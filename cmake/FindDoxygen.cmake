@@ -26,7 +26,6 @@
 #  Doxygen_VERSION_MAJOR      = The major version of the package found.
 #  Doxygen_VERSION_MINOR      = The minor version of the package found.
 #  Doxygen_VERSION_PATCH      = The patch version of the package found.
-#  Doxygen_VERSION_TWEAK      = The tweak version of the package found.
 #  Doxygen_VERSION            = This is set to: $major.$minor.$patch.$tweak
 #
 # The minimum required version of Doxygen can be specified using the
@@ -58,8 +57,8 @@ IF(Doxygen_DOXYGEN_EXECUTABLE)
             MESSAGE(STATUS "Warning, could not run doxygen --version")
         ENDIF()
     ELSE()
-        IF(var MATCHES "[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+.*")
-            STRING(REGEX REPLACE "([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1"
+        IF(var MATCHES "[0-9]+\\.[0-9]+\\.[0-9]+.*")
+            STRING(REGEX REPLACE "([0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1"
                    Doxygen_VERSION_STRING "${var}")
         ELSE()
             IF(NOT Doxygen_FIND_QUIETLY)
@@ -72,11 +71,8 @@ IF(Doxygen_DOXYGEN_EXECUTABLE)
                "${Doxygen_VERSION_STRING}")
         STRING(REGEX REPLACE "[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1"
                Doxygen_VERSION_PATCH "${Doxygen_VERSION_STRING}")
-        STRING(REGEX REPLACE "[0-9]+\\.[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1"
-               Doxygen_VERSION_TWEAK "${Doxygen_VERSION_STRING}")
         SET(Doxygen_VERSION ${Doxygen_VERSION_MAJOR}.${Doxygen_VERSION_MINOR})
         SET(Doxygen_VERSION ${Doxygen_VERSION}.${Doxygen_VERSION_PATCH})
-        SET(Doxygen_VERSION ${Doxygen_VERSION}.${Doxygen_VERSION_TWEAK})
     ENDIF()
 ENDIF()
 
