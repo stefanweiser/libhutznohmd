@@ -44,36 +44,34 @@ enum class uri_scheme {
 };
 
 //! Contains an URI as used in the HTTP protocol (e.g.
-// http://user@example.com:8080/?a=b#anchor).
+//! http://user\@example.com:8080/?a=b#anchor).
 class uri_interface
 {
 public:
-    virtual ~uri_interface()
-    {
-    }
+    virtual ~uri_interface();
 
     //! Returns whether the containing URI is valid or not.
     virtual bool valid() const = 0;
 
-    //! In "http://user@example.com:8080/?a=b#anchor" this is "http".
+    //! In "http://user\@example.com:8080/?a=b#anchor" this is "http".
     virtual const uri_scheme& scheme() const = 0;
 
-    //! In "http://user:pw@example.com:8080/?a=b#anchor" this is "user:pw".
+    //! In "http://user:pw\@example.com:8080/?a=b#anchor" this is "user:pw".
     virtual const char* userinfo() const = 0;
 
-    //! In "http://user:pw@example.com:8080/?a=b#anchor" this is "example.com".
+    //! In "http://user:pw\@example.com:8080/?a=b#anchor" this is "example.com".
     virtual const char* host() const = 0;
 
-    //! In "http://user:pw@example.com:8080/?a=b#anchor" this is "8080".
+    //! In "http://user:pw\@example.com:8080/?a=b#anchor" this is "8080".
     virtual const uint16_t& port() const = 0;
 
-    //! In "http://user:pw@example.com:8080/?a=b#anchor" this is "/".
+    //! In "http://user:pw\@example.com:8080/?a=b#anchor" this is "/".
     virtual const char* path() const = 0;
 
-    //! In "http://user:pw@example.com:8080/?a=b#anchor" this is "a=b".
+    //! In "http://user:pw\@example.com:8080/?a=b#anchor" this is "a=b".
     virtual const char* query() const = 0;
 
-    //! In "http://user:pw@example.com:8080/?a=b#anchor" this is "anchor".
+    //! In "http://user:pw\@example.com:8080/?a=b#anchor" this is "anchor".
     virtual const char* fragment() const = 0;
 };
 
@@ -102,9 +100,7 @@ public:
         PLAIN = 1
     };
 
-    virtual ~media_type_interface()
-    {
-    }
+    virtual ~media_type_interface();
 
     //! Returns the type, if the media type is known or media_type_type::CUSTOM
     // if unknown.
@@ -522,9 +518,7 @@ enum class header_type {
 class request_interface
 {
 public:
-    virtual ~request_interface()
-    {
-    }
+    virtual ~request_interface();
 
     //! Requested HTTP method.
     virtual rest::http::method method() const = 0;
@@ -552,9 +546,7 @@ public:
 class response_interface
 {
 public:
-    virtual ~response_interface()
-    {
-    }
+    virtual ~response_interface();
 
     //! Sets the status code.
     virtual void set_status_code(const rest::http::status_code& statusCode) = 0;
@@ -578,9 +570,7 @@ typedef std::function<void(const request_interface& request,
 class server_interface
 {
 public:
-    virtual ~server_interface()
-    {
-    }
+    virtual ~server_interface();
 
     //! Runs the server. Won't return till the server shall stop.
     virtual void run() = 0;

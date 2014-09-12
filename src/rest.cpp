@@ -16,23 +16,34 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_COMMON_HPP
-#define LIBREST_COMMON_HPP
+#include "rest.hpp"
 
 namespace rest
 {
 
-template <typename type, type lower_bound, type upper_bound>
-bool check_range(const type& value)
+namespace http
 {
-    static_assert(lower_bound <= upper_bound,
-                  "Lower bound must be less or equal to upper bound.");
-    if ((value < lower_bound) || (value > upper_bound)) {
-        return false;
-    }
-    return true;
+
+uri_interface::~uri_interface()
+{
 }
 
-} // namespace rest
+media_type_interface::~media_type_interface()
+{
+}
 
-#endif // LIBREST_COMMON_HPP
+request_interface::~request_interface()
+{
+}
+
+response_interface::~response_interface()
+{
+}
+
+server_interface::~server_interface()
+{
+}
+
+} // namespace http
+
+} // namespace rest
