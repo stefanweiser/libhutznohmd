@@ -31,18 +31,18 @@ namespace rest
 namespace http
 {
 
-int32_t get_char(void * handle)
+int32_t get_char(void* handle)
 {
-    return static_cast<request *>(handle)->get();
+    return static_cast<request*>(handle)->get();
 }
 
-int32_t peek_char(void * handle)
+int32_t peek_char(void* handle)
 {
-    return static_cast<request *>(handle)->peek();
+    return static_cast<request*>(handle)->peek();
 }
 
-request::request(const rest::socket::connection_pointer & connection,
-                 const parameters & param)
+request::request(const rest::socket::connection_pointer& connection,
+                 const parameters& param)
     : connection_(connection)
     , buffer_()
     , request_parser_(anonymous_int_function(&get_char, this),
@@ -50,7 +50,8 @@ request::request(const rest::socket::connection_pointer & connection,
     , data_()
     , index_(0)
     , parameters_(param)
-{}
+{
+}
 
 bool request::parse()
 {
@@ -60,9 +61,9 @@ bool request::parse()
     while ((content_length > 0) && (peek() >= 0)) {
         ssize_t old_size = data_.size();
         ssize_t old_buffer_size = static_cast<ssize_t>(buffer_.size());
-        if ((old_buffer_size - static_cast<ssize_t>(index_)) >= content_length) {
-            data_.insert(data_.end(),
-                         buffer_.begin() + index_,
+        if ((old_buffer_size - static_cast<ssize_t>(index_)) >=
+            content_length) {
+            data_.insert(data_.end(), buffer_.begin() + index_,
                          buffer_.begin() + index_ + content_length);
             index_ += content_length;
             content_length = 0;
@@ -74,10 +75,9 @@ bool request::parse()
     }
 
     bool result = request_parser_.valid();
-    if ((true == result) &&
-        (true == request_parser_.has_md5()) &&
+    if ((true == result) && (true == request_parser_.has_md5()) &&
         (true == parameters_.check_md5)) {
-        const std::array<uint8_t, 16> & md5 = request_parser_.md5();
+        const std::array<uint8_t, 16>& md5 = request_parser_.md5();
         result = (md5 == calculate_md5(data_));
     }
     return result;
@@ -88,7 +88,7 @@ rest::http::method request::method() const
     return static_cast<rest::http::method>(request_parser_.method());
 }
 
-const uri_interface & request::request_uri() const
+const uri_interface& request::request_uri() const
 {
     return request_parser_.request_uri();
 }
@@ -98,17 +98,17 @@ rest::http::version request::version() const
     return static_cast<rest::http::version>(request_parser_.version());
 }
 
-const std::map<std::string, std::string> & request::headers() const
+const std::map<std::string, std::string>& request::headers() const
 {
     return request_parser_.headers();
 }
 
-const rest::buffer & request::data() const
+const rest::buffer& request::data() const
 {
     return data_;
 }
 
-const media_type_interface & request::data_content_type() const
+const media_type_interface& request::data_content_type() const
 {
     return request_parser_.content_type();
 }

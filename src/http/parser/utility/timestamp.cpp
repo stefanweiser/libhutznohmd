@@ -27,7 +27,7 @@ namespace rest
 namespace http
 {
 
-int32_t parse_time(int32_t & character, const lexer & l)
+int32_t parse_time(int32_t& character, const lexer& l)
 {
     int32_t hour = l.get_unsigned_integer(character);
     if ((false == check_range<int32_t, 0, 23>(hour)) || (character != ':')) {
@@ -46,33 +46,21 @@ int32_t parse_time(int32_t & character, const lexer & l)
     return (60 * ((60 * hour) + minute)) + second;
 }
 
-int32_t parse_month(int32_t & character, const lexer & l)
+int32_t parse_month(int32_t& character, const lexer& l)
 {
     using value_info = trie<int32_t>::value_info;
-    static const std::vector<value_info> types = {{
-            value_info{"jan", 1},
-            value_info{"feb", 2},
-            value_info{"mar", 3},
-            value_info{"apr", 4},
-            value_info{"may", 5},
-            value_info{"jun", 6},
-            value_info{"jul", 7},
-            value_info{"aug", 8},
-            value_info{"sep", 9},
-            value_info{"oct", 10},
-            value_info{"nov", 11},
-            value_info{"dec", 12}
-        }
-    };
+    static const std::vector<value_info> types = {
+        {value_info{"jan", 1},  value_info{"feb", 2},  value_info{"mar", 3},
+         value_info{"apr", 4},  value_info{"may", 5},  value_info{"jun", 6},
+         value_info{"jul", 7},  value_info{"aug", 8},  value_info{"sep", 9},
+         value_info{"oct", 10}, value_info{"nov", 11}, value_info{"dec", 12}}};
 
     static const trie<int32_t> t(types, -1);
     push_back_string<32> tmp;
     return t.parse(character, tmp, l);
 }
 
-time_t day_of_the_year(const time_t day,
-                       const time_t month,
-                       const time_t year)
+time_t day_of_the_year(const time_t day, const time_t month, const time_t year)
 {
     time_t result = day;
     if (month < 3) {
@@ -115,54 +103,49 @@ bool is_valid_day(const time_t day, const time_t month, const time_t year)
     }
 }
 
-bool is_valid_epoch_date(const time_t day, const time_t month, const time_t year)
+bool is_valid_epoch_date(const time_t day, const time_t month,
+                         const time_t year)
 {
-    if ((year < 1970) ||
-        (false == check_range<time_t, 1, 12>(month)) ||
+    if ((year < 1970) || (false == check_range<time_t, 1, 12>(month)) ||
         (false == is_valid_day(day, month, year))) {
         return false;
     }
     return true;
 }
 
-time_t seconds_since_epoch(const time_t second_of_day,
-                           const time_t day,
-                           const time_t month,
-                           const time_t year)
+time_t seconds_since_epoch(const time_t second_of_day, const time_t day,
+                           const time_t month, const time_t year)
 {
     if (false == is_valid_epoch_date(day, month, year)) {
         return -1;
     }
 
-    const time_t second_of_year = second_of_day +
-                                  ((day_of_the_year(day, month, year) - 1) * 86400);
-    const time_t year_seconds_since_epoch = ((year - 1970) * 86400 * 365) +
-                                            (((year - (1972 - 3)) / 4) * 86400);
+    const time_t second_of_year =
+        second_of_day + ((day_of_the_year(day, month, year) - 1) * 86400);
+    const time_t year_seconds_since_epoch =
+        ((year - 1970) * 86400 * 365) + (((year - (1972 - 3)) / 4) * 86400);
 
     return year_seconds_since_epoch + second_of_year;
 }
 
-bool parse_gmt(int32_t & character, const lexer & l)
+bool parse_gmt(int32_t& character, const lexer& l)
 {
     using value_info = trie<bool>::value_info;
-    static const std::vector<value_info> types = {{
-            value_info{"gmt", true}
-        }
-    };
+    static const std::vector<value_info> types = {{value_info{"gmt", true}}};
 
     static const trie<bool> t(types, false);
     push_back_string<32> tmp;
     return t.parse(character, tmp, l);
 }
 
-void parse_optional_whitespace(int32_t & character, const lexer & l)
+void parse_optional_whitespace(int32_t& character, const lexer& l)
 {
     if ((character == ' ') || (character == '\n')) {
         character = l.get_non_whitespace();
     }
 }
 
-time_t parse_rfc1123_date_time(int32_t & character, const lexer & l)
+time_t parse_rfc1123_date_time(int32_t& character, const lexer& l)
 {
     character = l.get_non_whitespace();
     const int32_t day = l.get_unsigned_integer(character);
@@ -187,7 +170,7 @@ time_t parse_rfc1123_date_time(int32_t & character, const lexer & l)
     return seconds_since_epoch(second_of_day, day, month, year);
 }
 
-time_t parse_rfc850_date_time(int32_t & character, const lexer & l)
+time_t parse_rfc850_date_time(int32_t& character, const lexer& l)
 {
     parse_optional_whitespace(character, l);
     if (character != ',') {
@@ -222,7 +205,7 @@ time_t parse_rfc850_date_time(int32_t & character, const lexer & l)
     return seconds_since_epoch(second_of_day, day, month, year);
 }
 
-time_t parse_asctime_date_time(int32_t & character, const lexer & l)
+time_t parse_asctime_date_time(int32_t& character, const lexer& l)
 {
     parse_optional_whitespace(character, l);
     const int32_t month = parse_month(character, l);
@@ -243,35 +226,33 @@ time_t parse_asctime_date_time(int32_t & character, const lexer & l)
     return seconds_since_epoch(second_of_day, day, month, year);
 }
 
-std::tuple<int8_t, bool> parse_weekday(int32_t & character, const lexer & l)
+std::tuple<int8_t, bool> parse_weekday(int32_t& character, const lexer& l)
 {
     using value_type = std::tuple<int8_t, bool>;
     using value_info = trie<value_type>::value_info;
 
-    static const std::vector<value_info> types = {{
-            value_info{"sun", value_type{0, false}},
-            value_info{"sunday", value_type{0, true}},
-            value_info{"mon", value_type{1, false}},
-            value_info{"monday", value_type{1, true}},
-            value_info{"tue", value_type{2, false}},
-            value_info{"tuesday", value_type{2, true}},
-            value_info{"wed", value_type{3, false}},
-            value_info{"wednesday", value_type{3, true}},
-            value_info{"thu", value_type{4, false}},
-            value_info{"thursday", value_type{4, true}},
-            value_info{"fri", value_type{5, false}},
-            value_info{"friday", value_type{5, true}},
-            value_info{"sat", value_type{6, false}},
-            value_info{"saturday", value_type{6, true}}
-        }
-    };
+    static const std::vector<value_info> types = {
+        {value_info{"sun", value_type{0, false}},
+         value_info{"sunday", value_type{0, true}},
+         value_info{"mon", value_type{1, false}},
+         value_info{"monday", value_type{1, true}},
+         value_info{"tue", value_type{2, false}},
+         value_info{"tuesday", value_type{2, true}},
+         value_info{"wed", value_type{3, false}},
+         value_info{"wednesday", value_type{3, true}},
+         value_info{"thu", value_type{4, false}},
+         value_info{"thursday", value_type{4, true}},
+         value_info{"fri", value_type{5, false}},
+         value_info{"friday", value_type{5, true}},
+         value_info{"sat", value_type{6, false}},
+         value_info{"saturday", value_type{6, true}}}};
 
-    static const trie<value_type> t(types, value_type { -1, false});
+    static const trie<value_type> t(types, value_type{-1, false});
     push_back_string<32> tmp;
     return t.parse(character, tmp, l);
 }
 
-time_t parse_timestamp(int32_t & character, const lexer & l)
+time_t parse_timestamp(int32_t& character, const lexer& l)
 {
     int32_t weekday = -1;
     int32_t is_long_format = false;

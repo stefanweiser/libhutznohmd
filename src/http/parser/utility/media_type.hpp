@@ -34,31 +34,31 @@ namespace rest
 namespace http
 {
 
-class media_type: public media_type_interface
+class media_type : public media_type_interface
 {
 public:
     explicit media_type();
-    media_type(const media_type & rhs);
-    media_type & operator=(const media_type & rhs);
+    media_type(const media_type& rhs);
+    media_type& operator=(const media_type& rhs);
 
-    bool parse(const lexer & l, int32_t & character);
+    bool parse(const lexer& l, int32_t& character);
 
     virtual media_type_interface::mime_type type() const;
     virtual media_type_interface::mime_subtype subtype() const;
-    virtual const char * custom_type() const;
-    virtual const char * custom_subtype() const;
-    virtual const std::map<std::string, std::string> & parameters() const;
+    virtual const char* custom_type() const;
+    virtual const char* custom_subtype() const;
+    virtual const std::map<std::string, std::string>& parameters() const;
     virtual uint8_t quality() const;
     virtual uint8_t specification_grade() const;
 
 private:
-    void parse_type(int32_t & character);
-    void parse_subtype(int32_t & character);
-    bool parse_parameter(int32_t & character);
+    void parse_type(int32_t& character);
+    void parse_subtype(int32_t& character);
+    bool parse_parameter(int32_t& character);
 
-    bool parse_quality_parameter(int32_t & character);
+    bool parse_quality_parameter(int32_t& character);
 
-    const lexer * lexer_;
+    const lexer* lexer_;
     media_type_interface::mime_type type_;
     media_type_interface::mime_subtype subtype_;
     push_back_string<32> custom_type_;

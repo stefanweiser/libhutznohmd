@@ -34,9 +34,9 @@ class connection_socket_mock : public connection_socket_interface
 public:
     MOCK_METHOD0(connect, bool());
     MOCK_METHOD0(close, void());
-    MOCK_METHOD2(receive, bool(rest::buffer &, const size_t &));
-    MOCK_METHOD1(send, bool(const rest::buffer &));
-    MOCK_METHOD1(send, bool(const std::string &));
+    MOCK_METHOD2(receive, bool(rest::buffer&, const size_t&));
+    MOCK_METHOD1(send, bool(const rest::buffer&));
+    MOCK_METHOD1(send, bool(const std::string&));
 };
 
 typedef std::shared_ptr<connection_socket_mock> connection_mock_pointer;

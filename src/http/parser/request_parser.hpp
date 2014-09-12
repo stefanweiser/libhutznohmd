@@ -38,40 +38,45 @@ class request_parser
 {
 public:
     //! Constructs the request parser.
-    //! @param get_functor Returns an integer with the current character in the input stream and
-    //!                    sets the pointer of the current character one byte further. This value
-    //!                    must be in [0..255] for valid and less than 0 for invalid character.
-    //! @param peek_functor Returns an integer with the current character in the input stream.
-    //!                     This value must be in [0..255] for valid and less than 0 for invalid
+    //! @param get_functor Returns an integer with the current character in the
+    // input stream and
+    //!                    sets the pointer of the current character one byte
+    // further. This value
+    //!                    must be in [0..255] for valid and less than 0 for
+    // invalid character.
+    //! @param peek_functor Returns an integer with the current character in the
+    // input stream.
+    //!                     This value must be in [0..255] for valid and less
+    // than 0 for invalid
     //!                     character.
-    explicit request_parser(const anonymous_int_function & get_functor,
-                            const anonymous_int_function & peek_functor);
+    explicit request_parser(const anonymous_int_function& get_functor,
+                            const anonymous_int_function& peek_functor);
     void parse();
 
     bool valid() const;
-    const rest::http::version & version() const;
-    const std::map<std::string, std::string> & headers() const;
-    const size_t & content_length() const;
-    const media_type_interface & content_type() const;
-    const time_t & date() const;
+    const rest::http::version& version() const;
+    const std::map<std::string, std::string>& headers() const;
+    const size_t& content_length() const;
+    const media_type_interface& content_type() const;
+    const time_t& date() const;
     bool keeps_connection() const;
-    const std::array<uint8_t, 16> & md5() const;
+    const std::array<uint8_t, 16>& md5() const;
     bool has_md5() const;
-    const rest::http::method & method() const;
-    const uri_interface & request_uri() const;
-    const uri_interface & from_uri() const;
-    std::vector<const media_type_interface *> accept_header() const;
+    const rest::http::method& method() const;
+    const uri_interface& request_uri() const;
+    const uri_interface& from_uri() const;
+    std::vector<const media_type_interface*> accept_header() const;
 
 private:
-    bool parse_accept(int32_t & character);
-    bool parse_connection(int32_t & character);
-    bool parse_content_length(int32_t & character);
-    bool parse_content_md5(int32_t & character);
-    bool parse_content_type(int32_t & character);
-    bool parse_date(int32_t & character);
-    bool parse_from(int32_t & character);
-    bool parse_host(int32_t & character);
-    bool parse_headers(int32_t & character);
+    bool parse_accept(int32_t& character);
+    bool parse_connection(int32_t& character);
+    bool parse_content_length(int32_t& character);
+    bool parse_content_md5(int32_t& character);
+    bool parse_content_type(int32_t& character);
+    bool parse_date(int32_t& character);
+    bool parse_from(int32_t& character);
+    bool parse_host(int32_t& character);
+    bool parse_headers(int32_t& character);
 
     base_parser common_;
 

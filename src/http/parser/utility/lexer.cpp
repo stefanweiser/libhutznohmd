@@ -24,12 +24,13 @@ namespace rest
 namespace http
 {
 
-lexer::lexer(const anonymous_int_function & get_functor,
-             const anonymous_int_function & peek_functor)
+lexer::lexer(const anonymous_int_function& get_functor,
+             const anonymous_int_function& peek_functor)
     : get_functor_(get_functor)
     , peek_functor_(peek_functor)
     , last_char_(0)
-{}
+{
+}
 
 int32_t lexer::get() const
 {
@@ -62,7 +63,7 @@ int32_t lexer::get_non_whitespace() const
     return result;
 }
 
-int32_t lexer::get_unsigned_integer(int32_t & character) const
+int32_t lexer::get_unsigned_integer(int32_t& character) const
 {
     if ((character < '0') || (character > '9')) {
         return -1;
@@ -88,7 +89,7 @@ int32_t lexer::get_unsigned_integer(int32_t & character) const
     return result;
 }
 
-bool parse_comment(int32_t & character, const lexer & l)
+bool parse_comment(int32_t& character, const lexer& l)
 {
     // First character must be an opening parenthesis.
     if (character != '(') {
@@ -101,7 +102,8 @@ bool parse_comment(int32_t & character, const lexer & l)
     // Comments support nesting, so we have to check for that.
     size_t nesting_depth = 1;
 
-    // Eat up the characters till a valid end is detected. This could only be the end of the
+    // Eat up the characters till a valid end is detected. This could only be
+    // the end of the
     // stream.
     while (character >= 0) {
         if ('(' == character) {

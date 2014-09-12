@@ -33,7 +33,7 @@ namespace http
 //! @param data Vector of data to parse.
 //! @return Array of 16 bytes, that contains the digest.
 //! @warning This works only for little endian architectures.
-std::array<uint8_t, 16> calculate_md5(const std::vector<char> & data);
+std::array<uint8_t, 16> calculate_md5(const std::vector<char>& data);
 
 } // namespace http
 

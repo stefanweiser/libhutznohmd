@@ -34,18 +34,18 @@ namespace
 
 typedef std::pair<std::string, size_t> string_index_pair;
 
-int32_t get_char(void * handle)
+int32_t get_char(void* handle)
 {
-    string_index_pair * p = static_cast<string_index_pair *>(handle);
+    string_index_pair* p = static_cast<string_index_pair*>(handle);
     if (p->second < p->first.size()) {
         return static_cast<uint8_t>(p->first[p->second++]);
     }
     return -1;
 }
 
-int32_t peek_char(void * handle)
+int32_t peek_char(void* handle)
 {
-    string_index_pair * p = static_cast<string_index_pair *>(handle);
+    string_index_pair* p = static_cast<string_index_pair*>(handle);
     if (p->second < p->first.size()) {
         return static_cast<uint8_t>(p->first[p->second]);
     }
@@ -55,17 +55,18 @@ int32_t peek_char(void * handle)
 class fixture
 {
 public:
-    explicit fixture(const std::string & request);
+    explicit fixture(const std::string& request);
 
     string_index_pair str_;
     request_parser parser_;
 };
 
-fixture::fixture(const std::string & request)
+fixture::fixture(const std::string& request)
     : str_(std::make_pair(request, 0))
     , parser_(anonymous_int_function(&get_char, &str_),
               anonymous_int_function(&peek_char, &str_))
-{}
+{
+}
 
 } // namespace
 
@@ -135,8 +136,10 @@ TEST(request_parser, post_request)
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().path(), std::string("/"));
     EXPECT_EQ(f.parser_.headers().empty(), true);
-    EXPECT_EQ(f.parser_.content_type().type(), media_type_interface::mime_type::TEXT);
-    EXPECT_EQ(f.parser_.content_type().subtype(), media_type_interface::mime_subtype::WILDCARD);
+    EXPECT_EQ(f.parser_.content_type().type(),
+              media_type_interface::mime_type::TEXT);
+    EXPECT_EQ(f.parser_.content_type().subtype(),
+              media_type_interface::mime_subtype::WILDCARD);
 }
 
 TEST(request_parser, put_request)
@@ -155,7 +158,8 @@ TEST(request_parser, put_request)
 
 TEST(request_parser, delete_request)
 {
-    fixture f("DELETE / HTTP/1.1\r\nContent-Length:\n 1\r\nABC:\r\nDEF:\r\n\r\n");
+    fixture f(
+        "DELETE / HTTP/1.1\r\nContent-Length:\n 1\r\nABC:\r\nDEF:\r\n\r\n");
     f.parser_.parse();
     EXPECT_TRUE(f.parser_.valid());
     EXPECT_EQ(f.str_.second, f.str_.first.size());
@@ -247,7 +251,8 @@ TEST(request_parser, host_header_request)
 
 TEST(request_parser, unknown_content_length_in_request)
 {
-    fixture f("DELETE / HTTP/1.1\r\nContent-Length:\n a\r\nABC:\r\nDEF:\r\n\r\n");
+    fixture f(
+        "DELETE / HTTP/1.1\r\nContent-Length:\n a\r\nABC:\r\nDEF:\r\n\r\n");
     f.parser_.parse();
     EXPECT_FALSE(f.parser_.valid());
     EXPECT_EQ(f.str_.second, 37);

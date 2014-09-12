@@ -25,12 +25,16 @@
 
 @subsection sub_connection Connection
 
-Determines, what to do with the connection after the request is finished. Two values
+Determines, what to do with the connection after the request is finished. Two
+values
 are possible: @c close and @c keep-alive.
 
-In case of @c close the connection will be closed after the response is sent and in case of
-@c keep-alive the connection will be kept until the client closes the connection or a predefined
-time duration elapsed without activity on the connection. This time duration can be configured.
+In case of @c close the connection will be closed after the response is sent and
+in case of
+@c keep-alive the connection will be kept until the client closes the connection
+or a predefined
+time duration elapsed without activity on the connection. This time duration can
+be configured.
 @todo How it can be configured.
 
 @a Example:
@@ -52,10 +56,14 @@ Connection: keep-alive
 
 @subsection sub_content_length Content-Length
 
-The header field of the @c Content-Length must be added by the client in requests, if the request
-carries any payload data. The server will add this header field, if the payload data of the
-response is not empty. It must then contain the size of the payload in bytes. Thus it must be an
-unsinged integer. The size is limited to \f$2^{31}-1\f$. In case of an overflow the request gets
+The header field of the @c Content-Length must be added by the client in
+requests, if the request
+carries any payload data. The server will add this header field, if the payload
+data of the
+response is not empty. It must then contain the size of the payload in bytes.
+Thus it must be an
+unsinged integer. The size is limited to \f$2^{31}-1\f$. In case of an overflow
+the request gets
 rejected.
 
 @a Example:
@@ -70,13 +78,16 @@ Content-Length: 0
 
 @subsection sub_content_md5 Content-MD5
 
-This header field is optional and carries a MD5 hash sum. This hash sum is used to verify the
-content. If the header field is missing, the content is not verified with MD5. Thus there is no
+This header field is optional and carries a MD5 hash sum. This hash sum is used
+to verify the
+content. If the header field is missing, the content is not verified with MD5.
+Thus there is no
 default value.
 
 @note This is no security feature, because of 2 reasons:
 -# Collisions for MD5 could be found within reasonable time by recent hardware.
--# An attacker that is able to modify the header field or the content is everytime also able to
+-# An attacker that is able to modify the header field or the content is
+everytime also able to
 modify both.
 
 @a Example:
@@ -86,7 +97,8 @@ Content-MD5: Q2hlY2sgSW50ZWdyaXR5IQ==
 
 @subsection sub_content_type Content-Type
 
-A content type header defines how the application should interpret the content. It consists of one
+A content type header defines how the application should interpret the content.
+It consists of one
 MIME type.
 
 @a Example:
@@ -133,8 +145,10 @@ From: user@example.com
 
 @subsection sub_host Host
 
-Refers to the requested host on the server in case of multiple domains hosted on the server.
-Therefore it is part of the request URI. If the header is present, the content may overwrite the
+Refers to the requested host on the server in case of multiple domains hosted on
+the server.
+Therefore it is part of the request URI. If the header is present, the content
+may overwrite the
 content of the request URI.
 
 @a Example:

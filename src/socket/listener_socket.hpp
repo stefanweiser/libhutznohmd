@@ -38,10 +38,10 @@ namespace socket
 class listener_socket : public listener_socket_interface
 {
 public:
-    static std::shared_ptr<listener_socket> create(const std::string & host,
-            const uint16_t & port);
+    static std::shared_ptr<listener_socket> create(const std::string& host,
+                                                   const uint16_t& port);
 
-    explicit listener_socket(const int & s);
+    explicit listener_socket(const int& s);
     virtual ~listener_socket();
     virtual connection_pointer accept() const;
     virtual bool listening() const;

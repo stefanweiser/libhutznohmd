@@ -22,25 +22,25 @@
 #include <socket/socket_interface.hpp>
 #include <http/request.hpp>
 
-class connection: public rest::socket::connection_socket_interface
+class connection : public rest::socket::connection_socket_interface
 {
 public:
-    explicit connection(const std::string & filename);
+    explicit connection(const std::string& filename);
 
     virtual bool connect();
     virtual void close();
-    virtual bool receive(rest::buffer & data, const size_t & max_size);
-    virtual bool send(const rest::buffer & data);
-    virtual bool send(const std::string & data);
+    virtual bool receive(rest::buffer& data, const size_t& max_size);
+    virtual bool send(const rest::buffer& data);
+    virtual bool send(const std::string& data);
 
 private:
     std::ifstream stream_;
 };
 
-connection::connection(const std::string & filename)
-    : stream_(filename)
+connection::connection(const std::string& filename) : stream_(filename)
 {
-    std::cout << " stream is_open() = " << stream_.is_open() << "." << std::endl;
+    std::cout << " stream is_open() = " << stream_.is_open() << "."
+              << std::endl;
 }
 
 bool connection::connect()
@@ -49,9 +49,10 @@ bool connection::connect()
 }
 
 void connection::close()
-{}
+{
+}
 
-bool connection::receive(rest::buffer & data, const size_t & max_size)
+bool connection::receive(rest::buffer& data, const size_t& max_size)
 {
     size_t read_bytes = 0;
     int c = 0;
@@ -66,12 +67,12 @@ bool connection::receive(rest::buffer & data, const size_t & max_size)
     return (read_bytes > 0);
 }
 
-bool connection::send(const rest::buffer & /*data*/)
+bool connection::send(const rest::buffer& /*data*/)
 {
     return true;
 }
 
-bool connection::send(const std::string & /*data*/)
+bool connection::send(const std::string& /*data*/)
 {
     return true;
 }
@@ -81,7 +82,8 @@ int main()
     std::cout << "example_http" << std::endl;
 
     auto connection = std::make_shared<::connection>("./examples/res/request0");
-    rest::http::request request(connection, rest::http::request::parameters {true});
+    rest::http::request request(connection,
+                                rest::http::request::parameters{true});
     request.parse();
 
     return 0;

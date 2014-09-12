@@ -35,12 +35,12 @@ namespace http
 class lexer
 {
 public:
-    explicit lexer(const anonymous_int_function & get_functor,
-                   const anonymous_int_function & peek_functor);
+    explicit lexer(const anonymous_int_function& get_functor,
+                   const anonymous_int_function& peek_functor);
 
     int32_t get() const;
     int32_t get_non_whitespace() const;
-    int32_t get_unsigned_integer(int32_t & character) const;
+    int32_t get_unsigned_integer(int32_t& character) const;
 
 private:
     const anonymous_int_function get_functor_;
@@ -49,11 +49,10 @@ private:
 };
 
 //! Parses a word stopping if the continue condition gets wrong.
-template<size_t size, typename continue_function>
-void parse_word(int32_t & character,
-                push_back_string<size> & result,
-                const continue_function & continue_condition_functor,
-                const lexer & l)
+template <size_t size, typename continue_function>
+void parse_word(int32_t& character, push_back_string<size>& result,
+                const continue_function& continue_condition_functor,
+                const lexer& l)
 {
     while ((character >= 0) &&
            (true == continue_condition_functor(static_cast<char>(character)))) {
@@ -62,12 +61,13 @@ void parse_word(int32_t & character,
     }
 }
 
-//! Parses a quoted string stopping if an invalid character is found or the end is found.
-//! @return True if the string was successfully parsed and false if an error occurred.
-template<size_t size>
-bool parse_quoted_string(int32_t & character,
-                         push_back_string<size> & result,
-                         const lexer & l)
+//! Parses a quoted string stopping if an invalid character is found or the end
+// is found.
+//! @return True if the string was successfully parsed and false if an error
+// occurred.
+template <size_t size>
+bool parse_quoted_string(int32_t& character, push_back_string<size>& result,
+                         const lexer& l)
 {
     // First character must be a quote character.
     if (character != '"') {
@@ -80,8 +80,8 @@ bool parse_quoted_string(int32_t & character,
     // Fill the result string till a valid end is detected. This could be
     // 1. the end of the stream or
     // 2. an invalid character.
-    while ((character >= 0) &&
-           (true == is_valid_quoted_string_character(static_cast<uint8_t>(character)))) {
+    while ((character >= 0) && (true == is_valid_quoted_string_character(
+                                            static_cast<uint8_t>(character)))) {
         result.push_back(static_cast<char>(character));
         character = l.get();
     }
@@ -96,9 +96,11 @@ bool parse_quoted_string(int32_t & character,
     return true;
 }
 
-//! Parses a comment stopping if an invalid character is found or the end is found.
-//! @return True if the comment was successfully parsed and false if an error occurred.
-bool parse_comment(int32_t & character, const lexer & l);
+//! Parses a comment stopping if an invalid character is found or the end is
+// found.
+//! @return True if the comment was successfully parsed and false if an error
+// occurred.
+bool parse_comment(int32_t& character, const lexer& l);
 
 } // namespace http
 

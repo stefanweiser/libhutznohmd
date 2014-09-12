@@ -32,20 +32,21 @@ namespace rest
 namespace http
 {
 
-class response: public response_interface
+class response : public response_interface
 {
 public:
-    explicit response(const rest::socket::connection_pointer & connection);
+    explicit response(const rest::socket::connection_pointer& connection);
     void deliver();
 
-    virtual void set_status_code(const rest::http::status_code & status_code);
-    virtual void set_version(const rest::http::version & version);
-    virtual void set_header(const std::string & key, const std::string & value);
-    virtual void set_data(const rest::buffer & data);
+    virtual void set_status_code(const rest::http::status_code& status_code);
+    virtual void set_version(const rest::http::version& version);
+    virtual void set_header(const std::string& key, const std::string& value);
+    virtual void set_data(const rest::buffer& data);
 
 private:
-    static void deliver_version(std::ostream & os, const version & version);
-    static void deliver_status_code_text(std::ostream & os, const status_code & code);
+    static void deliver_version(std::ostream& os, const version& version);
+    static void deliver_status_code_text(std::ostream& os,
+                                         const status_code& code);
 
     rest::socket::connection_pointer connection_;
 

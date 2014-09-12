@@ -32,34 +32,36 @@ namespace
 
 void disable_time_wait(int socket)
 {
-    ::linger l = ::linger {1, 0};
+    ::linger l = ::linger{1, 0};
     ::setsockopt(socket, SOL_SOCKET, SO_LINGER, &l, sizeof(l));
 }
 
-int get_socket(const http::server_pointer & server)
+int get_socket(const http::server_pointer& server)
 {
     auto listener = std::dynamic_pointer_cast<http::server>(server)->socket();
-    return std::dynamic_pointer_cast<socket::listener_socket>(listener)->socket();
+    return std::dynamic_pointer_cast<socket::listener_socket>(listener)
+        ->socket();
 }
 
-int get_socket(const socket::connection_pointer & connection)
+int get_socket(const socket::connection_pointer& connection)
 {
-    return std::dynamic_pointer_cast<socket::connection_socket>(connection)->socket();
+    return std::dynamic_pointer_cast<socket::connection_socket>(connection)
+        ->socket();
 }
-
 }
 
 TEST(server, construction_destruction)
 {
-    auto s = http::create_server("127.0.0.1", 10000, http::transaction_function());
+    auto s =
+        http::create_server("127.0.0.1", 10000, http::transaction_function());
     disable_time_wait(get_socket(s));
 }
 
 TEST(server, normal_use_case_http_1_1)
 {
     bool called = false;
-    auto transaction = [&called](const http::request_interface & /*request*/,
-    http::response_interface & /*response*/) {
+    auto transaction = [&called](const http::request_interface& /*request*/,
+                                 http::response_interface& /*response*/) {
         called = true;
     };
 
@@ -85,8 +87,8 @@ TEST(server, normal_use_case_http_1_1)
 TEST(server, normal_use_case_http_1_0)
 {
     bool called = false;
-    auto transaction = [&called](const http::request_interface & /*request*/,
-    http::response_interface & /*response*/) {
+    auto transaction = [&called](const http::request_interface& /*request*/,
+                                 http::response_interface& /*response*/) {
         called = true;
     };
 

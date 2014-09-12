@@ -34,14 +34,13 @@ namespace rest
 namespace socket
 {
 
-connection_pointer connect(const std::string & host,
-                           const uint16_t & port)
+connection_pointer connect(const std::string& host, const uint16_t& port)
 {
     return connection_socket::create(host, port);
 }
 
-std::shared_ptr<connection_socket> connection_socket::create(const std::string & host,
-        const uint16_t & port)
+std::shared_ptr<connection_socket>
+connection_socket::create(const std::string& host, const uint16_t& port)
 {
     const int socket = ::socket(PF_INET, SOCK_STREAM, 0);
     if (socket == -1) {
@@ -54,17 +53,19 @@ std::shared_ptr<connection_socket> connection_socket::create(const std::string &
     return result;
 }
 
-connection_socket::connection_socket(const int & s)
+connection_socket::connection_socket(const int& s)
     : is_connected_(true)
     , socket_(s)
     , address_()
-{}
+{
+}
 
-connection_socket::connection_socket(const int & s, const ::sockaddr_in & address)
+connection_socket::connection_socket(const int& s, const ::sockaddr_in& address)
     : is_connected_(false)
     , socket_(s)
     , address_(address)
-{}
+{
+}
 
 connection_socket::~connection_socket()
 {
@@ -75,11 +76,11 @@ connection_socket::~connection_socket()
 namespace
 {
 
-union address_union {
-    const ::sockaddr * base;
-    const ::sockaddr_in * in;
+union address_union
+{
+    const ::sockaddr* base;
+    const ::sockaddr_in* in;
 };
-
 }
 
 bool connection_socket::connect()
@@ -103,7 +104,7 @@ void connection_socket::close()
     ::shutdown(socket_, SHUT_RDWR);
 }
 
-bool connection_socket::receive(rest::buffer & data, const size_t & max_size)
+bool connection_socket::receive(rest::buffer& data, const size_t& max_size)
 {
     if (false == is_connected_) {
         return false;
@@ -111,7 +112,8 @@ bool connection_socket::receive(rest::buffer & data, const size_t & max_size)
 
     const size_t old_size = data.size();
     data.resize(old_size + max_size);
-    const ::ssize_t received = receive_signal_safe(socket_, data.data() + old_size, max_size, 0);
+    const ::ssize_t received =
+        receive_signal_safe(socket_, data.data() + old_size, max_size, 0);
 
     if (received <= 0) {
         return false;
@@ -121,17 +123,17 @@ bool connection_socket::receive(rest::buffer & data, const size_t & max_size)
     return true;
 }
 
-bool connection_socket::send(const rest::buffer & data)
+bool connection_socket::send(const rest::buffer& data)
 {
     return send(data.data(), data.size());
 }
 
-bool connection_socket::send(const std::string & data)
+bool connection_socket::send(const std::string& data)
 {
     return send(data.data(), data.size());
 }
 
-bool connection_socket::send(const char * buffer, const size_t & size)
+bool connection_socket::send(const char* buffer, const size_t& size)
 {
     if (false == is_connected_) {
         return false;

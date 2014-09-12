@@ -24,7 +24,8 @@
 @section sec_header_fields_how How to read the header fields:
 
 Every header field documentation is splitted into three parts:
-- @a Description: What and how does it influence the system? What can you expect? Informations on
+- @a Description: What and how does it influence the system? What can you
+expect? Informations on
 the content.
 - @a Example: A common example on how to use it.
 - @a Default: Which value supposes the server, if the header field is missing.

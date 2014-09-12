@@ -34,18 +34,18 @@ namespace
 
 typedef std::pair<std::string, size_t> string_index_pair;
 
-int32_t get_char(void * handle)
+int32_t get_char(void* handle)
 {
-    string_index_pair * p = static_cast<string_index_pair *>(handle);
+    string_index_pair* p = static_cast<string_index_pair*>(handle);
     if (p->second < p->first.size()) {
         return static_cast<uint8_t>(p->first[p->second++]);
     }
     return -1;
 }
 
-int32_t peek_char(void * handle)
+int32_t peek_char(void* handle)
 {
-    string_index_pair * p = static_cast<string_index_pair *>(handle);
+    string_index_pair* p = static_cast<string_index_pair*>(handle);
     if (p->second < p->first.size()) {
         return static_cast<uint8_t>(p->first[p->second]);
     }
@@ -55,17 +55,18 @@ int32_t peek_char(void * handle)
 class fixture
 {
 public:
-    explicit fixture(const std::string & request);
+    explicit fixture(const std::string& request);
 
     string_index_pair str_;
     response_parser parser_;
 };
 
-fixture::fixture(const std::string & request)
+fixture::fixture(const std::string& request)
     : str_(std::make_pair(request, 0))
     , parser_(anonymous_int_function(&get_char, &str_),
               anonymous_int_function(&peek_char, &str_))
-{}
+{
+}
 
 } // namespace
 

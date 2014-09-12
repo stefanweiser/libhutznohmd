@@ -33,8 +33,8 @@ namespace rest
 namespace http
 {
 
-base_parser::base_parser(const anonymous_int_function & get_functor,
-                         const anonymous_int_function & peek_functor)
+base_parser::base_parser(const anonymous_int_function& get_functor,
+                         const anonymous_int_function& peek_functor)
     : lexer_(get_functor, peek_functor)
     , state_(parser_state::UNFINISHED)
     , header_key_()
@@ -47,20 +47,20 @@ base_parser::base_parser(const anonymous_int_function & get_functor,
     , connection_(connection_type::KEEP_ALIVE)
     , md5_()
     , has_md5_(false)
-{}
+{
+}
 
 base_parser::~base_parser()
-{}
+{
+}
 
-bool base_parser::parse_connection(int32_t & character)
+bool base_parser::parse_connection(int32_t& character)
 {
     using value_info = trie<connection_type>::value_info;
-    static const std::vector<value_info> types = {{
-            value_info{"close", connection_type::CLOSE},
-            value_info{"keep-alive", connection_type::KEEP_ALIVE},
-            value_info{"persist", connection_type::KEEP_ALIVE}
-        }
-    };
+    static const std::vector<value_info> types = {
+        {value_info{"close", connection_type::CLOSE},
+         value_info{"keep-alive", connection_type::KEEP_ALIVE},
+         value_info{"persist", connection_type::KEEP_ALIVE}}};
 
     static const trie<connection_type> t(types, connection_type::ERROR);
     push_back_string<32> tmp;
@@ -72,7 +72,7 @@ bool base_parser::parse_connection(int32_t & character)
     return false;
 }
 
-bool base_parser::parse_content_length(int32_t & character)
+bool base_parser::parse_content_length(int32_t& character)
 {
     int32_t length = lexer_.get_unsigned_integer(character);
     if (length < 0) {
@@ -83,11 +83,12 @@ bool base_parser::parse_content_length(int32_t & character)
     return true;
 }
 
-bool base_parser::parse_content_md5(int32_t & character)
+bool base_parser::parse_content_md5(int32_t& character)
 {
     std::string s;
     while ((character >= 0) &&
-           ((true == is_base64(static_cast<uint8_t>(character))) || ('=' == character))) {
+           ((true == is_base64(static_cast<uint8_t>(character))) ||
+            ('=' == character))) {
         s += static_cast<uint8_t>(character);
         character = lexer_.get();
     }
@@ -103,12 +104,12 @@ bool base_parser::parse_content_md5(int32_t & character)
     return false;
 }
 
-bool base_parser::parse_content_type(int32_t & character)
+bool base_parser::parse_content_type(int32_t& character)
 {
     return content_type_.parse(lexer_, character);
 }
 
-bool base_parser::parse_date(int32_t & character)
+bool base_parser::parse_date(int32_t& character)
 {
     time_t d = parse_timestamp(character, lexer_);
     if (d < 0) {
@@ -119,14 +120,15 @@ bool base_parser::parse_date(int32_t & character)
     return true;
 }
 
-bool base_parser::parse_custom_header(int32_t & character)
+bool base_parser::parse_custom_header(int32_t& character)
 {
     parse_word(character, header_key_, &is_valid_token_character, lexer_);
     if (character != ':') {
         return false;
     }
     character = lexer_.get();
-    parse_word(character, header_value_, &is_valid_header_value_character, lexer_);
+    parse_word(character, header_value_, &is_valid_header_value_character,
+               lexer_);
     if (character != '\n') {
         return false;
     }

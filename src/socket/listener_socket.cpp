@@ -32,7 +32,7 @@ namespace rest
 namespace socket
 {
 
-listener_pointer listen(const std::string & host, const uint16_t & port)
+listener_pointer listen(const std::string& host, const uint16_t& port)
 {
     return listener_socket::create(host, port);
 }
@@ -40,22 +40,23 @@ listener_pointer listen(const std::string & host, const uint16_t & port)
 namespace
 {
 
-union address_union {
+union address_union
+{
     ::sockaddr base;
     ::sockaddr_in in;
 };
-
 }
 
-std::shared_ptr<listener_socket> listener_socket::create(const std::string & host,
-        const uint16_t & port)
+std::shared_ptr<listener_socket>
+listener_socket::create(const std::string& host, const uint16_t& port)
 {
     const int socket = ::socket(PF_INET, SOCK_STREAM, 0);
     if (socket == -1) {
         return std::shared_ptr<listener_socket>();
     }
 
-    std::shared_ptr<listener_socket> result = std::make_shared<listener_socket>(socket);
+    std::shared_ptr<listener_socket> result =
+        std::make_shared<listener_socket>(socket);
 
     address_union address;
     address.in = fill_address(host, port);
@@ -68,10 +69,11 @@ std::shared_ptr<listener_socket> listener_socket::create(const std::string & hos
     return result;
 }
 
-listener_socket::listener_socket(const int & s)
+listener_socket::listener_socket(const int& s)
     : is_listening_(true)
     , socket_(s)
-{}
+{
+}
 
 listener_socket::~listener_socket()
 {

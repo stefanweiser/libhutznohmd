@@ -31,20 +31,21 @@ namespace
 
 void disable_time_wait(int socket)
 {
-    ::linger l = ::linger {1, 0};
+    ::linger l = ::linger{1, 0};
     ::setsockopt(socket, SOL_SOCKET, SO_LINGER, &l, sizeof(l));
 }
 
-int get_socket(const socket::connection_pointer & connection)
+int get_socket(const socket::connection_pointer& connection)
 {
-    return std::dynamic_pointer_cast<socket::connection_socket>(connection)->socket();
+    return std::dynamic_pointer_cast<socket::connection_socket>(connection)
+        ->socket();
 }
 
-int get_socket(const socket::listener_pointer & listener)
+int get_socket(const socket::listener_pointer& listener)
 {
-    return std::dynamic_pointer_cast<socket::listener_socket>(listener)->socket();
+    return std::dynamic_pointer_cast<socket::listener_socket>(listener)
+        ->socket();
 }
-
 }
 
 TEST(socket, construction_no_throw)
@@ -152,9 +153,7 @@ TEST(socket, terminate_try_to_connect)
 {
     auto connection = socket::connection_socket::create("240.0.0.1", 65535);
 
-    std::thread thread([&connection] {
-        EXPECT_FALSE(connection->connect());
-    });
+    std::thread thread([&connection] { EXPECT_FALSE(connection->connect()); });
 
     usleep(10000);
     connection->close();
@@ -186,25 +185,26 @@ TEST(socket, normal_use_case)
     EXPECT_TRUE(listener->listening());
 
     std::thread thread([] {
-        socket::connection_pointer connection = socket::connect("127.0.0.1", 10000);
+        socket::connection_pointer connection =
+            socket::connect("127.0.0.1", 10000);
         EXPECT_TRUE(connection->connect());
         EXPECT_NE(connection, socket::connection_pointer());
         disable_time_wait(get_socket(connection));
         buffer data;
         EXPECT_TRUE(connection->receive(data, 8));
-        EXPECT_EQ(data, buffer({ 0, 1, 2, 3 }));
-        data = { 4, 5, 6, 7 };
+        EXPECT_EQ(data, buffer({0, 1, 2, 3}));
+        data = {4, 5, 6, 7};
         EXPECT_TRUE(connection->send(data));
     });
 
     socket::connection_pointer connection = listener->accept();
     EXPECT_NE(connection, socket::connection_pointer());
     disable_time_wait(get_socket(connection));
-    buffer data = { 0, 1, 2, 3 };
+    buffer data = {0, 1, 2, 3};
     EXPECT_TRUE(connection->send(data));
     data.clear();
     EXPECT_TRUE(connection->receive(data, 8));
-    EXPECT_EQ(data, buffer({ 4, 5, 6, 7 }));
+    EXPECT_EQ(data, buffer({4, 5, 6, 7}));
 
     thread.join();
     EXPECT_TRUE(listener->listening());

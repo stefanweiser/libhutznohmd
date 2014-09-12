@@ -34,18 +34,18 @@ namespace
 
 typedef std::pair<std::string, size_t> string_index_pair;
 
-int32_t get_char(void * handle)
+int32_t get_char(void* handle)
 {
-    string_index_pair * p = static_cast<string_index_pair *>(handle);
+    string_index_pair* p = static_cast<string_index_pair*>(handle);
     if (p->second < p->first.size()) {
         return static_cast<uint8_t>(p->first[p->second++]);
     }
     return -1;
 }
 
-int32_t peek_char(void * handle)
+int32_t peek_char(void* handle)
 {
-    string_index_pair * p = static_cast<string_index_pair *>(handle);
+    string_index_pair* p = static_cast<string_index_pair*>(handle);
     if (p->second < p->first.size()) {
         return static_cast<uint8_t>(p->first[p->second]);
     }
@@ -55,22 +55,22 @@ int32_t peek_char(void * handle)
 class fixture
 {
 public:
-    explicit fixture(const std::string & str);
+    explicit fixture(const std::string& str);
 
-    template<size_t size>
-    size_t parse(const std::vector<trie<size_t>::value_info> & strings,
-                 push_back_string<size> & fail_safe_result);
+    template <size_t size>
+    size_t parse(const std::vector<trie<size_t>::value_info>& strings,
+                 push_back_string<size>& fail_safe_result);
 
     std::string str_;
 };
 
-fixture::fixture(const std::string & str)
-    : str_(str)
-{}
+fixture::fixture(const std::string& str) : str_(str)
+{
+}
 
-template<size_t size>
-size_t fixture::parse(const std::vector<trie<size_t>::value_info> & values,
-                      push_back_string<size> & fail_safe_result)
+template <size_t size>
+size_t fixture::parse(const std::vector<trie<size_t>::value_info>& values,
+                      push_back_string<size>& fail_safe_result)
 {
     string_index_pair p(str_, 0);
     lexer l(anonymous_int_function(&get_char, &p),
@@ -86,12 +86,9 @@ TEST(trie, basic_function)
 {
     fixture f("abc");
     push_back_string<4> fail_safe_result;
-    std::vector<trie<size_t>::value_info> values = {{
-            trie<size_t>::value_info{"abc", 1},
-            trie<size_t>::value_info{"def", 2},
-            trie<size_t>::value_info{"aef", 3}
-        }
-    };
+    std::vector<trie<size_t>::value_info> values = {
+        {trie<size_t>::value_info{"abc", 1}, trie<size_t>::value_info{"def", 2},
+         trie<size_t>::value_info{"aef", 3}}};
     EXPECT_EQ(f.parse(values, fail_safe_result), 1);
     EXPECT_EQ(fail_safe_result.c_str(), std::string(""));
 }
@@ -100,12 +97,9 @@ TEST(trie, basic_function2)
 {
     fixture f("aef");
     push_back_string<4> fail_safe_result;
-    std::vector<trie<size_t>::value_info> values = {{
-            trie<size_t>::value_info{"abc", 1},
-            trie<size_t>::value_info{"def", 2},
-            trie<size_t>::value_info{"aef", 3}
-        }
-    };
+    std::vector<trie<size_t>::value_info> values = {
+        {trie<size_t>::value_info{"abc", 1}, trie<size_t>::value_info{"def", 2},
+         trie<size_t>::value_info{"aef", 3}}};
     EXPECT_EQ(f.parse(values, fail_safe_result), 3);
     EXPECT_EQ(fail_safe_result.c_str(), std::string(""));
 }
@@ -114,12 +108,9 @@ TEST(trie, failed)
 {
     fixture f("aef");
     push_back_string<4> fail_safe_result;
-    std::vector<trie<size_t>::value_info> values = {{
-            trie<size_t>::value_info{"aBc", 1},
-            trie<size_t>::value_info{"def", 2},
-            trie<size_t>::value_info{"aef", 3}
-        }
-    };
+    std::vector<trie<size_t>::value_info> values = {
+        {trie<size_t>::value_info{"aBc", 1}, trie<size_t>::value_info{"def", 2},
+         trie<size_t>::value_info{"aef", 3}}};
     EXPECT_EQ(f.parse(values, fail_safe_result), 3);
     EXPECT_EQ(fail_safe_result.c_str(), std::string(""));
 }

@@ -22,7 +22,8 @@
 @page concept_overview Concept Overview
 
 The library consists mainly of two packages. One with helper classes for a
-restful web service and one with a http server. Both are visible for the user and
+restful web service and one with a http server. Both are visible for the user
+and
 therefore can be used. This should enable the user to use only specific
 components.
 

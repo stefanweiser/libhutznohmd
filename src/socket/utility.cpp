@@ -44,7 +44,8 @@ void close_signal_safe(int file_descriptor)
     } while ((result == -1) && (errno == EINTR));
 }
 
-int accept_signal_safe(int socket_descriptor, ::sockaddr * address, socklen_t * size)
+int accept_signal_safe(int socket_descriptor, ::sockaddr* address,
+                       socklen_t* size)
 {
     int result;
     do {
@@ -53,7 +54,8 @@ int accept_signal_safe(int socket_descriptor, ::sockaddr * address, socklen_t * 
     return result;
 }
 
-int connect_signal_safe(int socket_file_descriptor, const ::sockaddr * address, socklen_t size)
+int connect_signal_safe(int socket_file_descriptor, const ::sockaddr* address,
+                        socklen_t size)
 {
     int result = ::connect(socket_file_descriptor, address, size);
     if (result == -1) {
@@ -61,7 +63,7 @@ int connect_signal_safe(int socket_file_descriptor, const ::sockaddr * address, 
         if (errno != EINTR) {
             return result;
         }
-        pollfd p {socket_file_descriptor, POLLOUT, 0};
+        pollfd p{socket_file_descriptor, POLLOUT, 0};
         do {
             result = ::poll(&p, 1, -1);
             if ((result == -1) && (errno != EINTR)) {
@@ -71,7 +73,8 @@ int connect_signal_safe(int socket_file_descriptor, const ::sockaddr * address, 
 
         int error;
         socklen_t s = sizeof(error);
-        result = getsockopt(socket_file_descriptor, SOL_SOCKET, SO_ERROR, &error, &s);
+        result = getsockopt(socket_file_descriptor, SOL_SOCKET, SO_ERROR,
+                            &error, &s);
         if (result == -1) {
             return result;
         }
@@ -82,7 +85,8 @@ int connect_signal_safe(int socket_file_descriptor, const ::sockaddr * address, 
     return result;
 }
 
-ssize_t send_signal_safe(int file_descriptor, const void * buffer, size_t size, int flags)
+ssize_t send_signal_safe(int file_descriptor, const void* buffer, size_t size,
+                         int flags)
 {
     ssize_t sent;
     do {
@@ -91,7 +95,8 @@ ssize_t send_signal_safe(int file_descriptor, const void * buffer, size_t size, 
     return sent;
 }
 
-ssize_t receive_signal_safe(int file_descriptor, void * buffer, size_t size, int flags)
+ssize_t receive_signal_safe(int file_descriptor, void* buffer, size_t size,
+                            int flags)
 {
     ssize_t received;
     do {
@@ -100,7 +105,7 @@ ssize_t receive_signal_safe(int file_descriptor, void * buffer, size_t size, int
     return received;
 }
 
-::sockaddr_in fill_address(const std::string & host, const uint16_t & port)
+::sockaddr_in fill_address(const std::string& host, const uint16_t& port)
 {
     ::sockaddr_in address;
 

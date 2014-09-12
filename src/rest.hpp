@@ -37,50 +37,52 @@ namespace http
 {
 
 //! These URI schemes are supported by the parser and needed for HTTP.
-enum class uri_scheme
-{
+enum class uri_scheme {
     UNKNOWN = 0,
     HTTP = 1,
     MAILTO = 2
 };
 
-//! Contains an URI as used in the HTTP protocol (e.g. http://user@example.com:8080/?a=b#anchor).
+//! Contains an URI as used in the HTTP protocol (e.g.
+// http://user@example.com:8080/?a=b#anchor).
 class uri_interface
 {
 public:
-    virtual ~uri_interface() {}
+    virtual ~uri_interface()
+    {
+    }
 
     //! Returns whether the containing URI is valid or not.
     virtual bool valid() const = 0;
 
     //! In "http://user@example.com:8080/?a=b#anchor" this is "http".
-    virtual const uri_scheme & scheme() const = 0;
+    virtual const uri_scheme& scheme() const = 0;
 
     //! In "http://user:pw@example.com:8080/?a=b#anchor" this is "user:pw".
-    virtual const char * userinfo() const = 0;
+    virtual const char* userinfo() const = 0;
 
     //! In "http://user:pw@example.com:8080/?a=b#anchor" this is "example.com".
-    virtual const char * host() const = 0;
+    virtual const char* host() const = 0;
 
     //! In "http://user:pw@example.com:8080/?a=b#anchor" this is "8080".
-    virtual const uint16_t & port() const = 0;
+    virtual const uint16_t& port() const = 0;
 
     //! In "http://user:pw@example.com:8080/?a=b#anchor" this is "/".
-    virtual const char * path() const = 0;
+    virtual const char* path() const = 0;
 
     //! In "http://user:pw@example.com:8080/?a=b#anchor" this is "a=b".
-    virtual const char * query() const = 0;
+    virtual const char* query() const = 0;
 
     //! In "http://user:pw@example.com:8080/?a=b#anchor" this is "anchor".
-    virtual const char * fragment() const = 0;
+    virtual const char* fragment() const = 0;
 };
 
-//! A media type is a MIME type as is used to declare how the content of some data is to be read.
+//! A media type is a MIME type as is used to declare how the content of some
+// data is to be read.
 class media_type_interface
 {
 public:
-    enum class mime_type
-    {
+    enum class mime_type {
         CUSTOM = -1,
         WILDCARD = 0,
         APPLICATION = 1,
@@ -94,36 +96,44 @@ public:
         VIDEO = 9
     };
 
-    enum class mime_subtype
-    {
+    enum class mime_subtype {
         CUSTOM = -1,
         WILDCARD = 0,
         PLAIN = 1
     };
 
-    virtual ~media_type_interface() {}
+    virtual ~media_type_interface()
+    {
+    }
 
-    //! Returns the type, if the media type is known or media_type_type::CUSTOM if unknown.
+    //! Returns the type, if the media type is known or media_type_type::CUSTOM
+    // if unknown.
     virtual mime_type type() const = 0;
 
-    //! Returns the subtype, if the media type is known or media_type_subtype::CUSTOM if unknown.
+    //! Returns the subtype, if the media type is known or
+    // media_type_subtype::CUSTOM if unknown.
     virtual mime_subtype subtype() const = 0;
 
     //! Returns the type, if the media type is not known or "" if it is known.
-    virtual const char * custom_type() const = 0;
+    virtual const char* custom_type() const = 0;
 
-    //! Returns the subtype, if the media type is not known or "" if it is known.
-    virtual const char * custom_subtype() const = 0;
+    //! Returns the subtype, if the media type is not known or "" if it is
+    // known.
+    virtual const char* custom_subtype() const = 0;
 
-    //! Contains all parameters, that are not parsed specifically (like e.g. "q").
-    virtual const std::map<std::string, std::string> & parameters() const = 0;
+    //! Contains all parameters, that are not parsed specifically (like e.g.
+    //"q").
+    virtual const std::map<std::string, std::string>& parameters() const = 0;
 
-    //! The quality is expressed by the parameter "q" of the media type. It defines, how much
+    //! The quality is expressed by the parameter "q" of the media type. It
+    // defines, how much
     //! desired this media type is.
     virtual uint8_t quality() const = 0;
 
-    //! Returns a value, that defines how specific the media type is. The less the value, the more
-    //! unspecific the media type is. These values can be used to compare media types with each
+    //! Returns a value, that defines how specific the media type is. The less
+    // the value, the more
+    //! unspecific the media type is. These values can be used to compare media
+    // types with each
     //! other.
     virtual uint8_t specification_grade() const = 0;
 };
@@ -134,8 +144,7 @@ public:
 //!    without changing the result.
 //! 2. Side-Effect-Safety: The request does not alter the server state. Thus
 //!    it is inherently idempotent.
-enum class method
-{
+enum class method {
     //! The request is of unknown method. It is recommended to assert this case.
     UNKNOWN = 0,
 
@@ -174,8 +183,7 @@ enum class method
 };
 
 //! Defines the HTTP version used by the request.
-enum class version
-{
+enum class version {
     //! The request is of unknown version. It is recommended to assert this
     //! case.
     HTTP_UNKNOWN = 0,
@@ -192,8 +200,7 @@ enum class version
 
 //! An request is answered with a response. These responses carry a status code
 //! to tell the client the request result.
-enum class status_code
-{
+enum class status_code {
     //! Since HTTP/1.1
     //! Used when dividing a request into several parts. After responding this
     //! the client shall send more data of the request.
@@ -371,9 +378,9 @@ enum class status_code
     HTTP_VERSION_NOT_SUPPORTED = 505
 };
 
-//! Every request and response has several header fields. Those fields are of a specific type.
-enum class header_type
-{
+//! Every request and response has several header fields. Those fields are of a
+// specific type.
+enum class header_type {
     //! A header, that is not part of the implementation.
     CUSTOM = 0,
 
@@ -389,11 +396,13 @@ enum class header_type
     //! A list of accepted languages. Normally part of the request.
     ACCEPT_LANGUAGE,
 
-    //! If set, the sender supports byte serving for bandwidth optimization. Normally this is only
+    //! If set, the sender supports byte serving for bandwidth optimization.
+    // Normally this is only
     //! capable for constant data.
     ACCEPT_RANGES,
 
-    //! List of allowed methods for the requested resource. Part of the response.
+    //! List of allowed methods for the requested resource. Part of the
+    // response.
     ALLOW,
 
     //! Contains authorization credentials.
@@ -432,36 +441,44 @@ enum class header_type
     //! The timestamp, when the message was sent.
     DATE,
 
-    //! Defines an tag for the contained entity. Can be used for conditional requests.
+    //! Defines an tag for the contained entity. Can be used for conditional
+    // requests.
     ETAG,
 
-    //! Includes expectations for the server. If those cannot be met, the server must respond 417.
+    //! Includes expectations for the server. If those cannot be met, the server
+    // must respond 417.
     EXPECT,
 
     //! A timestamp, when the response considered stale.
     EXPIRES,
 
-    //! Contains a mailbox entry, which defines who controls source of the request.
+    //! Contains a mailbox entry, which defines who controls source of the
+    // request.
     FROM,
 
     //! Specifies an internet host and maybe a port used for the request.
     HOST,
 
-    //! Responds only if the entity tag matches to the current or any past entity of that resource.
+    //! Responds only if the entity tag matches to the current or any past
+    // entity of that resource.
     IF_MATCH,
 
-    //! Responds only if the request variant has been modified since that timestamp.
+    //! Responds only if the request variant has been modified since that
+    // timestamp.
     IF_MODIFIED_SINCE,
 
-    //! Responds only if the entity tag does not match to the current or any past entity of that
+    //! Responds only if the entity tag does not match to the current or any
+    // past entity of that
     //! resource.
     IF_NONE_MATCH,
 
-    //! A condition that short circuits a second request, if a conditional request would otherwise
+    //! A condition that short circuits a second request, if a conditional
+    // request would otherwise
     //! fail.
     IF_RANGE,
 
-    //! The requested operation will be performed, if the resource has been unmodified since that
+    //! The requested operation will be performed, if the resource has been
+    // unmodified since that
     //! timestamp.
     IF_UNMODIFIED_SINCE,
 
@@ -492,10 +509,12 @@ enum class header_type
     //! Contains some information about the used client.
     USER_AGENT,
 
-    //! Contains a set of header fields, that determine the validity of a cached response.
+    //! Contains a set of header fields, that determine the validity of a cached
+    // response.
     VARY,
 
-    //! Contains a challenge with informations for the client on how to authenticate to the server.
+    //! Contains a challenge with informations for the client on how to
+    // authenticate to the server.
     WWW_AUTHENTICATE
 };
 
@@ -503,25 +522,27 @@ enum class header_type
 class request_interface
 {
 public:
-    virtual ~request_interface() {}
+    virtual ~request_interface()
+    {
+    }
 
     //! Requested HTTP method.
     virtual rest::http::method method() const = 0;
 
     //! Requested URI.
-    virtual const uri_interface & request_uri() const = 0;
+    virtual const uri_interface& request_uri() const = 0;
 
     //! Requested HTTP version.
     virtual rest::http::version version() const = 0;
 
     //! Returns the custom header of the specified key.
-    virtual const std::map<std::string, std::string> & headers() const = 0;
+    virtual const std::map<std::string, std::string>& headers() const = 0;
 
     //! Returns the data buffer.
-    virtual const rest::buffer & data() const = 0;
+    virtual const rest::buffer& data() const = 0;
 
     //! Returns the conent type of the data buffer.
-    virtual const media_type_interface & data_content_type() const = 0;
+    virtual const media_type_interface& data_content_type() const = 0;
 
     //! Returns the content of the date header or the current timestamp.
     virtual time_t date() const = 0;
@@ -531,30 +552,35 @@ public:
 class response_interface
 {
 public:
-    virtual ~response_interface() {}
+    virtual ~response_interface()
+    {
+    }
 
     //! Sets the status code.
-    virtual void set_status_code(const rest::http::status_code & statusCode) = 0;
+    virtual void set_status_code(const rest::http::status_code& statusCode) = 0;
 
     //! Sets the HTTP version.
-    virtual void set_version(const rest::http::version & version) = 0;
+    virtual void set_version(const rest::http::version& version) = 0;
 
     //! Sets a header by key to a value.
-    virtual void set_header(const std::string & key, const std::string & value) = 0;
+    virtual void set_header(const std::string& key,
+                            const std::string& value) = 0;
 
     //! Sets the content data.
-    virtual void set_data(const rest::buffer & data) = 0;
+    virtual void set_data(const rest::buffer& data) = 0;
 };
 
 //! Callback type, used for every http transaction.
-typedef std::function < void(const request_interface & request,
-                             response_interface & response) > transaction_function;
+typedef std::function<void(const request_interface& request,
+                           response_interface& response)> transaction_function;
 
 //! Represents a HTTP server.
 class server_interface
 {
 public:
-    virtual ~server_interface() {}
+    virtual ~server_interface()
+    {
+    }
 
     //! Runs the server. Won't return till the server shall stop.
     virtual void run() = 0;
@@ -567,9 +593,8 @@ public:
 typedef std::shared_ptr<server_interface> server_pointer;
 
 //! Creates a server, that listens at a host address on specific port.
-server_pointer create_server(const std::string & host,
-                             const uint16_t & port,
-                             const transaction_function & access_functor);
+server_pointer create_server(const std::string& host, const uint16_t& port,
+                             const transaction_function& access_functor);
 
 } // namespace http
 

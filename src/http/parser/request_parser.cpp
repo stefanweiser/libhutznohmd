@@ -32,14 +32,15 @@ namespace rest
 namespace http
 {
 
-request_parser::request_parser(const anonymous_int_function & get_functor,
-                               const anonymous_int_function & peek_functor)
+request_parser::request_parser(const anonymous_int_function& get_functor,
+                               const anonymous_int_function& peek_functor)
     : common_(get_functor, peek_functor)
     , method_(rest::http::method::UNKNOWN)
     , request_uri_()
     , from_uri_()
     , accept_header_()
-{}
+{
+}
 
 void request_parser::parse()
 {
@@ -50,19 +51,18 @@ void request_parser::parse()
     int32_t character = common_.lexer_.get_non_whitespace();
     {
         using value_info = trie<rest::http::method>::value_info;
-        static const std::vector<value_info> types = {{
-                value_info{"head", rest::http::method::HEAD},
-                value_info{"get", rest::http::method::GET},
-                value_info{"put", rest::http::method::PUT},
-                value_info{"delete", rest::http::method::DELETE},
-                value_info{"post", rest::http::method::POST},
-                value_info{"trace", rest::http::method::TRACE},
-                value_info{"options", rest::http::method::OPTIONS},
-                value_info{"connect", rest::http::method::CONNECT}
-            }
-        };
+        static const std::vector<value_info> types = {
+            {value_info{"head", rest::http::method::HEAD},
+             value_info{"get", rest::http::method::GET},
+             value_info{"put", rest::http::method::PUT},
+             value_info{"delete", rest::http::method::DELETE},
+             value_info{"post", rest::http::method::POST},
+             value_info{"trace", rest::http::method::TRACE},
+             value_info{"options", rest::http::method::OPTIONS},
+             value_info{"connect", rest::http::method::CONNECT}}};
 
-        static const trie<rest::http::method> t(types, rest::http::method::UNKNOWN);
+        static const trie<rest::http::method> t(types,
+                                                rest::http::method::UNKNOWN);
         push_back_string<32> tmp;
         method_ = t.parse(character, tmp, common_.lexer_);
     }
@@ -85,26 +85,18 @@ void request_parser::parse()
     {
         using value_type = std::tuple<rest::http::version, connection_type>;
         using value_info = trie<value_type>::value_info;
-        static const std::vector<value_info> types = {{
-                value_info{"http/1.0", value_type{
-                        rest::http::version::HTTP_1_0,
-                        connection_type::CLOSE
-                    }
-                },
-                value_info{"http/1.1", value_type{
-                        rest::http::version::HTTP_1_1,
-                        connection_type::KEEP_ALIVE
-                    }
-                }
-            }
-        };
+        static const std::vector<value_info> types = {
+            {value_info{"http/1.0", value_type{rest::http::version::HTTP_1_0,
+                                               connection_type::CLOSE}},
+             value_info{"http/1.1", value_type{rest::http::version::HTTP_1_1,
+                                               connection_type::KEEP_ALIVE}}}};
 
-        static const trie<value_type> t(types, value_type {
-            rest::http::version::HTTP_UNKNOWN,
-            connection_type::ERROR
-        });
+        static const trie<value_type> t(
+            types, value_type{rest::http::version::HTTP_UNKNOWN,
+                              connection_type::ERROR});
         push_back_string<32> tmp;
-        std::tie(common_.version_, common_.connection_) = t.parse(character, tmp, common_.lexer_);
+        std::tie(common_.version_, common_.connection_) =
+            t.parse(character, tmp, common_.lexer_);
     }
 
     if ((rest::http::version::HTTP_UNKNOWN == common_.version_) ||
@@ -126,27 +118,27 @@ bool request_parser::valid() const
     return (parser_state::SUCCEEDED == common_.state_);
 }
 
-const rest::http::version & request_parser::version() const
+const rest::http::version& request_parser::version() const
 {
     return common_.version_;
 }
 
-const std::map<std::string, std::string> & request_parser::headers() const
+const std::map<std::string, std::string>& request_parser::headers() const
 {
     return common_.headers_;
 }
 
-const size_t & request_parser::content_length() const
+const size_t& request_parser::content_length() const
 {
     return common_.content_length_;
 }
 
-const media_type_interface & request_parser::content_type() const
+const media_type_interface& request_parser::content_type() const
 {
     return common_.content_type_;
 }
 
-const time_t & request_parser::date() const
+const time_t& request_parser::date() const
 {
     return common_.date_;
 }
@@ -156,7 +148,7 @@ bool request_parser::keeps_connection() const
     return (common_.connection_ == connection_type::KEEP_ALIVE);
 }
 
-const std::array<uint8_t, 16> & request_parser::md5() const
+const std::array<uint8_t, 16>& request_parser::md5() const
 {
     return common_.md5_;
 }
@@ -166,31 +158,31 @@ bool request_parser::has_md5() const
     return common_.has_md5_;
 }
 
-const rest::http::method & request_parser::method() const
+const rest::http::method& request_parser::method() const
 {
     return method_;
 }
 
-const uri_interface & request_parser::request_uri() const
+const uri_interface& request_parser::request_uri() const
 {
     return request_uri_;
 }
 
-const uri_interface & request_parser::from_uri() const
+const uri_interface& request_parser::from_uri() const
 {
     return from_uri_;
 }
 
-std::vector<const media_type_interface *> request_parser::accept_header() const
+std::vector<const media_type_interface*> request_parser::accept_header() const
 {
-    std::vector<const media_type_interface *> result;
+    std::vector<const media_type_interface*> result;
     for (size_t i = 0; i < accept_header_.size(); i++) {
         result.push_back(&(accept_header_[i]));
     }
     return result;
 }
 
-bool request_parser::parse_accept(int32_t & character)
+bool request_parser::parse_accept(int32_t& character)
 {
     do {
         accept_header_.push_back(media_type());
@@ -206,32 +198,32 @@ bool request_parser::parse_accept(int32_t & character)
     return true;
 }
 
-bool request_parser::parse_connection(int32_t & character)
+bool request_parser::parse_connection(int32_t& character)
 {
     return common_.parse_connection(character);
 }
 
-bool request_parser::parse_content_length(int32_t & character)
+bool request_parser::parse_content_length(int32_t& character)
 {
     return common_.parse_content_length(character);
 }
 
-bool request_parser::parse_content_md5(int32_t & character)
+bool request_parser::parse_content_md5(int32_t& character)
 {
     return common_.parse_content_md5(character);
 }
 
-bool request_parser::parse_content_type(int32_t & character)
+bool request_parser::parse_content_type(int32_t& character)
 {
     return common_.parse_content_type(character);
 }
 
-bool request_parser::parse_date(int32_t & character)
+bool request_parser::parse_date(int32_t& character)
 {
     return common_.parse_date(character);
 }
 
-bool request_parser::parse_from(int32_t & character)
+bool request_parser::parse_from(int32_t& character)
 {
     from_uri_.set_scheme(uri_scheme::MAILTO);
     if (false == from_uri_.parse(common_.lexer_, character, true)) {
@@ -241,7 +233,7 @@ bool request_parser::parse_from(int32_t & character)
     return true;
 }
 
-bool request_parser::parse_host(int32_t & character)
+bool request_parser::parse_host(int32_t& character)
 {
     uri host;
     if (false == host.parse(common_.lexer_, character, true)) {
@@ -262,21 +254,23 @@ bool request_parser::parse_host(int32_t & character)
     return true;
 }
 
-bool request_parser::parse_headers(int32_t & character)
+bool request_parser::parse_headers(int32_t& character)
 {
     using trie_value_ = base_parser::trie_value<request_parser>;
     using value_info = trie<trie_value_>::value_info;
-    static const std::vector<value_info> types = {{
-            value_info{"content-length", trie_value_{&request_parser::parse_content_length, 0}},
-            value_info{"content-md5", trie_value_{&request_parser::parse_content_md5, 1}},
-            value_info{"content-type", trie_value_{&request_parser::parse_content_type, 2}},
-            value_info{"date", trie_value_{&request_parser::parse_date, 3}},
-            value_info{"connection", trie_value_{&request_parser::parse_connection, 4}},
-            value_info{"accept", trie_value_{&request_parser::parse_accept, 5}},
-            value_info{"host", trie_value_{&request_parser::parse_host, 6}},
-            value_info{"from", trie_value_{&request_parser::parse_from, 7}}
-        }
-    };
+    static const std::vector<value_info> types = {
+        {value_info{"content-length",
+                    trie_value_{&request_parser::parse_content_length, 0}},
+         value_info{"content-md5",
+                    trie_value_{&request_parser::parse_content_md5, 1}},
+         value_info{"content-type",
+                    trie_value_{&request_parser::parse_content_type, 2}},
+         value_info{"date", trie_value_{&request_parser::parse_date, 3}},
+         value_info{"connection",
+                    trie_value_{&request_parser::parse_connection, 4}},
+         value_info{"accept", trie_value_{&request_parser::parse_accept, 5}},
+         value_info{"host", trie_value_{&request_parser::parse_host, 6}},
+         value_info{"from", trie_value_{&request_parser::parse_from, 7}}}};
 
     while (character != '\n') {
         if (false == common_.parse_generic_header(types, *this, character)) {

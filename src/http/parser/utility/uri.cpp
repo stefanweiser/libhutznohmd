@@ -30,11 +30,10 @@ namespace
 {
 
 //! Parses a URI specific word stopping if the continue condition gets wrong.
-template<size_t size, typename continue_function>
-bool parse_uri_word(int32_t & character,
-                    push_back_string<size> & result,
-                    const continue_function & continue_condition_functor,
-                    const lexer & l)
+template <size_t size, typename continue_function>
+bool parse_uri_word(int32_t& character, push_back_string<size>& result,
+                    const continue_function& continue_condition_functor,
+                    const lexer& l)
 {
     while ((character >= 0) &&
            (true == continue_condition_functor(static_cast<char>(character)))) {
@@ -73,9 +72,10 @@ uri::uri()
     , path_()
     , query_()
     , fragment_()
-{}
+{
+}
 
-bool uri::parse(const lexer & l, int32_t & character, const bool skip_scheme)
+bool uri::parse(const lexer& l, int32_t& character, const bool skip_scheme)
 {
     if (true == valid_) {
         return true;
@@ -89,22 +89,23 @@ bool uri::parse(const lexer & l, int32_t & character, const bool skip_scheme)
 
     if (('?' != character) && ('#' != character)) {
         // Must be a path or the end of the URI.
-        if (false == parse_uri_word(character, path_, &is_valid_uri_path_character, *lexer_)) {
+        if (false == parse_uri_word(character, path_,
+                                    &is_valid_uri_path_character, *lexer_)) {
             return false;
         }
     }
 
     if ('?' == character) {
         character = lexer_->get();
-        if (false == parse_uri_word(character, query_, &is_valid_uri_query_character, *lexer_)) {
+        if (false == parse_uri_word(character, query_,
+                                    &is_valid_uri_query_character, *lexer_)) {
             return false;
         }
     }
 
     if ('#' == character) {
         character = lexer_->get();
-        if (false == parse_uri_word(character,
-                                    fragment_,
+        if (false == parse_uri_word(character, fragment_,
                                     &is_valid_uri_fragment_character,
                                     *lexer_)) {
             return false;
@@ -115,14 +116,14 @@ bool uri::parse(const lexer & l, int32_t & character, const bool skip_scheme)
     return true;
 }
 
-void uri::set_scheme(const uri_scheme & new_scheme)
+void uri::set_scheme(const uri_scheme& new_scheme)
 {
     scheme_ = new_scheme;
 }
 
-bool uri::set_userinfo(const char * new_userinfo)
+bool uri::set_userinfo(const char* new_userinfo)
 {
-    const char * c = new_userinfo;
+    const char* c = new_userinfo;
     while ('\0' != (*c)) {
         if (false == is_valid_uri_authority_character(*c)) {
             return false;
@@ -135,9 +136,9 @@ bool uri::set_userinfo(const char * new_userinfo)
     return true;
 }
 
-bool uri::set_host(const char * new_host)
+bool uri::set_host(const char* new_host)
 {
-    const char * c = new_host;
+    const char* c = new_host;
     while ('\0' != (*c)) {
         if (false == is_valid_uri_authority_character(*c)) {
             return false;
@@ -150,7 +151,7 @@ bool uri::set_host(const char * new_host)
     return true;
 }
 
-void uri::set_port(const uint16_t & new_port)
+void uri::set_port(const uint16_t& new_port)
 {
     port_ = new_port;
 }
@@ -160,45 +161,45 @@ bool uri::valid() const
     return valid_;
 }
 
-const uri_scheme & uri::scheme() const
+const uri_scheme& uri::scheme() const
 {
     return scheme_;
 }
 
-const char * uri::userinfo() const
+const char* uri::userinfo() const
 {
     return userinfo_.c_str();
 }
 
-const char * uri::host() const
+const char* uri::host() const
 {
     return host_.c_str();
 }
 
-const uint16_t & uri::port() const
+const uint16_t& uri::port() const
 {
     return port_;
 }
 
-const char * uri::path() const
+const char* uri::path() const
 {
     return path_.c_str();
 }
 
-const char * uri::query() const
+const char* uri::query() const
 {
     return query_.c_str();
 }
 
-const char * uri::fragment() const
+const char* uri::fragment() const
 {
     return fragment_.c_str();
 }
 
-
-bool uri::parse_scheme_and_authority(int32_t & character, const bool skip_scheme)
+bool uri::parse_scheme_and_authority(int32_t& character, const bool skip_scheme)
 {
-    // Check whether there is a scheme and authority or neither of them. This is not conform with
+    // Check whether there is a scheme and authority or neither of them. This is
+    // not conform with
     // RFC 3986, but HTTP specifies request URIs without scheme and authority.
     if ('/' != character) {
         if (false == skip_scheme) {
@@ -228,23 +229,22 @@ bool uri::parse_scheme_and_authority(int32_t & character, const bool skip_scheme
     return true;
 }
 
-bool uri::parse_scheme(int32_t & character)
+bool uri::parse_scheme(int32_t& character)
 {
     using value_type = std::tuple<rest::http::uri_scheme, uint16_t>;
     using value_info = trie<value_type>::value_info;
-    static const std::vector<value_info> types = {{
-            value_info{"http", value_type{rest::http::uri_scheme::HTTP, 80}},
-            value_info{"mailto", value_type{rest::http::uri_scheme::MAILTO, 0}}
-        }
-    };
+    static const std::vector<value_info> types = {
+        {value_info{"http", value_type{rest::http::uri_scheme::HTTP, 80}},
+         value_info{"mailto", value_type{rest::http::uri_scheme::MAILTO, 0}}}};
 
-    static const trie<value_type> t(types, value_type {rest::http::uri_scheme::UNKNOWN, 0});
+    static const trie<value_type> t(
+        types, value_type{rest::http::uri_scheme::UNKNOWN, 0});
     push_back_string<8> tmp;
     std::tie(scheme_, port_) = t.parse(character, tmp, *lexer_);
     return (uri_scheme::UNKNOWN != scheme_);
 }
 
-bool uri::parse_userinfo_and_authority(int32_t & character)
+bool uri::parse_userinfo_and_authority(int32_t& character)
 {
     if ('/' == character) {
         const int32_t last_character = character;
@@ -263,15 +263,21 @@ bool uri::parse_userinfo_and_authority(int32_t & character)
     return true;
 }
 
-bool uri::parse_authority(int32_t & character)
+bool uri::parse_authority(int32_t& character)
 {
-    // There is an ambiguity in the authority part of an URI specified by RFC3986. You are not
-    // able to correctly parse the the authority into tokens without looking ahead n symbols,
-    // where n is the length of the whole authority part, because the symbol of ':' could occur
-    // before and after the '@' symbol, which is also optional. So what do you do, if you have
-    // found a ':' symbol without an '@' symbol before? The ':' could be part of the user info or
+    // There is an ambiguity in the authority part of an URI specified by
+    // RFC3986. You are not
+    // able to correctly parse the the authority into tokens without looking
+    // ahead n symbols,
+    // where n is the length of the whole authority part, because the symbol of
+    // ':' could occur
+    // before and after the '@' symbol, which is also optional. So what do you
+    // do, if you have
+    // found a ':' symbol without an '@' symbol before? The ':' could be part of
+    // the user info or
     // it separates host and port.
-    // Therefore it is easier to perform a 2-pass parsing to determine, whether a '@' symbol
+    // Therefore it is easier to perform a 2-pass parsing to determine, whether
+    // a '@' symbol
     // occurs or not.
 
     if (false == parse_authority_1st_pass(character)) {
@@ -281,12 +287,10 @@ bool uri::parse_authority(int32_t & character)
     return parse_authority_2nd_pass();
 }
 
-bool uri::parse_authority_1st_pass(int32_t & character)
+bool uri::parse_authority_1st_pass(int32_t& character)
 {
-    if (false == parse_uri_word(character,
-                                host_,
-                                &is_valid_uri_authority_character,
-                                *lexer_)) {
+    if (false == parse_uri_word(character, host_,
+                                &is_valid_uri_authority_character, *lexer_)) {
         return false;
     }
 
@@ -296,10 +300,8 @@ bool uri::parse_authority_1st_pass(int32_t & character)
         character = lexer_->get();
     }
 
-    if (false == parse_uri_word(character,
-                                host_,
-                                &is_valid_uri_authority_character,
-                                *lexer_)) {
+    if (false == parse_uri_word(character, host_,
+                                &is_valid_uri_authority_character, *lexer_)) {
         return false;
     }
 
@@ -308,8 +310,10 @@ bool uri::parse_authority_1st_pass(int32_t & character)
 
 bool uri::parse_authority_2nd_pass()
 {
-    // Now there are all parts of the authority at the right place, except the port number, if it
-    // exists. We will search the host backwards for a number and search the ':' symbol.
+    // Now there are all parts of the authority at the right place, except the
+    // port number, if it
+    // exists. We will search the host backwards for a number and search the ':'
+    // symbol.
     uint32_t p = 0;
     uint32_t factor = 1;
     for (ssize_t i = (host_.size() - 1); i >= 0; i--) {
@@ -333,7 +337,8 @@ bool uri::parse_authority_2nd_pass()
             break;
 
         } else if (':' == host_[i]) {
-            // This host is erroneous, because it has no correct port component, but a ':' symbol.
+            // This host is erroneous, because it has no correct port component,
+            // but a ':' symbol.
             return false;
         }
     }

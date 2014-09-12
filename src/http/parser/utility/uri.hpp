@@ -30,42 +30,43 @@ namespace rest
 namespace http
 {
 
-//! Implements parsing of URIs as specified in RFC 3986. It supports only the specified schemes.
-class uri: public uri_interface
+//! Implements parsing of URIs as specified in RFC 3986. It supports only the
+// specified schemes.
+class uri : public uri_interface
 {
 public:
     explicit uri();
 
-    explicit uri(const uri & rhs) = delete;
-    uri & operator=(const uri & rhs) = delete;
+    explicit uri(const uri& rhs) = delete;
+    uri& operator=(const uri& rhs) = delete;
 
-    bool parse(const lexer & l, int32_t & character, const bool skip_scheme);
+    bool parse(const lexer& l, int32_t& character, const bool skip_scheme);
 
-    void set_scheme(const uri_scheme & new_scheme);
-    bool set_userinfo(const char * new_userinfo);
-    bool set_host(const char * new_host);
-    void set_port(const uint16_t & new_port);
+    void set_scheme(const uri_scheme& new_scheme);
+    bool set_userinfo(const char* new_userinfo);
+    bool set_host(const char* new_host);
+    void set_port(const uint16_t& new_port);
 
     virtual bool valid() const;
-    virtual const uri_scheme & scheme() const;
-    virtual const char * userinfo() const;
-    virtual const char * host() const;
-    virtual const uint16_t & port() const;
-    virtual const char * path() const;
-    virtual const char * query() const;
-    virtual const char * fragment() const;
+    virtual const uri_scheme& scheme() const;
+    virtual const char* userinfo() const;
+    virtual const char* host() const;
+    virtual const uint16_t& port() const;
+    virtual const char* path() const;
+    virtual const char* query() const;
+    virtual const char* fragment() const;
 
 private:
-    bool parse_scheme_and_authority(int32_t & character, const bool skip_scheme);
-    bool parse_scheme(int32_t & character);
-    bool parse_userinfo_and_authority(int32_t & character);
-    bool parse_authority(int32_t & character);
-    bool parse_authority_1st_pass(int32_t & character);
+    bool parse_scheme_and_authority(int32_t& character, const bool skip_scheme);
+    bool parse_scheme(int32_t& character);
+    bool parse_userinfo_and_authority(int32_t& character);
+    bool parse_authority(int32_t& character);
+    bool parse_authority_1st_pass(int32_t& character);
     bool parse_authority_2nd_pass();
 
     bool parse_word();
 
-    const lexer * lexer_;
+    const lexer* lexer_;
     bool valid_;
     uri_scheme scheme_;
     push_back_string<16> userinfo_;

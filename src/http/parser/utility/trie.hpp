@@ -36,24 +36,23 @@ namespace http
 {
 
 //! Provides a parsing algorithm to convert
-template<typename value_type>
-class trie
+template <typename value_type> class trie
 {
 public:
-    using value_info = std::tuple<const char * const, value_type>;
+    using value_info = std::tuple<const char* const, value_type>;
 
-    explicit trie(const std::vector<value_info> & values, const value_type & default_value);
+    explicit trie(const std::vector<value_info>& values,
+                  const value_type& default_value);
 
-    template<size_t size>
-    value_type parse(int32_t & character,
-                     push_back_string<size> & fail_safe_result,
-                     const lexer & l) const;
+    template <size_t size>
+    value_type parse(int32_t& character,
+                     push_back_string<size>& fail_safe_result,
+                     const lexer& l) const;
 
 private:
-    explicit trie(const std::vector<value_info> & values,
-                  const std::string & name,
-                  const size_t & index,
-                  const value_type & default_value);
+    explicit trie(const std::vector<value_info>& values,
+                  const std::string& name, const size_t& index,
+                  const value_type& default_value);
 
     const bool has_value_;
     const std::string name_;
@@ -61,18 +60,21 @@ private:
     std::array<std::unique_ptr<trie>, 256> children_;
 };
 
-template<typename value_type>
-trie<value_type>::trie(const std::vector<value_info> & values, const value_type & default_value)
+template <typename value_type>
+trie<value_type>::trie(const std::vector<value_info>& values,
+                       const value_type& default_value)
     : trie(values, "", 0, default_value)
-{}
-
-template<typename value_type>
-template<size_t size>
-value_type trie<value_type>::parse(int32_t & character,
-                                   push_back_string<size> & fail_safe_result,
-                                   const lexer & l) const
 {
-    const std::unique_ptr<trie> & child = children_[static_cast<uint8_t>(character)];
+}
+
+template <typename value_type>
+template <size_t size>
+value_type trie<value_type>::parse(int32_t& character,
+                                   push_back_string<size>& fail_safe_result,
+                                   const lexer& l) const
+{
+    const std::unique_ptr<trie>& child =
+        children_[static_cast<uint8_t>(character)];
     if (std::unique_ptr<trie>() == child) {
         if (false == has_value_) {
             fail_safe_result.append_string(name_.c_str());
@@ -84,40 +86,38 @@ value_type trie<value_type>::parse(int32_t & character,
     return child->parse(character, fail_safe_result, l);
 }
 
-template<typename value_info>
-void fill_next_values(std::vector<value_info> & next_values,
-                      const std::vector<value_info> & values,
-                      const size_t & index,
-                      const uint8_t & c)
+template <typename value_info>
+void fill_next_values(std::vector<value_info>& next_values,
+                      const std::vector<value_info>& values,
+                      const size_t& index, const uint8_t& c)
 {
     for (size_t j = 0; j < values.size(); j++) {
-        const value_info & w = values[j];
-        const char * const next_string = std::get<0>(w);
+        const value_info& w = values[j];
+        const char* const next_string = std::get<0>(w);
         if ((c != 0) && (static_cast<uint8_t>(next_string[index]) == c)) {
             next_values.push_back(w);
         }
     }
 }
 
-template<typename value_type>
-trie<value_type>::trie(const std::vector<value_info> & values,
-                       const std::string & name,
-                       const size_t & index,
-                       const value_type & default_value)
+template <typename value_type>
+trie<value_type>::trie(const std::vector<value_info>& values,
+                       const std::string& name, const size_t& index,
+                       const value_type& default_value)
     : has_value_(false)
     , name_(name)
     , value_(default_value)
     , children_()
 {
     for (size_t i = 0; i < values.size(); i++) {
-        const value_info & v = values[i];
-        const char * const string = std::get<0>(v);
-        const value_type & value = std::get<1>(v);
+        const value_info& v = values[i];
+        const char* const string = std::get<0>(v);
+        const value_type& value = std::get<1>(v);
         const uint8_t c = static_cast<uint8_t>(string[index]);
 
         if ('\0' == c) {
-            const_cast<bool &>(has_value_) = true;
-            const_cast<value_type &>(value_) = value;
+            const_cast<bool&>(has_value_) = true;
+            const_cast<value_type&>(value_) = value;
             continue;
         }
 
@@ -125,28 +125,26 @@ trie<value_type>::trie(const std::vector<value_info> & values,
             continue;
         }
 
-        // Because we already carried all children going on with that character, we must not do
+        // Because we already carried all children going on with that character,
+        // we must not do
         // this again.
         std::vector<value_info> next_values;
         fill_next_values(next_values, values, index, c);
 
         if (false == next_values.empty()) {
-            children_[c] = std::unique_ptr<trie>(new trie(next_values,
-                                                 name_ + static_cast<char>(c),
-                                                 index + 1,
-                                                 default_value));
+            children_[c] = std::unique_ptr<trie>(
+                new trie(next_values, name_ + static_cast<char>(c), index + 1,
+                         default_value));
 
             // The trie parsing is case insensitive.
-            if (true == check_range < uint8_t, 'a', 'z' > (c)) {
-                children_[c & 0xDFU] = std::unique_ptr<trie>(new trie(next_values,
-                                       name_ + static_cast<char>(c & 0xDFU),
-                                       index + 1,
-                                       default_value));
-            } else if (true == check_range < uint8_t, 'A', 'Z' > (c)) {
-                children_[c | 0x20U] = std::unique_ptr<trie>(new trie(next_values,
-                                       name_ + static_cast<char>(c | 0x20U),
-                                       index + 1,
-                                       default_value));
+            if (true == check_range<uint8_t, 'a', 'z'>(c)) {
+                children_[c & 0xDFU] = std::unique_ptr<trie>(
+                    new trie(next_values, name_ + static_cast<char>(c & 0xDFU),
+                             index + 1, default_value));
+            } else if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
+                children_[c | 0x20U] = std::unique_ptr<trie>(
+                    new trie(next_values, name_ + static_cast<char>(c | 0x20U),
+                             index + 1, default_value));
             }
         }
     }

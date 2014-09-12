@@ -23,12 +23,13 @@
 
 #include <socket/socket_interface.hpp>
 
-rest::buffer data = { 0, 1, 2, 3 };
+rest::buffer data = {0, 1, 2, 3};
 
 void client()
 {
     std::cout << "  connecting" << std::endl;
-    rest::socket::connection_pointer c = rest::socket::connect("127.0.0.1", 30000);
+    rest::socket::connection_pointer c =
+        rest::socket::connect("127.0.0.1", 30000);
     if (false == c->connect()) {
         std::cout << "  client not connected" << std::endl;
         abort();
@@ -59,7 +60,8 @@ int main()
     std::cout << "example_socket" << std::endl;
 
     std::cout << "  listening" << std::endl;
-    rest::socket::listener_pointer listener = rest::socket::listen("127.0.0.1", 30000);
+    rest::socket::listener_pointer listener =
+        rest::socket::listen("127.0.0.1", 30000);
     std::thread thread(&client);
 
     std::cout << "  accepting" << std::endl;

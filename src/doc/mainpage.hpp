@@ -25,8 +25,10 @@
 
 To help the architects and developers of a webservice implementing it according
 to the principles of the
-@htmlonly <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm"> @endhtmlonly
-Representational State Transfer @htmlonly </a> @endhtmlonly architectural style by supporting an easy to
+@htmlonly <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">
+@endhtmlonly
+Representational State Transfer @htmlonly </a> @endhtmlonly architectural style
+by supporting an easy to
 use, reliable, robust, scalable and well tested library.
 
 @section sec_general_information General Information

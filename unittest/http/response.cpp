@@ -36,35 +36,35 @@ TEST(response, set_and_deliver)
     auto socket = std::make_shared<rest::socket::connection_socket_mock>();
     response response(socket);
 
-    response.set_data({ '0' });
+    response.set_data({'0'});
     response.set_header("Content-Length", "1");
     response.set_status_code(status_code::OK);
     response.set_version(version::HTTP_1_1);
 
-    EXPECT_CALL(*socket, send(An<const rest::buffer &>()))
-    .Times(1)
-    .WillRepeatedly(Return(true));
-    EXPECT_CALL(*socket, send(An<const std::string &>()))
-    .Times(1)
-    .WillRepeatedly(Return(true));
+    EXPECT_CALL(*socket, send(An<const rest::buffer&>()))
+        .Times(1)
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(*socket, send(An<const std::string&>()))
+        .Times(1)
+        .WillRepeatedly(Return(true));
     response.deliver();
 
     response.set_version(version::HTTP_1_0);
-    EXPECT_CALL(*socket, send(An<const rest::buffer &>()))
-    .Times(1)
-    .WillRepeatedly(Return(true));
-    EXPECT_CALL(*socket, send(An<const std::string &>()))
-    .Times(1)
-    .WillRepeatedly(Return(true));
+    EXPECT_CALL(*socket, send(An<const rest::buffer&>()))
+        .Times(1)
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(*socket, send(An<const std::string&>()))
+        .Times(1)
+        .WillRepeatedly(Return(true));
     response.deliver();
 
     response.set_version(version::HTTP_UNKNOWN);
-    EXPECT_CALL(*socket, send(An<const rest::buffer &>()))
-    .Times(1)
-    .WillRepeatedly(Return(true));
-    EXPECT_CALL(*socket, send(An<const std::string &>()))
-    .Times(1)
-    .WillRepeatedly(Return(true));
+    EXPECT_CALL(*socket, send(An<const rest::buffer&>()))
+        .Times(1)
+        .WillRepeatedly(Return(true));
+    EXPECT_CALL(*socket, send(An<const std::string&>()))
+        .Times(1)
+        .WillRepeatedly(Return(true));
     response.deliver();
 }
 

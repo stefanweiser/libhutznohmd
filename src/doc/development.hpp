@@ -25,7 +25,8 @@
 
 @section sec_principles Development Principles
 
-To aim a homogenous code base, it is indispensable to have some principles on how
+To aim a homogenous code base, it is indispensable to have some principles on
+how
 to work.
 
 I spent much time on porting code of software dinosaurs and therefor
@@ -46,13 +47,15 @@ that is arranged in another way.
 - @b YAGNI: Keep this in mind. If some code is not needed anymore, it shall be
 removed.
 
-In any cases it will be difficult where to draw the line. Don't be religious with
+In any cases it will be difficult where to draw the line. Don't be religious
+with
 them, but keep them in mind and improve the code.
 
 @section sec_who Who can contribute?
 
 Anyone who is passionated in developing software and shared the principles of
-this project is welcome to contribute to it. Please use a pull request on GitHub.
+this project is welcome to contribute to it. Please use a pull request on
+GitHub.
 
 @section sec_tools Tools
 

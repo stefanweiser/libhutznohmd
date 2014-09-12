@@ -33,15 +33,13 @@ namespace rest
 namespace http
 {
 
-enum class parser_state
-{
+enum class parser_state {
     UNFINISHED = 0,
     SUCCEEDED = 1,
     ERROR = 2
 };
 
-enum class connection_type
-{
+enum class connection_type {
     ERROR = 0,
     CLOSE,
     KEEP_ALIVE
@@ -50,30 +48,29 @@ enum class connection_type
 class base_parser
 {
 public:
-    explicit base_parser(const anonymous_int_function & get_functor,
-                         const anonymous_int_function & peek_functor);
+    explicit base_parser(const anonymous_int_function& get_functor,
+                         const anonymous_int_function& peek_functor);
     virtual ~base_parser();
 
-    bool parse_connection(int32_t & character);
-    bool parse_content_length(int32_t & character);
-    bool parse_content_md5(int32_t & character);
-    bool parse_content_type(int32_t & character);
-    bool parse_date(int32_t & character);
-    bool parse_custom_header(int32_t & character);
+    bool parse_connection(int32_t& character);
+    bool parse_content_length(int32_t& character);
+    bool parse_content_md5(int32_t& character);
+    bool parse_content_type(int32_t& character);
+    bool parse_date(int32_t& character);
+    bool parse_custom_header(int32_t& character);
 
-    template<typename parser_class>
-    using parsing_function = bool (parser_class::*)(int32_t &);
+    template <typename parser_class>
+    using parsing_function = bool (parser_class::*)(int32_t&);
 
-    template<typename parser_class>
+    template <typename parser_class>
     using trie_value = std::tuple<parsing_function<parser_class>, size_t>;
 
-    template<typename parser_class>
+    template <typename parser_class>
     using trie_value_info = typename trie<trie_value<parser_class>>::value_info;
 
-    template<class parser>
-    bool parse_generic_header(const std::vector<trie_value_info<parser>> & types,
-                              parser & p,
-                              int32_t & character);
+    template <class parser>
+    bool parse_generic_header(const std::vector<trie_value_info<parser>>& types,
+                              parser& p, int32_t& character);
 
     lexer lexer_;
     parser_state state_;
@@ -90,14 +87,13 @@ public:
     bool has_md5_;
 };
 
-template<class parser>
+template <class parser>
 bool base_parser::parse_generic_header(
-    const std::vector<base_parser::trie_value_info<parser>> & types,
-    parser & p,
-    int32_t & character)
+    const std::vector<base_parser::trie_value_info<parser>>& types, parser& p,
+    int32_t& character)
 {
     using trie_value_ = trie_value<parser>;
-    static const trie<trie_value_> t(types, trie_value_ {nullptr, -1});
+    static const trie<trie_value_> t(types, trie_value_{nullptr, -1});
     trie_value_ value = t.parse(character, header_key_, lexer_);
     if (character == ':') {
         character = lexer_.get_non_whitespace();

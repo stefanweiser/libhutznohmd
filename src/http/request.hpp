@@ -35,23 +35,24 @@ namespace rest
 namespace http
 {
 
-class request: public request_interface
+class request : public request_interface
 {
 public:
-    struct parameters {
+    struct parameters
+    {
         bool check_md5;
     };
 
-    explicit request(const rest::socket::connection_pointer & connection,
-                     const parameters & param);
+    explicit request(const rest::socket::connection_pointer& connection,
+                     const parameters& param);
     bool parse();
 
     virtual rest::http::method method() const;
-    virtual const uri_interface & request_uri() const;
+    virtual const uri_interface& request_uri() const;
     virtual rest::http::version version() const;
-    virtual const std::map<std::string, std::string> & headers() const;
-    virtual const rest::buffer & data() const;
-    virtual const media_type_interface & data_content_type() const;
+    virtual const std::map<std::string, std::string>& headers() const;
+    virtual const rest::buffer& data() const;
+    virtual const media_type_interface& data_content_type() const;
     virtual time_t date() const;
     virtual bool keeps_connection() const;
 
