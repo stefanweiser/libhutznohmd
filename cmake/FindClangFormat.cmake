@@ -39,7 +39,10 @@
 #  FIND_PACKAGE(ClangFormat)
 
 FIND_PROGRAM(ClangFormat_CLANGFORMAT_EXECUTABLE
-  NAMES clang-format
+  NAMES
+  clang-format
+  clang-format-3.5
+  clang-format-3.4
 )
 
 IF(ClangFormat_CLANGFORMAT_EXECUTABLE)
