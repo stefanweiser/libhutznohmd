@@ -16,18 +16,8 @@
 
 INCLUDE(Toolchain)
 
-IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-global-constructors")
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-weak-vtables")
-
-ELSEIF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-missing-field-initializers")
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-suggest-attribute=format")
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-suggest-attribute=noreturn")
-
-ENDIF()
+SETUP_COMPILER_FLAGS()
+DISABLE_GMOCK_DEPENDENT_WARNINGS()
 
 FILE(GLOB_RECURSE SOURCES *.cpp *.c)
 FILE(GLOB_RECURSE HEADERS *.hpp *.h)
