@@ -17,18 +17,35 @@
 SETUP_COMPILER_FLAGS()
 DISABLE_GMOCK_DEPENDENT_WARNINGS()
 
-FILE(GLOB_RECURSE SOURCES *.cpp *.c)
-FILE(GLOB_RECURSE HEADERS *.hpp *.h)
-FILE(GLOB_RECURSE GMOCK ${GMOCK_DIR}/*.cc ${GMOCK_DIR}/*.h)
+FILE(GLOB_RECURSE
+     FILES
+     *.cpp
+     *.hpp
+     *.c
+     *.h)
+FILE(GLOB_RECURSE
+     GMOCK
+     ${GMOCK_PATH}/*.cc
+     ${GMOCK_PATH}/*.h)
 
-ADD_EXECUTABLE(integrationtest_restsrv ${SOURCES} ${HEADERS} ${GMOCK})
-STYLE_FILES(integrationtest_restsrv ${SOURCES} ${HEADERS})
-ADD_TEST(integrationtest "${CMAKE_CURRENT_BINARY_DIR}/integrationtest_restsrv")
-SET_SOURCE_FILES_PROPERTIES(${GMOCK} PROPERTIES COMPILE_FLAGS -w)
+ADD_EXECUTABLE(integrationtest_restsrv
+               ${FILES}
+               ${GMOCK})
+STYLE_FILES(integrationtest_restsrv
+            ${FILES})
+ADD_TEST(integrationtest
+         "${CMAKE_CURRENT_BINARY_DIR}/integrationtest_restsrv")
 
-LINK_DIRECTORIES("${CMAKE_BINARY_DIR}/lib")
-TARGET_LINK_LIBRARIES(integrationtest_restsrv restsrv)
+SET_SOURCE_FILES_PROPERTIES(${GMOCK}
+                            PROPERTIES
+                            COMPILE_FLAGS
+                            -w)
 
-INCLUDE_DIRECTORIES("${PROJECT_DIR}/src")
-INCLUDE_DIRECTORIES("${PROJECT_DIR}/integrationtest")
-INCLUDE_DIRECTORIES(SYSTEM "${PROJECT_DIR}/gmock")
+TARGET_LINK_LIBRARIES(integrationtest_restsrv
+                      restsrv)
+
+INCLUDE_DIRECTORIES("${PROJECT_PATH}/src")
+INCLUDE_DIRECTORIES("${PROJECT_PATH}/integrationtest")
+
+INCLUDE_DIRECTORIES(SYSTEM
+                    "${PROJECT_PATH}/gmock")

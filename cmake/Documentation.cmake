@@ -31,9 +31,9 @@ IF(NOT MINIMAL)
                           ${Java_JAVA_EXECUTABLE} -Djava.awt.headless=true -jar
                               "${PLANTUML_JAR}" -v -o
                               "${CMAKE_CURRENT_BINARY_DIR}/html"
-                              "${CMAKE_CURRENT_SOURCE_DIR}/src/**.(c|cpp|h|hpp)"
+                              "${PROJECT_PATH}/src/**.(c|cpp|h|hpp)"
                           COMMAND ${Doxygen_DOXYGEN_EXECUTABLE}
-                              "${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile"
+                              "${PROJECT_PATH}/Doxyfile"
                           WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}" VERBATIM)
     ELSE()
         MESSAGE(WARNING "Target doc not available,"

@@ -16,13 +16,19 @@
 
 SETUP_COMPILER_FLAGS()
 
-FILE(GLOB_RECURSE SOURCES *.cpp *.c)
-FILE(GLOB_RECURSE HEADERS *.hpp *.h)
+FILE(GLOB_RECURSE
+     FILES
+     *.cpp
+     *.hpp
+     *.c
+     *.h)
 
-ADD_EXECUTABLE(example_http ${SOURCES} ${HEADERS})
-STYLE_FILES(example_http ${SOURCES} ${HEADERS})
+ADD_EXECUTABLE(example_http
+               ${FILES})
+STYLE_FILES(example_http
+            ${FILES})
 
-LINK_DIRECTORIES("${CMAKE_BINARY_DIR}/lib")
-TARGET_LINK_LIBRARIES(example_http restsrv)
+TARGET_LINK_LIBRARIES(example_http
+                      restsrv)
 
-INCLUDE_DIRECTORIES("${PROJECT_DIR}/src")
+INCLUDE_DIRECTORIES("${PROJECT_PATH}/src")

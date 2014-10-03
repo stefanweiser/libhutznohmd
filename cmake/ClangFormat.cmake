@@ -24,7 +24,7 @@ IF(NOT MINIMAL)
                 ${ClangFormat_CLANGFORMAT_EXECUTABLE} -i ${ARG})
         ENDFOREACH()
         ADD_CUSTOM_TARGET(format___${TARGET} ${FORMAT_COMMANDS}
-                          WORKING_DIRECTORY "${PROJECT_DIR}" VERBATIM)
+                          WORKING_DIRECTORY "${PROJECT_PATH}" VERBATIM)
         ADD_DEPENDENCIES(${TARGET} format___${TARGET})
     ENDMACRO()
 ELSE()

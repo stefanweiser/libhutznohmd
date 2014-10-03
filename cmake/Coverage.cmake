@@ -31,7 +31,7 @@ IF(NOT MINIMAL)
                 ${OUTPUT}.info.cleaned
               COMMAND ${CMAKE_COMMAND} -E remove ${OUTPUT}.info
                 ${OUTPUT}.info.cleaned
-              WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+              WORKING_DIRECTORY ${BUILD_PATH})
         ELSE()
             MESSAGE(WARNING "Target ${TARGET} not available," +
               " because lcov is missing.")

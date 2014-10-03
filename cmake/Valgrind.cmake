@@ -19,9 +19,9 @@ IF(NOT MINIMAL)
 
     IF(VALGRIND_FOUND)
         ADD_CUSTOM_TARGET(valgrind
-                          ${Valgrind_VALGRIND_EXECUTABLE} "${CMAKE_BINARY_DIR}/unittest/unittest_restsrv"
-                          COMMAND ${Valgrind_VALGRIND_EXECUTABLE} "${CMAKE_BINARY_DIR}/integrationtest/integrationtest_restsrv"
-                          WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
+                          ${Valgrind_VALGRIND_EXECUTABLE} "${BUILD_PATH}/unittest/unittest_restsrv"
+                          COMMAND ${Valgrind_VALGRIND_EXECUTABLE} "${BUILD_PATH}/integrationtest/integrationtest_restsrv"
+                          WORKING_DIRECTORY "${BUILD_PATH}")
     ELSE()
         MESSAGE(WARNING "Target valgrind not available,"
           " because valgrind is missing.")

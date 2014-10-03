@@ -21,7 +21,7 @@ IF(NOT MINIMAL)
         ADD_CUSTOM_TARGET(lizard
                           ${Lizard_LIZARD_EXECUTABLE} --warnings_only --CCN 10
                               --sort cyclomatic_complexity ./src/
-                          WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" VERBATIM)
+                          WORKING_DIRECTORY "${PROJECT_PATH}" VERBATIM)
     ELSE()
         MESSAGE(WARNING "Target lizard not available, because lizard is missing.")
     ENDIF()

@@ -17,19 +17,29 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 PROJECT(librestsrv)
 
-GET_FILENAME_COMPONENT(PROJECT_DIR
+GET_FILENAME_COMPONENT(PROJECT_PATH
                        "${CMAKE_CURRENT_SOURCE_DIR}"
                        REALPATH)
-GET_FILENAME_COMPONENT(GMOCK_DIR
-                       "${PROJECT_DIR}/gmock"
+GET_FILENAME_COMPONENT(BUILD_PATH
+                       "${CMAKE_BINARY_DIR}"
                        REALPATH)
+GET_FILENAME_COMPONENT(GMOCK_PATH
+                       "${CMAKE_CURRENT_SOURCE_DIR}/gmock"
+                       REALPATH)
+
 SET(CMAKE_MODULE_PATH
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/packages"
+    "${PROJECT_PATH}/cmake"
+    "${PROJECT_PATH}/cmake/packages"
     ${CMAKE_MODULE_PATH})
+
+SET(CPACK_GENERATOR
+    "DEB;RPM;TBZ2;TGZ")
+SET(CPACK_DEBIAN_PACKAGE_MAINTAINER
+    "Stefan Weiser <stefan.weiser@bluewin.ch>")
 
 INCLUDE(ClangFormat)
 INCLUDE(Coverage)
+INCLUDE(CPack)
 INCLUDE(CPPCheck)
 INCLUDE(Documentation)
 INCLUDE(Lizard)
@@ -40,11 +50,7 @@ INCLUDE(Valgrind)
 
 ENABLE_TESTING()
 
-RECURSIVE_SUBDIRS(src unittest integrationtest examples)
-
-SET(CPACK_GENERATOR
-    "DEB;RPM;TBZ2;TGZ")
-SET(CPACK_DEBIAN_PACKAGE_MAINTAINER
-    "Stefan Weiser <stefan.weiser@bluewin.ch>")
-
-INCLUDE(CPack)
+RECURSIVE_SUBDIRS(src
+                  unittest
+                  integrationtest
+                  examples)

@@ -22,5 +22,5 @@ IF(NOT MINIMAL)
                           --platform=unix64 --enable=all --std=c++11 --force
                           --suppress=unusedFunction
                           --suppress=missingIncludeSystem -I ./src/ ./src/
-                      WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" VERBATIM)
+                      WORKING_DIRECTORY "${PROJECT_PATH}" VERBATIM)
 ENDIF()

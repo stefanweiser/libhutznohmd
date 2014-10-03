@@ -16,14 +16,22 @@
 
 SETUP_COMPILER_FLAGS()
 
-FILE(GLOB_RECURSE SOURCES *.cpp *.c)
-FILE(GLOB_RECURSE HEADERS *.hpp *.h)
+FILE(GLOB_RECURSE
+     FILES
+     *.cpp
+     *.hpp
+     *.c
+     *.h)
 
-ADD_LIBRARY(restsrv SHARED ${SOURCES} ${HEADERS})
-STYLE_FILES(restsrv ${SOURCES} ${HEADERS})
-ADD_DEPENDENCIES(restsrv cppcheck)
+ADD_LIBRARY(restsrv
+            SHARED
+            ${FILES})
+STYLE_FILES(restsrv
+            ${FILES})
+ADD_DEPENDENCIES(restsrv
+                 cppcheck)
 
-INCLUDE_DIRECTORIES("${PROJECT_DIR}/src")
+INCLUDE_DIRECTORIES("${PROJECT_PATH}/src")
 
 INSTALL(TARGETS restsrv DESTINATION lib)
 INSTALL(FILES rest.hpp DESTINATION include)
