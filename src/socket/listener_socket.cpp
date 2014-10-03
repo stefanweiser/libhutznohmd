@@ -23,6 +23,7 @@
 #include <unistd.h>
 
 #include <socket/connection_socket.hpp>
+#include <socket/utility.hpp>
 
 #include "listener_socket.hpp"
 
@@ -32,9 +33,7 @@ namespace rest
 namespace socket
 {
 
-listener_socket_interface::~listener_socket_interface()
-{
-}
+listener_socket_interface::~listener_socket_interface() {}
 
 listener_pointer listen(const std::string& host, const uint16_t& port)
 {
@@ -49,7 +48,8 @@ union address_union
     ::sockaddr base;
     ::sockaddr_in in;
 };
-}
+
+} // namespace
 
 std::shared_ptr<listener_socket>
 listener_socket::create(const std::string& host, const uint16_t& port)
@@ -98,10 +98,7 @@ connection_pointer listener_socket::accept() const
     return std::make_shared<connection_socket>(client);
 }
 
-bool listener_socket::listening() const
-{
-    return is_listening_;
-}
+bool listener_socket::listening() const { return is_listening_; }
 
 void listener_socket::stop()
 {
@@ -109,10 +106,7 @@ void listener_socket::stop()
     ::shutdown(socket_, SHUT_RDWR);
 }
 
-int listener_socket::socket() const
-{
-    return socket_;
-}
+int listener_socket::socket() const { return socket_; }
 
 } // namespace socket
 

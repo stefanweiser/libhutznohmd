@@ -34,9 +34,7 @@ namespace rest
 namespace socket
 {
 
-connection_socket_interface::~connection_socket_interface()
-{
-}
+connection_socket_interface::~connection_socket_interface() {}
 
 connection_pointer connect(const std::string& host, const uint16_t& port)
 {
@@ -85,7 +83,8 @@ union address_union
     const ::sockaddr* base;
     const ::sockaddr_in* in;
 };
-}
+
+} // namespace
 
 bool connection_socket::connect()
 {
@@ -159,10 +158,7 @@ bool connection_socket::send(const char* buffer, const size_t& size)
     return true;
 }
 
-int connection_socket::socket() const
-{
-    return socket_;
-}
+int connection_socket::socket() const { return socket_; }
 
 } // namespace socket
 

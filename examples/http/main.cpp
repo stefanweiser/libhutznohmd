@@ -37,20 +37,16 @@ private:
     std::ifstream stream_;
 };
 
-connection::connection(const std::string& filename) : stream_(filename)
+connection::connection(const std::string& filename)
+    : stream_(filename)
 {
     std::cout << " stream is_open() = " << stream_.is_open() << "."
               << std::endl;
 }
 
-bool connection::connect()
-{
-    return false;
-}
+bool connection::connect() { return false; }
 
-void connection::close()
-{
-}
+void connection::close() {}
 
 bool connection::receive(rest::buffer& data, const size_t& max_size)
 {
@@ -67,15 +63,9 @@ bool connection::receive(rest::buffer& data, const size_t& max_size)
     return (read_bytes > 0);
 }
 
-bool connection::send(const rest::buffer& /*data*/)
-{
-    return true;
-}
+bool connection::send(const rest::buffer& /*data*/) { return true; }
 
-bool connection::send(const std::string& /*data*/)
-{
-    return true;
-}
+bool connection::send(const std::string& /*data*/) { return true; }
 
 int main()
 {

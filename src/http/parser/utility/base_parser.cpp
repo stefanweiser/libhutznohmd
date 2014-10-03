@@ -50,9 +50,7 @@ base_parser::base_parser(const anonymous_int_function& get_functor,
 {
 }
 
-base_parser::~base_parser()
-{
-}
+base_parser::~base_parser() {}
 
 bool base_parser::parse_connection(int32_t& character)
 {

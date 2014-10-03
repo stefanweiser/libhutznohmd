@@ -46,7 +46,8 @@ int get_socket(const socket::listener_pointer& listener)
     return std::dynamic_pointer_cast<socket::listener_socket>(listener)
         ->socket();
 }
-}
+
+} // namespace
 
 TEST(socket, construction_no_throw)
 {

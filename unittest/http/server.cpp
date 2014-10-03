@@ -34,26 +34,25 @@ namespace http
 TEST(server, parsing_request)
 {
     bool called = false;
-    auto transaction = [&called](const request_interface& /*request*/,
-                                 response_interface& /*response*/) {
-        called = true;
-    };
+    auto transaction =
+        [&called](const request_interface& /*request*/,
+                  response_interface& /*response*/) { called = true; };
     server server(rest::socket::listener_pointer(), transaction);
 
     auto socket = std::make_shared<rest::socket::connection_socket_mock>();
     EXPECT_CALL(*socket, receive(_, _))
-        .WillOnce(
-             Invoke([](rest::buffer & data, const size_t & /*max_size*/)->bool {
-                 std::stringstream stream;
-                 stream << "GET / HTTP/1.1\r\n";
-                 stream << "\r\n";
-                 std::string request_data = stream.str();
-                 data = rest::buffer(request_data.begin(), request_data.end());
-                 return true;
-             }))
+        .WillOnce(Invoke(
+            [](rest::buffer& data, const size_t & /*max_size*/) -> bool {
+                std::stringstream stream;
+                stream << "GET / HTTP/1.1\r\n";
+                stream << "\r\n";
+                std::string request_data = stream.str();
+                data = rest::buffer(request_data.begin(), request_data.end());
+                return true;
+            }))
         .WillRepeatedly(
-             Invoke([](rest::buffer & /*data*/, const size_t & /*max_size*/)
-                        ->bool { return false; }));
+            Invoke([](rest::buffer& /*data*/, const size_t & /*max_size*/)
+                       -> bool { return false; }));
     EXPECT_CALL(*socket, send(An<const rest::buffer&>()))
         .Times(1)
         .WillRepeatedly(Return(true));

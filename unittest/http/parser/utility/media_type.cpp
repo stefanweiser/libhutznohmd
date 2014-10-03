@@ -63,7 +63,8 @@ public:
     std::string str_;
 };
 
-fixture::fixture(const std::string& str) : str_(str)
+fixture::fixture(const std::string& str)
+    : str_(str)
 {
 }
 

@@ -48,7 +48,8 @@ int get_socket(const socket::connection_pointer& connection)
     return std::dynamic_pointer_cast<socket::connection_socket>(connection)
         ->socket();
 }
-}
+
+} // namespace
 
 TEST(server, construction_destruction)
 {
@@ -60,10 +61,9 @@ TEST(server, construction_destruction)
 TEST(server, normal_use_case_http_1_1)
 {
     bool called = false;
-    auto transaction = [&called](const http::request_interface& /*request*/,
-                                 http::response_interface& /*response*/) {
-        called = true;
-    };
+    auto transaction =
+        [&called](const http::request_interface& /*request*/,
+                  http::response_interface& /*response*/) { called = true; };
 
     auto server = http::create_server("127.0.0.1", 10000, transaction);
     disable_time_wait(get_socket(server));
@@ -87,10 +87,9 @@ TEST(server, normal_use_case_http_1_1)
 TEST(server, normal_use_case_http_1_0)
 {
     bool called = false;
-    auto transaction = [&called](const http::request_interface& /*request*/,
-                                 http::response_interface& /*response*/) {
-        called = true;
-    };
+    auto transaction =
+        [&called](const http::request_interface& /*request*/,
+                  http::response_interface& /*response*/) { called = true; };
 
     auto server = http::create_server("127.0.0.1", 10000, transaction);
     disable_time_wait(get_socket(server));

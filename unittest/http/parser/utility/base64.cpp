@@ -53,9 +53,9 @@ TEST(base64, encode_hello_world)
 TEST(base64, encode_pangram)
 {
     std::string base64 = encode_base64(
-        {'P', 'u', 'b', 'l', 'i', 'c', ' ', 'j', 'u', 'n', 'k', ' ', 'd',
-         'w', 'a', 'r', 'v', 'e', 's', ' ', 'h', 'u', 'g', ' ', 'm', 'y',
-         ' ', 'q', 'u', 'a', 'r', 't', 'z', ' ', 'f', 'o', 'x', '.'});
+        {'P', 'u', 'b', 'l', 'i', 'c', ' ', 'j', 'u', 'n', 'k', ' ', 'd', 'w',
+         'a', 'r', 'v', 'e', 's', ' ', 'h', 'u', 'g', ' ', 'm', 'y', ' ', 'q',
+         'u', 'a', 'r', 't', 'z', ' ', 'f', 'o', 'x', '.'});
     EXPECT_EQ(base64, "UHVibGljIGp1bmsgZHdhcnZlcyBodWcgbXkgcXVhcnR6IGZveC4=");
 }
 

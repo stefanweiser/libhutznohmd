@@ -37,11 +37,7 @@ namespace http
 {
 
 //! These URI schemes are supported by the parser and needed for HTTP.
-enum class uri_scheme {
-    UNKNOWN = 0,
-    HTTP = 1,
-    MAILTO = 2
-};
+enum class uri_scheme { UNKNOWN = 0, HTTP = 1, MAILTO = 2 };
 
 //! Contains an URI as used in the HTTP protocol (e.g.
 //! http://user\@example.com:8080/?a=b#anchor).
@@ -94,11 +90,7 @@ public:
         VIDEO = 9
     };
 
-    enum class mime_subtype {
-        CUSTOM = -1,
-        WILDCARD = 0,
-        PLAIN = 1
-    };
+    enum class mime_subtype { CUSTOM = -1, WILDCARD = 0, PLAIN = 1 };
 
     virtual ~media_type_interface();
 

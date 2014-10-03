@@ -33,17 +33,9 @@ namespace rest
 namespace http
 {
 
-enum class parser_state {
-    UNFINISHED = 0,
-    SUCCEEDED = 1,
-    ERROR = 2
-};
+enum class parser_state { UNFINISHED = 0, SUCCEEDED = 1, ERROR = 2 };
 
-enum class connection_type {
-    ERROR = 0,
-    CLOSE,
-    KEEP_ALIVE
-};
+enum class connection_type { ERROR = 0, CLOSE, KEEP_ALIVE };
 
 class base_parser
 {

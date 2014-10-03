@@ -50,9 +50,9 @@ int32_t parse_month(int32_t& character, const lexer& l)
 {
     using value_info = trie<int32_t>::value_info;
     static const std::vector<value_info> types = {
-        {value_info{"jan", 1},  value_info{"feb", 2},  value_info{"mar", 3},
-         value_info{"apr", 4},  value_info{"may", 5},  value_info{"jun", 6},
-         value_info{"jul", 7},  value_info{"aug", 8},  value_info{"sep", 9},
+        {value_info{"jan", 1}, value_info{"feb", 2}, value_info{"mar", 3},
+         value_info{"apr", 4}, value_info{"may", 5}, value_info{"jun", 6},
+         value_info{"jul", 7}, value_info{"aug", 8}, value_info{"sep", 9},
          value_info{"oct", 10}, value_info{"nov", 11}, value_info{"dec", 12}}};
 
     static const trie<int32_t> t(types, -1);

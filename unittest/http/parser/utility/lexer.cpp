@@ -41,7 +41,8 @@ int32_t peek_char(void* handle)
 {
     return static_cast<std::istream*>(handle)->peek();
 }
-}
+
+} // namespace
 
 TEST(lexer, empty)
 {

@@ -70,10 +70,7 @@ void response::set_header(const std::string& key, const std::string& value)
     headers_[key] = value;
 }
 
-void response::set_data(const rest::buffer& data)
-{
-    data_ = data;
-}
+void response::set_data(const rest::buffer& data) { data_ = data; }
 
 void response::deliver_version(std::ostream& os,
                                const rest::http::version& version)
@@ -90,12 +87,13 @@ void response::deliver_version(std::ostream& os,
 void response::deliver_status_code_text(std::ostream& os,
                                         const status_code& code)
 {
-    static const std::map<rest::http::status_code, std::string>
-    status_code_text = {
+    static const std::map<rest::http::status_code,
+                          std::string> status_code_text = {
         {status_code::CONTINUE, "100 Continue"},
         {status_code::SWITCHING_PROTOCOLS, "101 Switching Protocols"},
         {status_code::PROCESSING, "102 Processing"},
-        {status_code::OK, "200 Ok"}, {status_code::CREATED, "201 Continue"},
+        {status_code::OK, "200 Ok"},
+        {status_code::CREATED, "201 Continue"},
         {status_code::ACCEPTED, "202 Accepted"},
         {status_code::NON_AUTHORATIVE_INFORMATION,
          "203 Non Authorative Information"},
