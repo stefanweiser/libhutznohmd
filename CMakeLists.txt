@@ -28,7 +28,6 @@ SET(CMAKE_MODULE_PATH
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/packages"
     ${CMAKE_MODULE_PATH})
 
-INCLUDE(CheckToolchain)
 INCLUDE(ClangFormat)
 INCLUDE(Coverage)
 INCLUDE(CPPCheck)

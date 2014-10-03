@@ -17,10 +17,24 @@
 ENABLE_LANGUAGE(CXX)
 
 INCLUDE(CheckIncludeFileCXX)
-INCLUDE(CheckCXXCompilerFlag)
 INCLUDE(CheckCXXSourceCompiles)
 INCLUDE(CheckPrototypeDefinition)
 INCLUDE(CheckStructHasMember)
+INCLUDE(DetectCompilerVersion)
+
+
+
+IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    CHECK_CLANG_VERSION("${CMAKE_C_COMPILER}" "3.4")
+    CHECK_CLANG_VERSION("${CMAKE_CXX_COMPILER}" "3.4")
+ELSEIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    CHECK_GCC_VERSION("${CMAKE_C_COMPILER}" "4.8")
+    CHECK_GCC_VERSION("${CMAKE_CXX_COMPILER}" "4.8")
+ELSE()
+    MESSAGE(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER_ID} is not supported.")
+ENDIF()
+
+
 
 CHECK_INCLUDE_FILE_CXX(arpa/inet.h __HAS_ARPA_INET_H__)
 CHECK_INCLUDE_FILE_CXX(fcntl.h __HAS_FCNTL_H__)
@@ -40,9 +54,7 @@ IF(NOT __HAS_ARPA_INET_H__ OR
     MESSAGE(FATAL_ERROR "One of the required include files were not found.")
 ENDIF()
 
-IF(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"))
-    CHECK_CXX_COMPILER_FLAG("-std=c++11" __CXX11_AVAILABLE__)
-ENDIF()
+
 
 CHECK_STRUCT_HAS_MEMBER("struct linger" l_onoff "sys/socket.h" __HAS_LINGER_ONOFF__)
 CHECK_STRUCT_HAS_MEMBER("struct linger" l_linger "sys/socket.h" __HAS_LINGER_LINGER__)
@@ -54,91 +66,125 @@ CHECK_STRUCT_HAS_MEMBER("struct sockaddr_in" sin_port "netinet/in.h" __HAS_SOCKA
 CHECK_STRUCT_HAS_MEMBER("struct sockaddr_in" sin_addr "netinet/in.h" __HAS_SOCKADDR_IN_ADDR__)
 CHECK_STRUCT_HAS_MEMBER("struct in_addr" s_addr "netinet/in.h" __HAS_IN_ADDR_ADDR__)
 
+IF(NOT __HAS_LINGER_ONOFF__ OR
+   NOT __HAS_LINGER_LINGER__ OR
+   NOT __HAS_POLLFD_FD__ OR
+   NOT __HAS_POLLFD_EVENTS__ OR
+   NOT __HAS_POLLFD_REVENTS__ OR
+   NOT __HAS_SOCKADDR_IN_FAMILY__ OR
+   NOT __HAS_SOCKADDR_IN_PORT__ OR
+   NOT __HAS_SOCKADDR_IN_ADDR__ OR
+   NOT __HAS_IN_ADDR_ADDR__)
+    MESSAGE(FATAL_ERROR "One struct is not as expected.")
+ENDIF()
+
+
+
 CHECK_PROTOTYPE_DEFINITION(accept
-                           "int accept(int __fd, __SOCKADDR_ARG __addr, socklen_t *__restrict __addr_len)"
+                           "int accept(int fd, struct sockaddr *addr, socklen_t *addr_len)"
                            "0"
                            "sys/socket.h"
                            __HAS_ACCEPT__)
 CHECK_PROTOTYPE_DEFINITION(bind
-                           "int bind(int __fd, const struct sockaddr *__addr, socklen_t __addrlen)"
+                           "int bind(int fd, const struct sockaddr *addr, socklen_t addrlen)"
                            "0"
                            "sys/socket.h"
                            __HAS_BIND__)
 CHECK_PROTOTYPE_DEFINITION(connect
-                           "int connect(int __fd, __CONST_SOCKADDR_ARG __addr, socklen_t __len)"
+                           "int connect(int fd, const struct sockaddr *addr, socklen_t len)"
                            "0"
                            "sys/socket.h"
                            __HAS_CONNECT__)
 CHECK_PROTOTYPE_DEFINITION(getsockopt
-                           "int getsockopt(int __fd, int __level, int __optname, void *__restrict __optval, socklen_t *__restrict __optlen)"
+                           "int getsockopt(int fd, int level, int optname, void *optval, socklen_t *optlen)"
                            "0"
                            "sys/socket.h"
                            __HAS_GETSOCKOPT__)
 CHECK_PROTOTYPE_DEFINITION(listen
-                           "int listen(int __fd, int __n)"
+                           "int listen(int fd, int n)"
                            "0"
                            "sys/socket.h"
                            __HAS_LISTEN__)
 CHECK_PROTOTYPE_DEFINITION(recv
-                           "ssize_t recv(int __fd, void *__buf, size_t __n, int __flags)"
+                           "ssize_t recv(int fd, void *buf, size_t n, int flags)"
                            "0"
                            "sys/socket.h"
                            __HAS_RECV__)
 CHECK_PROTOTYPE_DEFINITION(send
-                           "ssize_t send(int __fd, __const void *__buf, size_t __n, int __flags)"
+                           "ssize_t send(int fd, const void *buf, size_t n, int flags)"
                            "0"
                            "sys/socket.h"
                            __HAS_SEND__)
 CHECK_PROTOTYPE_DEFINITION(setsockopt
-                           "int setsockopt(int __fd, int __level, int __optname, __const void *__optval, socklen_t __optlen)"
-                           "NULL"
+                           "int setsockopt(int fd, int level, int optname, const void *optval, socklen_t optlen)"
+                           "0"
                            "sys/socket.h"
                            __HAS_SETSOCKOPT__)
 CHECK_PROTOTYPE_DEFINITION(shutdown
-                           "int shutdown(int __fd, int __how)"
+                           "int shutdown(int fd, int how)"
                            "0"
                            "sys/socket.h"
                            __HAS_SHUTDOWN__)
 CHECK_PROTOTYPE_DEFINITION(socket
-                           "int socket(int __domain, int __type, int __protocol)"
+                           "int socket(int domain, int type, int protocol)"
                            "0"
                            "sys/socket.h"
                            __HAS_SOCKET__)
 
 CHECK_PROTOTYPE_DEFINITION(close
-                           "int close(int __fd)"
+                           "int close(int fd)"
                            "0"
                            "unistd.h"
                            __HAS_CLOSE__)
 CHECK_PROTOTYPE_DEFINITION(usleep
-                           "int usleep(__useconds_t __useconds)"
+                           "int usleep(useconds_t useconds)"
                            "0"
                            "unistd.h"
                            __HAS_USLEEP__)
 
 CHECK_PROTOTYPE_DEFINITION(htons
-                           "uint16_t htons(uint16_t __hostshort)"
+                           "uint16_t htons(uint16_t hostshort)"
                            "0"
                            "arpa/inet.h"
                            __HAS_HTONS__)
 CHECK_PROTOTYPE_DEFINITION(inet_aton
-                           "int inet_aton(__const char *__cp, struct in_addr *__inp)"
+                           "int inet_aton(const char *cp, struct in_addr *inp)"
                            "0"
                            "arpa/inet.h"
                            __HAS_INET_ATON__)
 CHECK_PROTOTYPE_DEFINITION(ntohs
-                           "uint16_t ntohs(uint16_t __netshort)"
+                           "uint16_t ntohs(uint16_t netshort)"
                            "0"
                            "arpa/inet.h"
                            __HAS_NTOHS__)
 CHECK_PROTOTYPE_DEFINITION(ntohl
-                           "uint32_t ntohl(uint32_t __netlong)"
+                           "uint32_t ntohl(uint32_t netlong)"
                            "0"
                            "arpa/inet.h"
                            __HAS_NTOHL__)
 
 CHECK_PROTOTYPE_DEFINITION(poll
-                           "int poll(struct pollfd *__fds, nfds_t __nfds, int __timeout)"
+                           "int poll(struct pollfd *fds, nfds_t nfds, int timeout)"
                            "0"
                            "sys/poll.h"
                            __HAS_POLL__)
+
+IF(NOT __HAS_ACCEPT__ OR
+   NOT __HAS_BIND__ OR
+   NOT __HAS_CONNECT__ OR
+   NOT __HAS_GETSOCKOPT__ OR
+   NOT __HAS_LISTEN__ OR
+   NOT __HAS_RECV__ OR
+   NOT __HAS_SEND__ OR
+   NOT __HAS_SETSOCKOPT__ OR
+   NOT __HAS_SHUTDOWN__ OR
+   NOT __HAS_SOCKET__ OR
+   NOT __HAS_CLOSE__ OR
+   NOT __HAS_USLEEP__ OR
+   NOT __HAS_HTONS__ OR
+   NOT __HAS_INET_ATON__ OR
+   NOT __HAS_NTOHS__ OR
+   NOT __HAS_NTOHL__ OR
+   NOT __HAS_POLL__)
+    MESSAGE(FATAL_ERROR "One functions signature is not as expected.")
+ENDIF()
