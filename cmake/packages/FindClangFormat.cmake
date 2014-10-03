@@ -52,30 +52,23 @@ IF(ClangFormat_CLANGFORMAT_EXECUTABLE)
       ERROR_VARIABLE var
       OUTPUT_STRIP_TRAILING_WHITESPACE
       ERROR_STRIP_TRAILING_WHITESPACE)
-    IF(NOT res EQUAL 1)
-        IF(${ClangFormat_FIND_REQUIRED})
-            MESSAGE(FATAL_ERROR "Error executing clang-format --version")
-        ELSE()
-            MESSAGE(STATUS "Warning, could not run clang-format --version")
-        ENDIF()
+
+    IF(var MATCHES ".*[0-9]+\\.[0-9]+\\.[0-9]+.*")
+        STRING(REGEX REPLACE ".*([0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1"
+               ClangFormat_VERSION_STRING "${var}")
     ELSE()
-        IF(var MATCHES ".*[0-9]+\\.[0-9]+\\.[0-9]+.*")
-            STRING(REGEX REPLACE ".*([0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1"
-                   ClangFormat_VERSION_STRING "${var}")
-        ELSE()
-            IF(NOT ClangFormat_FIND_QUIETLY)
-                MESSAGE(WARNING "regex not supported: ${var}. Please report")
-            ENDIF()
+        IF(NOT ClangFormat_FIND_QUIETLY)
+            MESSAGE(WARNING "regex not supported: ${var}. Please report")
         ENDIF()
-        STRING(REGEX REPLACE "([0-9]+).*" "\\1" ClangFormat_VERSION_MAJOR
-               "${ClangFormat_VERSION_STRING}")
-        STRING(REGEX REPLACE "[0-9]+\\.([0-9]+).*" "\\1" ClangFormat_VERSION_MINOR
-               "${ClangFormat_VERSION_STRING}")
-        STRING(REGEX REPLACE "[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1"
-               ClangFormat_VERSION_PATCH "${ClangFormat_VERSION_STRING}")
-        SET(ClangFormat_VERSION ${ClangFormat_VERSION_MAJOR}.${ClangFormat_VERSION_MINOR})
-        SET(ClangFormat_VERSION ${ClangFormat_VERSION}.${ClangFormat_VERSION_PATCH})
     ENDIF()
+    STRING(REGEX REPLACE "([0-9]+).*" "\\1" ClangFormat_VERSION_MAJOR
+           "${ClangFormat_VERSION_STRING}")
+    STRING(REGEX REPLACE "[0-9]+\\.([0-9]+).*" "\\1" ClangFormat_VERSION_MINOR
+           "${ClangFormat_VERSION_STRING}")
+    STRING(REGEX REPLACE "[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1"
+           ClangFormat_VERSION_PATCH "${ClangFormat_VERSION_STRING}")
+    SET(ClangFormat_VERSION ${ClangFormat_VERSION_MAJOR}.${ClangFormat_VERSION_MINOR})
+    SET(ClangFormat_VERSION ${ClangFormat_VERSION}.${ClangFormat_VERSION_PATCH})
 ENDIF()
 
 INCLUDE(FindPackageHandleStandardArgs)
