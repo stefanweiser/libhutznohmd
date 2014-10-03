@@ -27,6 +27,12 @@ def parse_arguments(steps):
     parser = ArgumentParser()
     parser.add_argument('step', nargs='+')
 
+    parser.add_argument('-m',
+                        '--minimal',
+                        dest='minimal',
+                        action='store_true',
+                        help='builds a minimal dependency toolchain')
+
     mutual_target_group = parser.add_mutually_exclusive_group()
     mutual_target_group.add_argument('-d',
                                      '--debug',
@@ -68,8 +74,12 @@ def check_is_bootstrapped():
 
 
 def execute_bootstrap(args):
-    check_call(['cmake', script_path, '-DCMAKE_INSTALL_PREFIX=' + install_path,
-                '-DCMAKE_BUILD_TYPE=' + args.target], cwd=build_path)
+    check_call(['cmake',
+                script_path,
+                '-DCMAKE_INSTALL_PREFIX=' + install_path,
+                '-DCMAKE_BUILD_TYPE=' + args.target,
+                '-DMINIMAL=' + str(args.minimal)],
+               cwd=build_path)
 
 
 def execute_build(args):
@@ -147,10 +157,6 @@ if __name__ == "__main__":
                            RED))
             print(colorize('python ' + version, RED))
         else:
-            if not os.path.exists(build_path):
-                os.makedirs(build_path)
-                execute_bootstrap(Struct(target='debug'))
-
             steps = {
                 'all': Struct(fn=execute_all,
                               help='builds all steps to make a package'),
@@ -179,6 +185,11 @@ if __name__ == "__main__":
             }
 
             args = parse_arguments(steps)
+
+            if not os.path.exists(build_path):
+                os.makedirs(build_path)
+                execute_bootstrap(args)
+
             for step in args.step:
                 steps[step].fn(args)
 
