@@ -14,8 +14,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
 
-
-
 INCLUDE(Toolchain)
 
 FILE(GLOB_RECURSE SOURCES *.cpp *.c)
@@ -27,5 +25,4 @@ STYLE_FILES(example_socket ${SOURCES} ${HEADERS})
 LINK_DIRECTORIES("${CMAKE_BINARY_DIR}/lib")
 TARGET_LINK_LIBRARIES(example_socket restsrv)
 
-INCLUDE_DIRECTORIES("${PROJECT_DIR}/examples/socket")
 INCLUDE_DIRECTORIES("${PROJECT_DIR}/src")

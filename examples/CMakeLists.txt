@@ -14,8 +14,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
 
-
-
 ADD_SUBDIRECTORY(socket)
 ADD_SUBDIRECTORY(http)
 ADD_SUBDIRECTORY(performance)

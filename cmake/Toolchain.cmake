@@ -14,8 +14,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
 
-
-
 IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -fsigned-char -pipe -pthread -std=c99 -D_POSIX_C_SOURCE=200809L -pedantic -Weverything -Werror -Wno-padded")

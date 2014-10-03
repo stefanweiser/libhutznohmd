@@ -14,15 +14,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
 
-INCLUDE(Toolchain)
+IF(NOT MINIMAL)
+    FIND_PACKAGE(Valgrind 3.7)
 
-FILE(GLOB_RECURSE SOURCES *.cpp *.c)
-FILE(GLOB_RECURSE HEADERS *.hpp *.h)
-
-ADD_EXECUTABLE(example_http ${SOURCES} ${HEADERS})
-STYLE_FILES(example_http ${SOURCES} ${HEADERS})
-
-LINK_DIRECTORIES("${CMAKE_BINARY_DIR}/lib")
-TARGET_LINK_LIBRARIES(example_http restsrv)
-
-INCLUDE_DIRECTORIES("${PROJECT_DIR}/src")
+    IF(VALGRIND_FOUND)
+        ADD_CUSTOM_TARGET(valgrind
+                          ${Valgrind_VALGRIND_EXECUTABLE} "${CMAKE_BINARY_DIR}/unittest/unittest_restsrv"
+                          COMMAND ${Valgrind_VALGRIND_EXECUTABLE} "${CMAKE_BINARY_DIR}/integrationtest/integrationtest_restsrv"
+                          WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
+    ELSE()
+        MESSAGE(WARNING "Target valgrind not available,"
+          " because valgrind is missing.")
+    ENDIF()
+ENDIF()

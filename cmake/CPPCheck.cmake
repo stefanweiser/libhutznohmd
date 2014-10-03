@@ -14,15 +14,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
 
-INCLUDE(Toolchain)
+IF(NOT MINIMAL)
+    FIND_PACKAGE(CPPCheck 1.60 REQUIRED)
 
-FILE(GLOB_RECURSE SOURCES *.cpp *.c)
-FILE(GLOB_RECURSE HEADERS *.hpp *.h)
-
-ADD_EXECUTABLE(example_http ${SOURCES} ${HEADERS})
-STYLE_FILES(example_http ${SOURCES} ${HEADERS})
-
-LINK_DIRECTORIES("${CMAKE_BINARY_DIR}/lib")
-TARGET_LINK_LIBRARIES(example_http restsrv)
-
-INCLUDE_DIRECTORIES("${PROJECT_DIR}/src")
+    ADD_CUSTOM_TARGET(cppcheck
+                      ${CPPCheck_CPPCHECK_EXECUTABLE} --quiet --language=c++
+                          --platform=unix64 --enable=all --std=c++11 --force
+                          --suppress=unusedFunction
+                          --suppress=missingIncludeSystem -I ./src/ ./src/
+                      WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" VERBATIM)
+ENDIF()

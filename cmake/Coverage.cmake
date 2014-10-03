@@ -14,26 +14,30 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
 
+IF(NOT MINIMAL)
+    FIND_PACKAGE(LCOV 1.9)
 
+    FUNCTION(COVERAGE_TARGET TARGET TEST EXCLUDE)
+        IF(LCOV_FOUND)
+            SET(OUTPUT "${TEST}_cov")
 
-FUNCTION(COVERAGE_TARGET TARGET TEST EXCLUDE)
-    IF(LCOV_FOUND)
-        SET(OUTPUT "${TEST}_cov")
-
-        ADD_CUSTOM_TARGET(${TARGET}
-          ${LCOV_LCOV_EXECUTABLE} -d . -z
-          COMMAND ${TEST}
-          COMMAND ${LCOV_LCOV_EXECUTABLE} -d . -c -o ${OUTPUT}.info
-          COMMAND ${LCOV_LCOV_EXECUTABLE} -r ${OUTPUT}.info ${EXCLUDE}
-            'gmock/*' '/usr/*' -o ${OUTPUT}.info.cleaned
-          COMMAND ${LCOV_GENHTML_EXECUTABLE} -o ${OUTPUT}
-            ${OUTPUT}.info.cleaned
-          COMMAND ${CMAKE_COMMAND} -E remove ${OUTPUT}.info
-            ${OUTPUT}.info.cleaned
-          WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-    ELSE()
-        MESSAGE(WARNING "Target ${TARGET} not available," +
-          " because lcov is missing.")
-    ENDIF()
-ENDFUNCTION()
-
+            ADD_CUSTOM_TARGET(${TARGET}
+              ${LCOV_LCOV_EXECUTABLE} -d . -z
+              COMMAND ${TEST}
+              COMMAND ${LCOV_LCOV_EXECUTABLE} -d . -c -o ${OUTPUT}.info
+              COMMAND ${LCOV_LCOV_EXECUTABLE} -r ${OUTPUT}.info ${EXCLUDE}
+                'gmock/*' '/usr/*' -o ${OUTPUT}.info.cleaned
+              COMMAND ${LCOV_GENHTML_EXECUTABLE} -o ${OUTPUT}
+                ${OUTPUT}.info.cleaned
+              COMMAND ${CMAKE_COMMAND} -E remove ${OUTPUT}.info
+                ${OUTPUT}.info.cleaned
+              WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        ELSE()
+            MESSAGE(WARNING "Target ${TARGET} not available," +
+              " because lcov is missing.")
+        ENDIF()
+    ENDFUNCTION()
+ELSE()
+    FUNCTION(COVERAGE_TARGET)
+    ENDFUNCTION()
+ENDIF()
