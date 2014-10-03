@@ -14,4 +14,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
 
-RECURSIVE_SUBDIRS(http performance socket)
+MACRO(RECURSIVE_SUBDIRS)
+    FOREACH(SUBDIR ${ARGN})
+        ADD_SUBDIRECTORY(${SUBDIR})
+    ENDFOREACH()
+ENDMACRO()

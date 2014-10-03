@@ -34,14 +34,12 @@ INCLUDE(CPPCheck)
 INCLUDE(Documentation)
 INCLUDE(Lizard)
 INCLUDE(RATS)
+INCLUDE(RecursiveSubdirs)
 INCLUDE(Valgrind)
 
 ENABLE_TESTING()
 
-ADD_SUBDIRECTORY(src)
-ADD_SUBDIRECTORY(unittest)
-ADD_SUBDIRECTORY(integrationtest)
-ADD_SUBDIRECTORY(examples)
+RECURSIVE_SUBDIRS(src unittest integrationtest examples)
 
 SET(CPACK_GENERATOR
     "DEB;RPM;TBZ2;TGZ")
