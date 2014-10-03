@@ -29,7 +29,6 @@ SET(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH})
 
 INCLUDE(CheckToolchain)
-
 INCLUDE(ClangFormat)
 INCLUDE(Coverage)
 INCLUDE(CPPCheck)
@@ -37,6 +36,7 @@ INCLUDE(Documentation)
 INCLUDE(Lizard)
 INCLUDE(RATS)
 INCLUDE(RecursiveSubdirs)
+INCLUDE(Toolchain)
 INCLUDE(Valgrind)
 
 ENABLE_TESTING()
