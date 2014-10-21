@@ -53,3 +53,5 @@ INCLUDE_DIRECTORIES("${PROJECT_PATH}/unittest")
 
 INCLUDE_DIRECTORIES(SYSTEM
                     "${PROJECT_PATH}/gmock")
+
+INSTALL(TARGETS unittest_restsrv DESTINATION bin)

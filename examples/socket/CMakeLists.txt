@@ -31,3 +31,5 @@ STYLE_FILES(example_socket
 TARGET_LINK_LIBRARIES(example_socket restsrv)
 
 INCLUDE_DIRECTORIES("${PROJECT_PATH}/src")
+
+INSTALL(TARGETS example_socket DESTINATION bin)

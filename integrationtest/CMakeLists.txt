@@ -49,3 +49,5 @@ INCLUDE_DIRECTORIES("${PROJECT_PATH}/integrationtest")
 
 INCLUDE_DIRECTORIES(SYSTEM
                     "${PROJECT_PATH}/gmock")
+
+INSTALL(TARGETS integrationtest_restsrv DESTINATION bin)

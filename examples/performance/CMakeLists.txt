@@ -31,3 +31,5 @@ STYLE_FILES(example_performance
 TARGET_LINK_LIBRARIES(example_performance restsrv)
 
 INCLUDE_DIRECTORIES("${PROJECT_PATH}/src")
+
+INSTALL(TARGETS example_performance DESTINATION bin)

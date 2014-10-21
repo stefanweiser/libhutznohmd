@@ -32,3 +32,5 @@ TARGET_LINK_LIBRARIES(example_http
                       restsrv)
 
 INCLUDE_DIRECTORIES("${PROJECT_PATH}/src")
+
+INSTALL(TARGETS example_http DESTINATION bin)
