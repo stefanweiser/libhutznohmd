@@ -30,6 +30,7 @@ STYLE_FILES(restsrv
             ${FILES})
 ADD_DEPENDENCIES(restsrv
                  cppcheck)
+SET_TARGET_PROPERTIES(restsrv PROPERTIES VERSION "${LIBRARY_VERSION}")
 
 INCLUDE_DIRECTORIES("${PROJECT_PATH}/src")
 

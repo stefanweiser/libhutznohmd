@@ -78,7 +78,8 @@ def execute_bootstrap(args):
                 script_path,
                 '-DCMAKE_INSTALL_PREFIX=' + install_path,
                 '-DCMAKE_BUILD_TYPE=' + args.target,
-                '-DMINIMAL=' + str(args.minimal)],
+                '-DMINIMAL=' + str(args.minimal),
+                '-DLIBRARY_VERSION=' + args.library_version],
                cwd=build_path)
 
 
@@ -119,8 +120,16 @@ def execute_lizard(args):
 def execute_package(args):
     check_is_bootstrapped()
 
-    check_call(['make', 'package'], cwd=build_path)
+    tar_name = 'librestsrv-' + args.library_version + '.tar.gz'
+    src_tar_name = 'librestsrv_src-' + args.library_version + '.tar.gz'
 
+    check_call(['tar', 'cf', os.path.join(build_path, tar_name), '--owner=root',
+                '--group=root', '.'], cwd=install_path)
+    check_call(['tar', 'cf', os.path.join(build_path, src_tar_name),
+                '--owner=root', '--group=root', '--exclude=./.git',
+                '--exclude=./.gitignore', '--exclude=./build',
+                '--exclude=./install', '--exclude=./python/__pycache__',
+                '--exclude=*.user', '.'], cwd=script_path)
 
 def execute_rats(args):
     check_is_bootstrapped()
@@ -185,6 +194,10 @@ if __name__ == "__main__":
             }
 
             args = parse_arguments(steps)
+
+            version_file = open(os.path.join(script_path, 'version'), 'r')
+            args.library_version = version_file.read().strip()
+            version_file.close()
 
             if not os.path.exists(build_path):
                 os.makedirs(build_path)
