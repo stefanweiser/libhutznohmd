@@ -19,8 +19,8 @@ IF(NOT MINIMAL)
 
     IF(RATS_FOUND)
         ADD_CUSTOM_TARGET(rats
-                          ${RATS_RATS_EXECUTABLE} --resultsonly -w 3
-                              ./examples ./integrationtest ./src ./unittest
+                          "${RATS_RATS_EXECUTABLE}" "--resultsonly" "-w" "3"
+                          "./examples" "./integrationtest" "./src" "./unittest"
                           WORKING_DIRECTORY "${PROJECT_PATH}" VERBATIM)
     ELSE()
         MESSAGE(WARNING "Target rats not available, because rats is missing.")

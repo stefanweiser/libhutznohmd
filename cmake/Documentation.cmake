@@ -22,21 +22,22 @@ IF(NOT MINIMAL)
     IF(JAVA_FOUND AND DOXYGEN_FOUND AND WGET_FOUND)
         SET(PLANTUML_JAR "${CMAKE_CURRENT_BINARY_DIR}/plantuml.jar")
         IF(NOT EXISTS "${PLANTUML_JAR}")
-            EXECUTE_PROCESS(COMMAND ${WGET_EXECUTABLE}
-              http://sourceforge.net/projects/plantuml/files/plantuml.jar/download
-              -O "${PLANTUML_JAR}")
+            EXECUTE_PROCESS(COMMAND "${WGET_EXECUTABLE}"
+                            "http://sourceforge.net/projects/plantuml/files/plantuml.jar/download"
+                            "-O" "${PLANTUML_JAR}")
         ENDIF()
 
         ADD_CUSTOM_TARGET(doc
-                          ${Java_JAVA_EXECUTABLE} -Djava.awt.headless=true -jar
-                              "${PLANTUML_JAR}" -v -o
-                              "${CMAKE_CURRENT_BINARY_DIR}/html"
-                              "${PROJECT_PATH}/src/**.(c|cpp|h|hpp)"
-                          COMMAND ${Doxygen_DOXYGEN_EXECUTABLE}
-                              "${PROJECT_PATH}/Doxyfile"
-                          WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}" VERBATIM)
+                          "${Java_JAVA_EXECUTABLE}" "-Djava.awt.headless=true"
+                          "-jar" "${PLANTUML_JAR}" "-v" "-o"
+                          "${CMAKE_CURRENT_BINARY_DIR}/html"
+                          "${PROJECT_PATH}/src/**.(c|cpp|h|hpp)"
+                          COMMAND "${Doxygen_DOXYGEN_EXECUTABLE}"
+                          "${PROJECT_PATH}/Doxyfile"
+                          WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+                          VERBATIM)
     ELSE()
-        MESSAGE(WARNING "Target doc not available,"
-          " because java, wget or doxygen is missing.")
+        MESSAGE(WARNING
+                "Target doc not available, because java, wget or doxygen is missing.")
     ENDIF()
 ENDIF()

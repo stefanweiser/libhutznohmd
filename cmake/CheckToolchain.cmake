@@ -56,15 +56,24 @@ ENDIF()
 
 
 
-CHECK_STRUCT_HAS_MEMBER("struct linger" l_onoff "sys/socket.h" __HAS_LINGER_ONOFF__)
-CHECK_STRUCT_HAS_MEMBER("struct linger" l_linger "sys/socket.h" __HAS_LINGER_LINGER__)
-CHECK_STRUCT_HAS_MEMBER("struct pollfd" fd "sys/poll.h" __HAS_POLLFD_FD__)
-CHECK_STRUCT_HAS_MEMBER("struct pollfd" events "sys/poll.h" __HAS_POLLFD_EVENTS__)
-CHECK_STRUCT_HAS_MEMBER("struct pollfd" revents "sys/poll.h" __HAS_POLLFD_REVENTS__)
-CHECK_STRUCT_HAS_MEMBER("struct sockaddr_in" sin_family "netinet/in.h" __HAS_SOCKADDR_IN_FAMILY__)
-CHECK_STRUCT_HAS_MEMBER("struct sockaddr_in" sin_port "netinet/in.h" __HAS_SOCKADDR_IN_PORT__)
-CHECK_STRUCT_HAS_MEMBER("struct sockaddr_in" sin_addr "netinet/in.h" __HAS_SOCKADDR_IN_ADDR__)
-CHECK_STRUCT_HAS_MEMBER("struct in_addr" s_addr "netinet/in.h" __HAS_IN_ADDR_ADDR__)
+CHECK_STRUCT_HAS_MEMBER("struct linger" l_onoff "sys/socket.h"
+                        __HAS_LINGER_ONOFF__)
+CHECK_STRUCT_HAS_MEMBER("struct linger" l_linger "sys/socket.h"
+                        __HAS_LINGER_LINGER__)
+CHECK_STRUCT_HAS_MEMBER("struct pollfd" fd "sys/poll.h"
+                        __HAS_POLLFD_FD__)
+CHECK_STRUCT_HAS_MEMBER("struct pollfd" events "sys/poll.h"
+                        __HAS_POLLFD_EVENTS__)
+CHECK_STRUCT_HAS_MEMBER("struct pollfd" revents "sys/poll.h"
+                        __HAS_POLLFD_REVENTS__)
+CHECK_STRUCT_HAS_MEMBER("struct sockaddr_in" sin_family "netinet/in.h"
+                        __HAS_SOCKADDR_IN_FAMILY__)
+CHECK_STRUCT_HAS_MEMBER("struct sockaddr_in" sin_port "netinet/in.h"
+                        __HAS_SOCKADDR_IN_PORT__)
+CHECK_STRUCT_HAS_MEMBER("struct sockaddr_in" sin_addr "netinet/in.h"
+                        __HAS_SOCKADDR_IN_ADDR__)
+CHECK_STRUCT_HAS_MEMBER("struct in_addr" s_addr "netinet/in.h"
+                        __HAS_IN_ADDR_ADDR__)
 
 IF(NOT __HAS_LINGER_ONOFF__ OR
    NOT __HAS_LINGER_LINGER__ OR

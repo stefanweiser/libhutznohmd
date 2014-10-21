@@ -23,11 +23,14 @@ FUNCTION(CHECK_GCC_VERSION PATH MIN_VERSION)
                     ERROR_STRIP_TRAILING_WHITESPACE)
 
     IF(VAR MATCHES ".*[0-9]+\\.[0-9]+\\.[0-9]+.*")
-        STRING(REGEX REPLACE ".*([0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1" VERSION "${VAR}")
+        STRING(REGEX REPLACE ".*([0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1" VERSION
+               "${VAR}")
         IF(VERSION VERSION_LESS MIN_VERSION)
-            MESSAGE(FATAL_ERROR "Found older version than ${MIN_VERSION} of ${PATH} (${VERSION}).")
+            MESSAGE(FATAL_ERROR
+                    "Found older version than ${MIN_VERSION} of ${PATH} (${VERSION}).")
         ELSE()
-            MESSAGE(STATUS "Found newer version than ${MIN_VERSION} of ${PATH} (${VERSION}).")
+            MESSAGE(STATUS
+                    "Found newer version than ${MIN_VERSION} of ${PATH} (${VERSION}).")
         ENDIF()
     ELSE()
         MESSAGE(FATAL_ERROR "Failed to find version of ${PATH}.")
@@ -35,7 +38,7 @@ FUNCTION(CHECK_GCC_VERSION PATH MIN_VERSION)
 ENDFUNCTION()
 
 FUNCTION(CHECK_CLANG_VERSION PATH MIN_VERSION)
-    EXECUTE_PROCESS(COMMAND ${PATH} --version
+    EXECUTE_PROCESS(COMMAND "${PATH}" "--version"
                     RESULT_VARIABLE RES
                     OUTPUT_VARIABLE VAR
                     ERROR_VARIABLE VAR
@@ -43,11 +46,14 @@ FUNCTION(CHECK_CLANG_VERSION PATH MIN_VERSION)
                     ERROR_STRIP_TRAILING_WHITESPACE)
 
     IF(VAR MATCHES ".*[0-9]+\\.[0-9]+\\.[0-9]+.*")
-        STRING(REGEX REPLACE ".*([0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1" VERSION "${VAR}")
+        STRING(REGEX REPLACE ".*([0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1" VERSION
+               "${VAR}")
         IF(VERSION VERSION_LESS MIN_VERSION)
-            MESSAGE(FATAL_ERROR "Found older version than ${MIN_VERSION} of ${PATH} (${VERSION}).")
+            MESSAGE(FATAL_ERROR
+                    "Found older version than ${MIN_VERSION} of ${PATH} (${VERSION}).")
         ELSE()
-            MESSAGE(STATUS "Found newer version than ${MIN_VERSION} of ${PATH} (${VERSION}).")
+            MESSAGE(STATUS
+                    "Found newer version than ${MIN_VERSION} of ${PATH} (${VERSION}).")
         ENDIF()
     ELSE()
         MESSAGE(FATAL_ERROR "Failed to find version of ${PATH}.")

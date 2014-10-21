@@ -19,8 +19,8 @@ IF(NOT MINIMAL)
 
     IF(LIZARD_FOUND)
         ADD_CUSTOM_TARGET(lizard
-                          ${Lizard_LIZARD_EXECUTABLE} --warnings_only --CCN 10
-                              --sort cyclomatic_complexity ./src/
+                          "${Lizard_LIZARD_EXECUTABLE}" "--warnings_only"
+                          "--CCN" "10" "--sort cyclomatic_complexity" "./src/"
                           WORKING_DIRECTORY "${PROJECT_PATH}" VERBATIM)
     ELSE()
         MESSAGE(WARNING "Target lizard not available, because lizard is missing.")

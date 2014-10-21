@@ -14,18 +14,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with the librestsrv project; if not, see <http://www.gnu.org/licenses/>.
 
-IF(NOT MINIMAL)
-    FIND_PACKAGE(Valgrind 3.7)
+SET(CPACK_GENERATOR "DEB;RPM;TBZ2;TGZ")
+SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Stefan Weiser <stefan.weiser@bluewin.ch>")
 
-    IF(VALGRIND_FOUND)
-        ADD_CUSTOM_TARGET(valgrind
-                          "${Valgrind_VALGRIND_EXECUTABLE}"
-                          "${BUILD_PATH}/unittest/unittest_restsrv"
-                          COMMAND "${Valgrind_VALGRIND_EXECUTABLE}"
-                          "${BUILD_PATH}/integrationtest/integrationtest_restsrv"
-                          WORKING_DIRECTORY "${BUILD_PATH}")
-    ELSE()
-        MESSAGE(WARNING
-            "Target valgrind not available, because valgrind is missing.")
-    ENDIF()
-ENDIF()
+INCLUDE(CPack)
