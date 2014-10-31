@@ -43,6 +43,7 @@ inline uint32_t g(const uint32_t& x, const uint32_t& y, const uint32_t& z)
 {
     return (x & z) | (y & (~z));
 }
+
 inline uint32_t h(const uint32_t& x, const uint32_t& y, const uint32_t& z)
 {
     return x ^ y ^ z;
@@ -221,7 +222,7 @@ std::array<uint8_t, 16> calculate_md5(const std::vector<char>& data)
     data_buffer[remaining] = last_bit;
 
     // Fill up the number of bits.
-    const size_t processed_bits = data.size() * bits_per_byte;
+    const uint64_t processed_bits = data.size() * bits_per_byte;
     for (size_t i = 0; i < size_of_size; ++i) {
         const size_t index = max_size_minus_size + i;
         data_buffer[index] =
