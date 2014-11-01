@@ -1,18 +1,18 @@
-/* This file is part of librestsrv.
+/* This file is part of libhutznohmd.
  * Copyright (C) 2013-2014 Stefan Weiser
 
- * The librestsrv project is free software; you can redistribute it and/or
+ * The libhutznohmd project is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 3.0 of the
  * License, or (at your option) any later version.
 
- * The librestsrv project is distributed in the hope that it will be useful,
+ * The libhutznohmd project is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser
  * General Public License for more details.
 
  * You should have received a copy of the GNU Lesser General Public License
- * along with the librestsrv project; if not, see
+ * along with the libhutznohmd project; if not, see
  * <http://www.gnu.org/licenses/>.
  */
 
@@ -38,7 +38,7 @@ web service.
 
 See @ref deployment to learn about the deployment tool @c make.
 
-See @ref development to get started developing librestsrv.
+See @ref development to get started developing libhutznohmd.
 
 @section sec_contact Contact
 Stefan Weiser <stefan @@dot weiser @@at bluewin @@dot ch>

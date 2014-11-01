@@ -120,8 +120,8 @@ def execute_lizard(args):
 def execute_package(args):
     check_is_bootstrapped()
 
-    tar_name = 'librestsrv-' + args.library_version + '.tar.gz'
-    src_tar_name = 'librestsrv_src-' + args.library_version + '.tar.gz'
+    tar_name = 'libhutznohmd-' + args.library_version + '.tar.gz'
+    src_tar_name = 'libhutznohmd_src-' + args.library_version + '.tar.gz'
 
     check_call(['tar', 'cf', os.path.join(build_path, tar_name), '--owner=root',
                 '--group=root', '.'], cwd=install_path)
