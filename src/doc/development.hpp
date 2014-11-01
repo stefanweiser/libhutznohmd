@@ -48,13 +48,12 @@ that is arranged in another way.
 removed.
 
 In any cases it will be difficult where to draw the line. Don't be religious
-with
-them, but keep them in mind and improve the code.
+with them, but keep them in mind and improve the code.
 
 @section sec_who Who can contribute?
 
-Anyone who is passionated in developing software and shared the principles of
-this project is welcome to contribute to it. Please use a pull request on
+Anyone who is passionated in developing software and is sharing the principles
+of this project is welcome to contribute to it. Please use a pull request on
 GitHub.
 
 @section sec_tools Tools
@@ -65,9 +64,10 @@ Generally:
 - @b cmake >= 2.8
 
 For building:
-- @b g++ >= 4.8 with complete C++11 support.
+- @b g++ >= 4.8
+- @b clang >= 3.4
 - @b cppcheck >= 1.60
-- @b astyle >= 2.03
+- @b clang-format >= 3.5
 
 For developing:
 - @b qtcreator >= 2.8
@@ -88,10 +88,7 @@ For metrics:
 - @b lizard >= 1.8.4 (see https://pypi.python.org/pypi/lizard)
 
 For packaging:
-- @b debhelper
-- @b rpmbuild >= 4.9
 - @b tar >= 1.26
-@todo [DOC] Find out how to build deb files in rpm based distributions.
 
 @section sec_concepts Concepts
 
