@@ -23,9 +23,11 @@ IF(NOT MINIMAL)
     IF(JAVA_FOUND AND DOXYGEN_FOUND AND WGET_FOUND)
         SET(PLANTUML_JAR "${CMAKE_CURRENT_BINARY_DIR}/plantuml.jar")
         IF(NOT EXISTS "${PLANTUML_JAR}")
+            MESSAGE(STATUS "Downloading PlantUML")
             EXECUTE_PROCESS(COMMAND "${WGET_EXECUTABLE}"
                             "http://sourceforge.net/projects/plantuml/files/plantuml.jar/download"
-                            "-O" "${PLANTUML_JAR}")
+                            "-O" "${PLANTUML_JAR}" OUTPUT_QUIET ERROR_QUIET)
+            MESSAGE(STATUS "Downloading PlantUML - done")
         ENDIF()
 
         ADD_CUSTOM_TARGET(doc
