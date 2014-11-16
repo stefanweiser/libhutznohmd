@@ -34,8 +34,6 @@ namespace rest
 namespace socket
 {
 
-connection_socket_interface::~connection_socket_interface() {}
-
 connection_pointer connect(const std::string& host, const uint16_t& port)
 {
     return connection_socket::create(host, port);

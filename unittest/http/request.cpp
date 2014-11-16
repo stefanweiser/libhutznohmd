@@ -22,7 +22,7 @@
 #include <http/parser/utility/md5.hpp>
 #include <http/request.hpp>
 
-#include <socket/mock_socket_interface.hpp>
+#include <mock_socket_interface.hpp>
 
 using namespace testing;
 

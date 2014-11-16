@@ -21,7 +21,7 @@
 #include <thread>
 #include <vector>
 
-#include <socket/socket_interface.hpp>
+#include <rest.hpp>
 
 void client()
 {

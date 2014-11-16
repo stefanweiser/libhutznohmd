@@ -21,7 +21,7 @@
 
 #include <gmock/gmock.h>
 
-#include <socket/socket_interface.hpp>
+#include <rest.hpp>
 
 namespace rest
 {

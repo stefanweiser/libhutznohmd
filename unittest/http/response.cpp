@@ -21,7 +21,7 @@
 
 #include <http/response.hpp>
 
-#include <socket/mock_socket_interface.hpp>
+#include <mock_socket_interface.hpp>
 
 using namespace testing;
 

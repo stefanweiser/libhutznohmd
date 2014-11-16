@@ -36,4 +36,13 @@ server_interface::~server_interface() {}
 
 } // namespace http
 
+namespace socket
+{
+
+connection_socket_interface::~connection_socket_interface() {}
+
+listener_socket_interface::~listener_socket_interface() {}
+
+} // namespace socket
+
 } // namespace rest

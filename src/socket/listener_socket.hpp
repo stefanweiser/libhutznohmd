@@ -25,8 +25,6 @@
 
 #include <rest.hpp>
 
-#include <socket/socket_interface.hpp>
-
 namespace rest
 {
 

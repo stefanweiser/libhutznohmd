@@ -20,7 +20,7 @@
 
 #include <gtest/gtest.h>
 
-#include <socket/socket_interface.hpp>
+#include <rest.hpp>
 
 namespace rest
 {
