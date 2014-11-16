@@ -20,85 +20,60 @@
 
 #include <gtest/gtest.h>
 
-#include <socket/connection_socket.hpp>
-#include <socket/listener_socket.hpp>
+#include <socket/socket_interface.hpp>
 
 namespace rest
 {
 
-namespace
-{
-
-void disable_time_wait(int socket)
-{
-    ::linger l = ::linger{1, 0};
-    ::setsockopt(socket, SOL_SOCKET, SO_LINGER, &l, sizeof(l));
-}
-
-int get_socket(const socket::connection_pointer& connection)
-{
-    return std::dynamic_pointer_cast<socket::connection_socket>(connection)
-        ->socket();
-}
-
-int get_socket(const socket::listener_pointer& listener)
-{
-    return std::dynamic_pointer_cast<socket::listener_socket>(listener)
-        ->socket();
-}
-
-} // namespace
-
 TEST(socket, construction_no_throw)
 {
-    auto listener = socket::listener_socket::create("127.0.0.1", 10000);
-    disable_time_wait(listener->socket());
-    EXPECT_NE(listener, std::shared_ptr<socket::listener_socket>());
+    auto listener = socket::listen("127.0.0.1", 10000);
+    EXPECT_TRUE(listener->set_lingering_timeout(0));
+    EXPECT_NE(listener, socket::listener_pointer());
     EXPECT_TRUE(listener->listening());
 }
 
 TEST(socket, wrong_construction_arguments)
 {
     auto listener = socket::listen("127.0.0.1", 10000);
-    disable_time_wait(get_socket(listener));
-
+    EXPECT_TRUE(listener->set_lingering_timeout(0));
     EXPECT_EQ(socket::listen("127.0.0.1", 10000), socket::listener_pointer());
     EXPECT_TRUE(listener->listening());
 }
 
 TEST(socket, accepting_closed_socket)
 {
-    auto listener = socket::listener_socket::create("127.0.0.1", 10000);
-    disable_time_wait(listener->socket());
+    auto listener = socket::listen("127.0.0.1", 10000);
+    EXPECT_TRUE(listener->set_lingering_timeout(0));
     EXPECT_EQ(::close(listener->socket()), 0);
     EXPECT_EQ(listener->accept(), socket::connection_pointer());
 }
 
 TEST(socket, connecting_closed_socket)
 {
-    auto connection = socket::connection_socket::create("127.0.0.1", 10000);
+    auto connection = socket::connect("127.0.0.1", 10000);
     connection->close();
     EXPECT_FALSE(connection->connect());
 }
 
 TEST(socket, connection_refused)
 {
-    auto connection = socket::connection_socket::create("127.0.0.1", 10000);
+    auto connection = socket::connect("127.0.0.1", 10000);
     EXPECT_FALSE(connection->connect());
 }
 
 TEST(socket, receive_send_closed_socket)
 {
     auto listener = socket::listen("127.0.0.1", 10000);
-    disable_time_wait(get_socket(listener));
+    EXPECT_TRUE(listener->set_lingering_timeout(0));
     EXPECT_TRUE(listener->listening());
 
     bool connected = false;
     bool disconnected = false;
     std::thread thread([&disconnected, &connected] {
-        auto connection = socket::connection_socket::create("127.0.0.1", 10000);
+        auto connection = socket::connect("127.0.0.1", 10000);
         EXPECT_TRUE(connection->connect());
-        disable_time_wait(connection->socket());
+        EXPECT_TRUE(connection->set_lingering_timeout(0));
         connected = true;
         while (disconnected == false) {
             usleep(1);
@@ -113,7 +88,7 @@ TEST(socket, receive_send_closed_socket)
     });
 
     socket::connection_pointer connection = listener->accept();
-    disable_time_wait(get_socket(connection));
+    EXPECT_TRUE(connection->set_lingering_timeout(0));
     while (connected == false) {
         usleep(1);
     }
@@ -126,25 +101,25 @@ TEST(socket, receive_send_closed_socket)
 TEST(socket, double_connect)
 {
     socket::listener_pointer listener = socket::listen("127.0.0.1", 10000);
-    disable_time_wait(get_socket(listener));
+    EXPECT_TRUE(listener->set_lingering_timeout(0));
     EXPECT_TRUE(listener->listening());
 
     std::thread thread([] {
-        auto connection = socket::connection_socket::create("127.0.0.1", 10000);
+        auto connection = socket::connect("127.0.0.1", 10000);
         EXPECT_TRUE(connection->connect());
         EXPECT_FALSE(connection->connect());
-        disable_time_wait(connection->socket());
+        EXPECT_TRUE(connection->set_lingering_timeout(0));
     });
 
     socket::connection_pointer connection = listener->accept();
-    disable_time_wait(get_socket(connection));
+    EXPECT_TRUE(connection->set_lingering_timeout(0));
     thread.join();
     EXPECT_TRUE(listener->listening());
 }
 
 TEST(socket, unconnected_send_receive)
 {
-    auto connection = socket::connection_socket::create("127.0.0.1", 10000);
+    auto connection = socket::connect("127.0.0.1", 10000);
     buffer data;
     EXPECT_FALSE(connection->send(""));
     EXPECT_FALSE(connection->receive(data, 0));
@@ -152,7 +127,7 @@ TEST(socket, unconnected_send_receive)
 
 TEST(socket, terminate_try_to_connect)
 {
-    auto connection = socket::connection_socket::create("240.0.0.1", 65535);
+    auto connection = socket::connect("240.0.0.1", 65535);
 
     std::thread thread([&connection] { EXPECT_FALSE(connection->connect()); });
 
@@ -164,7 +139,7 @@ TEST(socket, terminate_try_to_connect)
 TEST(socket, terminate_try_to_accept)
 {
     socket::listener_pointer listener = socket::listen("127.0.0.1", 10000);
-    disable_time_wait(get_socket(listener));
+    EXPECT_TRUE(listener->set_lingering_timeout(0));
     EXPECT_TRUE(listener->listening());
 
     std::thread thread([&listener] {
@@ -182,15 +157,14 @@ TEST(socket, terminate_try_to_accept)
 TEST(socket, normal_use_case)
 {
     socket::listener_pointer listener = socket::listen("127.0.0.1", 10000);
-    disable_time_wait(get_socket(listener));
+    EXPECT_TRUE(listener->set_lingering_timeout(0));
     EXPECT_TRUE(listener->listening());
 
     std::thread thread([] {
-        socket::connection_pointer connection =
-            socket::connect("127.0.0.1", 10000);
+        auto connection = socket::connect("127.0.0.1", 10000);
         EXPECT_TRUE(connection->connect());
         EXPECT_NE(connection, socket::connection_pointer());
-        disable_time_wait(get_socket(connection));
+        EXPECT_TRUE(connection->set_lingering_timeout(0));
         buffer data;
         EXPECT_TRUE(connection->receive(data, 8));
         EXPECT_EQ(data, buffer({0, 1, 2, 3}));
@@ -200,7 +174,7 @@ TEST(socket, normal_use_case)
 
     socket::connection_pointer connection = listener->accept();
     EXPECT_NE(connection, socket::connection_pointer());
-    disable_time_wait(get_socket(connection));
+    EXPECT_TRUE(connection->set_lingering_timeout(0));
     buffer data = {0, 1, 2, 3};
     EXPECT_TRUE(connection->send(data));
     data.clear();

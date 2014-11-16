@@ -44,8 +44,8 @@ public:
     virtual connection_pointer accept() const;
     virtual bool listening() const;
     virtual void stop();
-
-    int socket() const;
+    virtual bool set_lingering_timeout(const int& timeout);
+    virtual int socket() const;
 
 private:
     bool is_listening_;

@@ -37,6 +37,8 @@ public:
     MOCK_METHOD2(receive, bool(rest::buffer&, const size_t&));
     MOCK_METHOD1(send, bool(const rest::buffer&));
     MOCK_METHOD1(send, bool(const std::string&));
+    MOCK_METHOD1(set_lingering_timeout, bool(const int&));
+    MOCK_CONST_METHOD0(socket, int());
 };
 
 typedef std::shared_ptr<connection_socket_mock> connection_mock_pointer;
@@ -45,7 +47,10 @@ class listener_socket_mock : public listener_socket_interface
 {
 public:
     MOCK_CONST_METHOD0(accept, connection_pointer());
+    MOCK_CONST_METHOD0(listening, bool());
     MOCK_METHOD0(stop, void());
+    MOCK_METHOD1(set_lingering_timeout, bool(const int&));
+    MOCK_CONST_METHOD0(socket, int());
 };
 
 } // namespace socket

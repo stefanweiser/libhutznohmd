@@ -106,6 +106,12 @@ void listener_socket::stop()
     ::shutdown(socket_, SHUT_RDWR);
 }
 
+bool listener_socket::set_lingering_timeout(const int& timeout)
+{
+    ::linger l = ::linger{1, timeout};
+    return ::setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0;
+}
+
 int listener_socket::socket() const { return socket_; }
 
 } // namespace socket

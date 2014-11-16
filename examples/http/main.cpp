@@ -32,6 +32,8 @@ public:
     virtual bool receive(rest::buffer& data, const size_t& max_size);
     virtual bool send(const rest::buffer& data);
     virtual bool send(const std::string& data);
+    virtual bool set_lingering_timeout(const int& timeout);
+    virtual int socket() const;
 
 private:
     std::ifstream stream_;
@@ -66,6 +68,10 @@ bool connection::receive(rest::buffer& data, const size_t& max_size)
 bool connection::send(const rest::buffer& /*data*/) { return true; }
 
 bool connection::send(const std::string& /*data*/) { return true; }
+
+bool connection::set_lingering_timeout(const int& /*timeout*/) { return true; }
+
+int connection::socket() const { return 0; }
 
 int main()
 {

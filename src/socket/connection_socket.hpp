@@ -47,8 +47,8 @@ public:
     virtual bool receive(rest::buffer& data, const size_t& max_size);
     virtual bool send(const rest::buffer& data);
     virtual bool send(const std::string& data);
-
-    int socket() const;
+    virtual bool set_lingering_timeout(const int& timeout);
+    virtual int socket() const;
 
 private:
     bool send(const char* buffer, const size_t& size);

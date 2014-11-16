@@ -158,6 +158,12 @@ bool connection_socket::send(const char* buffer, const size_t& size)
     return true;
 }
 
+bool connection_socket::set_lingering_timeout(const int& timeout)
+{
+    ::linger l = ::linger{1, timeout};
+    return ::setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0;
+}
+
 int connection_socket::socket() const { return socket_; }
 
 } // namespace socket
