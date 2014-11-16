@@ -21,7 +21,7 @@
 
 #include <http/server.hpp>
 
-#include <mock_socket_interface.hpp>
+#include <mock_socket_interfaces.hpp>
 
 using namespace testing;
 
@@ -39,7 +39,7 @@ TEST(server, parsing_request)
                   response_interface& /*response*/) { called = true; };
     server server(rest::socket::listener_pointer(), transaction);
 
-    auto socket = std::make_shared<rest::socket::connection_socket_mock>();
+    auto socket = std::make_shared<rest::socket::connection_mock>();
     EXPECT_CALL(*socket, receive(_, _))
         .WillOnce(Invoke(
             [](rest::buffer& data, const size_t & /*max_size*/) -> bool {

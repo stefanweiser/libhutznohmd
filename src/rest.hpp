@@ -583,10 +583,10 @@ server_pointer create_server(const std::string& host, const uint16_t& port,
 namespace socket
 {
 
-class connection_socket_interface
+class connection_interface
 {
 public:
-    virtual ~connection_socket_interface();
+    virtual ~connection_interface();
     virtual bool connect() = 0;
     virtual void close() = 0;
     virtual bool receive(rest::buffer& data, const size_t& max_size) = 0;
@@ -596,12 +596,12 @@ public:
     virtual int socket() const = 0;
 };
 
-typedef std::shared_ptr<connection_socket_interface> connection_pointer;
+typedef std::shared_ptr<connection_interface> connection_pointer;
 
-class listener_socket_interface
+class listener_interface
 {
 public:
-    virtual ~listener_socket_interface();
+    virtual ~listener_interface();
     virtual connection_pointer accept() const = 0;
     virtual bool listening() const = 0;
     virtual void stop() = 0;
@@ -609,7 +609,7 @@ public:
     virtual int socket() const = 0;
 };
 
-typedef std::shared_ptr<listener_socket_interface> listener_pointer;
+typedef std::shared_ptr<listener_interface> listener_pointer;
 
 connection_pointer connect(const std::string& host, const uint16_t& port);
 listener_pointer listen(const std::string& host, const uint16_t& port);

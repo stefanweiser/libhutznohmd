@@ -26,7 +26,7 @@
 #include <sys/poll.h>
 #include <unistd.h>
 
-#include <socket/connection_socket.hpp>
+#include <socket/connection.hpp>
 
 #include "utility.hpp"
 

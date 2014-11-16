@@ -21,7 +21,7 @@
 
 #include <http/response.hpp>
 
-#include <mock_socket_interface.hpp>
+#include <mock_socket_interfaces.hpp>
 
 using namespace testing;
 
@@ -33,7 +33,7 @@ namespace http
 
 TEST(response, set_and_deliver)
 {
-    auto socket = std::make_shared<rest::socket::connection_socket_mock>();
+    auto socket = std::make_shared<rest::socket::connection_mock>();
     response response(socket);
 
     response.set_data({'0'});

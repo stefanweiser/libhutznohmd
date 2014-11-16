@@ -20,7 +20,7 @@
 #include <gmock/gmock.h>
 
 #include <http/server.hpp>
-#include <socket/connection_socket.hpp>
+#include <socket/connection.hpp>
 
 using namespace testing;
 
@@ -39,14 +39,12 @@ void disable_time_wait(int socket)
 int get_socket(const http::server_pointer& server)
 {
     auto listener = std::dynamic_pointer_cast<http::server>(server)->socket();
-    return std::dynamic_pointer_cast<socket::listener_socket>(listener)
-        ->socket();
+    return std::dynamic_pointer_cast<socket::listener>(listener)->socket();
 }
 
 int get_socket(const socket::connection_pointer& connection)
 {
-    return std::dynamic_pointer_cast<socket::connection_socket>(connection)
-        ->socket();
+    return std::dynamic_pointer_cast<socket::connection>(connection)->socket();
 }
 
 } // namespace

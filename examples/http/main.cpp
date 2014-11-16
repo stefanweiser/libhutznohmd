@@ -22,7 +22,7 @@
 #include <rest.hpp>
 #include <http/request.hpp>
 
-class connection : public rest::socket::connection_socket_interface
+class connection : public rest::socket::connection_interface
 {
 public:
     explicit connection(const std::string& filename);

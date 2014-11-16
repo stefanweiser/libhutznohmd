@@ -39,9 +39,9 @@ server_interface::~server_interface() {}
 namespace socket
 {
 
-connection_socket_interface::~connection_socket_interface() {}
+connection_interface::~connection_interface() {}
 
-listener_socket_interface::~listener_socket_interface() {}
+listener_interface::~listener_interface() {}
 
 } // namespace socket
 

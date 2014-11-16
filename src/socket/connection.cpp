@@ -26,7 +26,7 @@
 
 #include <socket/utility.hpp>
 
-#include "connection_socket.hpp"
+#include "connection.hpp"
 
 namespace rest
 {
@@ -36,38 +36,38 @@ namespace socket
 
 connection_pointer connect(const std::string& host, const uint16_t& port)
 {
-    return connection_socket::create(host, port);
+    return connection::create(host, port);
 }
 
-std::shared_ptr<connection_socket>
-connection_socket::create(const std::string& host, const uint16_t& port)
+std::shared_ptr<connection> connection::create(const std::string& host,
+                                               const uint16_t& port)
 {
     const int socket = ::socket(PF_INET, SOCK_STREAM, 0);
     if (socket == -1) {
-        return std::shared_ptr<connection_socket>();
+        return std::shared_ptr<connection>();
     }
 
     const ::sockaddr_in address = fill_address(host, port);
-    auto result = std::make_shared<connection_socket>(socket, address);
+    auto result = std::make_shared<connection>(socket, address);
 
     return result;
 }
 
-connection_socket::connection_socket(const int& s)
+connection::connection(const int& s)
     : is_connected_(true)
     , socket_(s)
     , address_()
 {
 }
 
-connection_socket::connection_socket(const int& s, const ::sockaddr_in& address)
+connection::connection(const int& s, const ::sockaddr_in& address)
     : is_connected_(false)
     , socket_(s)
     , address_(address)
 {
 }
 
-connection_socket::~connection_socket()
+connection::~connection()
 {
     close();
     close_signal_safe(socket_);
@@ -84,7 +84,7 @@ union address_union
 
 } // namespace
 
-bool connection_socket::connect()
+bool connection::connect()
 {
     if (true == is_connected_) {
         return false;
@@ -99,13 +99,13 @@ bool connection_socket::connect()
     return true;
 }
 
-void connection_socket::close()
+void connection::close()
 {
     is_connected_ = false;
     ::shutdown(socket_, SHUT_RDWR);
 }
 
-bool connection_socket::receive(rest::buffer& data, const size_t& max_size)
+bool connection::receive(rest::buffer& data, const size_t& max_size)
 {
     if (false == is_connected_) {
         return false;
@@ -124,17 +124,17 @@ bool connection_socket::receive(rest::buffer& data, const size_t& max_size)
     return true;
 }
 
-bool connection_socket::send(const rest::buffer& data)
+bool connection::send(const rest::buffer& data)
 {
     return send(data.data(), data.size());
 }
 
-bool connection_socket::send(const std::string& data)
+bool connection::send(const std::string& data)
 {
     return send(data.data(), data.size());
 }
 
-bool connection_socket::send(const char* buffer, const size_t& size)
+bool connection::send(const char* buffer, const size_t& size)
 {
     if (false == is_connected_) {
         return false;
@@ -156,13 +156,13 @@ bool connection_socket::send(const char* buffer, const size_t& size)
     return true;
 }
 
-bool connection_socket::set_lingering_timeout(const int& timeout)
+bool connection::set_lingering_timeout(const int& timeout)
 {
     ::linger l = ::linger{1, timeout};
     return ::setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0;
 }
 
-int connection_socket::socket() const { return socket_; }
+int connection::socket() const { return socket_; }
 
 } // namespace socket
 

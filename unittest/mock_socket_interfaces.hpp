@@ -29,7 +29,7 @@ namespace rest
 namespace socket
 {
 
-class connection_socket_mock : public connection_socket_interface
+class connection_mock : public connection_interface
 {
 public:
     MOCK_METHOD0(connect, bool());
@@ -41,9 +41,9 @@ public:
     MOCK_CONST_METHOD0(socket, int());
 };
 
-typedef std::shared_ptr<connection_socket_mock> connection_mock_pointer;
+typedef std::shared_ptr<connection_mock> connection_mock_pointer;
 
-class listener_socket_mock : public listener_socket_interface
+class listener_mock : public listener_interface
 {
 public:
     MOCK_CONST_METHOD0(accept, connection_pointer());

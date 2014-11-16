@@ -16,12 +16,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_SOCKET_LISTENER_SOCKET_HPP
-#define LIBREST_SOCKET_LISTENER_SOCKET_HPP
+#ifndef LIBREST_SOCKET_CONNECTION_SOCKET_HPP
+#define LIBREST_SOCKET_CONNECTION_SOCKET_HPP
 
 #include <cstdint>
-#include <memory>
-#include <string>
+
+#include <netinet/in.h>
 
 #include <rest.hpp>
 
@@ -31,27 +31,33 @@ namespace rest
 namespace socket
 {
 
-class listener_socket : public listener_socket_interface
+class connection : public connection_interface
 {
 public:
-    static std::shared_ptr<listener_socket> create(const std::string& host,
-                                                   const uint16_t& port);
+    static std::shared_ptr<connection> create(const std::string& host,
+                                              const uint16_t& port);
 
-    explicit listener_socket(const int& s);
-    virtual ~listener_socket();
-    virtual connection_pointer accept() const;
-    virtual bool listening() const;
-    virtual void stop();
+    explicit connection(const int& s);
+    explicit connection(const int& s, const ::sockaddr_in& address);
+    virtual ~connection();
+    virtual bool connect();
+    virtual void close();
+    virtual bool receive(rest::buffer& data, const size_t& max_size);
+    virtual bool send(const rest::buffer& data);
+    virtual bool send(const std::string& data);
     virtual bool set_lingering_timeout(const int& timeout);
     virtual int socket() const;
 
 private:
-    bool is_listening_;
+    bool send(const char* buffer, const size_t& size);
+
+    bool is_connected_;
     int socket_;
+    const ::sockaddr_in address_;
 };
 
 } // namespace socket
 
 } // namespace rest
 
-#endif // LIBREST_SOCKET_LISTENER_SOCKET_HPP
+#endif // LIBREST_SOCKET_CONNECTION_SOCKET_HPP

@@ -22,10 +22,10 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include <socket/connection_socket.hpp>
+#include <socket/connection.hpp>
 #include <socket/utility.hpp>
 
-#include "listener_socket.hpp"
+#include "listener.hpp"
 
 namespace rest
 {
@@ -35,7 +35,7 @@ namespace socket
 
 listener_pointer listen(const std::string& host, const uint16_t& port)
 {
-    return listener_socket::create(host, port);
+    return listener::create(host, port);
 }
 
 namespace
@@ -49,41 +49,40 @@ union address_union
 
 } // namespace
 
-std::shared_ptr<listener_socket>
-listener_socket::create(const std::string& host, const uint16_t& port)
+std::shared_ptr<listener> listener::create(const std::string& host,
+                                           const uint16_t& port)
 {
     const int socket = ::socket(PF_INET, SOCK_STREAM, 0);
     if (socket == -1) {
-        return std::shared_ptr<listener_socket>();
+        return std::shared_ptr<listener>();
     }
 
-    std::shared_ptr<listener_socket> result =
-        std::make_shared<listener_socket>(socket);
+    std::shared_ptr<listener> result = std::make_shared<listener>(socket);
 
     address_union address;
     address.in = fill_address(host, port);
     int result1 = ::bind(result->socket_, &(address.base), sizeof(address));
     int result2 = ::listen(result->socket_, 4);
     if ((result1 == -1) || (result2 == -1)) {
-        return std::shared_ptr<listener_socket>();
+        return std::shared_ptr<listener>();
     }
 
     return result;
 }
 
-listener_socket::listener_socket(const int& s)
+listener::listener(const int& s)
     : is_listening_(true)
     , socket_(s)
 {
 }
 
-listener_socket::~listener_socket()
+listener::~listener()
 {
     stop();
     close_signal_safe(socket_);
 }
 
-connection_pointer listener_socket::accept() const
+connection_pointer listener::accept() const
 {
     address_union address;
     ::socklen_t size = sizeof(address);
@@ -93,24 +92,24 @@ connection_pointer listener_socket::accept() const
         return connection_pointer();
     }
 
-    return std::make_shared<connection_socket>(client);
+    return std::make_shared<connection>(client);
 }
 
-bool listener_socket::listening() const { return is_listening_; }
+bool listener::listening() const { return is_listening_; }
 
-void listener_socket::stop()
+void listener::stop()
 {
     is_listening_ = false;
     ::shutdown(socket_, SHUT_RDWR);
 }
 
-bool listener_socket::set_lingering_timeout(const int& timeout)
+bool listener::set_lingering_timeout(const int& timeout)
 {
     ::linger l = ::linger{1, timeout};
     return ::setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0;
 }
 
-int listener_socket::socket() const { return socket_; }
+int listener::socket() const { return socket_; }
 
 } // namespace socket
 
