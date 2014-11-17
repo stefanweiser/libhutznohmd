@@ -24,16 +24,21 @@ FILE(GLOB_RECURSE
      *.c
      *.h)
 
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/version.cpp.in"
+               "${CMAKE_BINARY_DIR}/version.cpp")
+
 ADD_LIBRARY(hutznohmd
             SHARED
-            ${FILES})
+            ${FILES}
+            "${CMAKE_BINARY_DIR}/version.cpp")
 STYLE_FILES(hutznohmd
             ${FILES})
 ADD_DEPENDENCIES(hutznohmd
                  cppcheck)
 SET_TARGET_PROPERTIES(hutznohmd PROPERTIES VERSION "${LIBRARY_VERSION}")
 
-INCLUDE_DIRECTORIES("${PROJECT_PATH}/src")
+INCLUDE_DIRECTORIES("${CMAKE_BINARY_DIR}")
+INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}")
 
 INSTALL(TARGETS hutznohmd DESTINATION lib)
 INSTALL(FILES rest.hpp DESTINATION include)
