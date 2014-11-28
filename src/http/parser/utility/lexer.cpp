@@ -103,8 +103,7 @@ bool parse_comment(int32_t& character, const lexer& l)
     size_t nesting_depth = 1;
 
     // Eat up the characters till a valid end is detected. This could only be
-    // the end of the
-    // stream.
+    // the end of the stream.
     while (character >= 0) {
         if ('(' == character) {
             nesting_depth++;

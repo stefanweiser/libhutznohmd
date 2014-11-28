@@ -32,7 +32,7 @@ namespace http
 //! @brief Calculates the MD5 sum of a given vector of bytes.
 //! @param data Vector of data to parse.
 //! @return Array of 16 bytes, that contains the digest.
-//! @warning This works only for little endian architectures.
+//! @warning This currently works only on little endian architectures.
 std::array<uint8_t, 16> calculate_md5(const std::vector<char>& data);
 
 } // namespace http

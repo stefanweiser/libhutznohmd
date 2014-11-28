@@ -62,9 +62,9 @@ void parse_word(int32_t& character, push_back_string<size>& result,
 }
 
 //! Parses a quoted string stopping if an invalid character is found or the end
-// is found.
+//! is found.
 //! @return True if the string was successfully parsed and false if an error
-// occurred.
+//! occurred.
 template <size_t size>
 bool parse_quoted_string(int32_t& character, push_back_string<size>& result,
                          const lexer& l)
@@ -97,9 +97,9 @@ bool parse_quoted_string(int32_t& character, push_back_string<size>& result,
 }
 
 //! Parses a comment stopping if an invalid character is found or the end is
-// found.
+//! found.
 //! @return True if the comment was successfully parsed and false if an error
-// occurred.
+//! occurred.
 bool parse_comment(int32_t& character, const lexer& l);
 
 } // namespace http

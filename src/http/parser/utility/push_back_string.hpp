@@ -43,16 +43,16 @@ public:
     ~push_back_string();
 
     //! Pushs one character at the end of the string. The string won't get
-    // finished by '\0'. It
-    //! allocates memory dynamically if the string runs out of memory.
+    //! finished by '\0'. It allocates memory dynamically if the string runs
+    //! out of memory.
     void push_back(const char c);
 
     //! Pushs some character at the end of the string. The string won't get
-    // finished by '\0'. It
-    //! allocates memory dynamically if the string runs out of memory.
+    //! finished by '\0'. It allocates memory dynamically if the string runs
+    //! out of memory.
     //! WARNING: This method may never return, if the argument is not finished
-    // by '\0'. Do not use
-    //! it for user defined data. This may cause a buffer overflow.
+    //! by '\0'. Do not use it for user defined data. This may cause a buffer
+    //! overflow.
     void append_string(const char* s);
 
     //! Returns the character at a given index.
@@ -114,8 +114,7 @@ void push_back_string<maximum_size>::push_back(const char c)
                 dynamic_size_ += maximum_size;
 
                 // Don't forget to free the buffer block that was used before
-                // reallocation in case
-                // of a failed reallocation.
+                // reallocation in case of a failed reallocation.
                 char* new_buffer =
                     static_cast<char*>(realloc(dynamic_buffer_, dynamic_size_));
                 if (nullptr == new_buffer) {

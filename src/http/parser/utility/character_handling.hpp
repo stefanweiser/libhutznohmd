@@ -63,8 +63,7 @@ static char from_hex(const char c)
 }
 
 //! Returns true, if the given character is a valid character for an URI
-// authority without the '@'
-//! symbol.
+//! authority without the '@' symbol.
 static bool is_valid_uri_authority_character(uint8_t c)
 {
     static const std::array<char, 256> uri_authority_validity_map = {
@@ -119,7 +118,7 @@ static bool is_valid_uri_query_character(uint8_t c)
 }
 
 //! Returns true, if the given character is a valid character for an URI
-// fragment.
+//! fragment.
 static bool is_valid_uri_fragment_character(uint8_t c)
 {
     static const std::array<char, 256> uri_fragment_validity_map = {
@@ -156,7 +155,7 @@ static bool is_valid_token_character(uint8_t c)
 }
 
 //! Returns true, if the given character is a valid character for a custom
-// header value.
+//! header value.
 static bool is_valid_header_value_character(uint8_t c)
 {
     static const std::array<char, 256> header_value_validity_map = {
@@ -175,7 +174,7 @@ static bool is_valid_header_value_character(uint8_t c)
 }
 
 //! Returns true, if the given character is a valid character for a quoted
-// string.
+//! string.
 static bool is_valid_quoted_string_character(uint8_t c)
 {
     static const std::array<char, 256> quoted_string_validity_map = {
