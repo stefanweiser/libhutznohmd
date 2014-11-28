@@ -23,13 +23,11 @@
 
 @section sec_mission Mission Statement
 
-To help the architects and developers of a webservice implementing it according
-to the principles of the
-@htmlonly <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">
-@endhtmlonly
-Representational State Transfer @htmlonly </a> @endhtmlonly architectural style
-by supporting an easy to
-use, reliable, robust, scalable and well tested library.
+To help the developers of a webservice implementing it according to the
+principles of the [Representational State Transfer]
+(http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm "Roy Thomas
+Fieldings dissertation") architectural style by supporting an easy to use,
+reliable, robust, scalable and well tested library.
 
 @section sec_general_information General Information
 
@@ -39,6 +37,8 @@ web service.
 See @ref deployment to learn about the deployment tool @c make.
 
 See @ref development to get started developing libhutznohmd.
+
+See @ref etymology to learn more about the name of the library.
 
 @section sec_contact Contact
 Stefan Weiser <stefan @@dot weiser @@at bluewin @@dot ch>
