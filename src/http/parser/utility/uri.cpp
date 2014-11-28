@@ -247,11 +247,9 @@ bool uri::parse_scheme(int32_t& character)
 bool uri::parse_userinfo_and_authority(int32_t& character)
 {
     if ('/' == character) {
-        const int32_t last_character = character;
         path_.push_back(static_cast<char>(character));
         character = lexer_->get();
-
-        if (('/' == last_character) && ('/' == character)) {
+        if ('/' == character) {
             // It is no path. It is an authority.
             path_.clear();
             character = lexer_->get();
@@ -266,18 +264,13 @@ bool uri::parse_userinfo_and_authority(int32_t& character)
 bool uri::parse_authority(int32_t& character)
 {
     // There is an ambiguity in the authority part of an URI specified by
-    // RFC3986. You are not
-    // able to correctly parse the the authority into tokens without looking
-    // ahead n symbols,
-    // where n is the length of the whole authority part, because the symbol of
-    // ':' could occur
-    // before and after the '@' symbol, which is also optional. So what do you
-    // do, if you have
-    // found a ':' symbol without an '@' symbol before? The ':' could be part of
-    // the user info or
-    // it separates host and port.
-    // Therefore it is easier to perform a 2-pass parsing to determine, whether
-    // a '@' symbol
+    // RFC3986. You are not able to correctly parse the the authority into
+    // tokens without looking ahead n symbols, where n is the length of the
+    // whole authority part, because the symbol of ':' could occur before and
+    // after the '@' symbol, which is also optional. So what do you do, if you
+    // have found a ':' symbol without an '@' symbol before? The ':' could be
+    // part of the user info or it separates host and port. Therefore it is
+    // easier to perform a 2-pass parsing to determine, whether a '@' symbol
     // occurs or not.
 
     if (false == parse_authority_1st_pass(character)) {
@@ -311,9 +304,8 @@ bool uri::parse_authority_1st_pass(int32_t& character)
 bool uri::parse_authority_2nd_pass()
 {
     // Now there are all parts of the authority at the right place, except the
-    // port number, if it
-    // exists. We will search the host backwards for a number and search the ':'
-    // symbol.
+    // port number, if it exists. We will search the host backwards for a
+    // number and search the ':' symbol.
     uint32_t p = 0;
     uint32_t factor = 1;
     for (ssize_t i = (host_.size() - 1); i >= 0; i--) {
