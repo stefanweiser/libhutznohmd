@@ -32,7 +32,8 @@ namespace http
 //! slower and dynamic string types. Its maximum_size at begin is predefined
 //! by a template argument. The user is only able to push one character at the
 //! back of the string or clear the string at all to manipulate the string.
-template <size_t maximum_size> class push_back_string
+template <size_t maximum_size>
+class push_back_string
 {
 public:
     //! Constructs a new and empty string without any dynamic memory allocation.
@@ -172,7 +173,8 @@ size_t push_back_string<maximum_size>::size() const
     return current_length_;
 }
 
-template <size_t maximum_size> void push_back_string<maximum_size>::clear()
+template <size_t maximum_size>
+void push_back_string<maximum_size>::clear()
 {
     if (nullptr != dynamic_buffer_) {
         // We need to free the buffer, because we will work with the static data

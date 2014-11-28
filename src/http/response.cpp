@@ -70,7 +70,10 @@ void response::set_header(const std::string& key, const std::string& value)
     headers_[key] = value;
 }
 
-void response::set_data(const rest::buffer& data) { data_ = data; }
+void response::set_data(const rest::buffer& data)
+{
+    data_ = data;
+}
 
 void response::deliver_version(std::ostream& os,
                                const rest::http::version& version)

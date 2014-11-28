@@ -138,7 +138,10 @@ const media_type_interface& request_parser::content_type() const
     return common_.content_type_;
 }
 
-const time_t& request_parser::date() const { return common_.date_; }
+const time_t& request_parser::date() const
+{
+    return common_.date_;
+}
 
 bool request_parser::keeps_connection() const
 {
@@ -150,16 +153,25 @@ const std::array<uint8_t, 16>& request_parser::md5() const
     return common_.md5_;
 }
 
-bool request_parser::has_md5() const { return common_.has_md5_; }
+bool request_parser::has_md5() const
+{
+    return common_.has_md5_;
+}
 
-const rest::http::method& request_parser::method() const { return method_; }
+const rest::http::method& request_parser::method() const
+{
+    return method_;
+}
 
 const uri_interface& request_parser::request_uri() const
 {
     return request_uri_;
 }
 
-const uri_interface& request_parser::from_uri() const { return from_uri_; }
+const uri_interface& request_parser::from_uri() const
+{
+    return from_uri_;
+}
 
 std::vector<const media_type_interface*> request_parser::accept_header() const
 {

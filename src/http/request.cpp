@@ -31,7 +31,10 @@ namespace rest
 namespace http
 {
 
-int32_t get_char(void* handle) { return static_cast<request*>(handle)->get(); }
+int32_t get_char(void* handle)
+{
+    return static_cast<request*>(handle)->get();
+}
 
 int32_t peek_char(void* handle)
 {
@@ -100,14 +103,20 @@ const std::map<std::string, std::string>& request::headers() const
     return request_parser_.headers();
 }
 
-const rest::buffer& request::data() const { return data_; }
+const rest::buffer& request::data() const
+{
+    return data_;
+}
 
 const media_type_interface& request::data_content_type() const
 {
     return request_parser_.content_type();
 }
 
-time_t request::date() const { return request_parser_.date(); }
+time_t request::date() const
+{
+    return request_parser_.date();
+}
 
 bool request::keeps_connection() const
 {

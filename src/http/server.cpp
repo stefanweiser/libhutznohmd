@@ -82,7 +82,10 @@ void server::parse_request(const rest::socket::connection_pointer& connection)
     }
 }
 
-const rest::socket::listener_pointer& server::socket() const { return socket_; }
+const rest::socket::listener_pointer& server::socket() const
+{
+    return socket_;
+}
 
 } // namespace http
 

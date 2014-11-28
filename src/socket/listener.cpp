@@ -95,7 +95,10 @@ connection_pointer listener::accept() const
     return std::make_shared<connection>(client);
 }
 
-bool listener::listening() const { return is_listening_; }
+bool listener::listening() const
+{
+    return is_listening_;
+}
 
 void listener::stop()
 {
@@ -109,7 +112,10 @@ bool listener::set_lingering_timeout(const int& timeout)
     return ::setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0;
 }
 
-int listener::socket() const { return socket_; }
+int listener::socket() const
+{
+    return socket_;
+}
 
 } // namespace socket
 

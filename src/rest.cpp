@@ -24,24 +24,38 @@ namespace rest
 namespace http
 {
 
-uri_interface::~uri_interface() {}
+uri_interface::~uri_interface()
+{
+}
 
-media_type_interface::~media_type_interface() {}
+media_type_interface::~media_type_interface()
+{
+}
 
-request_interface::~request_interface() {}
+request_interface::~request_interface()
+{
+}
 
-response_interface::~response_interface() {}
+response_interface::~response_interface()
+{
+}
 
-server_interface::~server_interface() {}
+server_interface::~server_interface()
+{
+}
 
 } // namespace http
 
 namespace socket
 {
 
-connection_interface::~connection_interface() {}
+connection_interface::~connection_interface()
+{
+}
 
-listener_interface::~listener_interface() {}
+listener_interface::~listener_interface()
+{
+}
 
 } // namespace socket
 

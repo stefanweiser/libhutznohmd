@@ -138,7 +138,10 @@ const media_type_interface& response_parser::content_type() const
     return common_.content_type_;
 }
 
-const time_t& response_parser::date() const { return common_.date_; }
+const time_t& response_parser::date() const
+{
+    return common_.date_;
+}
 
 bool response_parser::keeps_connection() const
 {
@@ -150,9 +153,15 @@ const std::array<uint8_t, 16>& response_parser::md5() const
     return common_.md5_;
 }
 
-bool response_parser::has_md5() const { return common_.has_md5_; }
+bool response_parser::has_md5() const
+{
+    return common_.has_md5_;
+}
 
-const uint16_t& response_parser::status_code() const { return status_code_; }
+const uint16_t& response_parser::status_code() const
+{
+    return status_code_;
+}
 
 const char* response_parser::reason_phrase() const
 {

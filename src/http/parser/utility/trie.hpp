@@ -36,7 +36,8 @@ namespace http
 {
 
 //! Provides a parsing algorithm to parse a string into a enum value.
-template <typename value_type> class trie
+template <typename value_type>
+class trie
 {
 public:
     using value_info = std::tuple<const char* const, value_type>;

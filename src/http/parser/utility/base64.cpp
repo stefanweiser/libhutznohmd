@@ -28,9 +28,10 @@ namespace http
 
 std::string encode_base64(const std::vector<uint8_t>& data)
 {
-    static const std::string base64_encoder_map = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                                                  "abcdefghijklmnopqrstuvwxyz"
-                                                  "0123456789+/";
+    static const std::string base64_encoder_map =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz"
+        "0123456789+/";
 
     std::string result;
 

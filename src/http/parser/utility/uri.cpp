@@ -116,7 +116,10 @@ bool uri::parse(const lexer& l, int32_t& character, const bool skip_scheme)
     return true;
 }
 
-void uri::set_scheme(const uri_scheme& new_scheme) { scheme_ = new_scheme; }
+void uri::set_scheme(const uri_scheme& new_scheme)
+{
+    scheme_ = new_scheme;
+}
 
 bool uri::set_userinfo(const char* new_userinfo)
 {
@@ -148,23 +151,50 @@ bool uri::set_host(const char* new_host)
     return true;
 }
 
-void uri::set_port(const uint16_t& new_port) { port_ = new_port; }
+void uri::set_port(const uint16_t& new_port)
+{
+    port_ = new_port;
+}
 
-bool uri::valid() const { return valid_; }
+bool uri::valid() const
+{
+    return valid_;
+}
 
-const uri_scheme& uri::scheme() const { return scheme_; }
+const uri_scheme& uri::scheme() const
+{
+    return scheme_;
+}
 
-const char* uri::userinfo() const { return userinfo_.c_str(); }
+const char* uri::userinfo() const
+{
+    return userinfo_.c_str();
+}
 
-const char* uri::host() const { return host_.c_str(); }
+const char* uri::host() const
+{
+    return host_.c_str();
+}
 
-const uint16_t& uri::port() const { return port_; }
+const uint16_t& uri::port() const
+{
+    return port_;
+}
 
-const char* uri::path() const { return path_.c_str(); }
+const char* uri::path() const
+{
+    return path_.c_str();
+}
 
-const char* uri::query() const { return query_.c_str(); }
+const char* uri::query() const
+{
+    return query_.c_str();
+}
 
-const char* uri::fragment() const { return fragment_.c_str(); }
+const char* uri::fragment() const
+{
+    return fragment_.c_str();
+}
 
 bool uri::parse_scheme_and_authority(int32_t& character, const bool skip_scheme)
 {

@@ -86,14 +86,20 @@ bool media_type::parse(const lexer& l, int32_t& character)
     return true;
 }
 
-media_type_interface::mime_type media_type::type() const { return type_; }
+media_type_interface::mime_type media_type::type() const
+{
+    return type_;
+}
 
 media_type_interface::mime_subtype media_type::subtype() const
 {
     return subtype_;
 }
 
-const char* media_type::custom_type() const { return custom_type_.c_str(); }
+const char* media_type::custom_type() const
+{
+    return custom_type_.c_str();
+}
 
 const char* media_type::custom_subtype() const
 {
@@ -105,7 +111,10 @@ const std::map<std::string, std::string>& media_type::parameters() const
     return parameters_;
 }
 
-uint8_t media_type::quality() const { return quality_; }
+uint8_t media_type::quality() const
+{
+    return quality_;
+}
 
 uint8_t media_type::specification_grade() const
 {
