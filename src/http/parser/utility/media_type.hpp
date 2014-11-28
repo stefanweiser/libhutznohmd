@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_HTTP_PARSER_UTILITY_MEDIA_TYPE_HPP
-#define LIBREST_HTTP_PARSER_UTILITY_MEDIA_TYPE_HPP
+#ifndef LIBHUTZNOHMD_HTTP_PARSER_UTILITY_MEDIA_TYPE_HPP
+#define LIBHUTZNOHMD_HTTP_PARSER_UTILITY_MEDIA_TYPE_HPP
 
 #include <cstddef>
 #include <cstring>
@@ -72,4 +72,4 @@ private:
 
 } // namespace rest
 
-#endif // LIBREST_HTTP_PARSER_UTILITY_MEDIA_TYPE_HPP
+#endif // LIBHUTZNOHMD_HTTP_PARSER_UTILITY_MEDIA_TYPE_HPP

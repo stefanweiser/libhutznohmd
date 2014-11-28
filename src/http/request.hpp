@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_HTTP_REQUEST_HPP
-#define LIBREST_HTTP_REQUEST_HPP
+#ifndef LIBHUTZNOHMD_HTTP_REQUEST_HPP
+#define LIBHUTZNOHMD_HTTP_REQUEST_HPP
 
 #include <ctime>
 #include <map>
@@ -72,4 +72,4 @@ private:
 
 } // namespace rest
 
-#endif // LIBREST_HTTP_REQUEST_HPP
+#endif // LIBHUTZNOHMD_HTTP_REQUEST_HPP

@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_HTTP_RESPONSE_HPP
-#define LIBREST_HTTP_RESPONSE_HPP
+#ifndef LIBHUTZNOHMD_HTTP_RESPONSE_HPP
+#define LIBHUTZNOHMD_HTTP_RESPONSE_HPP
 
 #include <map>
 #include <memory>
@@ -60,4 +60,4 @@ private:
 
 } // namespace rest
 
-#endif // LIBREST_HTTP_RESPONSE_HPP
+#endif // LIBHUTZNOHMD_HTTP_RESPONSE_HPP

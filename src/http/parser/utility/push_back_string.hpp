@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_HTTP_PARSER_UTILITY_PUSH_BACK_STRING_HPP
-#define LIBREST_HTTP_PARSER_UTILITY_PUSH_BACK_STRING_HPP
+#ifndef LIBHUTZNOHMD_HTTP_PARSER_UTILITY_PUSH_BACK_STRING_HPP
+#define LIBHUTZNOHMD_HTTP_PARSER_UTILITY_PUSH_BACK_STRING_HPP
 
 #include <cstring>
 #include <cstdlib>
@@ -191,4 +191,4 @@ template <size_t maximum_size> void push_back_string<maximum_size>::clear()
 
 } // namespace rest
 
-#endif // LIBREST_HTTP_PARSER_UTILITY_PUSH_BACK_STRING_HPP
+#endif // LIBHUTZNOHMD_HTTP_PARSER_UTILITY_PUSH_BACK_STRING_HPP

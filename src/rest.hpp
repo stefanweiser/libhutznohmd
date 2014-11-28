@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_REST_HPP
-#define LIBREST_REST_HPP
+#ifndef LIBHUTZNOHMD_REST_HPP
+#define LIBHUTZNOHMD_REST_HPP
 
 #include <cstdint>
 #include <ctime>
@@ -618,4 +618,4 @@ listener_pointer listen(const std::string& host, const uint16_t& port);
 
 } // namespace rest
 
-#endif // LIBREST_REST_HPP
+#endif // LIBHUTZNOHMD_REST_HPP

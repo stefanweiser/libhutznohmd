@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_HTTP_PARSER_UTILITY_URI_HPP
-#define LIBREST_HTTP_PARSER_UTILITY_URI_HPP
+#ifndef LIBHUTZNOHMD_HTTP_PARSER_UTILITY_URI_HPP
+#define LIBHUTZNOHMD_HTTP_PARSER_UTILITY_URI_HPP
 
 #include <http/parser/utility/lexer.hpp>
 #include <http/parser/utility/push_back_string.hpp>
@@ -81,4 +81,4 @@ private:
 
 } // namespace rest
 
-#endif // LIBREST_HTTP_PARSER_UTILITY_URI_HPP
+#endif // LIBHUTZNOHMD_HTTP_PARSER_UTILITY_URI_HPP

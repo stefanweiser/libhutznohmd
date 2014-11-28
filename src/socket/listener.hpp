@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_SOCKET_LISTENER_SOCKET_HPP
-#define LIBREST_SOCKET_LISTENER_SOCKET_HPP
+#ifndef LIBHUTZNOHMD_SOCKET_LISTENER_SOCKET_HPP
+#define LIBHUTZNOHMD_SOCKET_LISTENER_SOCKET_HPP
 
 #include <cstdint>
 #include <memory>
@@ -54,4 +54,4 @@ private:
 
 } // namespace rest
 
-#endif // LIBREST_SOCKET_LISTENER_SOCKET_HPP
+#endif // LIBHUTZNOHMD_SOCKET_LISTENER_SOCKET_HPP

@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_HTTP_PARSER_REQUEST_PARSER_HPP
-#define LIBREST_HTTP_PARSER_REQUEST_PARSER_HPP
+#ifndef LIBHUTZNOHMD_HTTP_PARSER_REQUEST_PARSER_HPP
+#define LIBHUTZNOHMD_HTTP_PARSER_REQUEST_PARSER_HPP
 
 #include <http/parser/utility/anonymous_int_function.hpp>
 #include <http/parser/utility/base_parser.hpp>
@@ -91,4 +91,4 @@ private:
 
 } // namespace rest
 
-#endif // LIBREST_HTTP_PARSER_REQUEST_PARSER_HPP
+#endif // LIBHUTZNOHMD_HTTP_PARSER_REQUEST_PARSER_HPP

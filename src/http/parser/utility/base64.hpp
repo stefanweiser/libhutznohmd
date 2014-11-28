@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_HTTP_PARSER_UTILITY_BASE64_HPP
-#define LIBREST_HTTP_PARSER_UTILITY_BASE64_HPP
+#ifndef LIBHUTZNOHMD_HTTP_PARSER_UTILITY_BASE64_HPP
+#define LIBHUTZNOHMD_HTTP_PARSER_UTILITY_BASE64_HPP
 
 #include <cstdint>
 #include <string>
@@ -41,4 +41,4 @@ std::vector<uint8_t> decode_base64(const std::string& encoded_string);
 
 } // namespace rest
 
-#endif // LIBREST_HTTP_PARSER_UTILITY_BASE64_HPP
+#endif // LIBHUTZNOHMD_HTTP_PARSER_UTILITY_BASE64_HPP

@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_COMMON_HPP
-#define LIBREST_COMMON_HPP
+#ifndef LIBHUTZNOHMD_COMMON_HPP
+#define LIBHUTZNOHMD_COMMON_HPP
 
 namespace rest
 {
@@ -35,4 +35,4 @@ bool check_range(const type& value)
 
 } // namespace rest
 
-#endif // LIBREST_COMMON_HPP
+#endif // LIBHUTZNOHMD_COMMON_HPP

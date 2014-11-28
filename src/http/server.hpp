@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_HTTP_SERVER_HPP
-#define LIBREST_HTTP_SERVER_HPP
+#ifndef LIBHUTZNOHMD_HTTP_SERVER_HPP
+#define LIBHUTZNOHMD_HTTP_SERVER_HPP
 
 #include <functional>
 #include <memory>
@@ -58,4 +58,4 @@ private:
 
 } // namespace rest
 
-#endif // LIBREST_HTTP_SERVER_HPP
+#endif // LIBHUTZNOHMD_HTTP_SERVER_HPP

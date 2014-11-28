@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_HTTP_PARSER_UTILITY_LEXER_HPP
-#define LIBREST_HTTP_PARSER_UTILITY_LEXER_HPP
+#ifndef LIBHUTZNOHMD_HTTP_PARSER_UTILITY_LEXER_HPP
+#define LIBHUTZNOHMD_HTTP_PARSER_UTILITY_LEXER_HPP
 
 #include <cstddef>
 #include <string>
@@ -106,4 +106,4 @@ bool parse_comment(int32_t& character, const lexer& l);
 
 } // namespace rest
 
-#endif // LIBREST_HTTP_PARSER_UTILITY_LEXER_HPP
+#endif // LIBHUTZNOHMD_HTTP_PARSER_UTILITY_LEXER_HPP

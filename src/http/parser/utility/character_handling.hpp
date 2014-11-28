@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_HTTP_PARSER_UTILITY_CHARACTER_COMPARE_HPP
-#define LIBREST_HTTP_PARSER_UTILITY_CHARACTER_COMPARE_HPP
+#ifndef LIBHUTZNOHMD_HTTP_PARSER_UTILITY_CHARACTER_COMPARE_HPP
+#define LIBHUTZNOHMD_HTTP_PARSER_UTILITY_CHARACTER_COMPARE_HPP
 
 #include <array>
 #include <type_traits>
@@ -197,4 +197,4 @@ static bool is_valid_quoted_string_character(uint8_t c)
 
 } // namespace rest
 
-#endif // LIBREST_HTTP_PARSER_UTILITY_CHARACTER_COMPARE_HPP
+#endif // LIBHUTZNOHMD_HTTP_PARSER_UTILITY_CHARACTER_COMPARE_HPP

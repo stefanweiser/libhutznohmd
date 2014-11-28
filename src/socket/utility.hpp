@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBREST_SOCKET_UTILITY_HPP
-#define LIBREST_SOCKET_UTILITY_HPP
+#ifndef LIBHUTZNOHMD_SOCKET_UTILITY_HPP
+#define LIBHUTZNOHMD_SOCKET_UTILITY_HPP
 
 #include <cstdint>
 #include <memory>
@@ -53,4 +53,4 @@ ssize_t receive_signal_safe(int file_descriptor, void* buffer, size_t size,
 
 } // namespace rest
 
-#endif // LIBREST_SOCKET_UTILITY_HPP
+#endif // LIBHUTZNOHMD_SOCKET_UTILITY_HPP
