@@ -43,8 +43,8 @@ public:
     bool parse(const lexer& l, int32_t& character, const bool skip_scheme);
 
     void set_scheme(const uri_scheme& new_scheme);
-    bool set_userinfo(const char* new_userinfo);
-    bool set_host(const char* new_host);
+    bool set_userinfo(const char* const new_userinfo);
+    bool set_host(const char* const new_host);
     void set_port(const uint16_t& new_port);
 
     virtual bool valid() const;

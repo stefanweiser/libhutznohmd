@@ -121,7 +121,7 @@ void uri::set_scheme(const uri_scheme& new_scheme)
     scheme_ = new_scheme;
 }
 
-bool uri::set_userinfo(const char* new_userinfo)
+bool uri::set_userinfo(const char* const new_userinfo)
 {
     const char* c = new_userinfo;
     while ('\0' != (*c)) {
@@ -136,7 +136,7 @@ bool uri::set_userinfo(const char* new_userinfo)
     return true;
 }
 
-bool uri::set_host(const char* new_host)
+bool uri::set_host(const char* const new_host)
 {
     const char* c = new_host;
     while ('\0' != (*c)) {
