@@ -35,7 +35,7 @@ namespace rest
 namespace http
 {
 
-//! Provides a parsing algorithm to convert
+//! Provides a parsing algorithm to parse a string into a enum value.
 template <typename value_type> class trie
 {
 public:

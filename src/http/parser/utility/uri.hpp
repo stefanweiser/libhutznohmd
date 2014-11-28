@@ -31,7 +31,7 @@ namespace http
 {
 
 //! Implements parsing of URIs as specified in RFC 3986. It supports only the
-// specified schemes.
+//! specified schemes.
 class uri : public uri_interface
 {
 public:

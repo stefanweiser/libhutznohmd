@@ -29,12 +29,9 @@ namespace http
 {
 
 //! Provides a tradeoff between fast and static but limited string types and
-// slower and dynamic
-//! string types. Its maximum_size at begin is predefined by a template
-// argument. The user is only
-//! able to push one character at the back of the string or clear the string at
-// all to manipulate
-//! the string.
+//! slower and dynamic string types. Its maximum_size at begin is predefined
+//! by a template argument. The user is only able to push one character at the
+//! back of the string or clear the string at all to manipulate the string.
 template <size_t maximum_size> class push_back_string
 {
 public:
