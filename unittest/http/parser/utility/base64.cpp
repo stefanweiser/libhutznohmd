@@ -87,10 +87,17 @@ TEST(base64, decode_space_without_pad)
     EXPECT_EQ(decoded_data, data);
 }
 
-TEST(base64, decode_space_with_ignored_stuff)
+TEST(base64, decode_char62_char63)
 {
-    std::vector<uint8_t> decoded_data = decode_base64("I---A==");
-    std::vector<uint8_t> data{' '};
+    std::vector<uint8_t> decoded_data = decode_base64("+/+/");
+    std::vector<uint8_t> data{251, 255, 191};
+    EXPECT_EQ(decoded_data, data);
+}
+
+TEST(base64, decode_alternative_char62_char63)
+{
+    std::vector<uint8_t> decoded_data = decode_base64("-_-_");
+    std::vector<uint8_t> data{251, 255, 191};
     EXPECT_EQ(decoded_data, data);
 }
 

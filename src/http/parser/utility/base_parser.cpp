@@ -83,6 +83,16 @@ bool base_parser::parse_content_length(int32_t& character)
     return true;
 }
 
+namespace
+{
+
+bool is_base64(uint8_t c)
+{
+    return (std::isalnum(c) || (c == '+') || (c == '/'));
+}
+
+} // namespace
+
 bool base_parser::parse_content_md5(int32_t& character)
 {
     std::string s;
