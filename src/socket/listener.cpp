@@ -38,17 +38,6 @@ listener_pointer listen(const std::string& host, const uint16_t& port)
     return listener::create(host, port);
 }
 
-namespace
-{
-
-union address_union
-{
-    ::sockaddr base;
-    ::sockaddr_in in;
-};
-
-} // namespace
-
 std::shared_ptr<listener> listener::create(const std::string& host,
                                            const uint16_t& port)
 {
@@ -59,9 +48,9 @@ std::shared_ptr<listener> listener::create(const std::string& host,
 
     std::shared_ptr<listener> result = std::make_shared<listener>(socket);
 
-    address_union address;
-    address.in = fill_address(host, port);
-    int result1 = ::bind(result->socket_, &(address.base), sizeof(address));
+    sockaddr_in address = fill_address(host, port);
+    int result1 = ::bind(result->socket_, reinterpret_cast<sockaddr*>(&address),
+                         sizeof(address));
     int result2 = ::listen(result->socket_, 4);
     if ((result1 == -1) || (result2 == -1)) {
         return std::shared_ptr<listener>();
@@ -84,10 +73,10 @@ listener::~listener()
 
 connection_pointer listener::accept() const
 {
-    address_union address;
+    sockaddr_in address;
     ::socklen_t size = sizeof(address);
-
-    const int client = accept_signal_safe(socket_, &(address.base), &size);
+    const int client = accept_signal_safe(
+        socket_, reinterpret_cast<sockaddr*>(&address), &size);
     if (client == -1) {
         return connection_pointer();
     }

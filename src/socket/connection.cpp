@@ -69,17 +69,6 @@ connection::~connection()
     close_signal_safe(socket_);
 }
 
-namespace
-{
-
-union address_union
-{
-    const ::sockaddr* base;
-    const ::sockaddr_in* in;
-};
-
-} // namespace
-
 void connection::close()
 {
     is_connected_ = false;
@@ -150,9 +139,9 @@ bool connection::connect()
     if (true == is_connected_) {
         return false;
     }
-    address_union address;
-    address.in = &address_;
-    if (connect_signal_safe(socket_, address.base, sizeof(address_)) != 0) {
+    if (connect_signal_safe(socket_,
+                            reinterpret_cast<const sockaddr*>(&address_),
+                            sizeof(address_)) != 0) {
         close();
         return false;
     }
