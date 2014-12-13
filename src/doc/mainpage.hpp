@@ -38,7 +38,7 @@ See @ref deployment to learn about the deployment tool @c make.
 
 See @ref development to get started developing libhutznohmd.
 
-See @ref etymology to learn more about the name of the library.
+See @ref about_hutznohmd to learn more about the name of the library.
 
 @section sec_contact Contact
 Stefan Weiser <stefan @@dot weiser @@at bluewin @@dot ch>
