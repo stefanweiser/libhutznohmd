@@ -21,7 +21,7 @@
 
 #include <http/parser/utility/base64.hpp>
 
-#include <rest.hpp>
+#include <hutzn.hpp>
 
 using namespace testing;
 

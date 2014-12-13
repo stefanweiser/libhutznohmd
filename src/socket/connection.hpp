@@ -23,7 +23,7 @@
 
 #include <netinet/in.h>
 
-#include <rest.hpp>
+#include <hutzn.hpp>
 #include <libhutznohmd/sockets.hpp>
 
 namespace hutzn

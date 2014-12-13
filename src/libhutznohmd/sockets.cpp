@@ -16,7 +16,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "rest.hpp"
+#include "hutzn.hpp"
 
 namespace hutzn
 {

@@ -26,7 +26,7 @@
 #include <http/parser/utility/lexer.hpp>
 #include <http/parser/utility/push_back_string.hpp>
 
-#include <rest.hpp>
+#include <hutzn.hpp>
 
 namespace hutzn
 {

@@ -20,7 +20,7 @@
 
 #include <gtest/gtest.h>
 
-#include <rest.hpp>
+#include <hutzn.hpp>
 
 #include <socket/connection.hpp>
 

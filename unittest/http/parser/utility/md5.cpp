@@ -21,7 +21,7 @@
 
 #include <http/parser/utility/md5.hpp>
 
-#include <rest.hpp>
+#include <hutzn.hpp>
 
 using namespace testing;
 

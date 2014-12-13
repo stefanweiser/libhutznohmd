@@ -19,7 +19,7 @@
 #include <fstream>
 #include <iostream>
 
-#include <rest.hpp>
+#include <hutzn.hpp>
 #include <http/request.hpp>
 
 class connection : public hutzn::socket::connection_interface

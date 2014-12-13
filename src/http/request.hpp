@@ -25,7 +25,7 @@
 
 #include <socket/listener.hpp>
 
-#include <rest.hpp>
+#include <hutzn.hpp>
 
 #include <http/parser/request_parser.hpp>
 

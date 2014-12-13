@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_REST_HPP
-#define LIBHUTZNOHMD_REST_HPP
+#ifndef LIBHUTZNOHMD_HUTZN_HPP
+#define LIBHUTZNOHMD_HUTZN_HPP
 
 #include <cstdint>
 #include <ctime>
@@ -582,4 +582,4 @@ server_pointer create_server(const std::string& host, const uint16_t& port,
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_REST_HPP
+#endif // LIBHUTZNOHMD_HUTZN_HPP

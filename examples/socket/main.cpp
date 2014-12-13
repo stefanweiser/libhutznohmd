@@ -21,7 +21,7 @@
 #include <thread>
 #include <vector>
 
-#include <rest.hpp>
+#include <hutzn.hpp>
 
 #include <socket/connection.hpp>
 

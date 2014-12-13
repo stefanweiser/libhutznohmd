@@ -25,7 +25,7 @@
 #include <http/parser/utility/push_back_string.hpp>
 #include <http/parser/utility/trie.hpp>
 
-#include <rest.hpp>
+#include <hutzn.hpp>
 
 namespace hutzn
 {
