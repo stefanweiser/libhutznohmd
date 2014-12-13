@@ -32,8 +32,8 @@ namespace
 
 void disable_time_wait(int socket)
 {
-    ::linger l = ::linger{1, 0};
-    ::setsockopt(socket, SOL_SOCKET, SO_LINGER, &l, sizeof(l));
+    linger l = linger{1, 0};
+    setsockopt(socket, SOL_SOCKET, SO_LINGER, &l, sizeof(l));
 }
 
 int get_socket(const http::server_pointer& server)

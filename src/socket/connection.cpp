@@ -20,11 +20,6 @@
 #include <cstdint>
 #include <string>
 
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <unistd.h>
-
 #include <socket/utility.hpp>
 
 #include "connection.hpp"
@@ -43,7 +38,7 @@ std::shared_ptr<connection> connection::create(const std::string& host,
         return std::shared_ptr<connection>();
     }
 
-    const ::sockaddr_in address = fill_address(host, port);
+    const sockaddr_in address = fill_address(host, port);
     auto result = std::make_shared<connection>(socket, address);
 
     return result;
@@ -56,7 +51,7 @@ connection::connection(const int& s)
 {
 }
 
-connection::connection(const int& s, const ::sockaddr_in& address)
+connection::connection(const int& s, const sockaddr_in& address)
     : is_connected_(false)
     , socket_(s)
     , address_(address)
@@ -72,7 +67,7 @@ connection::~connection()
 void connection::close()
 {
     is_connected_ = false;
-    ::shutdown(socket_, SHUT_RDWR);
+    shutdown(socket_, SHUT_RDWR);
 }
 
 bool connection::receive(hutzn::buffer& data, const size_t& max_size)
@@ -83,11 +78,10 @@ bool connection::receive(hutzn::buffer& data, const size_t& max_size)
 
     const size_t old_size = data.size();
     data.resize(old_size + max_size);
-    const ::ssize_t received =
+    const ssize_t received =
         receive_signal_safe(socket_, data.data() + old_size, max_size, 0);
 
-    data.resize(old_size +
-                static_cast<size_t>(std::max<::ssize_t>(received, 0)));
+    data.resize(old_size + static_cast<size_t>(std::max<ssize_t>(received, 0)));
     return (received > 0);
 }
 
@@ -107,26 +101,26 @@ bool connection::send(const char* buffer, const size_t& size)
         return false;
     }
 
-    ::ssize_t total_sent_size = 0;
+    ssize_t total_sent_size = 0;
 
     do {
         const size_t block_size = size - static_cast<size_t>(total_sent_size);
-        const ::ssize_t sent_block_size =
+        const ssize_t sent_block_size =
             send_signal_safe(socket_, buffer + total_sent_size, block_size, 0);
 
         if (sent_block_size <= 0) {
             return false;
         }
         total_sent_size += sent_block_size;
-    } while (total_sent_size < static_cast<::ssize_t>(size));
+    } while (total_sent_size < static_cast<ssize_t>(size));
 
     return true;
 }
 
 bool connection::set_lingering_timeout(const int& timeout)
 {
-    ::linger l = ::linger{1, timeout};
-    return ::setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0;
+    linger l = linger{1, timeout};
+    return setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0;
 }
 
 int connection::socket() const

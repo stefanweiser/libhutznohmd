@@ -49,8 +49,8 @@ std::shared_ptr<listener> listener::create(const std::string& host,
     std::shared_ptr<listener> result = std::make_shared<listener>(socket);
 
     sockaddr_in address = fill_address(host, port);
-    int result1 = ::bind(result->socket_, reinterpret_cast<sockaddr*>(&address),
-                         sizeof(address));
+    int result1 = bind(result->socket_, reinterpret_cast<sockaddr*>(&address),
+                       sizeof(address));
     int result2 = ::listen(result->socket_, 4);
     if ((result1 == -1) || (result2 == -1)) {
         return std::shared_ptr<listener>();
@@ -74,7 +74,7 @@ listener::~listener()
 connection_pointer listener::accept() const
 {
     sockaddr_in address;
-    ::socklen_t size = sizeof(address);
+    socklen_t size = sizeof(address);
     const int client = accept_signal_safe(
         socket_, reinterpret_cast<sockaddr*>(&address), &size);
     if (client == -1) {
@@ -92,13 +92,13 @@ bool listener::listening() const
 void listener::stop()
 {
     is_listening_ = false;
-    ::shutdown(socket_, SHUT_RDWR);
+    shutdown(socket_, SHUT_RDWR);
 }
 
 bool listener::set_lingering_timeout(const int& timeout)
 {
-    ::linger l = ::linger{1, timeout};
-    return ::setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0;
+    linger l = linger{1, timeout};
+    return setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0;
 }
 
 int listener::socket() const

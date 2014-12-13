@@ -47,7 +47,7 @@ TEST(socket, accepting_closed_socket)
 {
     auto listener = socket::listen("127.0.0.1", 10000);
     EXPECT_TRUE(listener->set_lingering_timeout(0));
-    EXPECT_EQ(::close(listener->socket()), 0);
+    EXPECT_EQ(close(listener->socket()), 0);
     EXPECT_EQ(listener->accept(), socket::connection_pointer());
 }
 
@@ -84,7 +84,7 @@ TEST(socket, receive_send_closed_socket)
         buffer data;
         EXPECT_FALSE(connection->receive(data, 8));
 
-        EXPECT_EQ(::close(connection->socket()), 0);
+        EXPECT_EQ(close(connection->socket()), 0);
         EXPECT_FALSE(connection->receive(data, 8));
         EXPECT_FALSE(connection->send(data));
     });

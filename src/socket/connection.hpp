@@ -38,7 +38,7 @@ public:
                                               const uint16_t& port);
 
     explicit connection(const int& s);
-    explicit connection(const int& s, const ::sockaddr_in& address);
+    explicit connection(const int& s, const sockaddr_in& address);
     virtual ~connection() override;
     virtual void close() override;
     virtual bool receive(hutzn::buffer& data, const size_t& max_size) override;
@@ -54,7 +54,7 @@ private:
 
     bool is_connected_;
     int socket_;
-    const ::sockaddr_in address_;
+    const sockaddr_in address_;
 };
 
 } // namespace socket
