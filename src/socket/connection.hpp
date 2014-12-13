@@ -24,6 +24,7 @@
 #include <netinet/in.h>
 
 #include <rest.hpp>
+#include <libhutznohmd/sockets.hpp>
 
 namespace rest
 {

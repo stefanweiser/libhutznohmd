@@ -16,15 +16,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_SOCKET_LISTENER_SOCKET_HPP
-#define LIBHUTZNOHMD_SOCKET_LISTENER_SOCKET_HPP
-
-#include <cstdint>
-#include <memory>
-#include <string>
-
-#include <rest.hpp>
-#include <libhutznohmd/sockets.hpp>
+#include "rest.hpp"
 
 namespace rest
 {
@@ -32,27 +24,14 @@ namespace rest
 namespace socket
 {
 
-class listener : public listener_interface
+connection_interface::~connection_interface()
 {
-public:
-    static std::shared_ptr<listener> create(const std::string& host,
-                                            const uint16_t& port);
+}
 
-    explicit listener(const int& s);
-    virtual ~listener();
-    virtual connection_pointer accept() const;
-    virtual bool listening() const;
-    virtual void stop();
-    virtual bool set_lingering_timeout(const int& timeout);
-    virtual int socket() const;
-
-private:
-    bool is_listening_;
-    int socket_;
-};
+listener_interface::~listener_interface()
+{
+}
 
 } // namespace socket
 
 } // namespace rest
-
-#endif // LIBHUTZNOHMD_SOCKET_LISTENER_SOCKET_HPP

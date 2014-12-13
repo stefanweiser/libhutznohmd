@@ -25,8 +25,6 @@
 
 #include <arpa/inet.h>
 
-#include <rest.hpp>
-
 namespace rest
 {
 
