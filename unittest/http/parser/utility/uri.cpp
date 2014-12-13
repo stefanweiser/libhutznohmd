@@ -25,7 +25,7 @@
 
 using namespace testing;
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -385,4 +385,4 @@ TEST(uri, erroneous_authority2)
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

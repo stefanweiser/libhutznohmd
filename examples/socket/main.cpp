@@ -27,17 +27,17 @@
 
 void client()
 {
-    static const rest::buffer data = {0, 1, 2, 3};
+    static const hutzn::buffer data = {0, 1, 2, 3};
 
     std::cout << "  connecting" << std::endl;
-    auto c = rest::socket::connection::create("127.0.0.1", 30000);
+    auto c = hutzn::socket::connection::create("127.0.0.1", 30000);
     if (false == c->connect()) {
         std::cout << "  client not connected" << std::endl;
         abort();
     }
 
     std::cout << "  client receiving" << std::endl;
-    rest::buffer data2;
+    hutzn::buffer data2;
     if (false == c->receive(data2, 8)) {
         std::cout << "  client aborts on receive" << std::endl;
         abort();
@@ -58,17 +58,17 @@ void client()
 
 int main()
 {
-    static const rest::buffer data = {0, 1, 2, 3};
+    static const hutzn::buffer data = {0, 1, 2, 3};
 
     std::cout << "example_socket" << std::endl;
 
     std::cout << "  listening" << std::endl;
-    rest::socket::listener_pointer listener =
-        rest::socket::listen("127.0.0.1", 30000);
+    hutzn::socket::listener_pointer listener =
+        hutzn::socket::listen("127.0.0.1", 30000);
     std::thread thread(&client);
 
     std::cout << "  accepting" << std::endl;
-    rest::socket::connection_pointer connection = listener->accept();
+    hutzn::socket::connection_pointer connection = listener->accept();
 
     std::cout << "  server sending" << std::endl;
     if (false == connection->send(data)) {
@@ -76,7 +76,7 @@ int main()
     }
 
     std::cout << "  server receiving" << std::endl;
-    rest::buffer data2;
+    hutzn::buffer data2;
     if (false == connection->receive(data2, 8)) {
         std::cout << "  server aborts on receive" << std::endl;
     }

@@ -26,7 +26,7 @@
 #include <http/parser/utility/trie.hpp>
 #include <http/parser/utility/uri.hpp>
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -142,7 +142,7 @@ void test_uri_parser(const std::string& uri)
         lexer l(anonymous_int_function(&get_char, &p),
                 anonymous_int_function(&peek_char, &p));
         int32_t result = l.get();
-        rest::http::uri u;
+        hutzn::http::uri u;
         u.parse(l, result, false);
     }
 
@@ -152,7 +152,7 @@ void test_uri_parser(const std::string& uri)
         lexer l(anonymous_int_function(&get_char, &p),
                 anonymous_int_function(&peek_char, &p));
         int32_t result = l.get();
-        rest::http::uri u;
+        hutzn::http::uri u;
         u.parse(l, result, false);
     }
     std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
@@ -164,16 +164,16 @@ void test_uri_parser(const std::string& uri)
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn
 
 int main()
 {
     std::cout << "example_performance" << std::endl;
 
-    rest::http::test_req_parser("GET / HTTP/1.1\r\n\r\n");
-    rest::http::test_req_parser(
+    hutzn::http::test_req_parser("GET / HTTP/1.1\r\n\r\n");
+    hutzn::http::test_req_parser(
         "GET /what/a/long/url HTTP/1.1\r\nContent-Length: 0\r\n\r\n");
-    rest::http::test_req_parser(
+    hutzn::http::test_req_parser(
         "GET /what/a/long/url HTTP/1.1\r\nContent-Length: 0\r\n"
         "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
         "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
@@ -183,20 +183,20 @@ int main()
         "Content-Length: 0\r\nContent-Length: 0\r\nContent-Length: 0\r\n"
         "Content-Length: 0\r\n\r\n");
 
-    rest::http::test_http_date_parser("Sun, 06 Nov 1994 08:49:37 GMT");
-    rest::http::test_http_date_parser("Sunday, 06-Nov-94 08:49:37 GMT");
-    rest::http::test_http_date_parser("Sun Nov  6 08:49:37 1994");
+    hutzn::http::test_http_date_parser("Sun, 06 Nov 1994 08:49:37 GMT");
+    hutzn::http::test_http_date_parser("Sunday, 06-Nov-94 08:49:37 GMT");
+    hutzn::http::test_http_date_parser("Sun Nov  6 08:49:37 1994");
 
-    rest::http::test_trie_parse("");
-    rest::http::test_trie_parse("content-length");
-    rest::http::test_trie_parse("content-type");
-    rest::http::test_trie_parse("date");
+    hutzn::http::test_trie_parse("");
+    hutzn::http::test_trie_parse("content-length");
+    hutzn::http::test_trie_parse("content-type");
+    hutzn::http::test_trie_parse("date");
 
-    rest::http::test_uri_parser("/");
-    rest::http::test_uri_parser("http://localhost/");
-    rest::http::test_uri_parser("http://localhost:80/");
-    rest::http::test_uri_parser("http://user:pw@localhost:80/");
-    rest::http::test_uri_parser("http://user:pw@localhost:80/?a=b#anchor");
+    hutzn::http::test_uri_parser("/");
+    hutzn::http::test_uri_parser("http://localhost/");
+    hutzn::http::test_uri_parser("http://localhost:80/");
+    hutzn::http::test_uri_parser("http://user:pw@localhost:80/");
+    hutzn::http::test_uri_parser("http://user:pw@localhost:80/?a=b#anchor");
 
     return 0;
 }

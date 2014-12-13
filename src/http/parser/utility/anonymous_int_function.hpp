@@ -21,7 +21,7 @@
 
 #include <cstdint>
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -58,6 +58,6 @@ inline int32_t anonymous_int_function::operator()() const
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn
 
 #endif // LIBHUTZNOHMD_HTTP_PARSER_UTILITY_ANONYMOUS_INT_FUNCTION_HPP

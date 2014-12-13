@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -45,6 +45,6 @@ std::vector<uint8_t> decode_base64(const std::string& encoded_string);
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn
 
 #endif // LIBHUTZNOHMD_HTTP_PARSER_UTILITY_BASE64_HPP

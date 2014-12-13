@@ -23,7 +23,7 @@
 
 #include "media_type.hpp"
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -266,4 +266,4 @@ bool media_type::parse_quality_parameter(int32_t& character)
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

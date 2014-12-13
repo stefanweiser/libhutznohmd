@@ -29,7 +29,7 @@
 
 #include <libhutznohmd/sockets.hpp>
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -512,19 +512,19 @@ public:
     virtual ~request_interface();
 
     //! Requested HTTP method.
-    virtual rest::http::method method() const = 0;
+    virtual hutzn::http::method method() const = 0;
 
     //! Requested URI.
     virtual const uri_interface& request_uri() const = 0;
 
     //! Requested HTTP version.
-    virtual rest::http::version version() const = 0;
+    virtual hutzn::http::version version() const = 0;
 
     //! Returns the custom header of the specified key.
     virtual const std::map<std::string, std::string>& headers() const = 0;
 
     //! Returns the data buffer.
-    virtual const rest::buffer& data() const = 0;
+    virtual const hutzn::buffer& data() const = 0;
 
     //! Returns the conent type of the data buffer.
     virtual const media_type_interface& data_content_type() const = 0;
@@ -540,17 +540,18 @@ public:
     virtual ~response_interface();
 
     //! Sets the status code.
-    virtual void set_status_code(const rest::http::status_code& statusCode) = 0;
+    virtual void
+    set_status_code(const hutzn::http::status_code& statusCode) = 0;
 
     //! Sets the HTTP version.
-    virtual void set_version(const rest::http::version& version) = 0;
+    virtual void set_version(const hutzn::http::version& version) = 0;
 
     //! Sets a header by key to a value.
     virtual void set_header(const std::string& key,
                             const std::string& value) = 0;
 
     //! Sets the content data.
-    virtual void set_data(const rest::buffer& data) = 0;
+    virtual void set_data(const hutzn::buffer& data) = 0;
 };
 
 //! Callback type, used for every http transaction.
@@ -579,6 +580,6 @@ server_pointer create_server(const std::string& host, const uint16_t& port,
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn
 
 #endif // LIBHUTZNOHMD_REST_HPP

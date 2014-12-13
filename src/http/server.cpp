@@ -21,7 +21,7 @@
 
 #include "server.hpp"
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -30,11 +30,11 @@ namespace http
 server_pointer create_server(const std::string& host, const uint16_t& port,
                              const transaction_function& transaction_functor)
 {
-    auto socket = rest::socket::listen(host, port);
+    auto socket = hutzn::socket::listen(host, port);
     return std::make_shared<server>(socket, transaction_functor);
 }
 
-server::server(const rest::socket::listener_pointer& s,
+server::server(const hutzn::socket::listener_pointer& s,
                const transaction_function& transaction_functor)
     : threads_()
     , socket_(s)
@@ -65,7 +65,7 @@ void server::stop()
     socket_->stop();
 }
 
-void server::parse_request(const rest::socket::connection_pointer& connection)
+void server::parse_request(const hutzn::socket::connection_pointer& connection)
 {
     request request(connection, request::parameters{true});
     request.parse();
@@ -82,11 +82,11 @@ void server::parse_request(const rest::socket::connection_pointer& connection)
     }
 }
 
-const rest::socket::listener_pointer& server::socket() const
+const hutzn::socket::listener_pointer& server::socket() const
 {
     return socket_;
 }
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

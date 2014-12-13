@@ -18,7 +18,7 @@
 
 #include "md5.hpp"
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -244,4 +244,4 @@ std::array<uint8_t, 16> calculate_md5(const std::vector<char>& data)
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

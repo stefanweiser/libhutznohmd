@@ -27,7 +27,7 @@
 
 #include "base_parser.hpp"
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -39,7 +39,7 @@ base_parser::base_parser(const anonymous_int_function& get_functor,
     , state_(parser_state::UNFINISHED)
     , header_key_()
     , header_value_()
-    , version_(rest::http::version::HTTP_UNKNOWN)
+    , version_(hutzn::http::version::HTTP_UNKNOWN)
     , headers_()
     , content_length_(0)
     , content_type_()
@@ -161,4 +161,4 @@ bool base_parser::parse_custom_header(int32_t& character)
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

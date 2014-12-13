@@ -28,7 +28,7 @@
 
 #include <rest.hpp>
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -37,25 +37,25 @@ namespace http
 class server : public server_interface
 {
 public:
-    server(const rest::socket::listener_pointer& s,
+    server(const hutzn::socket::listener_pointer& s,
            const transaction_function& transaction_functor);
 
     virtual void run();
     virtual void stop();
 
-    void parse_request(const rest::socket::connection_pointer& connection);
+    void parse_request(const hutzn::socket::connection_pointer& connection);
 
-    const rest::socket::listener_pointer& socket() const;
+    const hutzn::socket::listener_pointer& socket() const;
 
 private:
     std::set<std::shared_ptr<std::thread>> threads_;
-    rest::socket::listener_pointer socket_;
+    hutzn::socket::listener_pointer socket_;
     transaction_function transaction_functor_;
     bool shutdown_;
 };
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn
 
 #endif // LIBHUTZNOHMD_HTTP_SERVER_HPP

@@ -24,7 +24,7 @@
 
 #include <common.hpp>
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -194,6 +194,6 @@ static bool is_valid_quoted_string_character(uint8_t c)
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn
 
 #endif // LIBHUTZNOHMD_HTTP_PARSER_UTILITY_CHARACTER_COMPARE_HPP

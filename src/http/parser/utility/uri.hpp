@@ -24,7 +24,7 @@
 
 #include <rest.hpp>
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -79,6 +79,6 @@ private:
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn
 
 #endif // LIBHUTZNOHMD_HTTP_PARSER_UTILITY_URI_HPP

@@ -23,7 +23,7 @@
 
 using namespace testing;
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -373,4 +373,4 @@ TEST(timestamp, year2000_date)
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

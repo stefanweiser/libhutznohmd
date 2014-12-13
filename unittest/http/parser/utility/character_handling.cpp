@@ -25,7 +25,7 @@
 
 using namespace testing;
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -341,4 +341,4 @@ TEST(character_handling, quoted_string_characters)
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

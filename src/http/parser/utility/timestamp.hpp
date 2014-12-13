@@ -24,7 +24,7 @@
 
 #include <http/parser/utility/lexer.hpp>
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -34,6 +34,6 @@ time_t parse_timestamp(int32_t& character, const lexer& l);
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn
 
 #endif // LIBHUTZNOHMD_HTTP_PARSER_UTILITY_TIMESTAMP_HPP

@@ -26,7 +26,7 @@
 #include <rest.hpp>
 #include <libhutznohmd/sockets.hpp>
 
-namespace rest
+namespace hutzn
 {
 
 namespace socket
@@ -53,6 +53,6 @@ private:
 
 } // namespace socket
 
-} // namespace rest
+} // namespace hutzn
 
 #endif // LIBHUTZNOHMD_SOCKET_LISTENER_SOCKET_HPP

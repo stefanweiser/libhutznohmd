@@ -25,7 +25,7 @@
 
 using namespace testing;
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -391,4 +391,4 @@ TEST(media_type, specification_grade4)
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

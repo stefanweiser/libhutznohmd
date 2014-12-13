@@ -25,7 +25,7 @@
 
 using namespace testing;
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -117,4 +117,4 @@ TEST(base64, decode_errornous)
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

@@ -19,7 +19,7 @@
 #ifndef LIBHUTZNOHMD_COMMON_HPP
 #define LIBHUTZNOHMD_COMMON_HPP
 
-namespace rest
+namespace hutzn
 {
 
 template <typename type, type lower_bound, type upper_bound>
@@ -33,6 +33,6 @@ bool check_range(const type& value)
     return true;
 }
 
-} // namespace rest
+} // namespace hutzn
 
 #endif // LIBHUTZNOHMD_COMMON_HPP

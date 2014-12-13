@@ -26,7 +26,7 @@
 #include <rest.hpp>
 #include <libhutznohmd/sockets.hpp>
 
-namespace rest
+namespace hutzn
 {
 
 namespace socket
@@ -42,8 +42,8 @@ public:
     explicit connection(const int& s, const ::sockaddr_in& address);
     virtual ~connection();
     virtual void close();
-    virtual bool receive(rest::buffer& data, const size_t& max_size);
-    virtual bool send(const rest::buffer& data);
+    virtual bool receive(hutzn::buffer& data, const size_t& max_size);
+    virtual bool send(const hutzn::buffer& data);
     virtual bool send(const std::string& data);
     virtual bool set_lingering_timeout(const int& timeout);
     virtual int socket() const;
@@ -60,6 +60,6 @@ private:
 
 } // namespace socket
 
-} // namespace rest
+} // namespace hutzn
 
 #endif // LIBHUTZNOHMD_SOCKET_CONNECTION_SOCKET_HPP

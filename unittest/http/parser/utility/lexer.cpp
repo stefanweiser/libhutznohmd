@@ -23,7 +23,7 @@
 
 using namespace testing;
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -227,4 +227,4 @@ TEST(lexer, nested_comments)
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

@@ -28,7 +28,7 @@
 
 #include "connection.hpp"
 
-namespace rest
+namespace hutzn
 {
 
 namespace socket
@@ -85,7 +85,7 @@ void connection::close()
     ::shutdown(socket_, SHUT_RDWR);
 }
 
-bool connection::receive(rest::buffer& data, const size_t& max_size)
+bool connection::receive(hutzn::buffer& data, const size_t& max_size)
 {
     if (false == is_connected_) {
         return false;
@@ -104,7 +104,7 @@ bool connection::receive(rest::buffer& data, const size_t& max_size)
     return true;
 }
 
-bool connection::send(const rest::buffer& data)
+bool connection::send(const hutzn::buffer& data)
 {
     return send(data.data(), data.size());
 }
@@ -164,4 +164,4 @@ bool connection::connect()
 
 } // namespace socket
 
-} // namespace rest
+} // namespace hutzn

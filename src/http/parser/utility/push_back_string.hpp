@@ -22,7 +22,7 @@
 #include <cstring>
 #include <cstdlib>
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -187,6 +187,6 @@ void push_back_string<maximum_size>::clear()
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn
 
 #endif // LIBHUTZNOHMD_HTTP_PARSER_UTILITY_PUSH_BACK_STRING_HPP

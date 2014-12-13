@@ -25,7 +25,7 @@
 
 using namespace testing;
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -33,7 +33,7 @@ namespace http
 
 TEST(response, set_and_deliver)
 {
-    auto socket = std::make_shared<rest::socket::connection_mock>();
+    auto socket = std::make_shared<hutzn::socket::connection_mock>();
     response response(socket);
 
     response.set_data({'0'});
@@ -41,7 +41,7 @@ TEST(response, set_and_deliver)
     response.set_status_code(status_code::OK);
     response.set_version(version::HTTP_1_1);
 
-    EXPECT_CALL(*socket, send(An<const rest::buffer&>()))
+    EXPECT_CALL(*socket, send(An<const hutzn::buffer&>()))
         .Times(1)
         .WillRepeatedly(Return(true));
     EXPECT_CALL(*socket, send(An<const std::string&>()))
@@ -50,7 +50,7 @@ TEST(response, set_and_deliver)
     response.deliver();
 
     response.set_version(version::HTTP_1_0);
-    EXPECT_CALL(*socket, send(An<const rest::buffer&>()))
+    EXPECT_CALL(*socket, send(An<const hutzn::buffer&>()))
         .Times(1)
         .WillRepeatedly(Return(true));
     EXPECT_CALL(*socket, send(An<const std::string&>()))
@@ -59,7 +59,7 @@ TEST(response, set_and_deliver)
     response.deliver();
 
     response.set_version(version::HTTP_UNKNOWN);
-    EXPECT_CALL(*socket, send(An<const rest::buffer&>()))
+    EXPECT_CALL(*socket, send(An<const hutzn::buffer&>()))
         .Times(1)
         .WillRepeatedly(Return(true));
     EXPECT_CALL(*socket, send(An<const std::string&>()))
@@ -70,4 +70,4 @@ TEST(response, set_and_deliver)
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

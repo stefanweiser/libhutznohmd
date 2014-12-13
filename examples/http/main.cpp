@@ -22,15 +22,15 @@
 #include <rest.hpp>
 #include <http/request.hpp>
 
-class connection : public rest::socket::connection_interface
+class connection : public hutzn::socket::connection_interface
 {
 public:
     explicit connection(const std::string& filename);
 
     virtual bool connect();
     virtual void close();
-    virtual bool receive(rest::buffer& data, const size_t& max_size);
-    virtual bool send(const rest::buffer& data);
+    virtual bool receive(hutzn::buffer& data, const size_t& max_size);
+    virtual bool send(const hutzn::buffer& data);
     virtual bool send(const std::string& data);
     virtual bool set_lingering_timeout(const int& timeout);
     virtual int socket() const;
@@ -55,7 +55,7 @@ void connection::close()
 {
 }
 
-bool connection::receive(rest::buffer& data, const size_t& max_size)
+bool connection::receive(hutzn::buffer& data, const size_t& max_size)
 {
     size_t read_bytes = 0;
     int c = 0;
@@ -70,7 +70,7 @@ bool connection::receive(rest::buffer& data, const size_t& max_size)
     return (read_bytes > 0);
 }
 
-bool connection::send(const rest::buffer& /*data*/)
+bool connection::send(const hutzn::buffer& /*data*/)
 {
     return true;
 }
@@ -95,8 +95,8 @@ int main()
     std::cout << "example_http" << std::endl;
 
     auto connection = std::make_shared<::connection>("./examples/res/request0");
-    rest::http::request request(connection,
-                                rest::http::request::parameters{true});
+    hutzn::http::request request(connection,
+                                 hutzn::http::request::parameters{true});
     request.parse();
 
     return 0;

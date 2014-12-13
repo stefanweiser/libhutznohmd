@@ -20,7 +20,7 @@
 
 #include "uri.hpp"
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -231,14 +231,14 @@ bool uri::parse_scheme_and_authority(int32_t& character, const bool skip_scheme)
 
 bool uri::parse_scheme(int32_t& character)
 {
-    using value_type = std::tuple<rest::http::uri_scheme, uint16_t>;
+    using value_type = std::tuple<hutzn::http::uri_scheme, uint16_t>;
     using value_info = trie<value_type>::value_info;
     static const std::vector<value_info> types = {
-        {value_info{"http", value_type{rest::http::uri_scheme::HTTP, 80}},
-         value_info{"mailto", value_type{rest::http::uri_scheme::MAILTO, 0}}}};
+        {value_info{"http", value_type{hutzn::http::uri_scheme::HTTP, 80}},
+         value_info{"mailto", value_type{hutzn::http::uri_scheme::MAILTO, 0}}}};
 
     static const trie<value_type> t(
-        types, value_type{rest::http::uri_scheme::UNKNOWN, 0});
+        types, value_type{hutzn::http::uri_scheme::UNKNOWN, 0});
     push_back_string<8> tmp;
     std::tie(scheme_, port_) = t.parse(character, tmp, *lexer_);
     return (uri_scheme::UNKNOWN != scheme_);
@@ -340,4 +340,4 @@ bool uri::parse_authority_2nd_pass()
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

@@ -18,7 +18,7 @@
 
 #include "rest.hpp"
 
-namespace rest
+namespace hutzn
 {
 
 namespace socket
@@ -34,4 +34,4 @@ listener_interface::~listener_interface()
 
 } // namespace socket
 
-} // namespace rest
+} // namespace hutzn

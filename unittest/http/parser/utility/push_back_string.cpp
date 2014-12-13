@@ -23,7 +23,7 @@
 
 using namespace testing;
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -83,4 +83,4 @@ TEST(push_back_string, basic_usage)
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

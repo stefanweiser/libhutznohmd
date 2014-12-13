@@ -24,7 +24,7 @@
 
 #include <socket/connection.hpp>
 
-namespace rest
+namespace hutzn
 {
 
 TEST(socket, construction_no_throw)
@@ -187,4 +187,4 @@ TEST(socket, normal_use_case)
     EXPECT_TRUE(listener->listening());
 }
 
-} // namespace rest
+} // namespace hutzn

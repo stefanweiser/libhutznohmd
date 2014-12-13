@@ -24,13 +24,13 @@
 
 #include "response.hpp"
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
 {
 
-response::response(const rest::socket::connection_pointer& connection)
+response::response(const hutzn::socket::connection_pointer& connection)
     : connection_(connection)
     , status_code_(status_code::INTERNAL_SERVER_ERROR)
     , version_(version::HTTP_1_1)
@@ -55,12 +55,12 @@ void response::deliver()
     connection_->send(data_);
 }
 
-void response::set_status_code(const rest::http::status_code& status_code)
+void response::set_status_code(const hutzn::http::status_code& status_code)
 {
     status_code_ = status_code;
 }
 
-void response::set_version(const rest::http::version& version)
+void response::set_version(const hutzn::http::version& version)
 {
     version_ = version;
 }
@@ -70,17 +70,17 @@ void response::set_header(const std::string& key, const std::string& value)
     headers_[key] = value;
 }
 
-void response::set_data(const rest::buffer& data)
+void response::set_data(const hutzn::buffer& data)
 {
     data_ = data;
 }
 
 void response::deliver_version(std::ostream& os,
-                               const rest::http::version& version)
+                               const hutzn::http::version& version)
 {
-    if (version == rest::http::version::HTTP_1_0) {
+    if (version == hutzn::http::version::HTTP_1_0) {
         os << "HTTP/1.0 ";
-    } else if (version == rest::http::version::HTTP_1_1) {
+    } else if (version == hutzn::http::version::HTTP_1_1) {
         os << "HTTP/1.1 ";
     } else {
         os << "HTTP/?.?";
@@ -90,7 +90,7 @@ void response::deliver_version(std::ostream& os,
 void response::deliver_status_code_text(std::ostream& os,
                                         const status_code& code)
 {
-    static const std::map<rest::http::status_code,
+    static const std::map<hutzn::http::status_code,
                           std::string> status_code_text = {
         {status_code::CONTINUE, "100 Continue"},
         {status_code::SWITCHING_PROTOCOLS, "101 Switching Protocols"},
@@ -151,4 +151,4 @@ void response::deliver_status_code_text(std::ostream& os,
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

@@ -18,7 +18,7 @@
 
 #include "rest.hpp"
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -46,4 +46,4 @@ server_interface::~server_interface()
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

@@ -20,7 +20,7 @@
 
 #include "base64.hpp"
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -138,4 +138,4 @@ std::vector<uint8_t> decode_base64(const std::string& encoded_string)
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

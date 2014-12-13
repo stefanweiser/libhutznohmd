@@ -27,7 +27,7 @@
 
 #include "listener.hpp"
 
-namespace rest
+namespace hutzn
 {
 
 namespace socket
@@ -119,4 +119,4 @@ int listener::socket() const
 
 } // namespace socket
 
-} // namespace rest
+} // namespace hutzn

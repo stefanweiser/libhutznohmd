@@ -23,7 +23,7 @@
 
 using namespace testing;
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -192,4 +192,4 @@ TEST(response_parser, http_error)
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

@@ -26,7 +26,7 @@
 #include <http/parser/utility/character_handling.hpp>
 #include <http/parser/utility/push_back_string.hpp>
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -104,6 +104,6 @@ bool parse_comment(int32_t& character, const lexer& l);
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn
 
 #endif // LIBHUTZNOHMD_HTTP_PARSER_UTILITY_LEXER_HPP

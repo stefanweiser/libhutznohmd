@@ -27,7 +27,7 @@
 
 #include <rest.hpp>
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -48,7 +48,7 @@ public:
                              const anonymous_int_function& peek_functor);
     void parse();
     bool valid() const;
-    const rest::http::version& version() const;
+    const hutzn::http::version& version() const;
     const std::map<std::string, std::string>& headers() const;
     const size_t& content_length() const;
     const media_type_interface& content_type() const;
@@ -74,6 +74,6 @@ private:
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn
 
 #endif // LIBHUTZNOHMD_HTTP_PARSER_RESPONSE_PARSER_HPP

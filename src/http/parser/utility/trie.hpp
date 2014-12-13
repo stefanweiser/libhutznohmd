@@ -29,7 +29,7 @@
 #include <http/parser/utility/lexer.hpp>
 #include <http/parser/utility/push_back_string.hpp>
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -153,6 +153,6 @@ trie<value_type>::trie(const std::vector<value_info>& values,
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn
 
 #endif // LIBHUTZNOHMD_HTTP_PARSER_UTILITY_TRIE_HPP

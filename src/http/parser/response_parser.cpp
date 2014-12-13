@@ -26,7 +26,7 @@
 
 #include "response_parser.hpp"
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -76,18 +76,18 @@ void response_parser::parse()
 
     int32_t result = common_.lexer_.get_non_whitespace();
     {
-        using value_info = trie<rest::http::version>::value_info;
+        using value_info = trie<hutzn::http::version>::value_info;
         static const std::vector<value_info> types = {
-            {value_info{"http/1.0", rest::http::version::HTTP_1_0},
-             value_info{"http/1.1", rest::http::version::HTTP_1_1}}};
+            {value_info{"http/1.0", hutzn::http::version::HTTP_1_0},
+             value_info{"http/1.1", hutzn::http::version::HTTP_1_1}}};
 
-        static const trie<rest::http::version> t(
-            types, rest::http::version::HTTP_UNKNOWN);
+        static const trie<hutzn::http::version> t(
+            types, hutzn::http::version::HTTP_UNKNOWN);
         push_back_string<32> tmp;
         common_.version_ = t.parse(result, tmp, common_.lexer_);
     }
 
-    if (rest::http::version::HTTP_UNKNOWN == common_.version_) {
+    if (hutzn::http::version::HTTP_UNKNOWN == common_.version_) {
         common_.state_ = parser_state::ERROR;
         return;
     }
@@ -118,7 +118,7 @@ bool response_parser::valid() const
     return (parser_state::SUCCEEDED == common_.state_);
 }
 
-const rest::http::version& response_parser::version() const
+const hutzn::http::version& response_parser::version() const
 {
     return common_.version_;
 }
@@ -219,4 +219,4 @@ bool response_parser::parse_headers(int32_t& character)
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

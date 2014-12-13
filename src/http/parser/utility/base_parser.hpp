@@ -27,7 +27,7 @@
 
 #include <rest.hpp>
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -69,7 +69,7 @@ public:
 
     push_back_string<40> header_key_;
     push_back_string<1000> header_value_;
-    rest::http::version version_;
+    hutzn::http::version version_;
     std::map<std::string, std::string> headers_;
     size_t content_length_;
     media_type content_type_;
@@ -105,6 +105,6 @@ bool base_parser::parse_generic_header(
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn
 
 #endif // LIBHUTZNOHMD_HTTP_PARSER_UTILITY_BASE_PARSER_HPP

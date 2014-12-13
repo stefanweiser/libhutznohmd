@@ -25,7 +25,7 @@
 
 using namespace testing;
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -82,4 +82,4 @@ TEST(md5, nearly_full_block)
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

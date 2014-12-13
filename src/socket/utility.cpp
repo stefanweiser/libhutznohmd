@@ -30,7 +30,7 @@
 
 #include "utility.hpp"
 
-namespace rest
+namespace hutzn
 {
 
 namespace socket
@@ -122,4 +122,4 @@ ssize_t receive_signal_safe(int file_descriptor, void* buffer, size_t size,
 
 } // namespace socket
 
-} // namespace rest
+} // namespace hutzn

@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 
-namespace rest
+namespace hutzn
 {
 
 //! Universal data buffer type of the library.
@@ -38,8 +38,8 @@ class connection_interface
 public:
     virtual ~connection_interface();
     virtual void close() = 0;
-    virtual bool receive(rest::buffer& data, const size_t& max_size) = 0;
-    virtual bool send(const rest::buffer& data) = 0;
+    virtual bool receive(hutzn::buffer& data, const size_t& max_size) = 0;
+    virtual bool send(const hutzn::buffer& data) = 0;
     virtual bool send(const std::string& data) = 0;
     virtual bool set_lingering_timeout(const int& timeout) = 0;
     virtual int socket() const = 0;
@@ -64,6 +64,6 @@ listener_pointer listen(const std::string& host, const uint16_t& port);
 
 } // namespace socket
 
-} // namespace rest
+} // namespace hutzn
 
 #endif // LIBHUTZNOHMD_LIBHUTZNOHMD_SOCKETS_HPP

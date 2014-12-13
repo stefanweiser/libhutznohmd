@@ -19,11 +19,11 @@
 #ifndef LIBHUTZNOHMD_VERSION_HPP
 #define LIBHUTZNOHMD_VERSION_HPP
 
-namespace rest
+namespace hutzn
 {
 
 std::string get_version();
 
-} // namespace rest
+} // namespace hutzn
 
 #endif // LIBHUTZNOHMD_VERSION_HPP

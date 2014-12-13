@@ -24,7 +24,7 @@
 
 using namespace testing;
 
-namespace rest
+namespace hutzn
 {
 
 namespace
@@ -108,4 +108,4 @@ TEST(server, normal_use_case_http_1_0)
     thread.join();
 }
 
-} // namespace rest
+} // namespace hutzn

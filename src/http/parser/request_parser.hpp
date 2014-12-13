@@ -28,7 +28,7 @@
 
 #include <rest.hpp>
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -50,7 +50,7 @@ public:
     void parse();
 
     bool valid() const;
-    const rest::http::version& version() const;
+    const hutzn::http::version& version() const;
     const std::map<std::string, std::string>& headers() const;
     const size_t& content_length() const;
     const media_type_interface& content_type() const;
@@ -58,7 +58,7 @@ public:
     bool keeps_connection() const;
     const std::array<uint8_t, 16>& md5() const;
     bool has_md5() const;
-    const rest::http::method& method() const;
+    const hutzn::http::method& method() const;
     const uri_interface& request_uri() const;
     const uri_interface& from_uri() const;
     std::vector<const media_type_interface*> accept_header() const;
@@ -76,7 +76,7 @@ private:
 
     base_parser common_;
 
-    rest::http::method method_;
+    hutzn::http::method method_;
     uri request_uri_;
     uri from_uri_;
 
@@ -85,6 +85,6 @@ private:
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn
 
 #endif // LIBHUTZNOHMD_HTTP_PARSER_REQUEST_PARSER_HPP

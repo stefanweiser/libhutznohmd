@@ -26,7 +26,7 @@
 
 #include "request_parser.hpp"
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -35,7 +35,7 @@ namespace http
 request_parser::request_parser(const anonymous_int_function& get_functor,
                                const anonymous_int_function& peek_functor)
     : common_(get_functor, peek_functor)
-    , method_(rest::http::method::UNKNOWN)
+    , method_(hutzn::http::method::UNKNOWN)
     , request_uri_()
     , from_uri_()
     , accept_header_()
@@ -50,24 +50,24 @@ void request_parser::parse()
 
     int32_t character = common_.lexer_.get_non_whitespace();
     {
-        using value_info = trie<rest::http::method>::value_info;
+        using value_info = trie<hutzn::http::method>::value_info;
         static const std::vector<value_info> types = {
-            {value_info{"head", rest::http::method::HEAD},
-             value_info{"get", rest::http::method::GET},
-             value_info{"put", rest::http::method::PUT},
-             value_info{"delete", rest::http::method::DELETE},
-             value_info{"post", rest::http::method::POST},
-             value_info{"trace", rest::http::method::TRACE},
-             value_info{"options", rest::http::method::OPTIONS},
-             value_info{"connect", rest::http::method::CONNECT}}};
+            {value_info{"head", hutzn::http::method::HEAD},
+             value_info{"get", hutzn::http::method::GET},
+             value_info{"put", hutzn::http::method::PUT},
+             value_info{"delete", hutzn::http::method::DELETE},
+             value_info{"post", hutzn::http::method::POST},
+             value_info{"trace", hutzn::http::method::TRACE},
+             value_info{"options", hutzn::http::method::OPTIONS},
+             value_info{"connect", hutzn::http::method::CONNECT}}};
 
-        static const trie<rest::http::method> t(types,
-                                                rest::http::method::UNKNOWN);
+        static const trie<hutzn::http::method> t(types,
+                                                 hutzn::http::method::UNKNOWN);
         push_back_string<32> tmp;
         method_ = t.parse(character, tmp, common_.lexer_);
     }
 
-    if (rest::http::method::UNKNOWN == method_) {
+    if (hutzn::http::method::UNKNOWN == method_) {
         common_.state_ = parser_state::ERROR;
         return;
     }
@@ -83,23 +83,23 @@ void request_parser::parse()
 
     character = common_.lexer_.get_non_whitespace();
     {
-        using value_type = std::tuple<rest::http::version, connection_type>;
+        using value_type = std::tuple<hutzn::http::version, connection_type>;
         using value_info = trie<value_type>::value_info;
         static const std::vector<value_info> types = {
-            {value_info{"http/1.0", value_type{rest::http::version::HTTP_1_0,
+            {value_info{"http/1.0", value_type{hutzn::http::version::HTTP_1_0,
                                                connection_type::CLOSE}},
-             value_info{"http/1.1", value_type{rest::http::version::HTTP_1_1,
+             value_info{"http/1.1", value_type{hutzn::http::version::HTTP_1_1,
                                                connection_type::KEEP_ALIVE}}}};
 
         static const trie<value_type> t(
-            types, value_type{rest::http::version::HTTP_UNKNOWN,
+            types, value_type{hutzn::http::version::HTTP_UNKNOWN,
                               connection_type::ERROR});
         push_back_string<32> tmp;
         std::tie(common_.version_, common_.connection_) =
             t.parse(character, tmp, common_.lexer_);
     }
 
-    if ((rest::http::version::HTTP_UNKNOWN == common_.version_) ||
+    if ((hutzn::http::version::HTTP_UNKNOWN == common_.version_) ||
         (character != '\n')) {
         common_.state_ = parser_state::ERROR;
         return;
@@ -118,7 +118,7 @@ bool request_parser::valid() const
     return (parser_state::SUCCEEDED == common_.state_);
 }
 
-const rest::http::version& request_parser::version() const
+const hutzn::http::version& request_parser::version() const
 {
     return common_.version_;
 }
@@ -158,7 +158,7 @@ bool request_parser::has_md5() const
     return common_.has_md5_;
 }
 
-const rest::http::method& request_parser::method() const
+const hutzn::http::method& request_parser::method() const
 {
     return method_;
 }
@@ -283,4 +283,4 @@ bool request_parser::parse_headers(int32_t& character)
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

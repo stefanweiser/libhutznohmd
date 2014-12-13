@@ -25,7 +25,7 @@
 
 #include "request.hpp"
 
-namespace rest
+namespace hutzn
 {
 
 namespace http
@@ -41,7 +41,7 @@ int32_t peek_char(void* handle)
     return static_cast<request*>(handle)->peek();
 }
 
-request::request(const rest::socket::connection_pointer& connection,
+request::request(const hutzn::socket::connection_pointer& connection,
                  const parameters& param)
     : connection_(connection)
     , buffer_()
@@ -83,9 +83,9 @@ bool request::parse()
     return result;
 }
 
-rest::http::method request::method() const
+hutzn::http::method request::method() const
 {
-    return static_cast<rest::http::method>(request_parser_.method());
+    return static_cast<hutzn::http::method>(request_parser_.method());
 }
 
 const uri_interface& request::request_uri() const
@@ -93,9 +93,9 @@ const uri_interface& request::request_uri() const
     return request_parser_.request_uri();
 }
 
-rest::http::version request::version() const
+hutzn::http::version request::version() const
 {
-    return static_cast<rest::http::version>(request_parser_.version());
+    return static_cast<hutzn::http::version>(request_parser_.version());
 }
 
 const std::map<std::string, std::string>& request::headers() const
@@ -103,7 +103,7 @@ const std::map<std::string, std::string>& request::headers() const
     return request_parser_.headers();
 }
 
-const rest::buffer& request::data() const
+const hutzn::buffer& request::data() const
 {
     return data_;
 }
@@ -147,4 +147,4 @@ int32_t request::peek()
 
 } // namespace http
 
-} // namespace rest
+} // namespace hutzn

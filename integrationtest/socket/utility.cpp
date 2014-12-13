@@ -22,7 +22,7 @@
 
 #include <socket/utility.hpp>
 
-namespace rest
+namespace hutzn
 {
 
 TEST(socket_utility, fill_address_ok)
@@ -39,4 +39,4 @@ TEST(socket_utility, fill_address_error)
     EXPECT_EQ(address.sin_family, AF_UNSPEC);
 }
 
-} // namespace rest
+} // namespace hutzn
