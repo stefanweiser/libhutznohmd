@@ -16,7 +16,7 @@
 # <http://www.gnu.org/licenses/>.
 
 IF(NOT MINIMAL)
-    FIND_PACKAGE(Doxygen 1.7.6)
+    FIND_PACKAGE(Doxygen 1.8.8)
     FIND_PACKAGE(Java 1.6)
     FIND_PACKAGE(Wget 1.13)
 
