@@ -31,14 +31,8 @@ IF(NOT MINIMAL)
         ENDIF()
 
         ADD_CUSTOM_TARGET(doc
-                          "${Java_JAVA_EXECUTABLE}" "-Djava.awt.headless=true"
-                          "-jar" "${PLANTUML_JAR}" "-v" "-o"
-                          "${CMAKE_CURRENT_BINARY_DIR}/html"
-                          "${PROJECT_PATH}/src/**.(c|cpp|h|hpp)"
-                          COMMAND "${Doxygen_DOXYGEN_EXECUTABLE}"
-                          "${PROJECT_PATH}/Doxyfile"
-                          WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-                          VERBATIM)
+                          "${Doxygen_DOXYGEN_EXECUTABLE}" "${PROJECT_PATH}/Doxyfile"
+                          WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}" VERBATIM)
     ELSE()
         MESSAGE(WARNING
                 "Target doc not available, because java, wget or doxygen is missing.")
