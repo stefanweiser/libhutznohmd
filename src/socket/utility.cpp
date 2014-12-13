@@ -16,17 +16,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <array>
-#include <cassert>
-
-#include <fcntl.h>
-#include <netdb.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/poll.h>
 #include <unistd.h>
-
-#include <socket/connection.hpp>
 
 #include "utility.hpp"
 
@@ -36,45 +29,49 @@ namespace hutzn
 namespace socket
 {
 
-void close_signal_safe(int file_descriptor)
+void close_signal_safe(const int file_descriptor)
 {
     int result;
     do {
-        result = ::close(file_descriptor);
+        result = close(file_descriptor);
     } while ((result == -1) && (errno == EINTR));
 }
 
-int accept_signal_safe(int socket_descriptor, ::sockaddr* address,
+int accept_signal_safe(const int socket_descriptor, sockaddr* address,
                        socklen_t* size)
 {
     int result;
     do {
-        result = ::accept(socket_descriptor, address, size);
+        result = accept(socket_descriptor, address, size);
     } while ((result == -1) && (errno == EINTR));
     return result;
 }
 
-int connect_signal_safe(int socket_file_descriptor, const ::sockaddr* address,
-                        socklen_t size)
+int connect_signal_safe(const int socket_descriptor, const sockaddr* address,
+                        const socklen_t size)
 {
-    int result = ::connect(socket_file_descriptor, address, size);
+    // Try to connect.
+    int result = connect(socket_descriptor, address, size);
     if (result == -1) {
-
+        // If this fails, try to recover from this error state.
         if (errno != EINTR) {
             return result;
         }
-        pollfd p{socket_file_descriptor, POLLOUT, 0};
+
+        // Wait till the socket gets writable.
+        pollfd p{socket_descriptor, POLLOUT, 0};
         do {
-            result = ::poll(&p, 1, -1);
+            result = poll(&p, 1, -1);
             if ((result == -1) && (errno != EINTR)) {
                 return result;
             }
         } while (result == -1);
 
+        // Check the error option of the socket.
         int error;
         socklen_t s = sizeof(error);
-        result = getsockopt(socket_file_descriptor, SOL_SOCKET, SO_ERROR,
-                            &error, &s);
+        result =
+            getsockopt(socket_descriptor, SOL_SOCKET, SO_ERROR, &error, &s);
         if (result == -1) {
             return result;
         }
@@ -85,31 +82,31 @@ int connect_signal_safe(int socket_file_descriptor, const ::sockaddr* address,
     return result;
 }
 
-ssize_t send_signal_safe(int file_descriptor, const void* buffer, size_t size,
-                         int flags)
+ssize_t send_signal_safe(const int file_descriptor, const void* buffer,
+                         const size_t size, const int flags)
 {
     ssize_t sent;
     do {
-        sent = ::send(file_descriptor, buffer, size, flags);
+        sent = send(file_descriptor, buffer, size, flags);
     } while ((sent == -1) && (errno == EINTR));
     return sent;
 }
 
-ssize_t receive_signal_safe(int file_descriptor, void* buffer, size_t size,
-                            int flags)
+ssize_t receive_signal_safe(const int file_descriptor, void* buffer,
+                            const size_t size, const int flags)
 {
     ssize_t received;
     do {
-        received = ::recv(file_descriptor, buffer, size, flags);
+        received = recv(file_descriptor, buffer, size, flags);
     } while ((received == -1) && (errno == EINTR));
     return received;
 }
 
-::sockaddr_in fill_address(const std::string& host, const uint16_t& port)
+sockaddr_in fill_address(const std::string& host, const uint16_t& port)
 {
-    ::sockaddr_in address;
+    sockaddr_in address;
 
-    if (0 == ::inet_aton(host.c_str(), &address.sin_addr)) {
+    if (0 == inet_aton(host.c_str(), &address.sin_addr)) {
         address.sin_family = AF_UNSPEC;
         return address;
     }

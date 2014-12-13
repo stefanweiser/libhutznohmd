@@ -20,7 +20,6 @@
 #define LIBHUTZNOHMD_SOCKET_UTILITY_HPP
 
 #include <cstdint>
-#include <memory>
 #include <string>
 
 #include <arpa/inet.h>
@@ -31,21 +30,37 @@ namespace hutzn
 namespace socket
 {
 
-void close_signal_safe(int file_descriptor);
+//! Calls the API function close and handles interfering signals. This means,
+//! that the function will return when the file descriptor is closed.
+void close_signal_safe(const int file_descriptor);
 
-int accept_signal_safe(int file_descriptor, ::sockaddr* address,
+//! Calls the API function accept and handles interfering signals. This means,
+//! that the function will return when there is a connection in the queue. It
+//! returns the file descriptor of the accepted connection.
+int accept_signal_safe(const int file_descriptor, sockaddr* address,
                        socklen_t* size);
 
-int connect_signal_safe(int socket_file_descriptor, const ::sockaddr* address,
-                        socklen_t size);
+//! Calls the API function connect and handles interfering signals. This means
+//! that the function will return when a connection is established. The
+//! connection is established, when the socket gets writable.
+int connect_signal_safe(const int socket_file_descriptor,
+                        const sockaddr* address, const socklen_t size);
 
-ssize_t send_signal_safe(int file_descriptor, const void* buffer, size_t size,
-                         int flags);
+//! Calls the API function send and handles interfering signals. It returns
+//! the number of sent bytes. When the socket is getting closed while sending
+//! data, it will return -1.
+ssize_t send_signal_safe(const int file_descriptor, const void* buffer,
+                         const size_t size, const int flags);
 
-ssize_t receive_signal_safe(int file_descriptor, void* buffer, size_t size,
-                            int flags);
+//! Calls the API function recv and handles interfering signals. It returns
+//! the number of received bytes. When the socket is getting closed while
+//! receiving data, it will return -1.
+ssize_t receive_signal_safe(const int file_descriptor, void* buffer,
+                            const size_t size, const int flags);
 
-::sockaddr_in fill_address(const std::string& host, const uint16_t& port);
+//! Converts a host string and a port into a sockaddr_in struct, that is needed
+//! when communicating with other API functions of the network stack.
+sockaddr_in fill_address(const std::string& host, const uint16_t& port);
 
 } // namespace socket
 
