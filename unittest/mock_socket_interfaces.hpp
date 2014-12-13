@@ -41,7 +41,7 @@ public:
     MOCK_CONST_METHOD0(socket, int());
 };
 
-typedef std::shared_ptr<connection_mock> connection_mock_pointer;
+using connection_mock_pointer = std::shared_ptr<connection_mock>;
 
 class listener_mock : public listener_interface
 {

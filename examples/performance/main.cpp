@@ -35,7 +35,7 @@ namespace http
 namespace
 {
 
-typedef std::pair<std::string, size_t> string_index_pair;
+using string_index_pair = std::pair<std::string, size_t>;
 
 int32_t get_char(void* handle)
 {

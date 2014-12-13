@@ -28,7 +28,7 @@ namespace rest
 {
 
 //! Universal data buffer type of the library.
-typedef std::vector<char> buffer;
+using buffer = std::vector<char>;
 
 namespace socket
 {
@@ -45,7 +45,7 @@ public:
     virtual int socket() const = 0;
 };
 
-typedef std::shared_ptr<connection_interface> connection_pointer;
+using connection_pointer = std::shared_ptr<connection_interface>;
 
 class listener_interface
 {
@@ -58,7 +58,7 @@ public:
     virtual int socket() const = 0;
 };
 
-typedef std::shared_ptr<listener_interface> listener_pointer;
+using listener_pointer = std::shared_ptr<listener_interface>;
 
 listener_pointer listen(const std::string& host, const uint16_t& port);
 

@@ -554,8 +554,8 @@ public:
 };
 
 //! Callback type, used for every http transaction.
-typedef std::function<void(const request_interface& request,
-                           response_interface& response)> transaction_function;
+using transaction_function = std::function<
+    void(const request_interface& request, response_interface& response)>;
 
 //! Represents a HTTP server.
 class server_interface
@@ -570,8 +570,8 @@ public:
     virtual void stop() = 0;
 };
 
-//! Shortcut typedef for a HTTP server.
-typedef std::shared_ptr<server_interface> server_pointer;
+//! Shortcut redifinition for a HTTP server.
+using server_pointer = std::shared_ptr<server_interface>;
 
 //! Creates a server, that listens at a host address on specific port.
 server_pointer create_server(const std::string& host, const uint16_t& port,
