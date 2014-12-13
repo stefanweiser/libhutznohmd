@@ -102,13 +102,13 @@ TEST(character_handling, uri_authority_characters)
     std::array<bool, 256> validity_map;
     std::fill(validity_map.begin(), validity_map.end(), false);
     for (char c = 'A'; c <= 'Z'; c++) {
-        validity_map[c] = true;
+        validity_map[static_cast<size_t>(c)] = true;
     }
     for (char c = 'a'; c <= 'z'; c++) {
-        validity_map[c] = true;
+        validity_map[static_cast<size_t>(c)] = true;
     }
     for (char c = '0'; c <= '9'; c++) {
-        validity_map[c] = true;
+        validity_map[static_cast<size_t>(c)] = true;
     }
     validity_map[':'] = true;
     validity_map['-'] = true;
@@ -142,13 +142,13 @@ TEST(character_handling, uri_path_characters)
     std::array<bool, 256> validity_map;
     std::fill(validity_map.begin(), validity_map.end(), false);
     for (char c = 'A'; c <= 'Z'; c++) {
-        validity_map[c] = true;
+        validity_map[static_cast<size_t>(c)] = true;
     }
     for (char c = 'a'; c <= 'z'; c++) {
-        validity_map[c] = true;
+        validity_map[static_cast<size_t>(c)] = true;
     }
     for (char c = '0'; c <= '9'; c++) {
-        validity_map[c] = true;
+        validity_map[static_cast<size_t>(c)] = true;
     }
     validity_map['-'] = true;
     validity_map['.'] = true;
@@ -185,13 +185,13 @@ TEST(character_handling, uri_query_characters)
     std::array<bool, 256> validity_map;
     std::fill(validity_map.begin(), validity_map.end(), false);
     for (char c = 'A'; c <= 'Z'; c++) {
-        validity_map[c] = true;
+        validity_map[static_cast<size_t>(c)] = true;
     }
     for (char c = 'a'; c <= 'z'; c++) {
-        validity_map[c] = true;
+        validity_map[static_cast<size_t>(c)] = true;
     }
     for (char c = '0'; c <= '9'; c++) {
-        validity_map[c] = true;
+        validity_map[static_cast<size_t>(c)] = true;
     }
     validity_map['-'] = true;
     validity_map['.'] = true;
@@ -229,13 +229,13 @@ TEST(character_handling, uri_fragment_characters)
     std::array<bool, 256> validity_map;
     std::fill(validity_map.begin(), validity_map.end(), false);
     for (char c = 'A'; c <= 'Z'; c++) {
-        validity_map[c] = true;
+        validity_map[static_cast<size_t>(c)] = true;
     }
     for (char c = 'a'; c <= 'z'; c++) {
-        validity_map[c] = true;
+        validity_map[static_cast<size_t>(c)] = true;
     }
     for (char c = '0'; c <= '9'; c++) {
-        validity_map[c] = true;
+        validity_map[static_cast<size_t>(c)] = true;
     }
     validity_map['-'] = true;
     validity_map['.'] = true;

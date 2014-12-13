@@ -164,7 +164,7 @@ TEST(lexer, word)
             anonymous_int_function(&peek_char, &s));
     int32_t character = l.get();
     push_back_string<4> data;
-    parse_word(character, data, [](const char& c) { return c != ' '; }, l);
+    parse_word(character, data, [](const uint8_t& c) { return c != ' '; }, l);
     EXPECT_EQ(std::string(data.c_str()), std::string("xyz"));
     EXPECT_EQ(character, ' ');
 }

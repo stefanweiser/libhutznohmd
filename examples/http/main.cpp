@@ -62,7 +62,7 @@ bool connection::receive(hutzn::buffer& data, const size_t& max_size)
     while ((c >= 0) && (read_bytes < max_size)) {
         c = stream_.get();
         if (c >= 0) {
-            data.push_back(static_cast<uint8_t>(c));
+            data.push_back(static_cast<char>(c));
             read_bytes++;
         }
     }

@@ -76,7 +76,7 @@ int32_t lexer::get_unsigned_integer(int32_t& character) const
         }
 
         int32_t old_result = result;
-        result = (result * 10) + (character - 0x30U);
+        result = (result * 10) + (character - 0x30);
 
         if (old_result > result) {
             // Overflow.

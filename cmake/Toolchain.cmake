@@ -32,7 +32,7 @@ IF(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR ("${CMAKE_CXX_COMPILER_ID}" 
     SET(USE_STRICTEST_RULES_FLAG "-pedantic -pedantic-errors -Werror")
     IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         SET(USE_STRICTEST_RULES_FLAG "${USE_STRICTEST_RULES_FLAG} -Weverything")
-        SET(USE_STRICTEST_RULES_FLAG "${USE_STRICTEST_RULES_FLAG} -Wno-unused-function -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-sign-conversion -Wno-exit-time-destructors -Wno-missing-prototypes")
+        SET(USE_STRICTEST_RULES_FLAG "${USE_STRICTEST_RULES_FLAG} -Wno-unused-function -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-exit-time-destructors -Wno-missing-prototypes")
 
         SET(WEAKENING_STRICT_RULES_DUE_TO_GMOCK "-Wno-global-constructors -Wno-weak-vtables")
     ELSEIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")

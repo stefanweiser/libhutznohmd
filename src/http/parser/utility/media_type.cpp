@@ -157,9 +157,9 @@ void media_type::parse_type(int32_t& character)
         types, media_type_interface::mime_type::CUSTOM);
     type_ = t.parse(character, custom_type_, *lexer_);
     if ((media_type_interface::mime_type::CUSTOM != type_) &&
-        (true == is_valid_token_character(static_cast<char>(character)))) {
+        (true == is_valid_token_character(static_cast<uint8_t>(character)))) {
         custom_type_.append_string(
-            std::get<0>(types[static_cast<int32_t>(type_)]));
+            std::get<0>(types[static_cast<size_t>(type_)]));
         type_ = media_type_interface::mime_type::CUSTOM;
     }
 
@@ -183,9 +183,9 @@ void media_type::parse_subtype(int32_t& character)
         types, media_type_interface::mime_subtype::CUSTOM);
     subtype_ = t.parse(character, custom_subtype_, *lexer_);
     if ((media_type_interface::mime_subtype::CUSTOM != subtype_) &&
-        (true == is_valid_token_character(static_cast<char>(character)))) {
+        (true == is_valid_token_character(static_cast<uint8_t>(character)))) {
         custom_subtype_.append_string(
-            std::get<0>(types[static_cast<int32_t>(subtype_)]));
+            std::get<0>(types[static_cast<size_t>(subtype_)]));
         subtype_ = media_type_interface::mime_subtype::CUSTOM;
     }
 

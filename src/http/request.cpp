@@ -56,21 +56,26 @@ request::request(const hutzn::socket::connection_pointer& connection,
 bool request::parse()
 {
     request_parser_.parse();
-    ssize_t content_length = request_parser_.content_length();
+    ssize_t content_length =
+        static_cast<ssize_t>(request_parser_.content_length());
 
     while ((content_length > 0) && (peek() >= 0)) {
-        ssize_t old_size = data_.size();
+        ssize_t old_size = static_cast<ssize_t>(data_.size());
         ssize_t old_buffer_size = static_cast<ssize_t>(buffer_.size());
         if ((old_buffer_size - static_cast<ssize_t>(index_)) >=
             content_length) {
-            data_.insert(data_.end(), buffer_.begin() + index_,
-                         buffer_.begin() + index_ + content_length);
-            index_ += content_length;
+            data_.insert(data_.end(),
+                         buffer_.begin() + static_cast<ssize_t>(index_),
+                         buffer_.begin() + static_cast<ssize_t>(index_) +
+                             content_length);
+            index_ += static_cast<size_t>(content_length);
             content_length = 0;
         } else {
-            data_.insert(data_.end(), buffer_.begin() + index_, buffer_.end());
+            data_.insert(data_.end(),
+                         buffer_.begin() + static_cast<ssize_t>(index_),
+                         buffer_.end());
             index_ = buffer_.size();
-            content_length -= (data_.size() - old_size);
+            content_length -= (static_cast<ssize_t>(data_.size()) - old_size);
         }
     }
 

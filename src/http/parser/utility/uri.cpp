@@ -35,8 +35,8 @@ bool parse_uri_word(int32_t& character, push_back_string<size>& result,
                     const continue_function& continue_condition_functor,
                     const lexer& l)
 {
-    while ((character >= 0) &&
-           (true == continue_condition_functor(static_cast<char>(character)))) {
+    while ((character >= 0) && (true == continue_condition_functor(
+                                            static_cast<uint8_t>(character)))) {
         if ('%' == character) {
             int32_t a = l.get();
             int32_t b = l.get();
@@ -125,7 +125,8 @@ bool uri::set_userinfo(const char* const new_userinfo)
 {
     const char* c = new_userinfo;
     while ('\0' != (*c)) {
-        if (false == is_valid_uri_authority_character(*c)) {
+        if (false ==
+            is_valid_uri_authority_character(static_cast<uint8_t>(*c))) {
             return false;
         }
         c++;
@@ -140,7 +141,8 @@ bool uri::set_host(const char* const new_host)
 {
     const char* c = new_host;
     while ('\0' != (*c)) {
-        if (false == is_valid_uri_authority_character(*c)) {
+        if (false ==
+            is_valid_uri_authority_character(static_cast<uint8_t>(*c))) {
             return false;
         }
         c++;
@@ -308,27 +310,29 @@ bool uri::parse_authority_2nd_pass()
     // number and search the ':' symbol.
     uint32_t p = 0;
     uint32_t factor = 1;
-    for (ssize_t i = (host_.size() - 1); i >= 0; i--) {
-        const uint8_t c = static_cast<uint8_t>(host_[i] - '0');
+    for (ssize_t i = (static_cast<ssize_t>(host_.size()) - 1); i >= 0; i--) {
+        const uint8_t c =
+            static_cast<uint8_t>(host_[static_cast<size_t>(i)] - '0');
 
         if ((c < 10) && (factor <= 10000)) {
 
             p += (factor * c);
             factor *= 10;
 
-        } else if ((':' == host_[i]) && (p > 0) && (p < 65536)) {
+        } else if ((':' == host_[static_cast<size_t>(i)]) && (p > 0) &&
+                   (p < 65536)) {
 
             port_ = static_cast<uint16_t>(p);
 
             push_back_string<32> tmp;
-            host_[i] = '\0';
+            host_[static_cast<size_t>(i)] = '\0';
             tmp.append_string(host_.c_str());
             host_.clear();
             host_.append_string(tmp.c_str());
 
             break;
 
-        } else if (':' == host_[i]) {
+        } else if (':' == host_[static_cast<size_t>(i)]) {
             // This host is erroneous, because it has no correct port component,
             // but a ':' symbol.
             return false;

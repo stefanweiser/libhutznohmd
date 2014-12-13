@@ -204,13 +204,14 @@ std::array<uint8_t, 16> calculate_md5(const std::vector<char>& data)
     // Copy the rest.
     std::array<char, block_size> data_buffer;
     uint8_t last_bit = 0x80U;
-    std::copy(data.end() - remaining, data.end(), data_buffer.begin());
+    std::copy(data.end() - static_cast<ssize_t>(remaining), data.end(),
+              data_buffer.begin());
 
     // If there is not enough space to append the size, we have to fill it into
     // another block.
     if (remaining > (max_size_minus_size - 1)) {
         std::fill(data_buffer.begin() + remaining, data_buffer.end(), 0);
-        data_buffer[remaining] = last_bit;
+        data_buffer[remaining] = static_cast<char>(last_bit);
         process(data_buffer.data(), digest);
         last_bit = 0;
         remaining = 0;
@@ -219,14 +220,14 @@ std::array<uint8_t, 16> calculate_md5(const std::vector<char>& data)
     // Fill up the block till there are 8 bytes left for the size in bits.
     std::fill(data_buffer.begin() + remaining,
               data_buffer.begin() + max_size_minus_size, 0);
-    data_buffer[remaining] = last_bit;
+    data_buffer[remaining] = static_cast<char>(last_bit);
 
     // Fill up the number of bits.
     const uint64_t processed_bits = data.size() * bits_per_byte;
     for (size_t i = 0; i < size_of_size; ++i) {
         const size_t index = max_size_minus_size + i;
         data_buffer[index] =
-            static_cast<uint8_t>(processed_bits >> (i * bits_per_byte));
+            static_cast<char>(processed_bits >> (i * bits_per_byte));
     }
 
     // Process last block.

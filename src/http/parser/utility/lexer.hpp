@@ -54,8 +54,8 @@ void parse_word(int32_t& character, push_back_string<size>& result,
                 const continue_function& continue_condition_functor,
                 const lexer& l)
 {
-    while ((character >= 0) &&
-           (true == continue_condition_functor(static_cast<char>(character)))) {
+    while ((character >= 0) && (true == continue_condition_functor(
+                                            static_cast<uint8_t>(character)))) {
         result.push_back(static_cast<char>(character));
         character = l.get();
     }
