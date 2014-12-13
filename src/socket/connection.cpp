@@ -78,10 +78,10 @@ bool connection::receive(hutzn::buffer& data, const size_t& max_size)
 
     const size_t old_size = data.size();
     data.resize(old_size + max_size);
-    const ssize_t received =
-        receive_signal_safe(socket_, data.data() + old_size, max_size, 0);
-
-    data.resize(old_size + static_cast<size_t>(std::max<ssize_t>(received, 0)));
+    void* const p = data.data() + old_size;
+    const ssize_t received = receive_signal_safe(socket_, p, max_size, 0);
+    const ssize_t new_extension_size = std::max<ssize_t>(received, 0);
+    data.resize(old_size + static_cast<size_t>(new_extension_size));
     return (received > 0);
 }
 
@@ -105,13 +105,13 @@ bool connection::send(const char* buffer, const size_t& size)
 
     do {
         const size_t block_size = size - static_cast<size_t>(total_sent_size);
-        const ssize_t sent_block_size =
-            send_signal_safe(socket_, buffer + total_sent_size, block_size, 0);
+        const void* const p = buffer + total_sent_size;
+        const ssize_t sent_size = send_signal_safe(socket_, p, block_size, 0);
 
-        if (sent_block_size <= 0) {
+        if (sent_size <= 0) {
             return false;
         }
-        total_sent_size += sent_block_size;
+        total_sent_size += sent_size;
     } while (total_sent_size < static_cast<ssize_t>(size));
 
     return true;
@@ -133,12 +133,13 @@ bool connection::connect()
     if (true == is_connected_) {
         return false;
     }
-    if (connect_signal_safe(socket_,
-                            reinterpret_cast<const sockaddr*>(&address_),
-                            sizeof(address_)) != 0) {
+
+    const sockaddr* address = reinterpret_cast<const sockaddr*>(&address_);
+    if (connect_signal_safe(socket_, address, sizeof(address_)) != 0) {
         close();
         return false;
     }
+
     is_connected_ = true;
     return true;
 }

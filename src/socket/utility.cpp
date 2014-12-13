@@ -37,8 +37,8 @@ void close_signal_safe(const int file_descriptor)
     } while ((result == -1) && (errno == EINTR));
 }
 
-int accept_signal_safe(const int socket_descriptor, sockaddr* address,
-                       socklen_t* size)
+int accept_signal_safe(const int socket_descriptor, sockaddr* const address,
+                       socklen_t* const size)
 {
     int result;
     do {
@@ -47,8 +47,8 @@ int accept_signal_safe(const int socket_descriptor, sockaddr* address,
     return result;
 }
 
-int connect_signal_safe(const int socket_descriptor, const sockaddr* address,
-                        const socklen_t size)
+int connect_signal_safe(const int socket_descriptor,
+                        const sockaddr* const address, const socklen_t size)
 {
     // Try to connect.
     int result = connect(socket_descriptor, address, size);
@@ -82,7 +82,7 @@ int connect_signal_safe(const int socket_descriptor, const sockaddr* address,
     return result;
 }
 
-ssize_t send_signal_safe(const int file_descriptor, const void* buffer,
+ssize_t send_signal_safe(const int file_descriptor, const void* const buffer,
                          const size_t size, const int flags)
 {
     ssize_t sent;
@@ -92,7 +92,7 @@ ssize_t send_signal_safe(const int file_descriptor, const void* buffer,
     return sent;
 }
 
-ssize_t receive_signal_safe(const int file_descriptor, void* buffer,
+ssize_t receive_signal_safe(const int file_descriptor, void* const buffer,
                             const size_t size, const int flags)
 {
     ssize_t received;
