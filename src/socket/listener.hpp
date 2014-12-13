@@ -16,14 +16,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_SOCKET_LISTENER_SOCKET_HPP
-#define LIBHUTZNOHMD_SOCKET_LISTENER_SOCKET_HPP
+#ifndef LIBHUTZNOHMD_SOCKET_LISTENER_HPP
+#define LIBHUTZNOHMD_SOCKET_LISTENER_HPP
 
 #include <cstdint>
 #include <memory>
 #include <string>
 
-#include <hutzn.hpp>
 #include <libhutznohmd/sockets.hpp>
 
 namespace hutzn
@@ -55,4 +54,4 @@ private:
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_SOCKET_LISTENER_SOCKET_HPP
+#endif // LIBHUTZNOHMD_SOCKET_LISTENER_HPP
