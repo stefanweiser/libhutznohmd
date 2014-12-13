@@ -16,6 +16,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
 #include <cstdint>
 #include <string>
 
@@ -96,12 +97,8 @@ bool connection::receive(hutzn::buffer& data, const size_t& max_size)
     const ::ssize_t received =
         receive_signal_safe(socket_, data.data() + old_size, max_size, 0);
 
-    if (received <= 0) {
-        return false;
-    }
-
-    data.resize(old_size + received);
-    return true;
+    data.resize(old_size + std::max<::ssize_t>(received, 0));
+    return (received <= 0);
 }
 
 bool connection::send(const hutzn::buffer& data)
