@@ -39,12 +39,12 @@ public:
                                             const uint16_t& port);
 
     explicit listener(const int& s);
-    virtual ~listener();
-    virtual connection_pointer accept() const;
-    virtual bool listening() const;
-    virtual void stop();
-    virtual bool set_lingering_timeout(const int& timeout);
-    virtual int socket() const;
+    virtual ~listener() override;
+    virtual connection_pointer accept() const override;
+    virtual bool listening() const override;
+    virtual void stop() override;
+    virtual bool set_lingering_timeout(const int& timeout) override;
+    virtual int socket() const override;
 
 private:
     bool is_listening_;
