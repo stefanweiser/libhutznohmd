@@ -41,13 +41,14 @@ public:
     explicit connection(const int& s);
     explicit connection(const int& s, const ::sockaddr_in& address);
     virtual ~connection();
-    virtual bool connect();
     virtual void close();
     virtual bool receive(rest::buffer& data, const size_t& max_size);
     virtual bool send(const rest::buffer& data);
     virtual bool send(const std::string& data);
     virtual bool set_lingering_timeout(const int& timeout);
     virtual int socket() const;
+
+    bool connect();
 
 private:
     bool send(const char* buffer, const size_t& size);

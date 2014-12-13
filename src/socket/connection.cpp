@@ -34,11 +34,6 @@ namespace rest
 namespace socket
 {
 
-connection_pointer connect(const std::string& host, const uint16_t& port)
-{
-    return connection::create(host, port);
-}
-
 std::shared_ptr<connection> connection::create(const std::string& host,
                                                const uint16_t& port)
 {
@@ -83,21 +78,6 @@ union address_union
 };
 
 } // namespace
-
-bool connection::connect()
-{
-    if (true == is_connected_) {
-        return false;
-    }
-    address_union address;
-    address.in = &address_;
-    if (connect_signal_safe(socket_, address.base, sizeof(address_)) != 0) {
-        close();
-        return false;
-    }
-    is_connected_ = true;
-    return true;
-}
 
 void connection::close()
 {
@@ -165,6 +145,21 @@ bool connection::set_lingering_timeout(const int& timeout)
 int connection::socket() const
 {
     return socket_;
+}
+
+bool connection::connect()
+{
+    if (true == is_connected_) {
+        return false;
+    }
+    address_union address;
+    address.in = &address_;
+    if (connect_signal_safe(socket_, address.base, sizeof(address_)) != 0) {
+        close();
+        return false;
+    }
+    is_connected_ = true;
+    return true;
 }
 
 } // namespace socket

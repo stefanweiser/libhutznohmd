@@ -68,7 +68,7 @@ TEST(server, normal_use_case_http_1_1)
 
     std::thread thread(std::bind(&http::server_interface::run, server.get()));
 
-    socket::connection_pointer connection = socket::connect("127.0.0.1", 10000);
+    auto connection = socket::connection::create("127.0.0.1", 10000);
     EXPECT_TRUE(connection->connect());
     disable_time_wait(get_socket(connection));
     std::string request = "GET / HTTP/1.1\r\n\r\n";
@@ -94,7 +94,7 @@ TEST(server, normal_use_case_http_1_0)
 
     std::thread thread(std::bind(&http::server_interface::run, server.get()));
 
-    socket::connection_pointer connection = socket::connect("127.0.0.1", 10000);
+    auto connection = socket::connection::create("127.0.0.1", 10000);
     EXPECT_TRUE(connection->connect());
     disable_time_wait(get_socket(connection));
     std::string request = "GET / HTTP/1.0\r\n\r\n";

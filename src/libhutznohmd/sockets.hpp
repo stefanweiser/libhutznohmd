@@ -37,7 +37,6 @@ class connection_interface
 {
 public:
     virtual ~connection_interface();
-    virtual bool connect() = 0;
     virtual void close() = 0;
     virtual bool receive(rest::buffer& data, const size_t& max_size) = 0;
     virtual bool send(const rest::buffer& data) = 0;
@@ -61,7 +60,6 @@ public:
 
 typedef std::shared_ptr<listener_interface> listener_pointer;
 
-connection_pointer connect(const std::string& host, const uint16_t& port);
 listener_pointer listen(const std::string& host, const uint16_t& port);
 
 } // namespace socket

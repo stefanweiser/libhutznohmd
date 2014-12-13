@@ -23,13 +23,14 @@
 
 #include <rest.hpp>
 
+#include <socket/connection.hpp>
+
 void client()
 {
     static const rest::buffer data = {0, 1, 2, 3};
 
     std::cout << "  connecting" << std::endl;
-    rest::socket::connection_pointer c =
-        rest::socket::connect("127.0.0.1", 30000);
+    auto c = rest::socket::connection::create("127.0.0.1", 30000);
     if (false == c->connect()) {
         std::cout << "  client not connected" << std::endl;
         abort();
