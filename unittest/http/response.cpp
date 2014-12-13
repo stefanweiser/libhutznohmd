@@ -21,7 +21,7 @@
 
 #include <http/response.hpp>
 
-#include <mock_socket_interfaces.hpp>
+#include <libhutznohmd/mock_sockets.hpp>
 
 using namespace testing;
 
@@ -33,7 +33,7 @@ namespace http
 
 TEST(response, set_and_deliver)
 {
-    auto socket = std::make_shared<hutzn::socket::connection_mock>();
+    auto socket = std::make_shared<hutzn::socket::connection_interface_mock>();
     response response(socket);
 
     response.set_data({'0'});

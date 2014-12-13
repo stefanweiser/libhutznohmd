@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_SOCKET_MOCK_SOCKET_INTERFACE_HPP
-#define LIBHUTZNOHMD_SOCKET_MOCK_SOCKET_INTERFACE_HPP
+#ifndef LIBHUTZNOHMD_LIBHUTZNOHMD_MOCK_SOCKETS_HPP
+#define LIBHUTZNOHMD_LIBHUTZNOHMD_MOCK_SOCKETS_HPP
 
 #include <gmock/gmock.h>
 
@@ -29,7 +29,7 @@ namespace hutzn
 namespace socket
 {
 
-class connection_mock : public connection_interface
+class connection_interface_mock : public connection_interface
 {
 public:
     MOCK_METHOD0(connect, bool());
@@ -41,9 +41,9 @@ public:
     MOCK_CONST_METHOD0(socket, int());
 };
 
-using connection_mock_pointer = std::shared_ptr<connection_mock>;
+using connection_mock_pointer = std::shared_ptr<connection_interface_mock>;
 
-class listener_mock : public listener_interface
+class listener_interface_mock : public listener_interface
 {
 public:
     MOCK_CONST_METHOD0(accept, connection_pointer());
@@ -53,8 +53,10 @@ public:
     MOCK_CONST_METHOD0(socket, int());
 };
 
+using listener_mock_pointer = std::shared_ptr<listener_interface_mock>;
+
 } // namespace socket
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_SOCKET_MOCK_SOCKET_INTERFACE_HPP
+#endif // LIBHUTZNOHMD_LIBHUTZNOHMD_MOCK_SOCKETS_HPP

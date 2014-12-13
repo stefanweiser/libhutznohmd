@@ -21,7 +21,7 @@
 
 #include <http/server.hpp>
 
-#include <mock_socket_interfaces.hpp>
+#include <libhutznohmd/mock_sockets.hpp>
 
 using namespace testing;
 
@@ -39,7 +39,7 @@ TEST(server, parsing_request)
                   response_interface& /*response*/) { called = true; };
     server server(hutzn::socket::listener_pointer(), transaction);
 
-    auto socket = std::make_shared<hutzn::socket::connection_mock>();
+    auto socket = std::make_shared<hutzn::socket::connection_interface_mock>();
     EXPECT_CALL(*socket, receive(_, _))
         .WillOnce(Invoke(
             [](hutzn::buffer& data, const size_t & /*max_size*/) -> bool {
