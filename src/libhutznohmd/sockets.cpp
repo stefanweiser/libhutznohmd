@@ -24,6 +24,10 @@ namespace hutzn
 namespace socket
 {
 
+block_device_interface::~block_device_interface()
+{
+}
+
 connection_interface::~connection_interface()
 {
 }

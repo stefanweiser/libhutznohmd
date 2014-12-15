@@ -88,21 +88,13 @@ using buffer = std::vector<char>;
 namespace socket
 {
 
-//! The term connection is here used as one side of a connected communication
-//! channel. This marks the difference to a listener, that defines only a single
-//! endpoint and cannot be used for communication directly.
-class connection_interface
+//! A block device is an object, which could be used to send and receive data
+//! blockwise. These blocks could be of custom size.
+class block_device_interface
 {
 public:
-    //! Shuts the connection down if not already done and releases the allocated
-    //! resources.
-    virtual ~connection_interface();
-
-    //! Shuts down the connection, but remain holding the resources. This will
-    //! immediately stop any call on that connection. You could release the
-    //! connection object afterwards, because no operation will work on such a
-    //! connection.
-    virtual void close() = 0;
+    //! Releases the resources allocated by the block device.
+    virtual ~block_device_interface();
 
     //! Invokes a blocking receive operation until something but at most
     //! @c max_size is read from the connection. The buffer will retain its
@@ -121,6 +113,23 @@ public:
     //! This function behaves equally, but takes a string instead of a binary
     //! buffer.
     virtual bool send(const std::string& data) = 0;
+};
+
+//! The term connection is here used as one side of a connected communication
+//! channel. This marks the difference to a listener, that defines only a single
+//! endpoint and cannot be used for communication directly.
+class connection_interface : public block_device_interface
+{
+public:
+    //! Shuts the connection down if not already done and releases the allocated
+    //! resources.
+    virtual ~connection_interface();
+
+    //! Shuts down the connection, but remain holding the resources. This will
+    //! immediately stop any call on that connection. You could release the
+    //! connection object afterwards, because no operation will work on such a
+    //! connection.
+    virtual void close() = 0;
 
     //! Overwrites the lingering timeout of the connection in seconds. As a part
     //! of most network stacks operating systems keep connections in the state
