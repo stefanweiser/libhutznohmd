@@ -38,19 +38,21 @@ public:
     explicit response(const hutzn::socket::connection_pointer& connection);
     void deliver();
 
-    virtual void set_status_code(const hutzn::http::status_code& status_code);
+    virtual void
+    set_status_code(const hutzn::request::status_code& status_code);
     virtual void set_version(const hutzn::http::version& version);
     virtual void set_header(const std::string& key, const std::string& value);
     virtual void set_data(const hutzn::buffer& data);
 
 private:
     static void deliver_version(std::ostream& os, const version& version);
-    static void deliver_status_code_text(std::ostream& os,
-                                         const status_code& code);
+    static void
+    deliver_status_code_text(std::ostream& os,
+                             const hutzn::request::status_code& code);
 
     hutzn::socket::connection_pointer connection_;
 
-    status_code status_code_;
+    hutzn::request::status_code status_code_;
     version version_;
     std::map<std::string, std::string> headers_;
     hutzn::buffer data_;

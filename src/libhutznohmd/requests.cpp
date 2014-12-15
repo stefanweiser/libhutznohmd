@@ -24,6 +24,18 @@ namespace hutzn
 namespace request
 {
 
+request_parser_interface::~request_parser_interface()
+{
+}
+
+handler_interface::~handler_interface()
+{
+}
+
+multiplexer_interface::~multiplexer_interface()
+{
+}
+
 } // namespace request
 
 } // namespace hutzn

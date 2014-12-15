@@ -32,7 +32,7 @@ namespace http
 
 response::response(const hutzn::socket::connection_pointer& connection)
     : connection_(connection)
-    , status_code_(status_code::INTERNAL_SERVER_ERROR)
+    , status_code_(request::status_code::INTERNAL_SERVER_ERROR)
     , version_(version::HTTP_1_1)
     , headers_()
     , data_()
@@ -55,7 +55,7 @@ void response::deliver()
     connection_->send(data_);
 }
 
-void response::set_status_code(const hutzn::http::status_code& status_code)
+void response::set_status_code(const hutzn::request::status_code& status_code)
 {
     status_code_ = status_code;
 }
@@ -88,60 +88,66 @@ void response::deliver_version(std::ostream& os,
 }
 
 void response::deliver_status_code_text(std::ostream& os,
-                                        const status_code& code)
+                                        const hutzn::request::status_code& code)
 {
-    static const std::map<hutzn::http::status_code,
+    static const std::map<hutzn::request::status_code,
                           std::string> status_code_text = {
-        {status_code::CONTINUE, "100 Continue"},
-        {status_code::SWITCHING_PROTOCOLS, "101 Switching Protocols"},
-        {status_code::PROCESSING, "102 Processing"},
-        {status_code::OK, "200 Ok"},
-        {status_code::CREATED, "201 Continue"},
-        {status_code::ACCEPTED, "202 Accepted"},
-        {status_code::NON_AUTHORATIVE_INFORMATION,
+        {request::status_code::CONTINUE, "100 Continue"},
+        {request::status_code::SWITCHING_PROTOCOLS, "101 Switching Protocols"},
+        {request::status_code::PROCESSING, "102 Processing"},
+        {request::status_code::OK, "200 Ok"},
+        {request::status_code::CREATED, "201 Continue"},
+        {request::status_code::ACCEPTED, "202 Accepted"},
+        {request::status_code::NON_AUTHORATIVE_INFORMATION,
          "203 Non Authorative Information"},
-        {status_code::NO_CONTENT, "204 No Content"},
-        {status_code::RESET_CONTENT, "205 Reset Content"},
-        {status_code::PARTIAL_CONTENT, "206 Partial Content"},
-        {status_code::MULTI_STATUS, "207 Multi Status"},
-        {status_code::MULTIPLE_CHOICES, "300 Multiple Choices"},
-        {status_code::MOVED_PERMANENTLY, "301 Moved Permanently"},
-        {status_code::FOUND, "302 Found"},
-        {status_code::SEE_OTHER, "303 See Other"},
-        {status_code::NOT_MODIFIED, "304 Not Modified"},
-        {status_code::USE_PROXY, "305 Use Proxy"},
-        {status_code::SWITCH_PROXY, "306 Switch Proxy"},
-        {status_code::TEMPORARY_REDIRECT, "307 Temporary Redirect"},
-        {status_code::BAD_REQUEST, "400 Bad Request"},
-        {status_code::UNAUTHORIZED, "401 Unauthorized"},
-        {status_code::PAYMENT_REQUIRED, "402 Payment Required"},
-        {status_code::FORBIDDEN, "403 Forbidden"},
-        {status_code::NOT_FOUND, "404 Not Found"},
-        {status_code::METHOD_NOT_ALLOWED, "405 Method Not Allowed"},
-        {status_code::METHOD_NOT_ACCEPTABLE, "406 Method Not Acceptable"},
-        {status_code::PROXY_AUTHENTIFICATION_REQUIRED,
+        {request::status_code::NO_CONTENT, "204 No Content"},
+        {request::status_code::RESET_CONTENT, "205 Reset Content"},
+        {request::status_code::PARTIAL_CONTENT, "206 Partial Content"},
+        {request::status_code::MULTI_STATUS, "207 Multi Status"},
+        {request::status_code::MULTIPLE_CHOICES, "300 Multiple Choices"},
+        {request::status_code::MOVED_PERMANENTLY, "301 Moved Permanently"},
+        {request::status_code::FOUND, "302 Found"},
+        {request::status_code::SEE_OTHER, "303 See Other"},
+        {request::status_code::NOT_MODIFIED, "304 Not Modified"},
+        {request::status_code::USE_PROXY, "305 Use Proxy"},
+        {request::status_code::SWITCH_PROXY, "306 Switch Proxy"},
+        {request::status_code::TEMPORARY_REDIRECT, "307 Temporary Redirect"},
+        {request::status_code::BAD_REQUEST, "400 Bad Request"},
+        {request::status_code::UNAUTHORIZED, "401 Unauthorized"},
+        {request::status_code::PAYMENT_REQUIRED, "402 Payment Required"},
+        {request::status_code::FORBIDDEN, "403 Forbidden"},
+        {request::status_code::NOT_FOUND, "404 Not Found"},
+        {request::status_code::METHOD_NOT_ALLOWED, "405 Method Not Allowed"},
+        {request::status_code::METHOD_NOT_ACCEPTABLE,
+         "406 Method Not Acceptable"},
+        {request::status_code::PROXY_AUTHENTIFICATION_REQUIRED,
          "407 Proxy Authentification Required"},
-        {status_code::REQUEST_TIMEOUT, "408 Request Timeout"},
-        {status_code::CONFLICT, "409 Conflict"},
-        {status_code::GONE, "410 Gone"},
-        {status_code::LENGTH_REQUIRED, "411 Length Required"},
-        {status_code::PRECONDITION_FAILED, "412 Precondition Failed"},
-        {status_code::REQUEST_ENTITY_TOO_LARGE, "413 Request Entity Too Large"},
-        {status_code::REQUEST_URI_TOO_LONG, "414 Request Uri Too Long"},
-        {status_code::UNSUPPORTED_MEDIA_TYPE, "415 Unsupported Media Type"},
-        {status_code::REQUESTED_RANGE_NOT_SATISFIABLE,
+        {request::status_code::REQUEST_TIMEOUT, "408 Request Timeout"},
+        {request::status_code::CONFLICT, "409 Conflict"},
+        {request::status_code::GONE, "410 Gone"},
+        {request::status_code::LENGTH_REQUIRED, "411 Length Required"},
+        {request::status_code::PRECONDITION_FAILED, "412 Precondition Failed"},
+        {request::status_code::REQUEST_ENTITY_TOO_LARGE,
+         "413 Request Entity Too Large"},
+        {request::status_code::REQUEST_URI_TOO_LONG,
+         "414 Request Uri Too Long"},
+        {request::status_code::UNSUPPORTED_MEDIA_TYPE,
+         "415 Unsupported Media Type"},
+        {request::status_code::REQUESTED_RANGE_NOT_SATISFIABLE,
          "416 Requested Range Not Satisfiable"},
-        {status_code::EXPECTATION_FAILED, "417 Expectation Failed"},
-        {status_code::UNPROCESSABLE_ENTITY, "422 Unprocessable Entity"},
-        {status_code::LOCKED, "423 Locked"},
-        {status_code::FAILED_DEPENDENCY, "424 Failed Dependency"},
-        {status_code::UPGRADE_REQUIRED, "426 Upgrade Required"},
-        {status_code::INTERNAL_SERVER_ERROR, "500 Internal Server Error"},
-        {status_code::NOT_IMPLEMENTED, "501 Not Implemented"},
-        {status_code::BAD_GATEWAY, "502 Bad Gateway"},
-        {status_code::SERVICE_UNAVAILABLE, "503 Service Unavailable"},
-        {status_code::GATEWAY_TIMEOUT, "504 Gateway Timeout"},
-        {status_code::HTTP_VERSION_NOT_SUPPORTED,
+        {request::status_code::EXPECTATION_FAILED, "417 Expectation Failed"},
+        {request::status_code::UNPROCESSABLE_ENTITY,
+         "422 Unprocessable Entity"},
+        {request::status_code::LOCKED, "423 Locked"},
+        {request::status_code::FAILED_DEPENDENCY, "424 Failed Dependency"},
+        {request::status_code::UPGRADE_REQUIRED, "426 Upgrade Required"},
+        {request::status_code::INTERNAL_SERVER_ERROR,
+         "500 Internal Server Error"},
+        {request::status_code::NOT_IMPLEMENTED, "501 Not Implemented"},
+        {request::status_code::BAD_GATEWAY, "502 Bad Gateway"},
+        {request::status_code::SERVICE_UNAVAILABLE, "503 Service Unavailable"},
+        {request::status_code::GATEWAY_TIMEOUT, "504 Gateway Timeout"},
+        {request::status_code::HTTP_VERSION_NOT_SUPPORTED,
          "505 Http Version Not Supported"}};
     auto it = status_code_text.find(code);
     if (it != status_code_text.end()) {

@@ -35,7 +35,7 @@ namespace http
 request_parser::request_parser(const anonymous_int_function& get_functor,
                                const anonymous_int_function& peek_functor)
     : common_(get_functor, peek_functor)
-    , method_(hutzn::http::method::UNKNOWN)
+    , method_(hutzn::request::method::UNKNOWN)
     , request_uri_()
     , from_uri_()
     , accept_header_()
@@ -50,24 +50,24 @@ void request_parser::parse()
 
     int32_t character = common_.lexer_.get_non_whitespace();
     {
-        using value_info = trie<hutzn::http::method>::value_info;
+        using value_info = trie<hutzn::request::method>::value_info;
         static const std::vector<value_info> types = {
-            {value_info{"head", hutzn::http::method::HEAD},
-             value_info{"get", hutzn::http::method::GET},
-             value_info{"put", hutzn::http::method::PUT},
-             value_info{"delete", hutzn::http::method::DELETE},
-             value_info{"post", hutzn::http::method::POST},
-             value_info{"trace", hutzn::http::method::TRACE},
-             value_info{"options", hutzn::http::method::OPTIONS},
-             value_info{"connect", hutzn::http::method::CONNECT}}};
+            {value_info{"head", hutzn::request::method::HEAD},
+             value_info{"get", hutzn::request::method::GET},
+             value_info{"put", hutzn::request::method::PUT},
+             value_info{"delete", hutzn::request::method::DELETE},
+             value_info{"post", hutzn::request::method::POST},
+             value_info{"trace", hutzn::request::method::TRACE},
+             value_info{"options", hutzn::request::method::OPTIONS},
+             value_info{"connect", hutzn::request::method::CONNECT}}};
 
-        static const trie<hutzn::http::method> t(types,
-                                                 hutzn::http::method::UNKNOWN);
+        static const trie<hutzn::request::method> t(
+            types, hutzn::request::method::UNKNOWN);
         push_back_string<32> tmp;
         method_ = t.parse(character, tmp, common_.lexer_);
     }
 
-    if (hutzn::http::method::UNKNOWN == method_) {
+    if (hutzn::request::method::UNKNOWN == method_) {
         common_.state_ = parser_state::ERROR;
         return;
     }
@@ -158,7 +158,7 @@ bool request_parser::has_md5() const
     return common_.has_md5_;
 }
 
-const hutzn::http::method& request_parser::method() const
+const hutzn::request::method& request_parser::method() const
 {
     return method_;
 }
