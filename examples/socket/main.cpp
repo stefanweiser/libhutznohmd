@@ -21,24 +21,22 @@
 #include <thread>
 #include <vector>
 
-#include <hutzn.hpp>
-
 #include <socket/connection.hpp>
 
 void client()
 {
-    static const hutzn::buffer data = {0, 1, 2, 3};
+    const hutzn::buffer data = {0, 1, 2, 3};
 
     std::cout << "  connecting" << std::endl;
-    auto c = hutzn::socket::connection::create("127.0.0.1", 30000);
-    if (false == c->connect()) {
+    auto connection = hutzn::socket::connection::create("127.0.0.1", 30000);
+    if (false == connection->connect()) {
         std::cout << "  client not connected" << std::endl;
         abort();
     }
 
     std::cout << "  client receiving" << std::endl;
     hutzn::buffer data2;
-    if (false == c->receive(data2, 8)) {
+    if (false == connection->receive(data2, 8)) {
         std::cout << "  client aborts on receive" << std::endl;
         abort();
     }
@@ -49,7 +47,7 @@ void client()
     }
 
     std::cout << "  client sending" << std::endl;
-    if (false == c->send(data2)) {
+    if (false == connection->send(data2)) {
         std::cout << "  client aborts on send" << std::endl;
     }
 
@@ -58,17 +56,16 @@ void client()
 
 int main()
 {
-    static const hutzn::buffer data = {0, 1, 2, 3};
+    const hutzn::buffer data = {0, 1, 2, 3};
 
     std::cout << "example_socket" << std::endl;
 
     std::cout << "  listening" << std::endl;
-    hutzn::socket::listener_pointer listener =
-        hutzn::socket::listen("127.0.0.1", 30000);
+    auto listener = hutzn::socket::listen("127.0.0.1", 30000);
     std::thread thread(&client);
 
     std::cout << "  accepting" << std::endl;
-    hutzn::socket::connection_pointer connection = listener->accept();
+    auto connection = listener->accept();
 
     std::cout << "  server sending" << std::endl;
     if (false == connection->send(data)) {
