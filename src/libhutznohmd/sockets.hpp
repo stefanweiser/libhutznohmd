@@ -27,57 +27,97 @@
 namespace hutzn
 {
 
-//! @page data_source_and_sink Data source and sink
-//!
-//! Each restful application has to communicate with its users. To fulfill this
-//! necessity this library defines @ref hutzn::socket::connection_interface
-//! "connections" and @ref hutzn::socket::listener_interface "listeners", which
-//! are the two types of sockets, that are used by network communication
-//! protocols. A listener is defined as an endpoint, to which connection
-//! endpoints can connect to. So they could be imaginated as half communication
-//! channels whose counterparts are missing. Once a connection has been
-//! established, there is one connection, that connects two programs via a
-//! network. The connection is represented by a connection object.
-//!
-//! The following example opens the port 80 and listens for exactly one
-//! connection, establishs the connection and responses to exactly one HTTP
-//! request (that must not contain more than 1024 bytes of payload).
-//! Afterwards this happens:
-//!
-//! -# The connection is getting shut down. The connection resources are getting
-//! detached from the process.
-//! -# The listener is getting shut down. The listener resources are getting
-//! detached from the process.
-//! -# The process returns with an exit code of 0.
-//! -# Then on most systems the ports, that are used by the connection stay in
-//! the state TIME_WAIT to catch stray packets. After a while those ports are
-//! getting unused.
-//!
-//! @code{.cpp}
-//! int main()
-//! {
-//!     auto listener = hutzn::socket::listen("0.0.0.0", 80);
-//!     auto connection = listener->accept();
-//!     hutzn::buffer request;
-//!     if (true == connection->read(request, 1024)) {
-//!         hutzn::buffer response;
-//!         // parse the http request and build a response.
-//!         connection->send(response);
-//!     }
-//!     return 0;
-//! }
-//! @endcode
-//!
-//! As shown above the user has to serve the listen, accept and (indirectly)
-//! close operations of the listeners and connections. The user must also manage
-//! the connections and listeners (when to store, when to dispose). While by
-//! this the user has to write more code, it also leaves the user free to make
-//! some important decisions:
-//!
-//! -# Singlethreaded or multithreaded
-//! -# When to accept a connection
-//! -# Which connection to accept
-//! -# Control over the communicated data
+/*!
+@page data_source_and_sink Data source and sink
+
+Each restful application has to communicate with its users. To fulfill this
+necessity this library defines @ref hutzn::socket::connection_interface
+"connections" and @ref hutzn::socket::listener_interface "listeners", which
+are the two types of sockets, that are used by network communication
+protocols.
+
+A listener is defined as an endpoint, to which connection
+endpoints can connect to. So they could be imaginated as half communication
+channels whose counterparts are missing. Once a connection has been
+established, there is one connection, that connects two programs via a
+network. The connection is represented by a connection object.
+
+@startuml{data_source_sink_classes.png}
+namespace hutzn {
+  class buffer <<typedef>>
+
+  namespace socket {
+    interface block_device_interface {
+      +receive(data: buffer, max_size: size_t): bool
+      +send(data: buffer): bool
+      +send(data: std::string): bool
+    }
+
+    interface connection_interface {
+      +close(): void
+      +set_lingering_timeout(timeout: int): void
+      +socket(): int
+    }
+
+    interface listener_interface {
+      +accept(): connection_interface
+      +listening(): bool
+      +stop(): void
+      +set_lingering_timeout(timeout: int): void
+      +socket(): int
+    }
+
+    class connection
+
+    class listener
+
+    block_device_interface <|-- connection_interface
+    connection_interface <|-- connection
+    listener_interface <|-- listener
+  }
+}
+@enduml
+
+The following example opens the port 80 and listens for exactly one
+connection, establishs the connection and responses to exactly one HTTP
+request (that must not contain more than 1024 bytes of payload).
+Afterwards this happens:
+
+-# The connection is getting shut down. The connection resources are getting
+detached from the process.
+-# The listener is getting shut down. The listener resources are getting
+detached from the process.
+-# The process returns with an exit code of 0.
+-# Then on most systems the ports, that are used by the connection stay in
+the state TIME_WAIT to catch stray packets. After a while those ports are
+getting unused.
+
+@code{.cpp}
+int main()
+{
+    auto listener = hutzn::socket::listen("0.0.0.0", 80);
+    auto connection = listener->accept();
+    hutzn::buffer request;
+    if (true == connection->read(request, 1024)) {
+        hutzn::buffer response;
+        // parse the http request and build a response.
+        connection->send(response);
+    }
+    return 0;
+}
+@endcode
+
+As shown above the user has to serve the listen, accept and (indirectly)
+close operations of the listeners and connections. The user must also manage
+the connections and listeners (when to store, when to dispose). While by
+this the user has to write more code, it also leaves the user free to make
+some important decisions:
+
+-# Singlethreaded or multithreaded
+-# When to accept a connection
+-# Which connection to accept
+-# Control over the communicated data
+*/
 
 //! Universal data buffer type. Could contain unprintable content or binary
 //! data.
