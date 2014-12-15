@@ -39,4 +39,10 @@ TEST(socket_utility, fill_address_error)
     EXPECT_EQ(address.sin_family, AF_UNSPEC);
 }
 
+TEST(socket_utility, fill_address_no_dns)
+{
+    sockaddr_in address = socket::fill_address("example.com", 0x8000);
+    EXPECT_EQ(address.sin_family, AF_UNSPEC);
+}
+
 } // namespace hutzn
