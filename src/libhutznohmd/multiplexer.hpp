@@ -73,6 +73,38 @@ parser to the multiplexer, which looks for a representation functor. This
 functor is getting called in order to get a response. If no functor could be
 found, the request will respond an error document.
 
+The following example registers a resource representation and sets an error
+handler for status code 404:
+
+@code
+hutzn::request::status_code C::foo(const hutzn::request::request_interface&,
+                                   const hutzn::request::response_interface&)
+{
+    // Do something.
+    return hutzn::request::status_code::OK;
+}
+
+void C::error_handler(const hutzn::request::request_interface&,
+                      const hutzn::request::response_interface&)
+{
+    // Do something.
+}
+
+void registerHandlers(C* const c, hutzn::multiplexer::multiplexer_interface& m)
+{
+    hutzn::multiplexer::representation_identification i{
+        "/",
+        hutzn::request::method::GET,
+        hutzn::request::mime_type::WILDCARD,
+        hutzn::request::mime_subtype::WILDCARD
+    };
+    using namespace std::placeholders;
+    m.connect(i, std::bind(&C::foo, c, _1, _2));
+    m.set_error_handler(hutzn::request::status_code::NOT_FOUND,
+                        std::bind(&C::error_handler, c, _1, _2));
+}
+@endcode
+
 A resource starts to exist, when you register the first representation callback
 and ceases when the last representation handler gets destroyed. Registering a
 resource representation requires to define a callback function that must have
