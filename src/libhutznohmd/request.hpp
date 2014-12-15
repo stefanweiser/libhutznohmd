@@ -75,41 +75,21 @@ enum class mime_subtype : uint16_t {
 //! 2. Side-Effect-Safety: The request does not alter the server state. Thus
 //!    it is inherently idempotent.
 enum class method : uint8_t {
-    //! The request is of unknown method. It is recommended to assert this case.
-    UNKNOWN = 0,
-
-    //! The HEAD method is identical to GET except that the server must not
-    //! return a message-body in the response. The method must not have side
-    //! effects.
-    HEAD = 1,
-
     //! The GET method is used to retrieve informations from the entity assigned
     //! to the URI. The method must not have side effects.
-    GET = 2,
+    GET = 0,
 
     //! The PUT method requests to store data to the entity represented by the
     //! URI. This method has to be idempotent.
-    PUT = 3,
+    PUT = 1,
 
     //! The DELETE method requests that the origin server deletes the resource
     //! identified by the URI. This method has to be idempotent.
-    DELETE = 4,
+    DELETE = 2,
 
     //! The POST method is used to request that the origin server accept the
     //! entity enclosed in the request.
-    POST = 5,
-
-    //! The TRACE method has to return the message. The client is able to see
-    //! whether there are modifications made by intermediate servers.
-    TRACE = 6,
-
-    //! The OPTIONS method returns all available methods on the URI.
-    OPTIONS = 7,
-
-    //! Converts the request connection to a transparent TCP/IP tunnel, usually
-    //! to facilitate SSL-encrypted communication through an unencrypted HTTP
-    //! proxy.
-    CONNECT = 8
+    POST = 3
 };
 
 //! An request is answered with a response. These responses carry a status code

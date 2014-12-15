@@ -39,22 +39,23 @@ namespace hutzn {
   namespace request {
     interface media_type_interface
 
-    class representation_identification {
+    class request_handler_id {
       +url: string
       +verb: method
       +type: mime_type
       +subtype: mime_subtype
     }
 
-    interface request_parser_interface {
-      +handle(connection: connection_interface): boolean
-    }
-
     interface handler_interface
 
-    interface multiplexer_interface {
-      +connect(id: representation_identification, fn): handler_interface
+    interface demultiplexer_interface {
+      +handle(connection: connection_interface)
+      +connect(id: request_handler_id, fn): handler_interface
       +set_error_handler(code: status_code, fn): handler_interface
+      +register_mime_type(type: string, result: mime_type): bool
+      +unregister_mime_type(type: mime_type): bool
+      +register_mime_subtype(subtype: string, result: mime_subtype): bool
+      +unregister_mime_subtype(subtype: mime_subtype): bool
     }
 
     class request_parser
@@ -62,16 +63,30 @@ namespace hutzn {
     class multiplexer
 
     handler_interface <|-- handler: <<implements>>
-    request_parser_interface <|-- request_parser: <<implements>>
-    multiplexer_interface <|-- multiplexer: <<implements>>
+    demultiplexer_interface <|-- multiplexer: <<implements>>
   }
 }
 @enduml
 
 In other words, requests are heading from the connection through the request
-parser to the multiplexer, which looks for a representation functor. This
-functor is getting called in order to get a response. If no functor could be
-found, the request will respond an error document.
+parser to the multiplexer, which looks for a request handler. This handler is
+getting called in order to get a response. If no functor could be found, the
+request will respond an error document.
+
+A resource starts to exist, when you register the first request handler and
+ceases when the last request handler gets destroyed. Registering a resource
+handler requires to define a callback function that must have the signature:
+
+@code{.cpp}
+status_code foo(const request_interface&, const response_interface&)
+@endcode
+
+Because of @c std::bind the user has the choice to use am member function as the
+callback function.
+
+@code{.cpp}
+std::bind(&Foo::bar, foo_pointer, std::placeholders::_1, std::placeholders::_2);
+@endcode
 
 The following example registers a resource representation and sets an error
 handler for status code 404:
@@ -90,9 +105,10 @@ void C::error_handler(const hutzn::request::request_interface&,
     // Do something.
 }
 
-void registerHandlers(C* const c, hutzn::multiplexer::multiplexer_interface& m)
+void registerHandlers(C* const c, hutzn::multiplexer::demultiplexer_interface&
+m)
 {
-    hutzn::multiplexer::representation_identification i{
+    hutzn::multiplexer::request_handler_id i{
         "/",
         hutzn::request::method::GET,
         hutzn::request::mime_type::WILDCARD,
@@ -105,25 +121,12 @@ void registerHandlers(C* const c, hutzn::multiplexer::multiplexer_interface& m)
 }
 @endcode
 
-A resource starts to exist, when you register the first representation callback
-and ceases when the last representation handler gets destroyed. Registering a
-resource representation requires to define a callback function that must have
-the signature:
+Allowing @c std::bind conceals an important detail from the user. The user
+exposes the this pointer of an object. This complicates lifetime. See @ref
+sec_lifetime_callbacks "lifetime of callbacks" for further information.
 
-@code{.cpp}
-status_code foo(const request_interface&, const response_interface&)
-@endcode
-
-Because of @c std::bind the user has the choice to use am member function as the
-callback function.
-
-@code{.cpp}
-std::bind(&Foo::bar, foo_pointer, std::placeholders::_1, std::placeholders::_2);
-@endcode
-
-This conceals an important detail from the user. The user exposes the this
-pointer of an object. This complicates lifetime. See @ref sec_lifetime_callbacks
-"lifetime of callbacks" for further information.
+As seen needs every registered handler a mime type. While the list of the
+library is never complete,
 
 */
 
@@ -132,47 +135,95 @@ pointer of an object. This complicates lifetime. See @ref sec_lifetime_callbacks
 namespace multiplexer
 {
 
-struct representation_identification
+//! These informations are used by the multiplexer to choose the right handler.
+struct request_handler_id
 {
+    //! This string contains only the path of the URL (e.g. "/index.html").
     std::string url;
+
+    //! Only GET, PUT, DELETE and POST are allowed verbs here.
     hutzn::request::method verb;
+
+    //! All known and registered mime types could be used.
     hutzn::request::mime_type type;
+
+    //! All known and registered mime subtypes could be used.
     hutzn::request::mime_subtype subtype;
 };
 
-class request_parser_interface
-{
-public:
-    virtual ~request_parser_interface();
-
-    virtual bool handle(const socket::connection_interface& connection) = 0;
-};
-
+//! Scopes the lifetime of a request or error handler. The handler gets
+//! unregistered, when this handler object gets destroyed.
 class handler_interface
 {
 public:
+    //! Unregisters the handler.
     virtual ~handler_interface();
 };
 
+//! Handlers are always reference counted.
 using handler_pointer = std::shared_ptr<handler_interface>;
 
-using representation_callback = std::function<
+//! Is used when the multiplexer calls a request handler back in order to get
+//! a response on a request.
+using request_handler_callback = std::function<
     hutzn::request::status_code(const hutzn::request::request_interface&,
                                 hutzn::request::response_interface&)>;
-using error_callback =
+
+//! Is used by the multiplexer in case of an error to get a useful response.
+using error_handler_callback =
     std::function<void(const hutzn::request::request_interface&,
                        hutzn::request::response_interface&)>;
 
-class multiplexer_interface
+//! Demuxes the HTTP requests to the request handlers.
+class demultiplexer_interface
 {
 public:
-    virtual ~multiplexer_interface();
+    //! While destroying the demuxer, no request must run or this may raise
+    //! a segmentation fault.
+    virtual ~demultiplexer_interface();
 
-    virtual handler_pointer connect(const representation_identification& id,
-                                    const representation_callback& fn) = 0;
+    //! Takes a connection to answer the request on the connection. Will block
+    //! until the connection is getting closed.
+    virtual void
+    handle(const socket::connection_interface& connection) const = 0;
+
+    //! Connects a request handler to a resource. Returns a handler object,
+    //! which acts as lifetime scope of the request handler.
+    virtual handler_pointer connect(const request_handler_id& id,
+                                    const request_handler_callback& fn) = 0;
+
+    //! Connects a error handler to a specific status code. Returns a handler
+    //! object, which acts as lifetime scope of the error handler.
     virtual handler_pointer
     set_error_handler(const hutzn::request::status_code& code,
-                      const error_callback& fn) = 0;
+                      const error_handler_callback& fn) = 0;
+
+    //! Registers a custom MIME type and returns true if that type was not
+    //! already registered. You could use the custom MIME type afterwards. If
+    //! the MIME type already exists, it sets the result to the already
+    //! registered one, but returns false.
+    virtual bool register_mime_type(const std::string& type,
+                                    hutzn::request::mime_type& result) = 0;
+
+    //! Registers a custom MIME subtype and returns true if that type was not
+    //! already registered. You could use the custom MIME subtype afterwards. If
+    //! the MIME subtype already exists, it sets the result to the already
+    //! registered one, but returns false.
+    virtual bool
+    register_mime_subtype(const std::string& subtype,
+                          hutzn::request::mime_subtype& result) = 0;
+
+    //! Unregisters a MIME type and returns true, if it was found and
+    //! successfully unregistered. To successfully unregister a MIME type, it is
+    //! necessary, that no registered request handler uses it.
+    virtual bool
+    unregister_mime_type(const hutzn::request::mime_type& type) = 0;
+
+    //! Unregisters a MIME subtype and returns true, if it was found and
+    //! successfully unregistered. To successfully unregister a MIME subtype, it
+    //! is necessary, that no registered request handler uses it.
+    virtual bool
+    unregister_mime_subtype(const hutzn::request::mime_subtype& subtype) = 0;
 };
 
 } // namespace multiplexer

@@ -58,7 +58,7 @@ public:
     bool keeps_connection() const;
     const std::array<uint8_t, 16>& md5() const;
     bool has_md5() const;
-    const hutzn::request::method& method() const;
+    const hutzn::method& method() const;
     const uri_interface& request_uri() const;
     const uri_interface& from_uri() const;
     std::vector<const media_type_interface*> accept_header() const;
@@ -76,7 +76,7 @@ private:
 
     base_parser common_;
 
-    hutzn::request::method method_;
+    hutzn::method method_;
     uri request_uri_;
     uri from_uri_;
 

@@ -34,6 +34,50 @@
 namespace hutzn
 {
 
+//! Every HTTP request has a specific method. There are two properties to a
+//! subset of methods.
+//! 1. Idempotence: You can apply the identical request n times to the same URI
+//!    without changing the result.
+//! 2. Side-Effect-Safety: The request does not alter the server state. Thus
+//!    it is inherently idempotent.
+enum class method : uint8_t {
+    //! The request is of unknown method. It is recommended to assert this case.
+    UNKNOWN = 0,
+
+    //! The HEAD method is identical to GET except that the server must not
+    //! return a message-body in the response. The method must not have side
+    //! effects.
+    HEAD = 1,
+
+    //! The GET method is used to retrieve informations from the entity assigned
+    //! to the URI. The method must not have side effects.
+    GET = 2,
+
+    //! The PUT method requests to store data to the entity represented by the
+    //! URI. This method has to be idempotent.
+    PUT = 3,
+
+    //! The DELETE method requests that the origin server deletes the resource
+    //! identified by the URI. This method has to be idempotent.
+    DELETE = 4,
+
+    //! The POST method is used to request that the origin server accept the
+    //! entity enclosed in the request.
+    POST = 5,
+
+    //! The TRACE method has to return the message. The client is able to see
+    //! whether there are modifications made by intermediate servers.
+    TRACE = 6,
+
+    //! The OPTIONS method returns all available methods on the URI.
+    OPTIONS = 7,
+
+    //! Converts the request connection to a transparent TCP/IP tunnel, usually
+    //! to facilitate SSL-encrypted communication through an unencrypted HTTP
+    //! proxy.
+    CONNECT = 8
+};
+
 namespace http
 {
 
@@ -287,7 +331,7 @@ public:
     virtual ~request_interface();
 
     //! Requested HTTP method.
-    virtual hutzn::request::method method() const = 0;
+    virtual hutzn::method method() const = 0;
 
     //! Requested URI.
     virtual const uri_interface& request_uri() const = 0;

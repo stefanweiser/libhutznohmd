@@ -24,15 +24,11 @@ namespace hutzn
 namespace multiplexer
 {
 
-request_parser_interface::~request_parser_interface()
-{
-}
-
 handler_interface::~handler_interface()
 {
 }
 
-multiplexer_interface::~multiplexer_interface()
+demultiplexer_interface::~demultiplexer_interface()
 {
 }
 

@@ -47,7 +47,7 @@ public:
                      const parameters& param);
     bool parse();
 
-    virtual hutzn::request::method method() const;
+    virtual hutzn::method method() const;
     virtual const uri_interface& request_uri() const;
     virtual hutzn::http::version version() const;
     virtual const std::map<std::string, std::string>& headers() const;

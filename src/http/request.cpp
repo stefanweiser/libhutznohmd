@@ -88,9 +88,9 @@ bool request::parse()
     return result;
 }
 
-hutzn::request::method request::method() const
+hutzn::method request::method() const
 {
-    return static_cast<hutzn::request::method>(request_parser_.method());
+    return request_parser_.method();
 }
 
 const uri_interface& request::request_uri() const
