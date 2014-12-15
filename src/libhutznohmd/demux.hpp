@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_LIBHUTZNOHMD_MULTIPLEXER_HPP
-#define LIBHUTZNOHMD_LIBHUTZNOHMD_MULTIPLEXER_HPP
+#ifndef LIBHUTZNOHMD_LIBHUTZNOHMD_DEMUX_HPP
+#define LIBHUTZNOHMD_LIBHUTZNOHMD_DEMUX_HPP
 
 #include <libhutznohmd/sockets.hpp>
 #include <libhutznohmd/request.hpp>
@@ -27,12 +27,12 @@ namespace hutzn
 
 /*!
 
-@page multiplexer Multiplexer
+@page demultiplexer Demultiplexer
 
 Once you got a connection, your client would propably perform a request. To
 parse it and to respond to it correctly a HTTP parser ist needed. HTTP on the
 other hand defines access to different documents on the same server. Therefore
-a request multiplexer is necessary.
+a request demultiplexer is necessary.
 
 @startuml{requests_classes.png}
 namespace hutzn {
@@ -60,16 +60,16 @@ namespace hutzn {
 
     class request_parser
     class handler
-    class multiplexer
+    class demultiplexer
 
     handler_interface <|-- handler: <<implements>>
-    demultiplexer_interface <|-- multiplexer: <<implements>>
+    demultiplexer_interface <|-- demultiplexer: <<implements>>
   }
 }
 @enduml
 
 In other words, requests are heading from the connection through the request
-parser to the multiplexer, which looks for a request handler. This handler is
+parser to the demultiplexer, which looks for a request handler. This handler is
 getting called in order to get a response. If no functor could be found, the
 request will respond an error document.
 
@@ -105,10 +105,10 @@ void C::error_handler(const hutzn::request::request_interface&,
     // Do something.
 }
 
-void registerHandlers(C* const c, hutzn::multiplexer::demultiplexer_interface&
+void registerHandlers(C* const c, hutzn::demux::demultiplexer_interface&
 m)
 {
-    hutzn::multiplexer::request_handler_id i{
+    hutzn::demux::request_handler_id i{
         "/",
         hutzn::request::method::GET,
         hutzn::request::mime_type::WILDCARD,
@@ -130,12 +130,13 @@ library is never complete,
 
 */
 
-//! This namespace contains all multiplexer related code and data. This includes
-//! the HTTP parser and the request multiplexer.
-namespace multiplexer
+//! This namespace contains all demultiplexer related code and data. This
+//! includes the HTTP parser and the request demultiplexer.
+namespace demux
 {
 
-//! These informations are used by the multiplexer to choose the right handler.
+//! These informations are used by the demultiplexer to choose the right
+//! handler.
 struct request_handler_id
 {
     //! This string contains only the path of the URL (e.g. "/index.html").
@@ -163,13 +164,13 @@ public:
 //! Handlers are always reference counted.
 using handler_pointer = std::shared_ptr<handler_interface>;
 
-//! Is used when the multiplexer calls a request handler back in order to get
+//! Is used when the demultiplexer calls a request handler back in order to get
 //! a response on a request.
 using request_handler_callback = std::function<
     hutzn::request::status_code(const hutzn::request::request_interface&,
                                 hutzn::request::response_interface&)>;
 
-//! Is used by the multiplexer in case of an error to get a useful response.
+//! Is used by the demultiplexer in case of an error to get a useful response.
 using error_handler_callback =
     std::function<void(const hutzn::request::request_interface&,
                        hutzn::request::response_interface&)>;
@@ -226,8 +227,8 @@ public:
     unregister_mime_subtype(const hutzn::request::mime_subtype& subtype) = 0;
 };
 
-} // namespace multiplexer
+} // namespace demux
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_LIBHUTZNOHMD_MULTIPLEXER_HPP
+#endif // LIBHUTZNOHMD_LIBHUTZNOHMD_DEMUX_HPP

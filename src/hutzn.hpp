@@ -27,9 +27,9 @@
 #include <string>
 #include <vector>
 
-#include <libhutznohmd/sockets.hpp>
+#include <libhutznohmd/demux.hpp>
 #include <libhutznohmd/request.hpp>
-#include <libhutznohmd/multiplexer.hpp>
+#include <libhutznohmd/sockets.hpp>
 
 namespace hutzn
 {

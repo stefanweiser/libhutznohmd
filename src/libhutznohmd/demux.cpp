@@ -16,12 +16,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "multiplexer.hpp"
+#include "demux.hpp"
 
 namespace hutzn
 {
 
-namespace multiplexer
+namespace demux
 {
 
 handler_interface::~handler_interface()
@@ -32,6 +32,6 @@ demultiplexer_interface::~demultiplexer_interface()
 {
 }
 
-} // namespace multiplexer
+} // namespace demux
 
 } // namespace hutzn

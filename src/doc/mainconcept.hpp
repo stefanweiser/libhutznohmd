@@ -41,14 +41,14 @@ skinparam component {
 
 [control code] <<user>> as control_code
 [listener] <<libhutznohmd>> as listener
-[request multiplexer] <<libhutznohmd>> as request_multiplexer
+[request demultiplexer] <<libhutznohmd>> as request_demultiplexer
 [resource function] <<user>> as resource_function
 [resource manager] <<user>> as resource_manager
 
 control_code -down-> listener : listens and accepts
-control_code -right-> request_multiplexer : provides connection sockets
-request_multiplexer -right-> resource_function : uses to process requests
-resource_manager -down-> request_multiplexer : manages resources
+control_code -right-> request_demultiplexer : provides connection sockets
+request_demultiplexer -right-> resource_function : uses to process requests
+resource_manager -down-> request_demultiplexer : manages resources
 @enduml
 
 Therefore the library does not enforce its users to process the requests in a

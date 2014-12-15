@@ -42,6 +42,6 @@ INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}")
 
 INSTALL(TARGETS hutznohmd DESTINATION lib)
 INSTALL(FILES hutzn.hpp DESTINATION include)
-INSTALL(FILES libhutznohmd/multiplexer.hpp DESTINATION include)
+INSTALL(FILES libhutznohmd/demux.hpp DESTINATION include)
 INSTALL(FILES libhutznohmd/request.hpp DESTINATION include)
 INSTALL(FILES libhutznohmd/sockets.hpp DESTINATION include)
