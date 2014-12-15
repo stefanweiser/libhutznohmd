@@ -28,6 +28,7 @@ namespace hutzn
 {
 
 /*!
+
 @page data_source_and_sink Data source and sink
 
 Each restful application has to communicate with its users. To fulfill this
@@ -117,6 +118,7 @@ some important decisions:
 -# When to accept a connection
 -# Which connection to accept
 -# Control over the communicated data
+
 */
 
 //! Universal data buffer type. Could contain unprintable content or binary

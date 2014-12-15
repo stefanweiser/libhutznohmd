@@ -28,7 +28,8 @@
 #include <vector>
 
 #include <libhutznohmd/sockets.hpp>
-#include <libhutznohmd/requests.hpp>
+#include <libhutznohmd/request.hpp>
+#include <libhutznohmd/multiplexer.hpp>
 
 namespace hutzn
 {
