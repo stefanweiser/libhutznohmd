@@ -48,23 +48,23 @@ namespace hutzn {
 
   namespace socket {
     interface block_device_interface {
-      +receive(data: buffer, max_size: size_t): bool
-      +send(data: buffer): bool
-      +send(data: std::string): bool
+      +receive(data: buffer, max_size: size): boolean
+      +send(data: buffer): boolean
+      +send(data: string): boolean
     }
 
     interface connection_interface {
-      +close(): void
-      +set_lingering_timeout(timeout: int): void
-      +socket(): int
+      +close()
+      +set_lingering_timeout(timeout: seconds)
+      +socket(): file_descriptor
     }
 
     interface listener_interface {
       +accept(): connection_interface
-      +listening(): bool
-      +stop(): void
-      +set_lingering_timeout(timeout: int): void
-      +socket(): int
+      +listening(): boolean
+      +stop()
+      +set_lingering_timeout(timeout: seconds)
+      +socket(): file_descriptor
     }
 
     class connection
@@ -72,8 +72,8 @@ namespace hutzn {
     class listener
 
     block_device_interface <|-- connection_interface
-    connection_interface <|-- connection
-    listener_interface <|-- listener
+    connection_interface <|-- connection: <<implements>>
+    listener_interface <|-- listener: <<implements>>
   }
 }
 @enduml
