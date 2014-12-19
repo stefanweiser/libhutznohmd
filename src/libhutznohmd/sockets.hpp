@@ -38,10 +38,9 @@ are the two types of sockets, that are used by network communication
 protocols.
 
 A listener is defined as an endpoint, to which connection
-endpoints can connect to. So they could be imaginated as half communication
-channels whose counterparts are missing. Once a connection has been
-established, there is one connection, that connects two programs via a
-network. The connection is represented by a connection object.
+endpoints can connect to. Once a connection has been established, it connects
+two programs via a network. This connection is represented by a connection
+object.
 
 @startuml{data_source_sink_classes.png}
 namespace hutzn {
@@ -110,13 +109,14 @@ int main()
 
 As shown above the user has to serve the listen, accept and (indirectly)
 close operations of the listeners and connections. The user must also manage
-the connections and listeners (when to store, when to dispose). While by
-this the user has to write more code, it also leaves the user free to make
+the connections and listeners (when to store, when to dispose). Because of this
+the user has to write more code, but it also leaves the user free to make
 some important decisions:
 
 -# Singlethreaded or multithreaded
 -# When to accept a connection
--# Which connection to accept
+-# How many connections to accept
+-# Which connection to accept and which to close immediately
 -# Control over the communicated data
 
 */
@@ -145,10 +145,9 @@ public:
     //! closed in any way. In this case the connection is then useless.
     virtual bool receive(hutzn::buffer& data, const size_t& max_size) = 0;
 
-    //! Invokes a blocking send operation. Returns true if all data were
-    //! successfully be sent. In case of a closed connection or a connection
-    //! shut down during the send it will return false. In any other cases
-    //! the operation will block you.
+    //! Invokes a blocking send operation. Returns true when all data were
+    //! successfully sent. In case of a closed connection or a connection
+    //! shut down during the send it will return false.
     virtual bool send(const hutzn::buffer& data) = 0;
 
     //! @see connection_interface::send(const hutzn::buffer&)
@@ -174,12 +173,13 @@ public:
     virtual void close() = 0;
 
     //! Overwrites the lingering timeout of the connection in seconds. As a part
-    //! of most network stacks operating systems keep connections in the state
-    //! TIME_WAIT some time after closing the socket (even if the program, that
-    //! was associated with that socket, terminated). Usually keeping this
-    //! timeouts is a good thing, because TIME_WAIT will eat up stray packets of
-    //! old connections. However sometimes it is necessary to overwrite this
-    //! timeout (e.g. when integration testing sockets).
+    //! of most network stacks the operating system is keeping connections in
+    //! the state TIME_WAIT some time after closing the socket (even if the
+    //! program, that was associated with that socket, terminates). Usually
+    //! keeping this timeout at the default value is a good idea, because
+    //! TIME_WAIT will eat up stray packets of the old connection. However
+    //! sometimes it is necessary to overwrite this timeout (e.g. when
+    //! integration testing sockets or this socket implementation).
     virtual bool set_lingering_timeout(const int& timeout) = 0;
 
     //! Returns the file descriptor of the underlying socket.
@@ -204,12 +204,13 @@ public:
     //! returned. The listener gets useless in this case.
     virtual connection_pointer accept() const = 0;
 
-    //! Returns whether the listener is currently listening or not.
+    //! Returns whether the listener is currently listening or not. Of course
+    //! this value is a volatile information.
     virtual bool listening() const = 0;
 
-    //! Shuts down the listener. This will mean, that any operation gets
-    //! immediately stopped. The listener is useless afterwards, because no
-    //! operation will succeed.
+    //! Shut down the listener. This will mean, that any operation gets
+    //! immediately stopped and the listener is useless afterwards, because no
+    //! operation will succeed if it is shut.
     virtual void stop() = 0;
 
     //! @see connection_interface::set_lingering_timeout(const int&)
