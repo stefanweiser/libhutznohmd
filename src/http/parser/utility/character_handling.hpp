@@ -62,7 +62,7 @@ static char from_hex(const char c)
     return hex_conversion_map[static_cast<uint8_t>(c)];
 }
 
-//! Returns true, if the given character is a valid character for an URI
+//! Returns true, if the given character is a valid character for a URI
 //! authority without the '@' symbol.
 static bool is_valid_uri_authority_character(uint8_t c)
 {
@@ -81,7 +81,7 @@ static bool is_valid_uri_authority_character(uint8_t c)
     return (uri_authority_validity_map[c] != 0);
 }
 
-//! Returns true, if the given character is a valid character for an URI path.
+//! Returns true, if the given character is a valid character for a URI path.
 static bool is_valid_uri_path_character(uint8_t c)
 {
     static const std::array<char, 256> uri_path_validity_map = {
@@ -99,7 +99,7 @@ static bool is_valid_uri_path_character(uint8_t c)
     return (uri_path_validity_map[c] != 0);
 }
 
-//! Returns true, if the given character is a valid character for an URI query.
+//! Returns true, if the given character is a valid character for a URI query.
 static bool is_valid_uri_query_character(uint8_t c)
 {
     static const std::array<char, 256> uri_query_validity_map = {
@@ -117,7 +117,7 @@ static bool is_valid_uri_query_character(uint8_t c)
     return (uri_query_validity_map[c] != 0);
 }
 
-//! Returns true, if the given character is a valid character for an URI
+//! Returns true, if the given character is a valid character for a URI
 //! fragment.
 static bool is_valid_uri_fragment_character(uint8_t c)
 {

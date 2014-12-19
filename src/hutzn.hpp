@@ -84,7 +84,7 @@ namespace http
 //! These URI schemes are supported by the parser and needed for HTTP.
 enum class uri_scheme : uint8_t { UNKNOWN = 0, HTTP = 1, MAILTO = 2 };
 
-//! Contains an URI as used in the HTTP protocol (e.g.
+//! Contains a URI as used in the HTTP protocol (e.g.
 //! http://user\@example.com:8080/?a=b#anchor).
 class uri_interface
 {
@@ -247,7 +247,7 @@ enum class header_type {
     //! The timestamp, when the message was sent.
     DATE,
 
-    //! Defines an tag for the contained entity. Can be used for conditional
+    //! Defines a tag for the contained entity. Can be used for conditional
     // requests.
     ETAG,
 
@@ -300,7 +300,7 @@ enum class header_type {
     //! Contains information about a specific range, that shall be responded.
     RANGE,
 
-    //! Contains an URL, where the client got the requested URL from.
+    //! Contains a URL, where the client got the requested URL from.
     REFERER,
 
     //! Indicates, that request could retried and then may succeed.

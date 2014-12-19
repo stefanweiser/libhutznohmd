@@ -265,7 +265,7 @@ bool uri::parse_userinfo_and_authority(int32_t& character)
 
 bool uri::parse_authority(int32_t& character)
 {
-    // There is an ambiguity in the authority part of an URI specified by
+    // There is an ambiguity in the authority part of a URI specified by
     // RFC3986. You are not able to correctly parse the the authority into
     // tokens without looking ahead n symbols, where n is the length of the
     // whole authority part, because the symbol of ':' could occur before and
