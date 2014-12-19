@@ -31,16 +31,14 @@ namespace hutzn
 
 Once you got a connection, your client would propably perform a request. To
 parse it and to respond to it correctly a HTTP parser ist needed. HTTP on the
-other hand defines access to different documents on the same server. Therefore
+other hand defines access to different entities on the same server. Therefore
 a request demultiplexer is necessary.
 
 @startuml{requests_classes.png}
 namespace hutzn {
   namespace request {
-    interface media_type_interface
-
     class request_handler_id {
-      +url: string
+      +path: string
       +verb: method
       +type: mime_type
       +subtype: mime_subtype
@@ -58,7 +56,6 @@ namespace hutzn {
       +unregister_mime_subtype(subtype: mime_subtype): bool
     }
 
-    class request_parser
     class handler
     class demultiplexer
 
@@ -68,10 +65,10 @@ namespace hutzn {
 }
 @enduml
 
-In other words, requests are heading from the connection through the request
-parser to the demultiplexer, which looks for a request handler. This handler is
-getting called in order to get a response. If no functor could be found, the
-request will respond an error document.
+In other words, requests are heading from the connection to the demultiplexer,
+which looks for a request handler. This handler is getting called in order to
+get a response. If no functor could be found, the request will respond an error
+document.
 
 A resource starts to exist, when you register the first request handler and
 ceases when the last request handler gets destroyed. Registering a resource
@@ -81,8 +78,8 @@ handler requires to define a callback function that must have the signature:
 status_code foo(const request_interface&, const response_interface&)
 @endcode
 
-Because of @c std::bind the user has the choice to use am member function as the
-callback function.
+Because of @c std::function the user has the choice to use a member function (by
+using @c std::bind) as the callback function.
 
 @code{.cpp}
 std::bind(&Foo::bar, foo_pointer, std::placeholders::_1, std::placeholders::_2);
@@ -92,6 +89,11 @@ The following example registers a resource representation and sets an error
 handler for status code 404:
 
 @code
+class C
+{
+// ...
+};
+
 hutzn::request::status_code C::foo(const hutzn::request::request_interface&,
                                    const hutzn::request::response_interface&)
 {
@@ -105,8 +107,7 @@ void C::error_handler(const hutzn::request::request_interface&,
     // Do something.
 }
 
-void registerHandlers(C* const c, hutzn::demux::demultiplexer_interface&
-m)
+void registerHandlers(C* const c, hutzn::demux::demultiplexer_interface& m)
 {
     hutzn::demux::request_handler_id i{
         "/",
@@ -122,11 +123,33 @@ m)
 @endcode
 
 Allowing @c std::bind conceals an important detail from the user. The user
-exposes the this pointer of an object. This complicates lifetime. See @ref
-sec_lifetime_callbacks "lifetime of callbacks" for further information.
+could expose the "this" pointer of an object. This complicates lifetime. See
+@ref sec_lifetime_callbacks "lifetime of callbacks" for further information.
 
-As seen needs every registered handler a mime type. While the list of the
-library is never complete,
+Every registered handler needs a mime type. While the list of the library is
+never complete, it could be extended by the user. You can register own MIME
+types and subtypes. There are no lifetime scopes of this registrations, because
+normally you want to do the registration and unregistration only once during
+the lifetime of a demultiplexer.
+
+@code
+int main()
+{
+    using demuxer = std::shared_ptr<hutzn::demux::demultiplexer_interface>;
+    demuxer d = demuxer(hutzn::demux::make_demultiplexer());
+    hutzn::request::mime_type x_type;
+    d->register_mime_type("example", x_type);
+
+    // Do something.
+
+    d->unregister_mime_type(x_type);
+    return 0;
+}
+@endcode
+
+Of course not all combinations of MIME types and subtypes are valid and make
+sense. Nevertheless the registration of types and subtypes are indepent,
+because it makes the implementation much easier.
 
 */
 
@@ -140,9 +163,12 @@ namespace demux
 struct request_handler_id
 {
     //! This string contains only the path of the URL (e.g. "/index.html").
-    std::string url;
+    //! Scheme, authorization, host, port, queries and fragments are not allowed
+    //! in this path.
+    std::string path;
 
-    //! Only GET, PUT, DELETE and POST are allowed verbs here.
+    //! Only GET, PUT, DELETE and POST are allowed verbs here. All other verbs
+    //! are reserved for internal usage.
     hutzn::request::method verb;
 
     //! All known and registered mime types could be used.
@@ -153,7 +179,8 @@ struct request_handler_id
 };
 
 //! Scopes the lifetime of a request or error handler. The handler gets
-//! unregistered, when this handler object gets destroyed.
+//! unregistered, when the handler object instance of this interface gets
+//! destroyed.
 class handler_interface
 {
 public:
@@ -180,20 +207,19 @@ class demultiplexer_interface
 {
 public:
     //! While destroying the demuxer, no request must run or this may raise
-    //! a segmentation fault.
+    //! a segmentation fault but at least undefined behaviour.
     virtual ~demultiplexer_interface();
 
     //! Takes a connection to answer the request on the connection. Will block
     //! until the connection is getting closed.
-    virtual void
-    handle(const socket::connection_interface& connection) const = 0;
+    virtual void handle(const socket::connection_interface& c) const = 0;
 
     //! Connects a request handler to a resource. Returns a handler object,
     //! which acts as lifetime scope of the request handler.
     virtual handler_pointer connect(const request_handler_id& id,
                                     const request_handler_callback& fn) = 0;
 
-    //! Connects a error handler to a specific status code. Returns a handler
+    //! Connects an error handler to a specific status code. Returns a handler
     //! object, which acts as lifetime scope of the error handler.
     virtual handler_pointer
     set_error_handler(const hutzn::request::status_code& code,
@@ -226,6 +252,12 @@ public:
     virtual bool
     unregister_mime_subtype(const hutzn::request::mime_subtype& subtype) = 0;
 };
+
+//! Creates a new empty demultiplexer. Returns a c pointer! Despite the fact,
+//! the this library tries to encourage you to do not use c pointers, it does
+//! not know the correct wrapper class. Sometimes a shared and sometimes a
+//! unique pointer may be appropriate. The user has to handle this.
+demultiplexer_interface* make_demultiplexer();
 
 } // namespace demux
 
