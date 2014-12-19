@@ -28,6 +28,8 @@ namespace hutzn
 
 @page requests Requests
 
+Whenever a request arives, there is a need
+
 */
 
 //! This namespace contains all request related code and data. This includes a
@@ -35,10 +37,10 @@ namespace hutzn
 namespace request
 {
 
-//! The MIME-Type consists of a group and a subtype.
+//! The MIME-Type consists of a group of subtypes.
 enum class mime_type : uint8_t {
-    //! The character *. Used to catch all existing types or declaring
-    //! that the subtype is not of interest.
+    //! The character *. Used to catch all types or declaring that the subtype
+    //! is not of interest.
     WILDCARD = 0,
 
     //! Application specific formats.
@@ -60,8 +62,8 @@ enum class mime_type : uint8_t {
 //! The subtype of a MIME-Type defines the concrete format of the
 //! representation.
 enum class mime_subtype : uint16_t {
-    //! The character *. Used to catch all existing subtypes or declaring
-    //! that the subtype is not of interest.
+    //! The character *. Used to catch all subtypes or declaring that the
+    //! subtype is not of interest.
     WILDCARD = 0,
 
     //! Plain text means, that the content is not in any specific format.
@@ -70,10 +72,14 @@ enum class mime_subtype : uint16_t {
 
 //! Every HTTP request has a specific method. There are two properties to a
 //! subset of methods.
-//! 1. Idempotence: You can apply the identical request n times to the same URI
+//!
+//! -# Idempotence: You can apply the identical request n times to the same URI
 //!    without changing the result.
-//! 2. Side-Effect-Safety: The request does not alter the server state. Thus
-//!    it is inherently idempotent.
+//! -# Side-Effect-Safety: The request does not alter the server state in any
+//!    belong. Thus it is inherently idempotent.
+//!
+//! The user has to ensure, that this properties are fulfilled. It is not easy
+//! to solve this by a framework or library.
 enum class method : uint8_t {
     //! The GET method is used to retrieve informations from the entity assigned
     //! to the URI. The method must not have side effects.
@@ -87,13 +93,19 @@ enum class method : uint8_t {
     //! identified by the URI. This method has to be idempotent.
     DELETE = 2,
 
-    //! The POST method is used to request that the origin server accept the
+    //! The POST method is used to request that the origin server accepts the
     //! entity enclosed in the request.
     POST = 3
 };
 
-//! An request is answered with a response. These responses carry a status code
-//! to tell the client the request result.
+//! A request is answered with a response. These responses carry a status code
+//! to tell the client the request result. The user is able to define custom
+//! status codes to extend this enumeration:
+//!
+//! @code
+//! constexpr hutzn::request::status_code xy =
+//!     static_cast<hutzn::request::status_code>(111);
+//! @endcode
 enum class status_code : uint16_t {
     //! Since HTTP/1.1
     //! Used when dividing a request into several parts. After responding this
@@ -125,7 +137,7 @@ enum class status_code : uint16_t {
     //! informations from another source.
     NON_AUTHORATIVE_INFORMATION = 203,
 
-    //! The request was processes successfully, but the response does not
+    //! The request was processed successfully, but the response does not
     //! contain any informations.
     NO_CONTENT = 204,
 
@@ -165,9 +177,6 @@ enum class status_code : uint16_t {
     //! Since HTTP/1.1
     //! The requested resource is only available via proxy.
     USE_PROXY = 305,
-
-    //! Obsolete.
-    SWITCH_PROXY = 306,
 
     //! Since HTTP/1.1
     //! The resource has moved, but unlike 301 not permanently. Thus future
