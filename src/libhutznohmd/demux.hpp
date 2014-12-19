@@ -29,16 +29,24 @@ namespace hutzn
 
 @page demultiplexer Demultiplexer
 
-Once you got a connection, your client would propably perform a request. To
-parse it and to respond to it correctly a HTTP parser ist needed. HTTP on the
-other hand defines access to different entities on the same server. Therefore
-a request demultiplexer is necessary. It is also required that a request
-handler could add and remove the registered request and error handlers while
-processing a request. Therefore processing a request must be independent from
-the demultiplexer.
+Once a connection is established, the client will send a request. To parse it
+and to respond to it correctly a HTTP parser ist needed. HTTP on the other hand
+defines access to different entities on the same server. Therefore a request
+demultiplexer is necessary. It is also required that the user could register and
+unregister request and error handlers while processing a request. Therefore
+processing a request has to be independent from the demultiplexer.
 
 @startuml{requests_classes.png}
 namespace hutzn {
+  namespace socket {
+    interface block_device_interface
+  }
+
+  namespace request {
+    interface request_interface
+    interface response_interface
+  }
+
   namespace demux {
     class request_handler_id {
       +path: string
@@ -70,10 +78,19 @@ namespace hutzn {
     class request_processor
     class demultiplexer
 
-    handler_interface <|-- handler: <<implements>>
-    request_processor_interface <|-- request_processor: <<implements>>
-    demux_query_interface <|-- demultiplexer: <<implements>>
-    demux_control_interface <|-- demultiplexer: <<implements>>
+    hutzn.socket.block_device_interface -- request_processor_interface: < uses
+    hutzn.request.request_interface -- request_processor_interface: < uses
+    hutzn.request.response_interface -- request_processor_interface: < uses
+    handler_interface -- request_processor_interface: < creates
+    hutzn.request.request_interface -- demux_query_interface: < uses
+    request_handler_id -- demux_control_interface: < uses
+    handler_interface -- demux_control_interface: < creates
+
+    handler_interface <|-- handler: implements
+    request_processor_interface <|-- request_processor: implements
+    demux_query_interface "1" o-- "1" request_processor
+    demux_query_interface <|-- demultiplexer: implements
+    demux_control_interface <|-- demultiplexer: implements
   }
 }
 @enduml
@@ -83,16 +100,18 @@ process to the demultiplexer, which looks for a request handler. This handler is
 getting called by the request processor in order to get a response. If no
 functor could be found, the request processor will respond an error document.
 
-A resource starts to exist, when you register the first request handler and
-ceases when the last request handler gets destroyed. Registering a resource
-handler requires to define a callback function that must have the signature:
+A resource starts to exist, when the first request handler is getting registered
+and ceases when the last request handler is getting destroyed. Registering a
+resource handler requires to define a callback function that must have the
+signature:
 
 @code{.cpp}
-status_code foo(const request_interface&, const response_interface&)
+status_code foo(const hutzn::request::request_interface&,
+                const hutzn::request::response_interface&);
 @endcode
 
-Because of @c std::function the user has the choice to use a member function (by
-using @c std::bind) as the callback function.
+Because the registration takes a @c std::function the user has the choice to
+use a member function (by using @c std::bind) as the callback function.
 
 @code{.cpp}
 using namespace std::placeholders;
@@ -142,16 +161,16 @@ Allowing @c std::bind conceals an important detail from the user. The user
 could expose the "this" pointer of an object. This complicates lifetime. See
 @ref sec_lifetime_callbacks "lifetime of callbacks" for further information.
 
-Every registered handler needs a mime type. While the list of the library is
-never complete, it could be extended by the user. You can register own MIME
-types and subtypes. There are no lifetime scopes of this registrations, because
-normally you want to do the registration and unregistration only once during
-the lifetime of a demultiplexer.
+Every registered handler needs a mime type. While the library's list is never
+complete, it could be extended by the user. You can register own MIME types and
+subtypes. There are no lifetime scopes of this registrations, because normally
+you want to do the registration and unregistration only once during the
+demultiplexer's lifetime.
 
 @code
 int main()
 {
-    hutzn::demux::demux_pointer d = demuxer(hutzn::demux::make_demultiplexer());
+    hutzn::demux::demux_pointer d = hutzn::demux::make_demultiplexer();
     hutzn::request::mime_type x_type;
     d->register_mime_type("example", x_type);
 
@@ -163,8 +182,8 @@ int main()
 @endcode
 
 Of course not all combinations of MIME types and subtypes are valid and make
-sense. Nevertheless the registration of types and subtypes are indepent,
-because it makes the implementation much easier.
+sense. Nevertheless the registration of types and subtypes is indepent, because
+it makes the implementation much easier.
 
 */
 
@@ -193,9 +212,8 @@ struct request_handler_id
     hutzn::request::mime_subtype subtype;
 };
 
-//! Scopes the lifetime of a request or error handler. The handler gets
-//! unregistered, when the handler object instance of this interface gets
-//! destroyed.
+//! Scopes the request or error handler's lifetime. The handler gets
+//! unregistered, when the handler object instance is getting destroyed.
 class handler_interface
 {
 public:
@@ -295,7 +313,7 @@ public:
     handle_one_request(socket::block_device_interface& device) const = 0;
 
     //! Connects an error handler to a specific status code. Returns a handler
-    //! object, which acts as lifetime scope of the error handler. If there is
+    //! object, which acts as the error handler's lifetime scope. If there is
     //! already one registered, it returns null.
     virtual handler_pointer
     set_error_handler(const hutzn::request::status_code& code,
