@@ -47,7 +47,7 @@ namespace hutzn {
     interface handler_interface
 
     interface demultiplexer_interface {
-      +handle(connection: connection_interface)
+      +handle(device: block_device_interface)
       +connect(id: request_handler_id, fn): handler_interface
       +set_error_handler(code: status_code, fn): handler_interface
       +register_mime_type(type: string, result: mime_type): bool
@@ -210,9 +210,9 @@ public:
     //! a segmentation fault but at least undefined behaviour.
     virtual ~demultiplexer_interface();
 
-    //! Takes a connection to answer the request on the connection. Will block
-    //! until the connection is getting closed.
-    virtual void handle(const socket::connection_interface& c) const = 0;
+    //! Takes a block device to answer a request. Will block until the block
+    //! device is getting closed.
+    virtual void handle(socket::block_device_interface& device) const = 0;
 
     //! Connects a request handler to a resource. Returns a handler object,
     //! which acts as lifetime scope of the request handler.
