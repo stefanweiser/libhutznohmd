@@ -32,11 +32,14 @@ namespace hutzn
 Once you got a connection, your client would propably perform a request. To
 parse it and to respond to it correctly a HTTP parser ist needed. HTTP on the
 other hand defines access to different entities on the same server. Therefore
-a request demultiplexer is necessary.
+a request demultiplexer is necessary. It is also required that a request
+handler could add and remove the registered request and error handlers while
+processing a request. Therefore processing a request must be independent from
+the demultiplexer.
 
 @startuml{requests_classes.png}
 namespace hutzn {
-  namespace request {
+  namespace demux {
     class request_handler_id {
       +path: string
       +verb: method
@@ -46,10 +49,17 @@ namespace hutzn {
 
     interface handler_interface
 
-    interface demultiplexer_interface {
-      +handle_one_request(device: block_device_interface): bool
-      +connect(id: request_handler_id, fn): handler_interface
-      +set_error_handler(code: status_code, fn): handler_interface
+    interface request_processor_interface {
+      +handle_one_request(device: block_device): bool
+      +set_error_handler(reason: status_code, fn): handler
+    }
+
+    interface demux_query_interface {
+      +determine_request_handler(request): fn
+    }
+
+    interface demux_control_interface {
+      +connect(id: request_handler_id, fn): handler
       +register_mime_type(type: string, result: mime_type): bool
       +unregister_mime_type(type: mime_type): bool
       +register_mime_subtype(subtype: string, result: mime_subtype): bool
@@ -57,18 +67,21 @@ namespace hutzn {
     }
 
     class handler
+    class request_processor
     class demultiplexer
 
     handler_interface <|-- handler: <<implements>>
-    demultiplexer_interface <|-- demultiplexer: <<implements>>
+    request_processor_interface <|-- request_processor: <<implements>>
+    demux_query_interface <|-- demultiplexer: <<implements>>
+    demux_control_interface <|-- demultiplexer: <<implements>>
   }
 }
 @enduml
 
-In other words, requests are heading from the connection to the demultiplexer,
-which looks for a request handler. This handler is getting called in order to
-get a response. If no functor could be found, the request will respond an error
-document.
+In other words, requests are heading from the connection through the request
+process to the demultiplexer, which looks for a request handler. This handler is
+getting called by the request processor in order to get a response. If no
+functor could be found, the request processor will respond an error document.
 
 A resource starts to exist, when you register the first request handler and
 ceases when the last request handler gets destroyed. Registering a resource
@@ -82,7 +95,8 @@ Because of @c std::function the user has the choice to use a member function (by
 using @c std::bind) as the callback function.
 
 @code{.cpp}
-std::bind(&Foo::bar, foo_pointer, std::placeholders::_1, std::placeholders::_2);
+using namespace std::placeholders;
+std::bind(&Foo::bar, foo_pointer, _1, _2);
 @endcode
 
 The following example registers a resource representation and sets an error
@@ -107,7 +121,9 @@ void C::error_handler(const hutzn::request::request_interface&,
     // Do something.
 }
 
-void registerHandlers(C* const c, hutzn::demux::demultiplexer_interface& m)
+void registerHandlers(C* const c,
+                      hutzn::demux::request_processor_interface& r,
+                      hutzn::demux::demux_control_interface& m)
 {
     hutzn::demux::request_handler_id i{
         "/",
@@ -117,7 +133,7 @@ void registerHandlers(C* const c, hutzn::demux::demultiplexer_interface& m)
     };
     using namespace std::placeholders;
     m.connect(i, std::bind(&C::foo, c, _1, _2));
-    m.set_error_handler(hutzn::request::status_code::NOT_FOUND,
+    r.set_error_handler(hutzn::request::status_code::NOT_FOUND,
                         std::bind(&C::error_handler, c, _1, _2));
 }
 @endcode
@@ -135,8 +151,7 @@ the lifetime of a demultiplexer.
 @code
 int main()
 {
-    using demuxer = std::shared_ptr<hutzn::demux::demultiplexer_interface>;
-    demuxer d = demuxer(hutzn::demux::make_demultiplexer());
+    hutzn::demux::demux_pointer d = demuxer(hutzn::demux::make_demultiplexer());
     hutzn::request::mime_type x_type;
     d->register_mime_type("example", x_type);
 
@@ -197,36 +212,32 @@ using request_handler_callback = std::function<
     hutzn::request::status_code(const hutzn::request::request_interface&,
                                 hutzn::request::response_interface&)>;
 
-//! Is used by the demultiplexer in case of an error to get a useful response.
-using error_handler_callback =
-    std::function<void(const hutzn::request::request_interface&,
-                       hutzn::request::response_interface&)>;
-
-//! Demuxes the HTTP requests to the request handlers.
-class demultiplexer_interface
+//! Demultiplexes the requests. It is necessary, that no call to this component
+//! blocks its users longer as needed. Any query that currently could not get
+//! answered has to result in an error instead of waiting.
+class demux_query_interface
 {
 public:
-    //! While destroying the demuxer, no request must run or this may raise
-    //! a segmentation fault but at least undefined behaviour.
-    virtual ~demultiplexer_interface();
+    //! Do not destroy the demultiplexer while performing any operation on it.
+    virtual ~demux_query_interface();
 
-    //! Takes a block device to answer one request. Will block until the request
-    //! is answered by a request or an error handler. Returns true, if one
-    //! request was successfully answered and false when the block device got
-    //! closed before the response was completely sent.
-    virtual bool
-    handle_one_request(socket::block_device_interface& device) const = 0;
+    virtual request_handler_callback determine_request_handler(
+        const hutzn::request::request_interface& request) = 0;
+};
 
+//! Demultiplexers should always be used with reference counted pointers.
+using demux_query_pointer = std::shared_ptr<demux_query_interface>;
+
+//! Demultiplexes the requests. It is necessary, that no call to this component
+//! blocks its users longer as needed. Any query that currently could not get
+//! answered has to result in an error instead of waiting.
+class demux_interface : public demux_query_interface
+{
+public:
     //! Connects a request handler to a resource. Returns a handler object,
     //! which acts as lifetime scope of the request handler.
     virtual handler_pointer connect(const request_handler_id& id,
                                     const request_handler_callback& fn) = 0;
-
-    //! Connects an error handler to a specific status code. Returns a handler
-    //! object, which acts as lifetime scope of the error handler.
-    virtual handler_pointer
-    set_error_handler(const hutzn::request::status_code& code,
-                      const error_handler_callback& fn) = 0;
 
     //! Registers a custom MIME type and returns true if that type was not
     //! already registered. You could use the custom MIME type afterwards. If
@@ -256,11 +267,46 @@ public:
     unregister_mime_subtype(const hutzn::request::mime_subtype& subtype) = 0;
 };
 
-//! Creates a new empty demultiplexer. Returns a c pointer! Despite the fact,
-//! the this library tries to encourage you to do not use c pointers, it does
-//! not know the correct wrapper class. Sometimes a shared and sometimes a
-//! unique pointer may be appropriate. The user has to handle this.
-demultiplexer_interface* make_demultiplexer();
+//! Demultiplexers should always be used with reference counted pointers.
+using demux_pointer = std::shared_ptr<demux_interface>;
+
+//! Creates a new empty demultiplexer.
+demux_pointer make_demultiplexer();
+
+//! Is used by the demultiplexer in case of an error to get a useful response.
+using error_handler_callback =
+    std::function<void(const hutzn::request::request_interface&,
+                       hutzn::request::response_interface&)>;
+
+//! Waits for, parses and handles the requests. Calls to the request and error
+//! handlers. Queries the correct request handler from a given demultiplexer.
+class request_processor_interface
+{
+public:
+    //! It is necessary, that no request is processed while destroying or it
+    //! will lead to undefined behaviour.
+    virtual ~request_processor_interface();
+
+    //! Takes a block device to answer one request. Will block until the request
+    //! is answered by a request or an error handler. Returns true, if one
+    //! request was successfully answered and false when the block device got
+    //! closed before the response was completely sent.
+    virtual bool
+    handle_one_request(socket::block_device_interface& device) const = 0;
+
+    //! Connects an error handler to a specific status code. Returns a handler
+    //! object, which acts as lifetime scope of the error handler. If there is
+    //! already one registered, it returns null.
+    virtual handler_pointer
+    set_error_handler(const hutzn::request::status_code& code,
+                      const error_handler_callback& fn) = 0;
+};
+
+//! The request processor should always be a reference counted pointer
+using request_processor_pointer = std::shared_ptr<request_processor_interface>;
+
+//! Creates a new request processor. Needs a query pointer.
+request_processor_pointer make_request_processor(const demux_query_pointer& q);
 
 } // namespace demux
 
