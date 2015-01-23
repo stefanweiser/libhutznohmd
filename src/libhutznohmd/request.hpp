@@ -59,14 +59,6 @@ stop
 Each request consists of verb, path, version, some headers and a body. All of
 this is represented in the request interface. All the headers defined by the
 current HTTP standard are listed in the following subpages.
-
-Every header field documentation is splitted into three parts:
-- @a Description: What and how does it influence the system? What can you
-expect? Informations on the content.
-- @a Example: A common example on how to use it.
-- @a Default: Which value the server supposes, if the header field is missing.
-- @a Implemented: Since when is it implemented by the library.
-
 -# @subpage page_basic_http_support
 -# @subpage page_encoding
 -# @subpage page_auth
@@ -74,6 +66,13 @@ expect? Informations on the content.
 -# @subpage page_cookies
 -# @subpage page_byte_serving
 -# @subpage page_conditional
+
+Every header field documentation is splitted into three parts:
+- @a Description: What and how does it influence the system? What can you
+expect? Informations on the content.
+- @a Example: A common example on how to use it.
+- @a Default: Which value the server supposes, if the header field is missing.
+- @a Implemented: Since when is it implemented by the library.
 
 
 
