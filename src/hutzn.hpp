@@ -281,12 +281,12 @@ To reach a homogenous code base, it is indispensable to have some principles
 about working with the code.
 
 I spent much time on porting and maintaining code of software dinosaurs and
-therefore reengineering the meaning of it. Often I choose to rewrite it
-component by component, because the original code is somewhat bloated. Sometimes
-I got tired of fixing or removing the one-thousand-and-first idea of slightly
+therefore reengineering the meaning of it. Often I chose to rewrite it component
+by component, because the original code is somewhat bloated. Sometimes I got
+tired of fixing or removing the one-thousand-and-first idea of slightly
 improving the performance at the expense of a massively higher risk of raising
-maintenance costs, where another improvement would do the same, but more
-reliable.
+maintenance costs, where another improvement would serve the same purpose, but
+more reliable.
 
 However, here are some principles, that are essential for this library:
 
@@ -296,8 +296,8 @@ for a problem should be refactored or at least documented.
 - @b AAA: The tests should be arranged in that pattern, but there are good
 reasons that not all tests may fulfill this. A triple-A test is better than one
 that is arranged in another way.
-- @b YAGNI: Keep this in mind. If some code is not needed anymore, it shall be
-removed.
+- @b YAGNI: Keep this in mind. Don't write code, that you will need in two years
+and if some code is not needed anymore, it shall be removed.
 
 In any cases it will be difficult where to draw the line. Don't be religious
 with these principles, but keep them in mind and improve the code.
@@ -330,8 +330,8 @@ For valgrind:
 - @b valgrind >= 3.7
 
 For metrics:
-- @b lizard >= 1.8.4 (see https://pypi.python.org/pypi/lizard)
-- @b rats >= 2.4 (https://code.google.com/p/rough-auditing-tool-for-security/)
+- @b [lizard >= 1.8.4] (https://pypi.python.org/pypi/lizard)
+- @b [rats >= 2.4] (https://code.google.com/p/rough-auditing-tool-for-security/)
 
 For packaging:
 - @b tar >= 1.26
@@ -340,22 +340,23 @@ For packaging:
 
 @subsection subsec_quick_start Quick Start
 
-All deployment steps are done by the @c make script. A help could be printed out
-by:
+All deployment steps are done by the shell script @c make. A help could be
+printed out by:
 
 @code
 $ ./make --help
 @endcode
 
-Normally making @c all in both targets (@c --debug and @c --release) and making
+Normally making @c all in both targets (@c --debug and @c --release) or making
 @c coverage is of interest.
 
 @subsection subsec_deploying Deploying
 
-Deploying a version is done by incrementing the version and making a package:
+Deploying a version is done by incrementing the version number in the file @c
+version and making a package:
 
 @code
-./make --release --minimal build package
+$ ./make --release --minimal build package
 @endcode
 
 The packages will be left in the @c build subdirectory. They are ought to be
