@@ -34,7 +34,7 @@ reliable, robust, scalable and well tested library.
 See @ref getting_started to get some examples on how to start your own RESTful
 web service.
 
-See @ref deployment to learn about the deployment tool @c make.
+See @ref sec_deployment to learn about the deployment tool @c make.
 
 See @ref development to get started developing libhutznohmd.
 
