@@ -42,7 +42,7 @@ processor to the demultiplexer, which looks for a request handler. This handler
 is getting called by the request processor in order to get a response. If no
 functor could be found, the request processor will respond an error document.
 
-@startuml{requests_classes.svg}
+@startuml{demultiplexer_classes.svg}
 namespace hutzn {
   namespace socket {
     interface block_device_interface

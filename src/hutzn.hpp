@@ -90,7 +90,7 @@ for socket communication and multiplexing requests (splitted into two
 components), but no code to connect those components. The user has to connect
 this by own code:
 
-@startuml{source_multiplexing_destination.svg}
+@startuml{components.svg}
 left to right direction
 skinparam packageStyle rect
 
