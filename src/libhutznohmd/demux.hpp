@@ -87,10 +87,10 @@ namespace hutzn {
     hutzn.socket.block_device_interface -- request_processor_interface: < uses
     hutzn.request.request_interface -- request_processor_interface: < uses
     hutzn.request.response_interface -- request_processor_interface: < uses
-    handler_interface -- request_processor_interface: < calls
+    handler_interface -- request_processor_interface: < returns
     hutzn.request.request_interface -- demux_query_interface: < uses
     request_handler_id -- demux_control_interface: < uses
-    handler_interface -- demux_control_interface: < calls
+    handler_interface -- demux_control_interface: < returns
 
     handler_interface <|-- handler: implements
     request_processor_interface <|-- request_processor: implements
