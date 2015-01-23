@@ -45,7 +45,7 @@ namespace hutzn
 To reach a homogenous code base, it is indispensable to have some principles
 about working with the code.
 
-I spent much time on porting code of software dinosaurs and therefor
+I spent much time on porting code of software dinosaurs and therefore
 reengineering the meaning of it. Often I choose to rewrite it component by
 component, because the original code is somewhat bloated. Sometimes I got tired
 of fixing or removing the one-thousand-and-first idea of slightly improving the
