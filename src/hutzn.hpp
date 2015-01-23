@@ -218,6 +218,25 @@ Deploying a version is done by incrementing the version and making a package:
 These packages are ought to be released. Create a tag on the git repository
 afterwards.
 
+@page roadmap Roadmap
+
+@todo [DOC] Make roadmap.
+
+HTTP:
+- Basic HTTP-Support (protocol, document negotiation)
+- Authentification / Authorization
+- Conditional-Requests
+- Encoding
+- Cookies
+- Byte Serving
+- Caching
+- DNT
+- HSTS
+
+REST:
+- REST helpers
+- WADL support
+
 */
 
 //! Every HTTP request has a specific method. There are two properties to a
