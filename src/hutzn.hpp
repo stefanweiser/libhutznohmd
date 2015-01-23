@@ -366,11 +366,11 @@ released. Create a tag on the git repository afterwards.
 
 @page page_concept Concept
 
-Today HTTP is one of the world's most broadly used protocol to connect a server
-to its clients. While it is a really easy to use and human readable, there is
-a need for some rules about the "how to interact". An increasingly common
-"style" is representational state transfer (REST). The target of this library is
-to support its users to fulfill the ideas of REST.
+Today HTTP is one of the world's most broadly used protocols to connect a server
+to its clients. While it is really easy to use and human readable, there is a
+need for some rules about the "how to interact". An increasingly common "style"
+is representational state transfer (REST). The target of this library is to
+support its users to fulfill the ideas of REST while developing a web service.
 
 A user of this library has to provide some control code and a resource manager
 to connect its request handlers to the library. This will make the REST
@@ -405,14 +405,14 @@ Structually the library user needs three things at an abstracted level:
 
 -# An abstraction of the @subpage page_data_source_and_sink
 "data source and sink" (e.g. sockets).
--# A @subpage page_demultiplexer "multiplexing component", that helps to
+-# A @subpage page_demultiplexer "demultiplexing component", that helps to
 generate the correct response on any request.
 -# An access to the @subpage page_requests "request data".
 
 This library solves those needs in separated components. There are interfaces
-for socket communication and multiplexing requests (splitted into two
-components), but no code to connect those components. The user has to connect
-this by own code:
+for socket communication and demultiplexing requests (splitted into two
+component groups), but no code to connect those components. The user has to
+connect this by own code:
 
 @startuml{components.svg}
 left to right direction
@@ -456,7 +456,7 @@ Pro:
 
 Contra:
 - more possibilities for errors
-- server has more to decide (this is not a whole framework)
+- this is not a whole framework
 
 Though it is recommended only to connect library components with each other,
 this is not enforced. The user is able to write own components to replace those
