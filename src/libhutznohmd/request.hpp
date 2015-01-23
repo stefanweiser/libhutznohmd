@@ -28,7 +28,54 @@ namespace hutzn
 
 @page requests Requests
 
-Whenever a request arives, there is a need
+Parsing a request is done by an internal HTTP parser. It offers the server an
+optimized view on the request. On the other hand the server has to generate a
+response. The following activity diagram is a simplification of the control
+flow during request handling:
+
+@startuml{request_activity.svg}
+
+start
+
+:read request;
+if (request ok) then (yes)
+    if (handler exists) then (yes)
+        :call handler;
+        :write response;
+    else (no)
+        if (error handler exists) then (yes)
+            :call error handler;
+            :write response;
+        else (no)
+            :write internal server error response;
+        endif
+    endif
+else (no)
+    :write bad request error response;
+endif
+
+stop
+
+@enduml
+
+Each request consists of verb, path, version, some headers and a body. All of
+this is represented in the request interface. All the headers defined by the
+current HTTP standard are listed in the following subpages.
+
+Every header field documentation is splitted into three parts:
+- @a Description: What and how does it influence the system? What can you
+expect? Informations on the content.
+- @a Example: A common example on how to use it.
+- @a Default: Which value the server supposes, if the header field is missing.
+- @a Implemented: Since when is it implemented by the library.
+
+-# @subpage page_basic_http_support
+-# @subpage page_encoding
+-# @subpage page_auth
+-# @subpage page_caching
+-# @subpage page_cookies
+-# @subpage page_byte_serving
+-# @subpage page_conditional
 
 */
 
