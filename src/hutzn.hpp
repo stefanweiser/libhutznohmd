@@ -42,12 +42,11 @@ namespace hutzn
 
 @section sec_principles Development Principles
 
-To aim a homogenous code base, it is indispensable to have some principles on
-how
-to work.
+To reach a homogenous code base, it is indispensable to have some principles
+about working with the code.
 
 I spent much time on porting code of software dinosaurs and therefor
-reengineering the meaning of it. Often I have chosen to rewrite it component by
+reengineering the meaning of it. Often I choose to rewrite it component by
 component, because the original code is somewhat bloated. Sometimes I got tired
 of fixing or removing the one-thousand-and-first idea of slightly improving the
 performance at the expense of a massively higher risk of raising maintenance
@@ -56,7 +55,7 @@ costs, where another improvement would do the same, but more reliable.
 However, there are some principles, that are essential:
 
 - @b KISS: The code has to be as simple as possible. Any non-intuitive solution
-for a problem should be documented.
+for a problem should be refactored or at least documented.
 - @b SOLID: This should keep the architecture extensible.
 - @b AAA: The tests should be arranged in that pattern, but there are good
 reasons that not all tests may fulfill this. A triple-A test is better than one
@@ -67,30 +66,23 @@ removed.
 In any cases it will be difficult where to draw the line. Don't be religious
 with them, but keep them in mind and improve the code.
 
-@section sec_who Who can contribute?
-
-Anyone who is passionated in developing software and is sharing the principles
-of this project is welcome to contribute to it. Please use a pull request on
-GitHub.
-
 @section sec_tools Tools
 
 Generally:
-- @b bash >= 4.2
 - @b git >= 1.7.9
 - @b cmake >= 2.8
 
 For building:
 - @b g++ >= 4.8
-- @b clang >= 3.4
+- @b clang >= 3.5
 - @b cppcheck >= 1.60
 - @b clang-format >= 3.5
 
-For developing:
+Recommended for developing:
 - @b qtcreator >= 2.8
 
 For documentation:
-- @b doxygen >= 1.7.6
+- @b doxygen >= 1.8.8
 - @b dot >= 2.26
 - @b java >= 1.6
 
@@ -103,15 +95,10 @@ For valgrind:
 
 For metrics:
 - @b lizard >= 1.8.4 (see https://pypi.python.org/pypi/lizard)
+- @b rats >= 2.4 (https://code.google.com/p/rough-auditing-tool-for-security/)
 
 For packaging:
 - @b tar >= 1.26
-
-@section sec_concepts Concepts
-
-- @ref interaction_concept
-- @ref roadmap
-- @ref header_fields
 
 @section sec_deployment Deployment
 
@@ -132,7 +119,7 @@ Normally making @c all in both targets (@c --debug and @c --release) and making
 Deploying a version is done by incrementing the version and making a package:
 
 @code
-./make --release --minimal package
+./make --release --minimal build package
 @endcode
 
 These packages are ought to be released. Create a tag on the git repository
