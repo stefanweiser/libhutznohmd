@@ -38,25 +38,24 @@ namespace hutzn
 
 @mainpage
 
-@section sec_mission Mission Statement
-
-To help the developers of a webservice implementing it according to the
-principles of the [Representational State Transfer]
+The libhutznohmd is a library, that helps the developers of a web service
+implementing it according to the principles of the
+[Representational State Transfer]
 (http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm "Roy Thomas
-Fieldings dissertation") architectural style by supporting an easy to use,
-reliable, robust, scalable and well tested library.
+Fieldings dissertation") architectural style by providing easy to use, reliable,
+robust, scalable and well tested functionality.
 
 @section sec_general_information General Information
 
-See @subpage page_getting_started to get some examples on how to start your own
-RESTful web service.
+See @subpage page_getting_started to get some examples on how to start building
+your own RESTful web service.
 
-See @subpage page_development to get started developing libhutznohmd.
+See @subpage page_development to get started developing this library.
 
 See @subpage page_about_hutznohmd to learn more about the name of the library.
 
 @section sec_contact Contact
-Stefan Weiser <stefan @@dot weiser @@at bluewin @@dot ch>
+Stefan Weiser <stefan (dot) weiser (at) bluewin (dot) ch>
 
 @section sec_license License
 
