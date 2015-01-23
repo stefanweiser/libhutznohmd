@@ -36,6 +36,10 @@ namespace hutzn
 
 /*!
 
+@page getting_started Getting Started
+
+@todo [DOC] Fill examples.
+
 @page concept Concept
 
 Today HTTP is one of the world's most broadly used protocol to connect a server
@@ -118,6 +122,12 @@ Contra:
 Though it is recommended only to connect library components with each other,
 this is not enforced. The user is able to write own components to replace those
 of the library.
+
+@page lifetime Lifetime
+
+@section sec_lifetime_main_objects The main objects of the library
+
+@section sec_lifetime_callbacks Callbacks
 
 @page development Development
 
