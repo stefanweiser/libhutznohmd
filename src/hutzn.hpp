@@ -469,17 +469,44 @@ of the library.
 
 The implementation gurantees some properties, that get discussed here.
 
-@section sec_exceptions Exception handling
+@section sec_exception_safety Exception safety
 
 The library will never throw an exception by itself. Raising an exception is
-defined as a fatal error for the library code. This enables you to choose
-whether to write a server, that does use exception handling or not. This
-gurantee is given by the use of the noexcept keyword. There is one exception
-from this rule. The member function
-@ref hutzn::demux::request_processor_interface::handle_one_request is not marked
-with that specifier, because it is necessary to call a request handler or an
-error handler which is part of the server. The library will not enforce those
-handler functions to fulfill this no-exception policy.
+defined as a fatal error for the library code. Therefore the application has to
+abort and the bug has to be fixed. This enables you to choose whether to write a
+server, that does use exception handling or not. Sadly there is currently no way
+to enforce this gurantee without loosing the ability to test with google-mock.
+There is also one exception from this rule. The member function
+@ref hutzn::demux::request_processor_interface::handle_one_request may throw an
+exception, because it is necessary to call a request handler or an error handler
+which is part of the server. The library will not enforce those handler
+functions to fulfill this no-exception policy.
+
+@section sec_thread_safety Thread safety
+
+Although the library will not start and stop a thread itself, it is nevertheless
+designed to gurantee thread safety everywhere. All functionality could be
+accessed simultaneously by multiple threads. This gurantee does introduce some
+deadlock situations.
+
+The most important one is a deadlock, that happens, when the system is not
+correctly destroyed:
+
+@startuml{most_important_deadlock.svg}
+left to right direction
+
+(request\nhandler) as rh
+(request\nprocessor) as rp
+(control\ncode) as cc
+
+cc --> rp: "handle request"
+rp --> rh: "calls"
+rh --> cc: "stop server"
+@enduml
+
+The control code calls the request processor to handle a request. The request
+handler is getting called by the request processor and wants to stop the server
+synchronously, which will wait till the request handler finishs.
 
 
 
