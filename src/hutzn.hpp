@@ -36,33 +36,6 @@ namespace hutzn
 
 /*!
 
-@page deployment Deployment
-
-@section sec_quick_start Quick Start
-
-All deployment steps are done by the @c make script. A help could be printed out
-by:
-
-@code
-$ ./make --help
-@endcode
-
-Normally making @c all in both targets (@c --debug and @c --release) and making
-@c --coverage is of interest.
-
-@section sec_deploying Deploying
-
-Deploying a version is done by incrementing the version and making a package:
-
-@code
-./make --release --minimal package
-@endcode
-
-These packages are ought to be released. Create a tag on the git repository
-afterwards.
-
-
-
 @page development Development
 
 @todo [DOC] Fill concepts.
@@ -139,7 +112,31 @@ For packaging:
 - @ref interaction_concept
 - @ref roadmap
 - @ref header_fields
-- @ref http_parser
+
+@section sec_deployment Deployment
+
+@subsection subsec_quick_start Quick Start
+
+All deployment steps are done by the @c make script. A help could be printed out
+by:
+
+@code
+$ ./make --help
+@endcode
+
+Normally making @c all in both targets (@c --debug and @c --release) and making
+@c --coverage is of interest.
+
+@subsection subsec_deploying Deploying
+
+Deploying a version is done by incrementing the version and making a package:
+
+@code
+./make --release --minimal package
+@endcode
+
+These packages are ought to be released. Create a tag on the git repository
+afterwards.
 
 */
 
