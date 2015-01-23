@@ -65,24 +65,4 @@ Contra:
 Though it is recommended only to connect library components with each other,
 this is not enforced.
 
-@page concept_overview Concept Overview
-
-The library consists mainly of two packages. One with helper classes for a
-restful web service and one with a http server. Both are visible for the user
-and therefore can be used. This should enable the user to use only specific
-components.
-
-@startuml{main_concept.png}
-package "rest" {
-    [container]
-    [resource]
-}
-
-package "http-server" {
-    [request]
-    [http-parser]
-    [response]
-}
-@enduml
-
 */
