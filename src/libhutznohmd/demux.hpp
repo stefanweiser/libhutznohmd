@@ -30,13 +30,19 @@ namespace hutzn
 @page demultiplexer Demultiplexer
 
 Once a connection is established, the client will send a request. To parse it
-and to respond to it correctly a HTTP parser ist needed. HTTP on the other hand
+and to respond to it correctly a HTTP parser is needed. HTTP on the other hand
 defines access to different entities on the same server. Therefore a request
 demultiplexer is necessary. It is also required that the user could register and
-unregister request and error handlers while processing a request. Therefore
-processing a request has to be independent from the demultiplexer.
+unregister request and error handlers while processing a request (e.g. when
+creating a resource). Therefore processing a request has to be independent from
+the demultiplexer.
 
-@startuml{requests_classes.png}
+In other words, requests are heading from the connection through the request
+processor to the demultiplexer, which looks for a request handler. This handler
+is getting called by the request processor in order to get a response. If no
+functor could be found, the request processor will respond an error document.
+
+@startuml{requests_classes.svg}
 namespace hutzn {
   namespace socket {
     interface block_device_interface
@@ -81,10 +87,10 @@ namespace hutzn {
     hutzn.socket.block_device_interface -- request_processor_interface: < uses
     hutzn.request.request_interface -- request_processor_interface: < uses
     hutzn.request.response_interface -- request_processor_interface: < uses
-    handler_interface -- request_processor_interface: < creates
+    handler_interface -- request_processor_interface: < calls
     hutzn.request.request_interface -- demux_query_interface: < uses
     request_handler_id -- demux_control_interface: < uses
-    handler_interface -- demux_control_interface: < creates
+    handler_interface -- demux_control_interface: < calls
 
     handler_interface <|-- handler: implements
     request_processor_interface <|-- request_processor: implements
@@ -94,11 +100,6 @@ namespace hutzn {
   }
 }
 @enduml
-
-In other words, requests are heading from the connection through the request
-process to the demultiplexer, which looks for a request handler. This handler is
-getting called by the request processor in order to get a response. If no
-functor could be found, the request processor will respond an error document.
 
 A resource starts to exist, when the first request handler is getting registered
 and ceases when the last request handler is getting destroyed. Registering a
@@ -118,27 +119,28 @@ using namespace std::placeholders;
 std::bind(&Foo::bar, foo_pointer, _1, _2);
 @endcode
 
-The following example registers a resource representation and sets an error
-handler for status code 404:
+The following example registers a resource handler and sets an error handler
+for status code 404:
 
 @code
 class C
 {
 // ...
+
+public:
+    hutzn::request::status_code foo(const hutzn::request::request_interface&,
+                                    const hutzn::request::response_interface&)
+    {
+        // Do something.
+        return hutzn::request::status_code::OK;
+    }
+
+    void error_handler(const hutzn::request::request_interface&,
+                       const hutzn::request::response_interface&)
+    {
+        // Do something.
+    }
 };
-
-hutzn::request::status_code C::foo(const hutzn::request::request_interface&,
-                                   const hutzn::request::response_interface&)
-{
-    // Do something.
-    return hutzn::request::status_code::OK;
-}
-
-void C::error_handler(const hutzn::request::request_interface&,
-                      const hutzn::request::response_interface&)
-{
-    // Do something.
-}
 
 void registerHandlers(C* const c,
                       hutzn::demux::request_processor_interface& r,
@@ -150,6 +152,7 @@ void registerHandlers(C* const c,
         hutzn::request::mime_type::WILDCARD,
         hutzn::request::mime_subtype::WILDCARD
     };
+
     using namespace std::placeholders;
     m.connect(i, std::bind(&C::foo, c, _1, _2));
     r.set_error_handler(hutzn::request::status_code::NOT_FOUND,
@@ -301,14 +304,15 @@ using error_handler_callback =
 class request_processor_interface
 {
 public:
-    //! It is necessary, that no request is processed while destroying or it
-    //! will lead to undefined behaviour.
+    //! It is necessary, that no request is getting processed while destroying
+    //! it.
     virtual ~request_processor_interface();
 
     //! Takes a block device to answer one request. Will block until the request
     //! is answered by a request or an error handler. Returns true, if one
-    //! request was successfully answered and false when the block device got
-    //! closed before the response was completely sent.
+    //! request was successfully answered (either as error or not) and false
+    //! when the block device got closed before the response was completely
+    //! sent.
     virtual bool
     handle_one_request(socket::block_device_interface& device) const = 0;
 

@@ -37,12 +37,11 @@ necessity this library defines @ref hutzn::socket::connection_interface
 are the two types of sockets, that are used by network communication
 protocols.
 
-A listener is defined as an endpoint, to which connection
-endpoints can connect to. Once a connection has been established, it connects
-two programs via a network. This connection is represented by a connection
-object.
+A listener is defined as an endpoint, to which connection endpoints can connect
+to. Once a connection has been established, it connects two programs via a
+network. This connection is represented by a connection object.
 
-@startuml{data_source_sink_classes.png}
+@startuml{data_source_sink_classes.svg}
 namespace hutzn {
   class buffer <<typedef>>
 
@@ -109,11 +108,11 @@ int main()
 
 As shown above the user has to serve the listen, accept and (indirectly)
 close operations of the listeners and connections. The user must also manage
-the connections and listeners (when to store, when to dispose). Because of this
-the user has to write more code, but it also leaves the user free to make
+the connections and listeners (when and where to store and dispose). This makes
+the user write more code on its own, but it also leaves the user free to make
 some important decisions:
 
--# Singlethreaded or multithreaded
+-# Singlethreaded vs. multithreaded
 -# When to accept a connection
 -# How many connections to accept
 -# Which connection to accept and which to close immediately
@@ -142,7 +141,7 @@ public:
     //! @c max_size is read from the connection. The buffer will retain its
     //! content and gets extended by the new data. Returning true indicates,
     //! that something has been read. False means, that the connection were
-    //! closed in any way. In this case the connection is then useless.
+    //! closed. This makes the connection useless.
     virtual bool receive(hutzn::buffer& data, const size_t& max_size) = 0;
 
     //! Invokes a blocking send operation. Returns true when all data were
@@ -174,8 +173,8 @@ public:
 
     //! Overwrites the lingering timeout of the connection in seconds. As a part
     //! of most network stacks the operating system is keeping connections in
-    //! the state TIME_WAIT some time after closing the socket (even if the
-    //! program, that was associated with that socket, terminates). Usually
+    //! the state TIME_WAIT for some time after closing the socket (even if the
+    //! process, that was associated with that socket, terminates). Usually
     //! keeping this timeout at the default value is a good idea, because
     //! TIME_WAIT will eat up stray packets of the old connection. However
     //! sometimes it is necessary to overwrite this timeout (e.g. when
@@ -195,22 +194,22 @@ using connection_pointer = std::shared_ptr<connection_interface>;
 class listener_interface
 {
 public:
-    //! Shuts down the listening. Releases all resources afterwars.
+    //! Shuts down the listening. Releases all resources afterwards.
     virtual ~listener_interface();
 
     //! Blocks until someone wants to connect to the listener or the listener
     //! gets closed. In the first case the connection gets established and
     //! returned. In case of closing the listener an empty pointer is getting
-    //! returned. The listener gets useless in this case.
+    //! returned and the listener can be released.
     virtual connection_pointer accept() const = 0;
 
-    //! Returns whether the listener is currently listening or not. Of course
+    //! Returns whether the listener is currently listening or not. Naturally
     //! this value is a volatile information.
     virtual bool listening() const = 0;
 
-    //! Shut down the listener. This will mean, that any operation gets
-    //! immediately stopped and the listener is useless afterwards, because no
-    //! operation will succeed if it is shut.
+    //! Shuts down the listener. This means, that any operation gets immediately
+    //! stopped and the listener is useless afterwards, because no operation
+    //! will succeed if it is shut.
     virtual void stop() = 0;
 
     //! @see connection_interface::set_lingering_timeout(const int&)
@@ -224,8 +223,8 @@ public:
 using listener_pointer = std::shared_ptr<listener_interface>;
 
 //! Creates a listener by host and port, defining the ip address and port number
-//! the listener should listen on. It returns a listener object, that do
-//! listening on the given host/port combination. You may want to accept the
+//! the listener should listen on. It returns a listener object, that already
+//! listens on the given host/port combination. You may want to accept the
 //! incoming connections afterwards.
 listener_pointer listen(const std::string& host, const uint16_t& port);
 

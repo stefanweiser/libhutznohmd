@@ -43,19 +43,19 @@ enum class mime_type : uint8_t {
     //! is not of interest.
     WILDCARD = 0,
 
-    //! Application specific formats.
+    //! "application"
     APPLICATION = 1,
 
-    //! An audio format.
+    //! "audio"
     AUDIO = 2,
 
-    //! An image format.
+    //! "image"
     IMAGE = 3,
 
-    //! A textual format.
+    //! "text"
     TEXT = 4,
 
-    //! A video format.
+    //! "video"
     VIDEO = 5
 };
 
@@ -66,7 +66,7 @@ enum class mime_subtype : uint16_t {
     //! subtype is not of interest.
     WILDCARD = 0,
 
-    //! Plain text means, that the content is not in any specific format.
+    //! "plain" means, that the content is not in any specific format.
     PLAIN = 1
 };
 
@@ -82,11 +82,11 @@ enum class mime_subtype : uint16_t {
 //! to solve this by a framework or library.
 enum class method : uint8_t {
     //! The GET method is used to retrieve informations from the entity assigned
-    //! to the URI. The method must not have side effects.
+    //! to the URI. The request must not have side effects.
     GET = 0,
 
     //! The PUT method requests to store data to the entity represented by the
-    //! URI. This method has to be idempotent.
+    //! URI. This request has to be idempotent.
     PUT = 1,
 
     //! The DELETE method requests that the origin server deletes the resource
@@ -109,18 +109,13 @@ enum class method : uint8_t {
 enum class status_code : uint16_t {
     //! Since HTTP/1.1
     //! Used when dividing a request into several parts. After responding this
-    //! the client shall send more data of the request.
+    //! code the client shall send more data of the request.
     CONTINUE = 100,
 
     //! Since HTTP/1.1
     //! Acknowledging the client, that a requested protocol switch is accepted
     //! by the server.
     SWITCHING_PROTOCOLS = 101,
-
-    //! Used for WebDAV.
-    //! The server responses this, when the server has received the request and
-    //! is currently processing it.
-    PROCESSING = 102,
 
     //! Standard response for successful requests.
     OK = 200,
@@ -140,20 +135,6 @@ enum class status_code : uint16_t {
     //! The request was processed successfully, but the response does not
     //! contain any informations.
     NO_CONTENT = 204,
-
-    //! The server successfully processed the request, but is not returning any
-    //! content. Unlike a 204 response, this response requires that the
-    //! requester reset the document view.
-    RESET_CONTENT = 205,
-
-    //! The server delivers only parts of the resource, because the client
-    //! wished so by using a range header (e.g. continuing canceled downloads).
-    PARTIAL_CONTENT = 206,
-
-    //! Used for WebDAV.
-    //! The body consists of multiple response codes, depending on the number of
-    //! sub-requests made.
-    MULTI_STATUS = 207,
 
     //! Indicates multiple options for the client to follow.
     MULTIPLE_CHOICES = 300,
@@ -190,9 +171,6 @@ enum class status_code : uint16_t {
     //! has not authentificated itself. There must be a WWW-Authenticate headers
     //! with a challenge in the response.
     UNAUTHORIZED = 401,
-
-    //! Reserved for future use.
-    PAYMENT_REQUIRED = 402,
 
     //! Responding the requested information is prohibited, but authentification
     //! will make no difference.
@@ -237,24 +215,8 @@ enum class status_code : uint16_t {
     //! The requested media type is not available for the requested resource.
     UNSUPPORTED_MEDIA_TYPE = 415,
 
-    //! The requested range of the requested resource cannot be supplied. (e.g.
-    //! beyond the end of file)
-    REQUESTED_RANGE_NOT_SATISFIABLE = 416,
-
     //! The requirements of the Expect header cannot be fulfilled.
     EXPECTATION_FAILED = 417,
-
-    //! Used for WebDAV.
-    //! The request cannot be processed, due to semantic errors.
-    UNPROCESSABLE_ENTITY = 422,
-
-    //! Used for WebDAV.
-    //! The requested resource is locked.
-    LOCKED = 423,
-
-    //! Used for WebDAV.
-    //! The request failed, due to a failure of a previous request.
-    FAILED_DEPENDENCY = 424,
 
     //! The client should switch to a different protocol.
     UPGRADE_REQUIRED = 426,

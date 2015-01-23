@@ -25,7 +25,7 @@
 To build a restful web service there are two things needed at the most
 abstracted level:
 
--# An abstraction of the source and the destination of data (e.g. sockets).
+-# An abstraction of the data source and sink (e.g. sockets).
 -# A multiplexing component, that helps to generate the correct response on any
 request.
 
@@ -33,10 +33,10 @@ This library is solving this in separated components. There are interfaces for
 socket communication and multiplexing requests, but no code to connect those
 components. The user has to connect this by own code:
 
-@startuml{source_multiplexing_destination.png}
+@startuml{source_multiplexing_destination.svg}
 skinparam component {
-    BackgroundColor<<user>> green
-    BackgroundColor<<libhutznohmd>> red
+    BackgroundColor<<user>> lightblue
+    BackgroundColor<<libhutznohmd>> lightyellow
 }
 
 [control code] <<user>> as control_code
@@ -57,7 +57,7 @@ predefined way. This decision has some advantages and some disadvantages.
 Pro:
 - more flexible
 - modular concept
-- no multithreading in the library
+- easy and functional library implementation
 
 Contra:
 - more possibilities for errors
