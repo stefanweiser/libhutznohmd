@@ -40,19 +40,21 @@ namespace hutzn
 
 @todo [DOC] Fill examples.
 
+
+
 @page concept Concept
 
 Today HTTP is one of the world's most broadly used protocol to connect a server
 to its clients. While it is a really easy to use and human readable, there is
-a need for some rules about the "how to interact". A common "style" is
-representational state transfer (REST). The target of this library is to support
-its users to fulfill the ideas of REST.
+a need for some rules about the "how to interact". An increasingly common
+"style" is representational state transfer (REST). The target of this library is
+to support its users to fulfill the ideas of REST.
 
 A user of this library has to provide some control code and a resource manager
 to connect its request handlers to the library. This will make the REST
 application available to the client, which wants to request resource
 representations. The control code has to listen for and accept the connections,
-which then are provided to the library again, which tries to call the correct
+which then are provided to the library again, that tries to call the correct
 request handler.
 
 @startuml{use_case.svg}
@@ -83,29 +85,41 @@ Structually the library user needs two things at an abstracted level:
 -# A multiplexing component, that helps to generate the correct response on any
 request.
 
-This library is solving this in separated components. There are interfaces for
-socket communication and multiplexing requests (splitted into two components),
-but no code to connect those components. The user has to connect this by own
-code:
+This library solves those needs in separated components. There are interfaces
+for socket communication and multiplexing requests (splitted into two
+components), but no code to connect those components. The user has to connect
+this by own code:
 
 @startuml{source_multiplexing_destination.svg}
-skinparam component {
-    BackgroundColor<<user>> lightblue
-    BackgroundColor<<libhutznohmd>> lightyellow
+left to right direction
+skinparam packageStyle rect
+
+interface " " as li
+interface " " as rpi
+interface " " as di
+
+package "libhutznohmd" {
+    [listener] as listener
+    [request processor] as request_processor
+    [demultiplexer] as demultiplexer
 }
 
-[control code] <<user>> as control_code
-[listener] <<libhutznohmd>> as listener
-[request processor] <<libhutznohmd>> as request_processor
-[demultiplexer] <<libhutznohmd>> as demultiplexer
-[resource function] <<user>> as resource_function
-[resource manager] <<user>> as resource_manager
+package "server" {
+    [control code] as control_code
+    [resource function] as resource_function
+    [resource manager] as resource_manager
+}
 
-control_code -down-> listener : listens and accepts
-control_code -right-> request_processor : provides connections
-request_processor -right-> resource_function : uses to process requests
-request_processor -down-> demultiplexer : determines request handler
-resource_manager -left-> demultiplexer : manages resources
+li - listener
+rpi - request_processor
+di - demultiplexer
+
+listener -[hidden]right- request_processor
+control_code ..> li : listens and accepts
+control_code ..> rpi : provides connections
+request_processor ..> resource_function : process\nrequests
+request_processor .right.> demultiplexer : determines\nrequest\nhandler
+resource_manager ..> di : manages resources
 @enduml
 
 Therefore the library does not enforce its users to process the requests in a
@@ -118,16 +132,21 @@ Pro:
 
 Contra:
 - more possibilities for errors
+- server has more to decide (this is not a whole framework)
 
 Though it is recommended only to connect library components with each other,
 this is not enforced. The user is able to write own components to replace those
 of the library.
+
+
 
 @page lifetime Lifetime
 
 @section sec_lifetime_main_objects The main objects of the library
 
 @section sec_lifetime_callbacks Callbacks
+
+
 
 @page development Development
 
@@ -138,18 +157,19 @@ of the library.
 To reach a homogenous code base, it is indispensable to have some principles
 about working with the code.
 
-I spent much time on porting code of software dinosaurs and therefore
-reengineering the meaning of it. Often I choose to rewrite it component by
-component, because the original code is somewhat bloated. Sometimes I got tired
-of fixing or removing the one-thousand-and-first idea of slightly improving the
-performance at the expense of a massively higher risk of raising maintenance
-costs, where another improvement would do the same, but more reliable.
+I spent much time on porting and maintaining code of software dinosaurs and
+therefore reengineering the meaning of it. Often I choose to rewrite it
+component by component, because the original code is somewhat bloated. Sometimes
+I got tired of fixing or removing the one-thousand-and-first idea of slightly
+improving the performance at the expense of a massively higher risk of raising
+maintenance costs, where another improvement would do the same, but more
+reliable.
 
-However, there are some principles, that are essential:
+However, here are some principles, that are essential for this library:
 
 - @b KISS: The code has to be as simple as possible. Any non-intuitive solution
 for a problem should be refactored or at least documented.
-- @b SOLID: This should keep the architecture extensible.
+- @b SOLID: This should keep the architecture extensible and robust.
 - @b AAA: The tests should be arranged in that pattern, but there are good
 reasons that not all tests may fulfill this. A triple-A test is better than one
 that is arranged in another way.
@@ -157,7 +177,7 @@ that is arranged in another way.
 removed.
 
 In any cases it will be difficult where to draw the line. Don't be religious
-with them, but keep them in mind and improve the code.
+with these principles, but keep them in mind and improve the code.
 
 @section sec_tools Tools
 
@@ -205,7 +225,7 @@ $ ./make --help
 @endcode
 
 Normally making @c all in both targets (@c --debug and @c --release) and making
-@c --coverage is of interest.
+@c coverage is of interest.
 
 @subsection subsec_deploying Deploying
 
@@ -215,8 +235,10 @@ Deploying a version is done by incrementing the version and making a package:
 ./make --release --minimal build package
 @endcode
 
-These packages are ought to be released. Create a tag on the git repository
-afterwards.
+The packages will be left in the @c build subdirectory. They are ought to be
+released. Create a tag on the git repository afterwards.
+
+
 
 @page roadmap Roadmap
 
