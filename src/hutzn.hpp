@@ -272,6 +272,7 @@ used to say: "to meet people by strolling to them".
 These links may help you to get started developing the library:
 
 - @subpage page_concept
+- @subpage page_gurantees
 - @subpage page_lifetime
 - @subpage page_roadmap
 
@@ -461,6 +462,24 @@ Contra:
 Though it is recommended only to connect library components with each other,
 this is not enforced. The user is able to write own components to replace those
 of the library.
+
+
+
+@page page_gurantees Gurantees of the implementation
+
+The implementation gurantees some properties, that get discussed here.
+
+@section sec_exceptions Exception handling
+
+The library will never throw an exception by itself. Raising an exception is
+defined as a fatal error for the library code. This enables you to choose
+whether to write a server, that does use exception handling or not. This
+gurantee is given by the use of the noexcept keyword. There is one exception
+from this rule. The member function
+@ref hutzn::demux::request_processor_interface::handle_one_request is not marked
+with that specifier, because it is necessary to call a request handler or an
+error handler which is part of the server. The library will not enforce those
+handler functions to fulfill this no-exception policy.
 
 
 
