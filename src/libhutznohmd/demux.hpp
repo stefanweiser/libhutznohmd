@@ -27,7 +27,7 @@ namespace hutzn
 
 /*!
 
-@page demultiplexer Demultiplexer
+@page page_demultiplexer Demultiplexer
 
 Once a connection is established, the client will send a request. To parse it
 and to respond to it correctly a HTTP parser is needed. HTTP on the other hand

@@ -48,14 +48,12 @@ reliable, robust, scalable and well tested library.
 
 @section sec_general_information General Information
 
-See @ref getting_started to get some examples on how to start your own RESTful
-web service.
+See @subpage page_getting_started to get some examples on how to start your own
+RESTful web service.
 
-See @ref sec_deployment to learn about the deployment tool @c make.
+See @subpage page_development to get started developing libhutznohmd.
 
-See @ref development to get started developing libhutznohmd.
-
-See @ref about_hutznohmd to learn more about the name of the library.
+See @subpage page_about_hutznohmd to learn more about the name of the library.
 
 @section sec_contact Contact
 Stefan Weiser <stefan @@dot weiser @@at bluewin @@dot ch>
@@ -232,13 +230,13 @@ Library.
 
 
 
-@page getting_started Getting Started
+@page page_getting_started Getting Started
 
-@todo [DOC] Fill examples.
+@todo [DOC] fill examples
 
 
 
-@page about_hutznohmd What on earth is a Hutznohmd?
+@page page_about_hutznohmd What on earth is a Hutznohmd?
 
 A Hutznohmd (or Hutzenabend in standard german) is a tradition of the people of
 the Ore Mountains (german Erzgebirge, czech Krušné hory). The Ore Mountains were
@@ -270,115 +268,13 @@ used to say: "to meet people by strolling to them".
 
 
 
-@page concept Concept
+@page page_development Development
 
-Today HTTP is one of the world's most broadly used protocol to connect a server
-to its clients. While it is a really easy to use and human readable, there is
-a need for some rules about the "how to interact". An increasingly common
-"style" is representational state transfer (REST). The target of this library is
-to support its users to fulfill the ideas of REST.
+These links may help you to get started developing the library:
 
-A user of this library has to provide some control code and a resource manager
-to connect its request handlers to the library. This will make the REST
-application available to the client, which wants to request resource
-representations. The control code has to listen for and accept the connections,
-which then are provided to the library again, that tries to call the correct
-request handler.
-
-@startuml{use_case.svg}
-left to right direction
-skinparam packageStyle rect
-
-actor client
-actor control_code <<server>>
-actor resource_manager <<server>>
-
-rectangle libhutznohmd {
-    client -left-> (requests)
-    control_code --> (listens)
-    control_code --> (accepts\nconnections)
-    control_code --> (provides\nconnections)
-    resource_manager --> (manages\nresources)
-
-    (requests) .left.> (listens) : <<include>>
-    (requests) .right.> (accepts\nconnections) : <<include>>
-    (provides\nconnections) .right.> (manages\nresources) : <<include>>
-    (provides\nconnections) -[hidden]down- (accepts\nconnections)
-}
-@enduml
-
-Structually the library user needs two things at an abstracted level:
-
--# An abstraction of the data source and sink (e.g. sockets).
--# A multiplexing component, that helps to generate the correct response on any
-request.
-
-This library solves those needs in separated components. There are interfaces
-for socket communication and multiplexing requests (splitted into two
-components), but no code to connect those components. The user has to connect
-this by own code:
-
-@startuml{components.svg}
-left to right direction
-skinparam packageStyle rect
-
-interface " " as li
-interface " " as rpi
-interface " " as di
-
-package "libhutznohmd" {
-    [listener] as listener
-    [request processor] as request_processor
-    [demultiplexer] as demultiplexer
-}
-
-package "server" {
-    [control code] as control_code
-    [resource function] as resource_function
-    [resource manager] as resource_manager
-}
-
-li - listener
-rpi - request_processor
-di - demultiplexer
-
-listener -[hidden]right- request_processor
-control_code ..> li : listens and accepts
-control_code ..> rpi : provides connections
-request_processor ..> resource_function : process\nrequests
-request_processor .right.> demultiplexer : determines\nrequest\nhandler
-resource_manager ..> di : manages resources
-@enduml
-
-Therefore the library does not enforce its users to process the requests in a
-predefined way. This decision has some advantages and some disadvantages.
-
-Pro:
-- more flexible
-- modular concept
-- easy and functional library implementation
-
-Contra:
-- more possibilities for errors
-- server has more to decide (this is not a whole framework)
-
-Though it is recommended only to connect library components with each other,
-this is not enforced. The user is able to write own components to replace those
-of the library.
-
-
-
-@page lifetime Lifetime
-
-@section sec_lifetime_main_objects The main objects of the library
-
-@section sec_lifetime_callbacks Callbacks
-
-
-
-@page development Development
-
-@todo [DOC] Fill concepts.
+- @subpage page_concept
+- @subpage page_lifetime
+- @subpage page_roadmap
 
 @section sec_principles Development Principles
 
@@ -468,9 +364,121 @@ released. Create a tag on the git repository afterwards.
 
 
 
-@page roadmap Roadmap
+@page page_concept Concept
 
-@todo [DOC] Make roadmap.
+Today HTTP is one of the world's most broadly used protocol to connect a server
+to its clients. While it is a really easy to use and human readable, there is
+a need for some rules about the "how to interact". An increasingly common
+"style" is representational state transfer (REST). The target of this library is
+to support its users to fulfill the ideas of REST.
+
+A user of this library has to provide some control code and a resource manager
+to connect its request handlers to the library. This will make the REST
+application available to the client, which wants to request resource
+representations. The control code has to listen for and accept the connections,
+which then are provided to the library again, that tries to call the correct
+request handler.
+
+@startuml{use_case.svg}
+left to right direction
+skinparam packageStyle rect
+
+actor client
+actor control_code <<server>>
+actor resource_manager <<server>>
+
+rectangle libhutznohmd {
+    client -left-> (requests)
+    control_code --> (listens)
+    control_code --> (accepts\nconnections)
+    control_code --> (provides\nconnections)
+    resource_manager --> (manages\nresources)
+
+    (requests) .left.> (listens) : <<include>>
+    (requests) .right.> (accepts\nconnections) : <<include>>
+    (provides\nconnections) .right.> (manages\nresources) : <<include>>
+    (provides\nconnections) -[hidden]down- (accepts\nconnections)
+}
+@enduml
+
+Structually the library user needs three things at an abstracted level:
+
+-# An abstraction of the @subpage page_data_source_and_sink
+"data source and sink" (e.g. sockets).
+-# A @subpage page_demultiplexer "multiplexing component", that helps to
+generate the correct response on any request.
+-# An access to the @subpage page_requests "request data".
+
+This library solves those needs in separated components. There are interfaces
+for socket communication and multiplexing requests (splitted into two
+components), but no code to connect those components. The user has to connect
+this by own code:
+
+@startuml{components.svg}
+left to right direction
+skinparam packageStyle rect
+
+interface " " as li
+interface " " as rpi
+interface " " as di
+
+package "libhutznohmd" {
+    [listener] as listener
+    [request processor] as request_processor
+    [demultiplexer] as demultiplexer
+}
+
+package "server" {
+    [control code] as control_code
+    [resource function] as resource_function
+    [resource manager] as resource_manager
+}
+
+li - listener
+rpi - request_processor
+di - demultiplexer
+
+listener -[hidden]right- request_processor
+control_code ..> li : listens and accepts
+control_code ..> rpi : provides connections
+request_processor ..> resource_function : process\nrequests
+request_processor .right.> demultiplexer : determines\nrequest\nhandler
+resource_manager ..> di : manages resources
+@enduml
+
+Therefore the library does not enforce its users to process the requests in a
+predefined way. This decision has some advantages and some disadvantages.
+
+Pro:
+- more flexible
+- modular concept
+- easy and functional library implementation
+
+Contra:
+- more possibilities for errors
+- server has more to decide (this is not a whole framework)
+
+Though it is recommended only to connect library components with each other,
+this is not enforced. The user is able to write own components to replace those
+of the library.
+
+
+
+@page page_lifetime Lifetime
+
+@section sec_lifetime_main_objects The main objects of the library
+
+@todo [DOC] define lifetime of the main objects
+
+@section sec_lifetime_callbacks Callbacks
+
+@todo [DOC] work on callback lifetime concept
+
+
+
+@page page_roadmap Roadmap
+
+@todo [DOC] define roadmap
 
 HTTP:
 - Basic HTTP-Support (protocol, document negotiation)

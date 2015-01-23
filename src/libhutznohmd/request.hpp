@@ -26,7 +26,7 @@ namespace hutzn
 
 /*!
 
-@page requests Requests
+@page page_requests Requests
 
 Parsing a request is done by an internal HTTP parser. It offers the server an
 optimized view on the request. The server also has to generate a response. The
@@ -93,7 +93,8 @@ in case of
 or a predefined
 time duration elapsed without activity on the connection. This time duration can
 be configured.
-@todo How it can be configured.
+
+@todo [DOC] how it can be configured
 
 @a Example:
 @code
@@ -173,7 +174,7 @@ Content-Type: text/plain
 
 This header contains the timestamp, when the message was generated.
 
-@todo Explain, when the date is used and how it can be configured.
+@todo [DOC] explain, when the date is used and how it can be configured
 
 @a Example:
 @code

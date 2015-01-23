@@ -29,7 +29,7 @@ namespace hutzn
 
 /*!
 
-@page data_source_and_sink Data source and sink
+@page page_data_source_and_sink Data source and sink
 
 Each restful application has to communicate with its users. To fulfill this
 necessity this library defines @ref hutzn::socket::connection_interface
