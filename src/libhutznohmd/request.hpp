@@ -83,99 +83,118 @@ expect? Informations on the content.
 @subsection sub_connection Connection
 
 Determines, what to do with the connection after the request is finished. Two
-values
-are possible: @c close and @c keep-alive.
+values are possible: @c close and @c keep-alive.
 
 In case of @c close the connection will be closed after the response is sent and
-in case of
-@c keep-alive the connection will be kept until the client closes the connection
-or a predefined
-time duration elapsed without activity on the connection. This time duration can
-be configured.
+in case of @c keep-alive the connection will be kept until the client closes the
+connection or a predefined time duration elapsed without activity on the
+connection. This time duration can be configured.
 
-@todo [DOC] how it can be configured
+@todo [DOC] how the timeout can be configured
 
-@a Example:
+@subsubsection subsub_connction_example Example:
+
 @code
 Connection: keep-alive
 @endcode
 
-@a Default:
+@subsubsection subsub_connction_default Default:
 
-till HTTP/1.0:
+till @c HTTP/1.0:
 @code
 Connection: close
 @endcode
 
-since HTTP/1.1:
+since @c HTTP/1.1:
 @code
 Connection: keep-alive
 @endcode
 
+@subsubsection subsub_connction_implemented Implemented:
+
+unimplemented
+
 @subsection sub_content_length Content-Length
 
 The header field of the @c Content-Length must be added by the client in
-requests, if the request
-carries any payload data. The server will add this header field, if the payload
-data of the
-response is not empty. It must then contain the size of the payload in bytes.
-Thus it must be an
-unsigned integer. The size is limited to \f$2^{31}-1\f$. In case of an overflow
-the request gets
+requests, if the request carries any payload data. The server will add this
+header field, if the payload data of the response is not empty. It must then
+contain the size of the payload in bytes. Thus it must be an unsigned integer.
+The size is limited to \f$2^{31}-1\f$. In case of an overflow the request gets
 rejected.
 
-@a Example:
+@subsubsection subsub_content_length_example Example:
+
 @code
 Content-Length: 123
 @endcode
 
-@a Default:
+@subsubsection subsub_content_length_default Default:
+
 @code
 Content-Length: 0
 @endcode
 
+@subsubsection subsub_content_length_implemented Implemented:
+
+unimplemented
+
 @subsection sub_content_md5 Content-MD5
 
 This header field is optional and carries a MD5 hash sum. This hash sum is used
-to verify the
-content. If the header field is missing, the content is not verified with MD5.
-Thus there is no
-default value.
+to verify the content. If the header field is missing, the content is not
+verified with MD5. Thus there is no default value.
 
 @note This is no security feature, because of 2 reasons:
 -# Collisions for MD5 could be found within reasonable time by recent hardware.
 -# An attacker that is able to modify the header field or the content is
-everytime also able to
-modify both.
+everytime also able to modify both.
 
-@a Example:
+@subsubsection subsub_content_md5_example Example:
+
 @code
 Content-MD5: Q2hlY2sgSW50ZWdyaXR5IQ==
 @endcode
 
+@subsubsection subsub_content_md5_default Default:
+
+@code
+Content-MD5:
+@endcode
+
+@subsubsection subsub_content_md5_implemented Implemented:
+
+unimplemented
+
 @subsection sub_content_type Content-Type
 
 A content type header defines how the application should interpret the content.
-It consists of one
-MIME type.
+It consists of one MIME type.
 
-@a Example:
+@subsubsection subsub_content_type_example Example:
+
 @code
 Content-Type: application/xml
 @endcode
 
-@a Default:
+@subsubsection subsub_content_type_default Default:
+
 @code
 Content-Type: text/plain
 @endcode
 
-@subsection sub_content_date Date
+@subsubsection subsub_content_type_implemented Implemented:
+
+unimplemented
+
+@subsection sub_date Date
 
 This header contains the timestamp, when the message was generated.
 
 @todo [DOC] explain, when the date is used and how it can be configured
 
-@a Example:
+@subsubsection subsub_date_example Example:
+
 @code
 Date: Wed, 13 May 2014 22:10:48 GMT
 @endcode
@@ -196,7 +215,8 @@ Date: Wed, 13 May 2014 22:10:48 GMT
 
 Contains an e-mail address of a human, that controls the requesting user agent.
 
-@a Example:
+@subsubsection subsub_from_example Example:
+
 @code
 From: user@example.com
 @endcode
@@ -204,12 +224,11 @@ From: user@example.com
 @subsection sub_host Host
 
 Refers to the requested host on the server in case of multiple domains hosted on
-the server.
-Therefore it is part of the request URI. If the header is present, the content
-may overwrite the
-content of the request URI.
+the server. Therefore it is part of the request URI. If the header is present,
+the content may overwrite the content of the request URI.
 
-@a Example:
+@subsubsection subsub_host_example Example:
+
 @code
 Host: example.com
 @endcode
