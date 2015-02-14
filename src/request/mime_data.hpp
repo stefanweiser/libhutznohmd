@@ -72,11 +72,12 @@ public:
         return false;
     }
 
-    value_type parse_type(const char* const string, const size_t length)
+    value_type parse_type(const std::string& string)
     {
         bool success;
         value_type result;
-        std::tie(success, result) = types_.find(string, length);
+        std::tie(success, result) =
+            types_.find(string.c_str(), string.length());
         if (true == success) {
             return result;
         }

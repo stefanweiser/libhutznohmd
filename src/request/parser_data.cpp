@@ -44,16 +44,14 @@ bool parser_data::unregister_mime_subtype(const mime_subtype& subtype)
     return mime_subtypes_.unregister_type(subtype);
 }
 
-mime_type parser_data::parse_mime_type(const char* const string,
-                                       const size_t length)
+mime_type parser_data::parse_mime_type(const std::string& string)
 {
-    return mime_types_.parse_type(string, length);
+    return mime_types_.parse_type(string);
 }
 
-mime_subtype parser_data::parse_mime_subtype(const char* const string,
-                                             const size_t length)
+mime_subtype parser_data::parse_mime_subtype(const std::string& string)
 {
-    return mime_subtypes_.parse_type(string, length);
+    return mime_subtypes_.parse_type(string);
 }
 
 } // namespace request
