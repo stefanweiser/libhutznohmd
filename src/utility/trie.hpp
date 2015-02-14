@@ -29,22 +29,6 @@
 namespace hutzn
 {
 
-namespace detail
-{
-
-template <typename value_type>
-struct trie_node
-{
-    using self_ = trie_node<value_type>;
-
-    bool has_value_{false};
-    value_type value_{value_type()};
-    std::array<std::unique_ptr<self_>, 256> children_;
-    size_t used_children_{0};
-};
-
-} // namespace detail
-
 template <typename value_type>
 class trie
 {
@@ -78,9 +62,15 @@ public:
     }
 
 private:
-    using trie_node_ = detail::trie_node<value_type>;
+    struct trie_node
+    {
+        bool has_value_{false};
+        value_type value_{value_type()};
+        std::array<std::unique_ptr<trie_node>, 256> children_;
+        size_t used_children_{0};
+    };
 
-    find_result_type generateFindResult(const trie_node_& node,
+    find_result_type generateFindResult(const trie_node& node,
                                         const char* const original_string,
                                         const char* const string) const
     {
@@ -89,7 +79,7 @@ private:
         return std::make_tuple(used_chars, node.value_);
     }
 
-    find_result_type find(const trie_node_& node,
+    find_result_type find(const trie_node& node,
                           const char* const original_string,
                           const char* const string,
                           const size_t characters_remaining) const
@@ -100,7 +90,7 @@ private:
 
         find_result_type result;
 
-        const std::unique_ptr<trie_node_>& child =
+        const std::unique_ptr<trie_node>& child =
             node.children_[static_cast<uint8_t>(*string)];
         if (child) {
             result = find(*child, original_string, string + 1,
@@ -113,16 +103,16 @@ private:
         return result;
     }
 
-    trie_node_& get_or_create_child(trie_node_& curr, const uint8_t c)
+    trie_node& get_or_create_child(trie_node& curr, const uint8_t c)
     {
         if (!curr.children_[c]) {
-            curr.children_[c] = std::unique_ptr<trie_node_>(new trie_node_);
+            curr.children_[c] = std::unique_ptr<trie_node>(new trie_node);
             curr.used_children_++;
         }
         return *curr.children_[c];
     }
 
-    bool insert(trie_node_& curr, const char* string, const value_type& value)
+    bool insert(trie_node& curr, const char* string, const value_type& value)
     {
         const uint8_t c = static_cast<uint8_t>(*string);
         if (c == 0) {
@@ -163,7 +153,7 @@ private:
         return true;
     }
 
-    bool erase(trie_node_& curr, const char* string)
+    bool erase(trie_node& curr, const char* string)
     {
         const uint8_t c = static_cast<uint8_t>(*string);
         if (c == 0) {
@@ -177,7 +167,7 @@ private:
 
         } else {
 
-            std::unique_ptr<trie_node_>& child = curr.children_[c];
+            std::unique_ptr<trie_node>& child = curr.children_[c];
             if (!child || (false == erase(*child, string + 1))) {
                 return false;
             }
@@ -189,7 +179,7 @@ private:
             if (true == is_case_insensitive_) {
                 if (true == check_range<uint8_t, 'a', 'z'>(c)) {
 
-                    std::unique_ptr<trie_node_>& other_child =
+                    std::unique_ptr<trie_node>& other_child =
                         curr.children_[c & 0xDFU];
                     if (!other_child ||
                         (false == erase(*other_child, string + 1))) {
@@ -203,7 +193,7 @@ private:
 
                 } else if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
 
-                    std::unique_ptr<trie_node_>& other_child =
+                    std::unique_ptr<trie_node>& other_child =
                         curr.children_[c | 0x20U];
                     if (!other_child ||
                         (false == erase(*other_child, string + 1))) {
@@ -222,7 +212,7 @@ private:
     }
 
     const bool is_case_insensitive_;
-    trie_node_ root_node_;
+    trie_node root_node_;
 };
 
 } // namespace hutzn
