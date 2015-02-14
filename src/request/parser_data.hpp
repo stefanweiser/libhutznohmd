@@ -19,6 +19,8 @@
 #ifndef LIBHUTZNOHMD_REQEUST_PARSER_DATA_HPP
 #define LIBHUTZNOHMD_REQEUST_PARSER_DATA_HPP
 
+#include <map>
+
 #include <libhutznohmd/demux.hpp>
 #include <utility/trie.hpp>
 
@@ -33,7 +35,15 @@ class parser_data
 public:
     explicit parser_data();
 
+    hutzn::request::mime_type register_mime_type(const std::string& type);
+    hutzn::request::mime_subtype
+    register_mime_subtype(const std::string& subtype);
+    bool unregister_mime_type(const hutzn::request::mime_type& type);
+    bool unregister_mime_subtype(const hutzn::request::mime_subtype& subtype);
+
 private:
+    std::map<mime_type, std::string> registered_mime_types_;
+    std::map<mime_subtype, std::string> registered_mime_subtypes_;
     trie<mime_type> mime_types_;
     trie<mime_subtype> mime_subtypes_;
 };

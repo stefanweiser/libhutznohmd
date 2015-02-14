@@ -30,6 +30,57 @@ parser_data::parser_data()
 {
 }
 
+hutzn::request::mime_type
+parser_data::register_mime_type(const std::string& type)
+{
+    hutzn::request::mime_type result = hutzn::request::mime_type::INVALID;
+    if (true == mime_types_.insert(type.c_str(), result)) {
+        registered_mime_types_[result] = type;
+        return result;
+    }
+    return hutzn::request::mime_type::INVALID;
+}
+
+hutzn::request::mime_subtype
+parser_data::register_mime_subtype(const std::string& subtype)
+{
+    hutzn::request::mime_subtype result = hutzn::request::mime_subtype::INVALID;
+    if (true == mime_subtypes_.insert(subtype.c_str(), result)) {
+        registered_mime_subtypes_[result] = subtype;
+        return result;
+    }
+    return hutzn::request::mime_subtype::INVALID;
+}
+
+bool parser_data::unregister_mime_type(const hutzn::request::mime_type& type)
+{
+    auto it = registered_mime_types_.find(type);
+    if (it != registered_mime_types_.end()) {
+        const bool result = mime_types_.erase(it->second.c_str());
+
+        // The registration of that type is based on the existence in the trie
+        // and not in the map. Therefore ignoring this result is mandatory.
+        registered_mime_types_.erase(it);
+        return result;
+    }
+    return false;
+}
+
+bool parser_data::unregister_mime_subtype(
+    const hutzn::request::mime_subtype& subtype)
+{
+    auto it = registered_mime_subtypes_.find(subtype);
+    if (it != registered_mime_subtypes_.end()) {
+        const bool result = mime_subtypes_.erase(it->second.c_str());
+
+        // The registration of that type is based on the existence in the trie
+        // and not in the map. Therefore ignoring this result is mandatory.
+        registered_mime_subtypes_.erase(it);
+        return result;
+    }
+    return false;
+}
+
 } // namespace request
 
 } // namespace hutzn
