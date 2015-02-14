@@ -19,6 +19,8 @@
 #ifndef LIBHUTZNOHMD_LIBHUTZNOHMD_DEMUX_HPP
 #define LIBHUTZNOHMD_LIBHUTZNOHMD_DEMUX_HPP
 
+#include <cstdint>
+
 #include <libhutznohmd/sockets.hpp>
 #include <libhutznohmd/request.hpp>
 
@@ -311,8 +313,7 @@ public:
     //! Takes a block device to answer one request. Will block until the request
     //! is answered by a request or an error handler. Returns true, if one
     //! request was successfully answered (either as error or not) and false
-    //! when the block device got closed before the response was completely
-    //! sent.
+    //! when the block device got closed during read or send on the connection.
     virtual bool
     handle_one_request(socket::block_device_interface& device) const = 0;
 
@@ -327,8 +328,11 @@ public:
 //! The request processor should always be a reference counted pointer
 using request_processor_pointer = std::shared_ptr<request_processor_interface>;
 
-//! Creates a new request processor. Needs a query pointer.
-request_processor_pointer make_request_processor(const demux_query_pointer& q);
+//! Creates a new request processor. Needs a query pointer and a connection
+//! timeout in seconds.
+request_processor_pointer
+make_request_processor(const demux_query_pointer& query_interface,
+                       const uint64_t& connection_timeout_in_sec = 30);
 
 } // namespace demux
 

@@ -86,19 +86,22 @@ Determines, what to do with the connection after the request is finished. Two
 values are possible: @c close and @c keep-alive.
 
 In case of @c close the connection will be closed after the response is sent and
-in case of @c keep-alive the connection will be kept until the client closes the
-connection or a predefined time duration elapsed without activity on the
-connection. This time duration can be configured.
+in case of @c keep-alive the connection will be kept open until the client
+closes the connection or a predefined time duration elapsed without activity on
+the connection.
 
-@todo [DOC] how the timeout can be configured
+This time duration can be configured for the request processor in its factory
+function @ref hutzn::demux::make_request_processor. It shall be deemed to be a
+lower bound. It could take longer till the connection is effectively getting
+closed. See @ref sec_lifetime_connection for more information.
 
-@subsubsection subsub_connction_example Example:
+@subsubsection subsub_connection_example Example:
 
 @code
 Connection: keep-alive
 @endcode
 
-@subsubsection subsub_connction_default Default:
+@subsubsection subsub_connection_default Default:
 
 till @c HTTP/1.0:
 @code
@@ -110,7 +113,7 @@ since @c HTTP/1.1:
 Connection: keep-alive
 @endcode
 
-@subsubsection subsub_connction_implemented Implemented:
+@subsubsection subsub_connection_implemented Implemented:
 
 unimplemented
 
@@ -120,8 +123,8 @@ The header field of the @c Content-Length must be added by the client in
 requests, if the request carries any payload data. The server will add this
 header field, if the payload data of the response is not empty. It must then
 contain the size of the payload in bytes. Thus it must be an unsigned integer.
-The size is limited to \f$2^{31}-1\f$. In case of an overflow the request gets
-rejected.
+The size is limited to \f$2^{31}-1\f$. In case of an overflow the request
+invalid and therefore rejected.
 
 @subsubsection subsub_content_length_example Example:
 
@@ -189,15 +192,24 @@ unimplemented
 
 @subsection sub_date Date
 
-This header contains the timestamp, when the message was generated.
-
-@todo [DOC] explain, when the date is used and how it can be configured
+This header contains the timestamp, when the message was generated. The request
+processor will add its timestamp to the response.
 
 @subsubsection subsub_date_example Example:
 
 @code
 Date: Wed, 13 May 2014 22:10:48 GMT
 @endcode
+
+@subsubsection subsub_date_default Default:
+
+@code
+Date: Thu, 01 Jan 1970 00:00:00 GMT
+@endcode
+
+@subsubsection subsub_date_implemented Implemented:
+
+unimplemented
 
 @section sec_basic_request Request-Specific
 

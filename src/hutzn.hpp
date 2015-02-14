@@ -512,6 +512,9 @@ synchronously, which will wait till the request handler finishs.
 
 @todo [DOC] work on callback lifetime concept
 
+@section sec_lifetime_connection Connection lifetime
+
+@todo [DOC] connection lifetime concept
 
 
 @page page_roadmap Roadmap
