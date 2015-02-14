@@ -49,6 +49,9 @@ template <typename value_type>
 class trie
 {
 public:
+    static_assert(sizeof(uint8_t) == sizeof(char),
+                  "The trie implementation need a char type that has 8 bits or "
+                  "it would compromise some type convertions.");
     trie(const bool is_case_insensitive)
         : is_case_insensitive_(is_case_insensitive)
         , root_node_{}
