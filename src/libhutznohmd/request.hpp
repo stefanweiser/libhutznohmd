@@ -892,21 +892,52 @@ public:
     //! Returns the content of the referer field.
     virtual const char* referer() const = 0;
 
-    //! Returns the content of the user agent field.
+    //! Returns the content of the user agent field. Usually this is used to
+    //! work around some idiosyncrasies of some specific clients to improve the
+    //! result of the web service.
     virtual const char* user_agent() const = 0;
 };
 
+//! The request handler uses this interface to assemble the response.
 class response_interface
 {
 public:
     virtual ~response_interface();
 
-    virtual bool set_header(const char* const key, const char* const value) = 0;
+    //! Sets or overwrites a custom header. Every header field name, which is
+    //! explicitly predefined by @ref page_requests gets rejected. Returns true,
+    //! if the value was successfully set. A header field could get cleared by
+    //! leaving the value empty. The header field will not be part of the
+    //! response data in that case.
+    virtual bool set_header(const char* const name,
+                            const char* const value) = 0;
+
+    //! Sets or overwrites the content and implicitly the content length of the
+    //! response. The second parameter controls, whether a Content-MD5 field
+    //! is generated or not.
     virtual void set_content(const hutzn::buffer& content,
                              const bool set_md5) = 0;
+
+    //! Sets or overwrites the Content-Location header field.
     virtual void set_content_location(const char* const content_location) = 0;
+
+    //! Sets or overwrites the Location header field.
     virtual void set_location(const char* const location) = 0;
+
+    //! Sets or overwrites a retry timeout. The client should then repeat the
+    //! request after it timed out. Setting 0 (the origin of the epoch time)
+    //! clears that header field. Returns true, if the operation is accepted
+    //! and false, if the parameter has an invalid value (e.g. negative time).
     virtual bool set_retry_after(const time_t retry_time) = 0;
+
+    //! Sets the Server header field, which is, in fact, a fingerprint of the
+    //! running server software. Usually this is used by the client to work
+    //! around some idiosyncrasies. Per default this is not set for security
+    //! reasons. So you should be sure that the benefits of setting a
+    //! fingerprint outweights its costs (e.g. if the server software is public
+    //! domain anyway, you could assume, that attackers know about the
+    //! implementations weaknesses). Consider that setting the server software
+    //! name without a version may be a good solution.
     virtual void set_server(const char* const fingerprint) = 0;
 };
 
