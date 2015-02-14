@@ -81,6 +81,30 @@ bool parser_data::unregister_mime_subtype(
     return false;
 }
 
+hutzn::request::mime_type parser_data::parse_mime_type(const char* const string,
+                                                       const size_t length)
+{
+    bool success;
+    hutzn::request::mime_type result;
+    std::tie(success, result) = mime_types_.find(string, length);
+    if (true == success) {
+        return result;
+    }
+    return hutzn::request::mime_type::INVALID;
+}
+
+hutzn::request::mime_subtype
+parser_data::parse_mime_subtype(const char* const string, const size_t length)
+{
+    bool success;
+    hutzn::request::mime_subtype result;
+    std::tie(success, result) = mime_subtypes_.find(string, length);
+    if (true == success) {
+        return result;
+    }
+    return hutzn::request::mime_subtype::INVALID;
+}
+
 } // namespace request
 
 } // namespace hutzn

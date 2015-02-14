@@ -40,6 +40,10 @@ public:
     register_mime_subtype(const std::string& subtype);
     bool unregister_mime_type(const hutzn::request::mime_type& type);
     bool unregister_mime_subtype(const hutzn::request::mime_subtype& subtype);
+    hutzn::request::mime_type parse_mime_type(const char* const string,
+                                              const size_t length);
+    hutzn::request::mime_subtype parse_mime_subtype(const char* const string,
+                                                    const size_t length);
 
 private:
     std::map<mime_type, std::string> registered_mime_types_;
