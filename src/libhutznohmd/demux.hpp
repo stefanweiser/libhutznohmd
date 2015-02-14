@@ -59,8 +59,8 @@ namespace hutzn {
     class request_handler_id {
       +path: string
       +method: http_verb
-      +type: mime_type
-      +subtype: mime_subtype
+      +input_type: mime
+      +return_type: mime
     }
 
     interface handler_interface
@@ -71,10 +71,10 @@ namespace hutzn {
     }
 
     interface demux_query_interface {
-      +determine_request_handler(request): fn
+      +determine_request_handler(type: mime): fn
     }
 
-    interface demux_control_interface {
+    interface demux_interface {
       +connect(id: request_handler_id, fn): handler
       +register_mime_type(type: string, result: mime_type): bool
       +unregister_mime_type(type: mime_type): bool
@@ -90,15 +90,15 @@ namespace hutzn {
     hutzn.request.request_interface -- request_processor_interface: < uses
     hutzn.request.response_interface -- request_processor_interface: < uses
     handler_interface -- request_processor_interface: < returns
-    hutzn.request.request_interface -- demux_query_interface: < uses
-    request_handler_id -- demux_control_interface: < uses
-    handler_interface -- demux_control_interface: < returns
+    request_handler_id -- demux_interface: < uses
+    handler_interface -- demux_interface: < returns
 
     handler_interface <|-- handler: implements
     request_processor_interface <|-- request_processor: implements
     demux_query_interface "1" o-- "1" request_processor
     demux_query_interface <|-- demultiplexer: implements
-    demux_control_interface <|-- demultiplexer: implements
+    demux_interface <|-- demultiplexer: implements
+    demux_query_interface <|-- demux_interface: "derives from"
   }
 }
 @enduml
@@ -147,13 +147,15 @@ public:
 
 void registerHandlers(C* const c,
                       hutzn::demux::request_processor_interface& r,
-                      hutzn::demux::demux_control_interface& m)
+                      hutzn::demux::demux_interface& m)
 {
     hutzn::demux::request_handler_id i{
         "/",
         hutzn::request::http_verb::GET,
-        hutzn::request::mime_type::WILDCARD,
-        hutzn::request::mime_subtype::WILDCARD
+        std::make_pair(hutzn::request::mime_type::WILDCARD,
+                       hutzn::request::mime_subtype::WILDCARD),
+        std::make_pair(hutzn::request::mime_type::TEXT,
+                       hutzn::request::mime_subtype::PLAIN)
     };
 
     using namespace std::placeholders;
@@ -211,11 +213,13 @@ struct request_handler_id
     //! are reserved for internal usage.
     hutzn::request::http_verb method;
 
-    //! All known and registered MIME types could be used.
-    hutzn::request::mime_type type;
+    //! Describes the type that the request handler takes. INVALID is not
+    //! allowed here.
+    hutzn::request::mime input_type;
 
-    //! All known and registered MIME subtypes could be used.
-    hutzn::request::mime_subtype subtype;
+    //! Describes the type that the request handler returns. INVALID is not
+    //! allowed here.
+    hutzn::request::mime result_type;
 };
 
 //! Scopes the request or error handler's lifetime. The handler gets

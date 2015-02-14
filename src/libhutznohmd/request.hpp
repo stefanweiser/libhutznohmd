@@ -34,7 +34,6 @@ following activity diagram is a simplification of the control flow during
 request handling:
 
 @startuml{request_activity.svg}
-
 start
 :read request;
 if (request ok?) then (yes)
@@ -53,7 +52,6 @@ else (no)
     :write bad request error response;
 endif
 stop
-
 @enduml
 
 Each request consists of verb, path, version, some headers and a body. All of
@@ -124,8 +122,12 @@ namespace hutzn {
       +date(): time
       +content(): buffer
       +content_length(): size
-      +content_type(): string
-      +accept(in/out handle: pointer): string
+      +content_type(): mime
+      +accept(in/out handle: pointer, type: mime): bool
+      +expect(): http_expectation
+      +from(): string
+      +referer(): string
+      +user_agent(): string
     }
 
     interface response_interface {
@@ -577,6 +579,9 @@ enum class mime_subtype : uint16_t {
     PLAIN = 2
 };
 
+//! Used to describe a MIME type combination. Often this type is used.
+using mime = std::pair<mime_type, mime_subtype>;
+
 //! Every request is marked with a HTTP version number. The sever has to support
 //! the behaviour of this version.
 enum class http_version : uint8_t {
@@ -593,8 +598,7 @@ enum class http_version : uint8_t {
     //! explicitly wished.
     HTTP_1_1 = 2,
 
-    //! This version is currently unsupported and reserved for the next HTTP
-    //! standard.
+    //! This version is currently unsupported, but already reserved.
     HTTP_2_0 = 3
 };
 
@@ -783,6 +787,7 @@ enum class http_expectation : uint8_t {
     CONTINUE = 1
 };
 
+//! Is used by the request processor to find the right request handler and
 class request_interface
 {
 public:
@@ -830,7 +835,7 @@ public:
 
     //! Returns the MIME type and subtype of the content if existing. Returns
     //! invalid type and subtype if no content exists.
-    virtual std::tuple<mime_type, mime_subtype> content_type() const = 0;
+    virtual mime content_type() const = 0;
 
     //! Gives its user access to a list of MIME types and subtype in the accept
     //! header. To get the first item, you have to initialize the handle with a
@@ -843,14 +848,12 @@ public:
     //!
     //! @code{.cpp}
     //! void* handle = nullptr;
-    //! hutzn::request::mime_type type;
-    //! hutzn::request::mime_subtype subtype;
-    //! while (true == request->accept(handle, type, subtype)) {
+    //! mime type;
+    //! while (true == request->accept(handle, type)) {
     //!     // Do some fancy stuff.
     //! }
     //! @endcode
-    virtual bool accept(void*& handle, mime_type& type,
-                        mime_subtype& subtype) const = 0;
+    virtual bool accept(void*& handle, mime& type) const = 0;
 
     //! Returns the expectation of the client. If the expectation is not
     //! implemented it returns UNKNOWN. Then the request processor will return
