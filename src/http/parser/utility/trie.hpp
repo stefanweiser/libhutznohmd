@@ -24,10 +24,10 @@
 #include <tuple>
 #include <vector>
 
-#include <common.hpp>
 #include <http/parser/utility/character_handling.hpp>
 #include <http/parser/utility/lexer.hpp>
 #include <http/parser/utility/push_back_string.hpp>
+#include <utility/common.hpp>
 
 namespace hutzn
 {

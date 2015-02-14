@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <common.hpp>
 #include <http/parser/utility/trie.hpp>
+#include <utility/common.hpp>
 
 #include "timestamp.hpp"
 

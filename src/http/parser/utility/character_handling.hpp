@@ -22,7 +22,7 @@
 #include <array>
 #include <type_traits>
 
-#include <common.hpp>
+#include <utility/common.hpp>
 
 namespace hutzn
 {
