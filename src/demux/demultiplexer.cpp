@@ -46,29 +46,27 @@ handler_pointer demultiplexer::connect(const request_handler_id& /*id*/,
     return handler_pointer();
 }
 
-bool demultiplexer::register_mime_type(const std::string& /*type*/,
-                                       hutzn::request::mime_type& /*result*/)
+hutzn::request::mime_type
+demultiplexer::register_mime_type(const std::string& type)
 {
-    return false;
+    return request_parser_data_->register_mime_type(type);
 }
 
-bool
-demultiplexer::register_mime_subtype(const std::string& /*subtype*/,
-                                     hutzn::request::mime_subtype& /*result*/)
+hutzn::request::mime_subtype
+demultiplexer::register_mime_subtype(const std::string& subtype)
 {
-    return false;
+    return request_parser_data_->register_mime_subtype(subtype);
 }
 
-bool
-demultiplexer::unregister_mime_type(const hutzn::request::mime_type& /*type*/)
+bool demultiplexer::unregister_mime_type(const hutzn::request::mime_type& type)
 {
-    return false;
+    return request_parser_data_->unregister_mime_type(type);
 }
 
 bool demultiplexer::unregister_mime_subtype(
-    const hutzn::request::mime_subtype& /*subtype*/)
+    const hutzn::request::mime_subtype& subtype)
 {
-    return false;
+    return request_parser_data_->unregister_mime_subtype(subtype);
 }
 
 std::shared_ptr<hutzn::request::parser_data>

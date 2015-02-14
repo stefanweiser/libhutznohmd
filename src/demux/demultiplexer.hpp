@@ -19,6 +19,8 @@
 #ifndef LIBHUTZNOHMD_DEMUX_DEMULTIPLEXER_HPP
 #define LIBHUTZNOHMD_DEMUX_DEMULTIPLEXER_HPP
 
+#include <memory>
+
 #include <libhutznohmd/demux.hpp>
 
 #include <request/parser_data.hpp>
@@ -40,11 +42,11 @@ public:
     virtual handler_pointer connect(const request_handler_id& id,
                                     const request_handler_callback& fn);
 
-    virtual bool register_mime_type(const std::string& type,
-                                    hutzn::request::mime_type& result);
+    virtual hutzn::request::mime_type
+    register_mime_type(const std::string& type);
 
-    virtual bool register_mime_subtype(const std::string& subtype,
-                                       hutzn::request::mime_subtype& result);
+    virtual hutzn::request::mime_subtype
+    register_mime_subtype(const std::string& subtype);
 
     virtual bool unregister_mime_type(const hutzn::request::mime_type& type);
 

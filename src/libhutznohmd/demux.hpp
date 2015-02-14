@@ -270,20 +270,19 @@ public:
     virtual handler_pointer connect(const request_handler_id& id,
                                     const request_handler_callback& fn) = 0;
 
-    //! Registers a custom MIME type and returns true if that type was not
-    //! already registered. You could use the custom MIME type afterwards. If
-    //! the MIME type already exists, it sets the result to the already
-    //! registered one, but returns false.
-    virtual bool register_mime_type(const std::string& type,
-                                    hutzn::request::mime_type& result) = 0;
+    //! Registers a custom MIME type and returns a new mime_type value if that
+    //! type was not already registered. You could use the custom MIME type
+    //! afterwards. If the MIME type already exists, it returns
+    //! hutzn::request::mime_type::INVALID.
+    virtual hutzn::request::mime_type
+    register_mime_type(const std::string& type) = 0;
 
-    //! Registers a custom MIME subtype and returns true if that type was not
-    //! already registered. You could use the custom MIME subtype afterwards. If
-    //! the MIME subtype already exists, it sets the result to the already
-    //! registered one, but returns false.
-    virtual bool
-    register_mime_subtype(const std::string& subtype,
-                          hutzn::request::mime_subtype& result) = 0;
+    //! Registers a custom MIME subtype and returns a new mime_subtype value if
+    //! that type was not already registered. You could use the custom MIME
+    //! subtype afterwards. If the MIME subtype already exists, it returns
+    //! hutzn::request::mime_subtype::INVALID.
+    virtual hutzn::request::mime_subtype
+    register_mime_subtype(const std::string& subtype) = 0;
 
     //! Unregisters a MIME type and returns true, if it was found and
     //! successfully unregistered. To successfully unregister a MIME type, it is
