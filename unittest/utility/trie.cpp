@@ -76,6 +76,7 @@ TEST(dynamic_trie, find_part_strings)
     EXPECT_EQ(t.find("abc", 3), std::make_tuple(true, 1));
     EXPECT_EQ(t.find("abcd", 4), std::make_tuple(true, 1));
     EXPECT_EQ(t.find("abcdef", 6), std::make_tuple(true, 2));
+    EXPECT_EQ(t.find("abcdefgh", 8), std::make_tuple(true, 2));
     EXPECT_TRUE(t.erase("abc"));
     EXPECT_TRUE(t.erase("abcdef"));
 }
