@@ -58,7 +58,7 @@ namespace hutzn {
   namespace demux {
     class request_handler_id {
       +path: string
-      +verb: method
+      +method: verb
       +type: mime_type
       +subtype: mime_subtype
     }
@@ -150,7 +150,7 @@ void registerHandlers(C* const c,
 {
     hutzn::demux::request_handler_id i{
         "/",
-        hutzn::request::method::GET,
+        hutzn::request::verb::GET,
         hutzn::request::mime_type::WILDCARD,
         hutzn::request::mime_subtype::WILDCARD
     };
@@ -208,7 +208,7 @@ struct request_handler_id
 
     //! Only GET, PUT, DELETE and POST are allowed verbs here. All other verbs
     //! are reserved for internal usage.
-    hutzn::request::method verb;
+    hutzn::request::verb method;
 
     //! All known and registered mime types could be used.
     hutzn::request::mime_type type;

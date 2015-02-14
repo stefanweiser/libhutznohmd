@@ -57,8 +57,24 @@ stop
 @enduml
 
 Each request consists of verb, path, version, some headers and a body. All of
-this is represented in the request interface. All the headers defined by the
-current HTTP standard are listed in the following subpages.
+this is represented in the request interface.
+
+@startuml{request_classes.svg}
+namespace hutzn {
+  namespace request {
+    interface request_interface {
+      +method(): verb
+      +
+    }
+
+    interface response_interface {
+    }
+  }
+}
+@enduml
+
+All the headers defined by the current HTTP standard are listed in the following
+subpages.
 -# @subpage page_basic_http_support
 -# @subpage page_encoding
 -# @subpage page_auth
@@ -478,8 +494,8 @@ enum class mime_subtype : uint16_t {
     PLAIN = 1
 };
 
-//! Every HTTP request has a specific method. There are two properties to a
-//! subset of methods.
+//! Every HTTP request has a specific verb. There are two properties to a subset
+//! of methods.
 //!
 //! -# Idempotence: You can apply the identical request n times to the same URI
 //!    without changing the result.
@@ -488,20 +504,20 @@ enum class mime_subtype : uint16_t {
 //!
 //! The user has to ensure, that this properties are fulfilled. It is not easy
 //! to solve this by a framework or library.
-enum class method : uint8_t {
-    //! The GET method is used to retrieve informations from the entity assigned
+enum class verb : uint8_t {
+    //! The verb GET is used to retrieve informations from the entity assigned
     //! to the URI. The request must not have side effects.
     GET = 0,
 
-    //! The PUT method requests to store data to the entity represented by the
-    //! URI. This request has to be idempotent.
+    //! The verb PUT requests to store data to the entity represented by the
+    //! URI. The request has to be idempotent.
     PUT = 1,
 
-    //! The DELETE method requests that the origin server deletes the resource
-    //! identified by the URI. This method has to be idempotent.
+    //! The verb DELETE requests that the origin server deletes the resource
+    //! identified by the URI. The request has to be idempotent.
     DELETE = 2,
 
-    //! The POST method is used to request that the origin server accepts the
+    //! The verb POST is used to request that the origin server accepts the
     //! entity enclosed in the request.
     POST = 3
 };
@@ -587,7 +603,7 @@ enum class status_code : uint16_t {
     //! The requested resource was not found.
     NOT_FOUND = 404,
 
-    //! The requested resource does not support this method.
+    //! The requested resource does not support the given verb.
     METHOD_NOT_ALLOWED = 405,
 
     //! The requested resource cannot generate content, due to non-acceptable
