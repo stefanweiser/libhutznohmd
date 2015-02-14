@@ -29,6 +29,11 @@ demux_pointer make_demultiplexer()
     return std::make_shared<demultiplexer>();
 }
 
+demultiplexer::demultiplexer()
+    : request_parser_data_(std::make_shared<hutzn::request::parser_data>())
+{
+}
+
 request_handler_callback demultiplexer::determine_request_handler(
     const hutzn::request::request_interface& /*request*/)
 {
@@ -64,6 +69,12 @@ bool demultiplexer::unregister_mime_subtype(
     const hutzn::request::mime_subtype& /*subtype*/)
 {
     return false;
+}
+
+std::shared_ptr<hutzn::request::parser_data>
+demultiplexer::request_parser_data() const
+{
+    return request_parser_data_;
 }
 
 } // namespace demux

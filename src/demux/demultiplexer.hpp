@@ -21,6 +21,8 @@
 
 #include <libhutznohmd/demux.hpp>
 
+#include <request/parser_data.hpp>
+
 namespace hutzn
 {
 
@@ -30,6 +32,8 @@ namespace demux
 class demultiplexer : public demux_interface
 {
 public:
+    explicit demultiplexer();
+
     virtual request_handler_callback
     determine_request_handler(const hutzn::request::request_interface& request);
 
@@ -46,6 +50,11 @@ public:
 
     virtual bool
     unregister_mime_subtype(const hutzn::request::mime_subtype& subtype);
+
+    std::shared_ptr<hutzn::request::parser_data> request_parser_data() const;
+
+private:
+    std::shared_ptr<hutzn::request::parser_data> request_parser_data_;
 };
 
 } // namespace demux
