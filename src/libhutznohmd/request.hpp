@@ -171,7 +171,7 @@ Every header field documentation is splitted into three parts:
 expect? Informations on the content.
 - @a Example: A common example on how to use it.
 - @a Default: Which value the server supposes, if the header field is missing.
-- @a Implemented: Since when is it implemented by the library.
+- @a Implementation Status: Since when is it implemented by the library.
 
 
 
@@ -212,7 +212,7 @@ since @c HTTP/1.1:
 Connection: keep-alive
 @endcode
 
-@subsubsection subsub_connection_implemented Implemented:
+@subsubsection subsub_connection_implemented Implementation Status:
 
 unimplemented
 
@@ -237,7 +237,7 @@ Content-Length: 123
 Content-Length: 0
 @endcode
 
-@subsubsection subsub_content_length_implemented Implemented:
+@subsubsection subsub_content_length_implemented Implementation Status:
 
 unimplemented
 
@@ -264,7 +264,7 @@ Content-MD5: Q2hlY2sgSW50ZWdyaXR5IQ==
 Content-MD5:
 @endcode
 
-@subsubsection subsub_content_md5_implemented Implemented:
+@subsubsection subsub_content_md5_implemented Implementation Status:
 
 unimplemented
 
@@ -285,7 +285,7 @@ Content-Type: application/xml
 Content-Type: text/plain
 @endcode
 
-@subsubsection subsub_content_type_implemented Implemented:
+@subsubsection subsub_content_type_implemented Implementation Status:
 
 unimplemented
 
@@ -306,7 +306,7 @@ Date: Wed, 13 May 2014 22:10:48 GMT
 Date: Thu, 01 Jan 1970 00:00:00 GMT
 @endcode
 
-@subsubsection subsub_date_implemented Implemented:
+@subsubsection subsub_date_implemented Implementation Status:
 
 unimplemented
 
@@ -314,13 +314,55 @@ unimplemented
 
 @subsection sub_accept Accept
 
-<td>TBD</td>
-<td><pre>Accept: text/plain</pre></td>
+Defines preferable response representations. The content of this header field is
+a list of MIME types, which are sorted by a q-value (quality). The higher the
+quality value is, the more preferable it is for the server to returns such
+a resource represenation. If no quality value is defined, the highest value of
+1.0 is assumed.
+
+Internally it is getting matched against the available request handler for this
+resource to pick up the most preferable resource representation that is
+available.
+
+@subsubsection subsub_accept_example Example:
+
+@code
+Accept: text/plain;q=0.9,text/html;q=0.1
+@endcode
+
+@subsubsection subsub_accept_default Default:
+
+@code
+Accept: * / *
+@endcode
+
+@subsubsection subsub_accept_implemented Implementation Status:
+
+unimplemented
 
 @subsection sub_expect Expect
 
-<td>TBD</td>
-<td><pre>Expect: 100-continue</pre></td>
+It contains expectations of the client about the response. A server, that does
+not understand the expectation or cannot fulfill it, must respond with the
+error code 417 (Expectation failed).
+
+Currently only the expectation "100-continue" is defined by the standard.
+
+@subsubsection subsub_expect_example Example:
+
+@code
+Expect: 100-continue
+@endcode
+
+@subsubsection subsub_expect_default Default:
+
+@code
+Expect:
+@endcode
+
+@subsubsection subsub_expect_implemented Implementation Status:
+
+unimplemented
 
 @subsection sub_from From
 
@@ -331,6 +373,16 @@ Contains an e-mail address of a human, that controls the requesting user agent.
 @code
 From: user@example.com
 @endcode
+
+@subsubsection subsub_from_default Default:
+
+@code
+From:
+@endcode
+
+@subsubsection subsub_from_implemented Implementation Status:
+
+unimplemented
 
 @subsection sub_host Host
 
@@ -344,47 +396,171 @@ the content may overwrite the content of the request URI.
 Host: example.com
 @endcode
 
+@subsubsection subsub_host_default Default:
+
+@code
+Host:
+@endcode
+
+@subsubsection subsub_host_implemented Implementation Status:
+
+unimplemented
+
 @subsection sub_referer Referer
 
-<td>TBD</td>
-<td><pre>Referer: http://www.example.com/</pre></td>
+Contains the URI, from which the requests URI was obtained from.
+
+@subsubsection subsub_referer_example Example:
+
+@code
+Referer: http://www.example.com/
+@endcode
+
+@subsubsection subsub_referer_default Default:
+
+@code
+Referer:
+@endcode
+
+@subsubsection subsub_referer_implemented Implementation Status:
+
+unimplemented
 
 @subsection sub_user_agent User-Agent
 
-<td>TBD</td>
-<td><pre>User-Agent: Googlebot/2.1 (+http://www.google.com/bot.html)</pre></td>
+Contains informations about the requesting client product.
+
+@subsubsection subsub_user_agent_example Example:
+
+@code
+User-Agent: Googlebot/2.1 (+http://www.google.com/bot.html)
+@endcode
+
+@subsubsection subsub_user_agent_default Default:
+
+@code
+User-Agent:
+@endcode
+
+@subsubsection subsub_user_agent_implemented Implementation Status:
+
+unimplemented
 
 @section sec_basic_response Response-Specific
 
 @subsection sub_allow Allow
 
-<td>TBD</td>
-<td><pre>Allow: GET, HEAD, PUT</pre></td>
+Contains all available methods for the requested resource. This field is
+available in responses with the error code of 405 (Method not allowed).
+
+@subsubsection subsub_allow_example Example:
+
+@code
+Allow: GET, HEAD, PUT
+@endcode
+
+@subsubsection subsub_allow_default Default:
+
+not present
+
+@subsubsection subsub_allow_implemented Implementation Status:
+
+unimplemented
 
 @subsection sub_content_location Content-Location
 
-<td>TBD</td>
-<td><pre>Content-Location: /example</pre></td>
+Points to the original URI of the requested resource. Should be set, when a
+resource is available under different URIs.
+
+@subsubsection subsub_content_location_example Example:
+
+@code
+Content-Location: /example
+@endcode
+
+@subsubsection subsub_content_location_default Default:
+
+not present
+
+@subsubsection subsub_content_location_implemented Implementation Status:
+
+unimplemented
 
 @subsection sub_etag ETag
 
-<td>TBD</td>
-<td><pre>ETag: "0123456789abcdef"</pre></td>
+Contains the current value of the entity tag.
+
+@subsubsection subsub_etag_example Example:
+
+@code
+ETag: "0123456789abcdef"
+@endcode
+
+@subsubsection subsub_etag_default Default:
+
+not present
+
+@subsubsection subsub_etag_implemented Implementation Status:
+
+unimplemented
 
 @subsection sub_location Location
 
-<td>TBD</td>
-<td><pre>Location: http://example.com/example</pre></td>
+Contains the location the client should be guided to. Could contain the URI of a
+created resource or the URI of a moved one.
+
+@subsubsection subsub_location_example Example:
+
+@code
+Location: http://example.com/example
+@endcode
+
+@subsubsection subsub_location_default Default:
+
+not present
+
+@subsubsection subsub_location_implemented Implementation Status:
+
+unimplemented
 
 @subsection sub_retry_after Retry-After
 
-<td>TBD</td>
-<td><pre>Retry-After: 120</pre></td>
+Tells the client, that it should repeat the request later to get a proper
+result.
+
+@subsubsection subsub_retry_after_example Example:
+
+@code
+Retry-After: Fri, 31 Dec 1999 23:59:59 GMT
+Retry-After: 120
+@endcode
+
+@subsubsection subsub_retry_after_default Default:
+
+not present
+
+@subsubsection subsub_retry_after_implemented Implementation Status:
+
+unimplemented
 
 @subsection sub_server Server
 
-<td>TBD</td>
-<td><pre>Server: librest/x.y.z</pre></td>
+Tells the client, which server and version it requests from. This is deactivated
+per default for security reasons.
+
+@subsubsection subsub_server_example Example:
+
+@code
+Server: my_server/1.0.0
+@endcode
+
+@subsubsection subsub_server_default Default:
+
+not present
+
+@subsubsection subsub_server_implemented Implementation Status:
+
+unimplemented
 
 
 
@@ -817,9 +993,16 @@ public:
     //! Returns the fragment of the URL.
     virtual const char* fragment() const = 0;
 
-    //! Returns the used HTTP version. This influences server behaviour (e.g.
+    //! Returns the used HTTP version. This influences server behaviour
+    //(e.g.
     //! connection duration).
     virtual http_version version() const = 0;
+
+    //! Returns the content of any custom header field. Only those, which are
+    //! available by explicit member functions are available. If the header
+    //! field is not present, it returns an empty string. Will never return
+    //! a null-pointer.
+    virtual const char* header_value(const char* const name) const = 0;
 
     //! Returns true, if the connection will be kept after the request is
     //! processed.
