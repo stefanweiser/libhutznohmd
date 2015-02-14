@@ -864,7 +864,7 @@ public:
 
     //! Sets the status code.
     virtual void
-    set_status_code(const hutzn::request::status_code& statusCode) = 0;
+    set_status_code(const hutzn::request::http_status_code& status_code) = 0;
 
     //! Sets the HTTP version.
     virtual void set_version(const hutzn::http::version& version) = 0;

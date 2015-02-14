@@ -38,7 +38,7 @@ TEST(response, set_and_deliver)
 
     response.set_data({'0'});
     response.set_header("Content-Length", "1");
-    response.set_status_code(hutzn::request::status_code::OK);
+    response.set_status_code(hutzn::request::http_status_code::OK);
     response.set_version(version::HTTP_1_1);
 
     EXPECT_CALL(*socket, send(An<const hutzn::buffer&>()))

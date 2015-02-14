@@ -58,7 +58,7 @@ namespace hutzn {
   namespace demux {
     class request_handler_id {
       +path: string
-      +method: verb
+      +method: http_verb
       +type: mime_type
       +subtype: mime_subtype
     }
@@ -67,7 +67,7 @@ namespace hutzn {
 
     interface request_processor_interface {
       +handle_one_request(device: block_device): bool
-      +set_error_handler(reason: status_code, fn): handler
+      +set_error_handler(reason: http_status_code, fn): handler
     }
 
     interface demux_query_interface {
@@ -109,8 +109,8 @@ resource handler requires to define a callback function that must have the
 signature:
 
 @code{.cpp}
-status_code foo(const hutzn::request::request_interface&,
-                const hutzn::request::response_interface&);
+http_status_code foo(const hutzn::request::request_interface&,
+                     const hutzn::request::response_interface&);
 @endcode
 
 Because the registration takes a @c std::function the user has the choice to
@@ -130,11 +130,12 @@ class C
 // ...
 
 public:
-    hutzn::request::status_code foo(const hutzn::request::request_interface&,
-                                    const hutzn::request::response_interface&)
+    hutzn::request::http_status_code
+    foo(const hutzn::request::request_interface&,
+        const hutzn::request::response_interface&)
     {
         // Do something.
-        return hutzn::request::status_code::OK;
+        return hutzn::request::http_status_code::OK;
     }
 
     void error_handler(const hutzn::request::request_interface&,
@@ -150,14 +151,14 @@ void registerHandlers(C* const c,
 {
     hutzn::demux::request_handler_id i{
         "/",
-        hutzn::request::verb::GET,
+        hutzn::request::http_verb::GET,
         hutzn::request::mime_type::WILDCARD,
         hutzn::request::mime_subtype::WILDCARD
     };
 
     using namespace std::placeholders;
     m.connect(i, std::bind(&C::foo, c, _1, _2));
-    r.set_error_handler(hutzn::request::status_code::NOT_FOUND,
+    r.set_error_handler(hutzn::request::http_status_code::NOT_FOUND,
                         std::bind(&C::error_handler, c, _1, _2));
 }
 @endcode
@@ -208,7 +209,7 @@ struct request_handler_id
 
     //! Only GET, PUT, DELETE and POST are allowed verbs here. All other verbs
     //! are reserved for internal usage.
-    hutzn::request::verb method;
+    hutzn::request::http_verb method;
 
     //! All known and registered mime types could be used.
     hutzn::request::mime_type type;
@@ -232,8 +233,8 @@ using handler_pointer = std::shared_ptr<handler_interface>;
 //! Is used when the demultiplexer calls a request handler back in order to get
 //! a response on a request.
 using request_handler_callback = std::function<
-    hutzn::request::status_code(const hutzn::request::request_interface&,
-                                hutzn::request::response_interface&)>;
+    hutzn::request::http_status_code(const hutzn::request::request_interface&,
+                                     hutzn::request::response_interface&)>;
 
 //! Demultiplexes the requests. It is necessary, that no call to this component
 //! blocks its users longer as needed. Any query that currently could not get
@@ -321,7 +322,7 @@ public:
     //! object, which acts as the error handler's lifetime scope. If there is
     //! already one registered, it returns null.
     virtual handler_pointer
-    set_error_handler(const hutzn::request::status_code& code,
+    set_error_handler(const hutzn::request::http_status_code& code,
                       const error_handler_callback& fn) = 0;
 };
 

@@ -62,13 +62,87 @@ this is represented in the request interface.
 @startuml{request_classes.svg}
 namespace hutzn {
   namespace request {
+    enum http_verb {
+      GET
+      PUT
+      DELETE
+      POST
+    }
+
+    enum http_version {
+      HTTP_UNKNOWN
+      HTTP_1_0
+      HTTP_1_1
+      HTTP_2_0
+    }
+
+    enum http_status_code {
+        CONTINUE
+        SWITCHING_PROTOCOLS
+        OK
+        CREATED
+        ACCEPTED
+        NON_AUTHORATIVE_INFORMATION
+        NO_CONTENT
+        MULTIPLE_CHOICES
+        MOVED_PERMANENTLY
+        FOUND
+        SEE_OTHER
+        NOT_MODIFIED
+        USE_PROXY
+        TEMPORARY_REDIRECT
+        BAD_REQUEST
+        UNAUTHORIZED
+        FORBIDDEN
+        NOT_FOUND
+        METHOD_NOT_ALLOWED
+        METHOD_NOT_ACCEPTABLE
+        PROXY_AUTHENTIFICATION_REQUIRED
+        REQUEST_TIMEOUT
+        CONFLICT
+        GONE
+        LENGTH_REQUIRED
+        PRECONDITION_FAILED
+        REQUEST_ENTITY_TOO_LARGE
+        REQUEST_URI_TOO_LONG
+        UNSUPPORTED_MEDIA_TYPE
+        EXPECTATION_FAILED
+        UPGRADE_REQUIRED
+        INTERNAL_SERVER_ERROR
+        NOT_IMPLEMENTED
+        BAD_GATEWAY
+        SERVICE_UNAVAILABLE
+        GATEWAY_TIMEOUT
+        HTTP_VERSION_NOT_SUPPORTED
+    }
+
     interface request_interface {
-      +method(): verb
-      +
+      +method(): http_verb
+      +path(): string
+      +version(): http_version
+      +keeps_connection(): bool
+      +date(): time
+      +content(): buffer
+      +content_length(): size
+      +content_type(in/out handle: pointer): string
     }
 
     interface response_interface {
+      +set_status_code(status_code: http_status_code)
+      +set_version(version: http_version)
+      +set_header(key: string, value: string)
+      +set_content(content: buffer)
     }
+
+    class request
+    class response
+
+    http_version -- request_interface: < uses
+    http_verb -- request_interface: < uses
+    http_version -- response_interface: < uses
+    http_status_code -- response_interface: < uses
+    request_interface <|-- request: implements
+    response_interface <|-- response: implements
   }
 }
 @enduml
@@ -494,6 +568,27 @@ enum class mime_subtype : uint16_t {
     PLAIN = 1
 };
 
+//! Every request is marked with a HTTP version number. The sever has to support
+//! the behaviour of this version.
+enum class http_version : uint8_t {
+    //! The request is of unknown version. A request with that version number
+    //! could be handled as malformed.
+    HTTP_UNKNOWN = 0,
+
+    //! The older version of the HTTP protocol.
+    HTTP_1_0 = 1,
+
+    //! The main difference to version 1.0 is that servers on one IP address can
+    //! host more than one website. The second difference is that persistent
+    //! connection is the default case now and non-persistence must be
+    //! explicitly wished.
+    HTTP_1_1 = 2,
+
+    //! This version is currently unsupported and reserved for the next HTTP
+    //! standard.
+    HTTP_2_0 = 3
+};
+
 //! Every HTTP request has a specific verb. There are two properties to a subset
 //! of methods.
 //!
@@ -504,7 +599,7 @@ enum class mime_subtype : uint16_t {
 //!
 //! The user has to ensure, that this properties are fulfilled. It is not easy
 //! to solve this by a framework or library.
-enum class verb : uint8_t {
+enum class http_verb : uint8_t {
     //! The verb GET is used to retrieve informations from the entity assigned
     //! to the URI. The request must not have side effects.
     GET = 0,
@@ -527,10 +622,10 @@ enum class verb : uint8_t {
 //! status codes to extend this enumeration:
 //!
 //! @code
-//! constexpr hutzn::request::status_code xy =
-//!     static_cast<hutzn::request::status_code>(111);
+//! constexpr hutzn::request::http_status_code xy =
+//!     static_cast<hutzn::request::http_status_code>(111);
 //! @endcode
-enum class status_code : uint16_t {
+enum class http_status_code : uint16_t {
     //! Since HTTP/1.1
     //! Used when dividing a request into several parts. After responding this
     //! code the client shall send more data of the request.
