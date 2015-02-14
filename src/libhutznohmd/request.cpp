@@ -24,6 +24,14 @@ namespace hutzn
 namespace request
 {
 
+request_interface::~request_interface()
+{
+}
+
+response_interface::~response_interface()
+{
+}
+
 } // namespace request
 
 } // namespace hutzn

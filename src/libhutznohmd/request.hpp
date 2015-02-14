@@ -124,7 +124,8 @@ namespace hutzn {
       +date(): time
       +content(): buffer
       +content_length(): size
-      +content_type(in/out handle: pointer): string
+      +content_type(): string
+      +accept(in/out handle: pointer): string
     }
 
     interface response_interface {
@@ -537,35 +538,43 @@ namespace request
 
 //! The MIME-Type consists of a group of subtypes.
 enum class mime_type : uint8_t {
+    //! The type is invalid. The implementation should reject the request or
+    //! response.
+    INVALID = 0,
+
     //! The character *. Used to catch all types or declaring that the subtype
     //! is not of interest.
-    WILDCARD = 0,
+    WILDCARD = 1,
 
     //! "application"
-    APPLICATION = 1,
+    APPLICATION = 2,
 
     //! "audio"
-    AUDIO = 2,
+    AUDIO = 3,
 
     //! "image"
-    IMAGE = 3,
+    IMAGE = 4,
 
     //! "text"
-    TEXT = 4,
+    TEXT = 5,
 
     //! "video"
-    VIDEO = 5
+    VIDEO = 6
 };
 
 //! The subtype of a MIME-Type defines the concrete format of the
 //! representation.
 enum class mime_subtype : uint16_t {
+    //! The subtype is invalid. The implementation should reject the request or
+    //! response.
+    INVALID = 0,
+
     //! The character *. Used to catch all subtypes or declaring that the
     //! subtype is not of interest.
-    WILDCARD = 0,
+    WILDCARD = 1,
 
     //! "plain" means, that the content is not in any specific format.
-    PLAIN = 1
+    PLAIN = 2
 };
 
 //! Every request is marked with a HTTP version number. The sever has to support
@@ -619,9 +628,10 @@ enum class http_verb : uint8_t {
 
 //! A request is answered with a response. These responses carry a status code
 //! to tell the client the request result. The user is able to define custom
-//! status codes to extend this enumeration:
+//! status codes to extend this enumeration. Be aware, that there is no
+//! "speaking" status code in the response in that case:
 //!
-//! @code
+//! @code{.cpp}
 //! constexpr hutzn::request::http_status_code xy =
 //!     static_cast<hutzn::request::http_status_code>(111);
 //! @endcode
@@ -762,8 +772,85 @@ enum class http_status_code : uint16_t {
     HTTP_VERSION_NOT_SUPPORTED = 505
 };
 
-class request_interface;
-class response_interface;
+class request_interface
+{
+public:
+    virtual ~request_interface();
+
+    //! Returns the HTTP verb used by the request (GET, PUT, DELETE or POST are
+    //! allowed).
+    virtual http_verb method() const = 0;
+
+    //! The used URL without scheme, authorization, host, port, queries or
+    //! fragment.
+    virtual std::string path() const = 0;
+
+    //! The host name used by the request client. This is currently just
+    //! an information.
+    virtual std::string host() const = 0;
+
+    //! Returns a value of a key, that is in the query part of the URL.
+    virtual std::string query(const std::string& key) const = 0;
+
+    //! Returns the fragment of the URL.
+    virtual std::string fragment() const = 0;
+
+    //! Returns the used HTTP version. This influences server behaviour (e.g.
+    //! connection duration).
+    virtual http_version version() const = 0;
+
+    //! Returns true, if the connection will be kept after the request is
+    //! processed.
+    virtual bool keeps_connection() const = 0;
+
+    //! Returns the timestamp of the request (date header) as epoch time or 0
+    //! if the header field does not exist.
+    virtual time_t date() const = 0;
+
+    //! Returns a pointer to the begin of the content in the buffer. This data
+    //! buffer is @b not null-terminated and has the length of the
+    //! content-length header field. If there is no content it returns nullptr.
+    virtual void* content() const = 0;
+
+    //! Returns the length of the buffer returned by
+    //! @ref hutzn::request::request_interface::content(). If there is no
+    //! content it returns 0.
+    virtual size_t content_length() const = 0;
+
+    //! Returns the MIME type and subtype of the content if existing. Returns
+    //! invalid type and subtype if no content exists.
+    virtual std::tuple<mime_type, mime_subtype> content_type() const = 0;
+
+    //! Gives its user access to a list of MIME types and subtype in the accept
+    //! header. To get the first item, you have to initialize the handle with a
+    //! nullptr. The handle will point to the current item after each call. To
+    //! get the next item just recall it. The function returns false, if the end
+    //! of the list is reached and true in any other case. Till the end of the
+    //! function is reached, the parameters are getting modified by the call.
+    //!
+    //! @code{.cpp}
+    //! void* handle = nullptr;
+    //! hutzn::request::mime_type type;
+    //! hutzn::request::mime_subtype subtype;
+    //! while (true == request->accept(handle, type, subtype)) {
+    //!     // Do some fancy stuff.
+    //! }
+    //! @endcode
+    virtual bool accept(void*& handle, mime_type& type,
+                        mime_subtype& subtype) const = 0;
+};
+
+class response_interface
+{
+public:
+    virtual ~response_interface();
+
+    virtual bool set_status_code(const http_status_code& status_code) = 0;
+    virtual bool set_version(const http_version& version) = 0;
+    virtual bool set_header(const std::string& key,
+                            const std::string& value) = 0;
+    virtual bool set_content(const hutzn::buffer& content) = 0;
+};
 
 } // namespace request
 
