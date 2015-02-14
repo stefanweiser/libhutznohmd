@@ -37,6 +37,70 @@ TEST(mime_data, initialization)
     EXPECT_EQ(t.parse_type("ABC"), mime_type::INVALID);
 }
 
+TEST(mime_data, registering_unregistering)
+{
+    mime_data<mime_type, uint8_t> t;
+    mime_type type = t.register_type("abc");
+    EXPECT_NE(type, mime_type::INVALID);
+    EXPECT_TRUE(t.unregister_type(type));
+}
+
+TEST(mime_data, double_registering)
+{
+    mime_data<mime_type, uint8_t> t;
+    mime_type type1 = t.register_type("abc");
+    mime_type type2 = t.register_type("abc");
+    EXPECT_NE(type1, mime_type::INVALID);
+    EXPECT_EQ(type2, mime_type::INVALID);
+    EXPECT_TRUE(t.unregister_type(type1));
+    EXPECT_FALSE(t.unregister_type(type2));
+}
+
+TEST(mime_data, double_registering_case_sensitive)
+{
+    mime_data<mime_type, uint8_t> t;
+    mime_type type1 = t.register_type("abc");
+    mime_type type2 = t.register_type("ABC");
+    EXPECT_NE(type1, mime_type::INVALID);
+    EXPECT_EQ(type2, mime_type::INVALID);
+    EXPECT_TRUE(t.unregister_type(type1));
+    EXPECT_FALSE(t.unregister_type(type2));
+}
+
+TEST(mime_data, parse_type_successful)
+{
+    mime_data<mime_type, uint8_t> t;
+    mime_type type = t.register_type("abc");
+    EXPECT_NE(type, mime_type::INVALID);
+    EXPECT_EQ(t.parse_type("abc"), type);
+    EXPECT_EQ(t.parse_type("abcdef"), type);
+    EXPECT_TRUE(t.unregister_type(type));
+}
+
+TEST(mime_data, parse_type_successful_case_sensitive)
+{
+    mime_data<mime_type, uint8_t> t;
+    mime_type type = t.register_type("abc");
+    EXPECT_NE(type, mime_type::INVALID);
+    EXPECT_EQ(t.parse_type("Abc"), type);
+    EXPECT_EQ(t.parse_type("aBc"), type);
+    EXPECT_EQ(t.parse_type("abC"), type);
+    EXPECT_EQ(t.parse_type("ABc"), type);
+    EXPECT_EQ(t.parse_type("aBC"), type);
+    EXPECT_EQ(t.parse_type("AbC"), type);
+    EXPECT_EQ(t.parse_type("ABC"), type);
+    EXPECT_TRUE(t.unregister_type(type));
+}
+
+TEST(mime_data, parse_type_failure)
+{
+    mime_data<mime_type, uint8_t> t;
+    mime_type type = t.register_type("abc");
+    EXPECT_NE(type, mime_type::INVALID);
+    EXPECT_EQ(t.parse_type("xyzabcdef"), mime_type::INVALID);
+    EXPECT_TRUE(t.unregister_type(type));
+}
+
 } // namespace request
 
 } // namespace hutzn
