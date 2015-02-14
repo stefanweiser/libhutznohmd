@@ -22,7 +22,7 @@
 namespace hutzn
 {
 
-template <typename type, type lower_bound, type upper_bound>
+template <typename type, const type lower_bound, const type upper_bound>
 bool check_range(const type& value)
 {
     static_assert(lower_bound <= upper_bound,
