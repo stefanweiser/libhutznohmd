@@ -75,43 +75,48 @@ namespace hutzn {
     }
 
     enum http_status_code {
-        CONTINUE
-        SWITCHING_PROTOCOLS
-        OK
-        CREATED
-        ACCEPTED
-        NON_AUTHORATIVE_INFORMATION
-        NO_CONTENT
-        MULTIPLE_CHOICES
-        MOVED_PERMANENTLY
-        FOUND
-        SEE_OTHER
-        NOT_MODIFIED
-        USE_PROXY
-        TEMPORARY_REDIRECT
-        BAD_REQUEST
-        UNAUTHORIZED
-        FORBIDDEN
-        NOT_FOUND
-        METHOD_NOT_ALLOWED
-        METHOD_NOT_ACCEPTABLE
-        PROXY_AUTHENTIFICATION_REQUIRED
-        REQUEST_TIMEOUT
-        CONFLICT
-        GONE
-        LENGTH_REQUIRED
-        PRECONDITION_FAILED
-        REQUEST_ENTITY_TOO_LARGE
-        REQUEST_URI_TOO_LONG
-        UNSUPPORTED_MEDIA_TYPE
-        EXPECTATION_FAILED
-        UPGRADE_REQUIRED
-        INTERNAL_SERVER_ERROR
-        NOT_IMPLEMENTED
-        BAD_GATEWAY
-        SERVICE_UNAVAILABLE
-        GATEWAY_TIMEOUT
-        HTTP_VERSION_NOT_SUPPORTED
+      CONTINUE
+      SWITCHING_PROTOCOLS
+      OK
+      CREATED
+      ACCEPTED
+      NON_AUTHORATIVE_INFORMATION
+      NO_CONTENT
+      MULTIPLE_CHOICES
+      MOVED_PERMANENTLY
+      FOUND
+      SEE_OTHER
+      NOT_MODIFIED
+      USE_PROXY
+      TEMPORARY_REDIRECT
+      BAD_REQUEST
+      UNAUTHORIZED
+      FORBIDDEN
+      NOT_FOUND
+      METHOD_NOT_ALLOWED
+      METHOD_NOT_ACCEPTABLE
+      PROXY_AUTHENTIFICATION_REQUIRED
+      REQUEST_TIMEOUT
+      CONFLICT
+      GONE
+      LENGTH_REQUIRED
+      PRECONDITION_FAILED
+      REQUEST_ENTITY_TOO_LARGE
+      REQUEST_URI_TOO_LONG
+      UNSUPPORTED_MEDIA_TYPE
+      EXPECTATION_FAILED
+      UPGRADE_REQUIRED
+      INTERNAL_SERVER_ERROR
+      NOT_IMPLEMENTED
+      BAD_GATEWAY
+      SERVICE_UNAVAILABLE
+      GATEWAY_TIMEOUT
+      HTTP_VERSION_NOT_SUPPORTED
+    }
+
+    enum http_status_code {
+      UNKNOWN
+      CONTINUE
     }
 
     interface request_interface {
@@ -142,6 +147,7 @@ namespace hutzn {
 
     http_version -- request_interface: < uses
     http_verb -- request_interface: < uses
+    http_expectation -- request_interface: < uses
     http_version -- response_interface: < uses
     http_status_code -- response_interface: < uses
     request_interface <|-- request: implements
