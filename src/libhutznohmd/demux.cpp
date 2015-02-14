@@ -24,7 +24,11 @@ namespace hutzn
 namespace demux
 {
 
-request_processor_interface::~request_processor_interface()
+demux_query_interface::~demux_query_interface()
+{
+}
+
+demux_interface::~demux_interface()
 {
 }
 
@@ -32,7 +36,7 @@ handler_interface::~handler_interface()
 {
 }
 
-demux_query_interface::~demux_query_interface()
+request_processor_interface::~request_processor_interface()
 {
 }
 

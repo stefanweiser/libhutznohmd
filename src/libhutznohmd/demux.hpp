@@ -262,6 +262,9 @@ using demux_query_pointer = std::shared_ptr<demux_query_interface>;
 class demux_interface : public demux_query_interface
 {
 public:
+    //! Do not destroy the demultiplexer while performing any operation on it.
+    virtual ~demux_interface();
+
     //! Connects a request handler to a resource. Returns a handler object,
     //! which acts as lifetime scope of the request handler.
     virtual handler_pointer connect(const request_handler_id& id,
