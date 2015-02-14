@@ -55,6 +55,12 @@ public:
     {
     }
 
+    std::tuple<bool, value_type> find(const char* const string,
+                                      const size_t max_length) const
+    {
+        return find(root_node_, string, max_length);
+    }
+
     bool insert(const char* string, const value_type& value)
     {
         return insert(root_node_, string, value);
@@ -68,6 +74,28 @@ public:
 private:
     using trie_node_ = detail::trie_node<value_type>;
 
+    std::tuple<bool, value_type> find(const trie_node_& node,
+                                      const char* const string,
+                                      const size_t characters_remaining) const
+    {
+        if (0 == characters_remaining) {
+            return std::make_tuple(node.has_value_, node.value_);
+        }
+
+        std::tuple<bool, value_type> result;
+
+        const std::unique_ptr<trie_node_>& child =
+            node.children_[static_cast<uint8_t>(*string)];
+        if (child) {
+            result = find(*child, string + 1, characters_remaining - 1);
+        }
+
+        if (false == std::get<0>(result)) {
+            return std::make_tuple(node.has_value_, node.value_);
+        }
+        return result;
+    }
+
     trie_node_& get_or_create_child(trie_node_& curr, const uint8_t c)
     {
         if (!curr.children_[c]) {
@@ -80,7 +108,7 @@ private:
     bool insert(trie_node_& curr, const char* string, const value_type& value)
     {
         const uint8_t c = static_cast<uint8_t>(*string);
-        if (c == '\0') {
+        if (c == 0) {
 
             // Check if node is already possessed.
             if (true == curr.has_value_) {
@@ -93,7 +121,7 @@ private:
         } else {
 
             if (false ==
-                insert(get_or_create_child(curr, c), string++, value)) {
+                insert(get_or_create_child(curr, c), string + 1, value)) {
                 return false;
             }
 
@@ -101,14 +129,14 @@ private:
                 if (true == check_range<uint8_t, 'a', 'z'>(c)) {
 
                     if (false == insert(get_or_create_child(curr, c & 0xDFU),
-                                        string++, value)) {
+                                        string + 1, value)) {
                         return false;
                     }
 
                 } else if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
 
                     if (false == insert(get_or_create_child(curr, c | 0x20U),
-                                        string++, value)) {
+                                        string + 1, value)) {
                         return false;
                     }
                 }
@@ -121,7 +149,7 @@ private:
     bool erase(trie_node_& curr, const char* string)
     {
         const uint8_t c = static_cast<uint8_t>(*string);
-        if (c == '\0') {
+        if (c == 0) {
 
             // Check if node is not possessed.
             if (false == curr.has_value_) {
@@ -133,7 +161,7 @@ private:
         } else {
 
             std::unique_ptr<trie_node_>& child = curr.children_[c];
-            if (!child || (false == erase(*child, string++))) {
+            if (!child || (false == erase(*child, string + 1))) {
                 return false;
             }
 
@@ -147,7 +175,7 @@ private:
                     std::unique_ptr<trie_node_>& other_child =
                         curr.children_[c & 0xDFU];
                     if (!other_child ||
-                        (false == erase(*other_child, string++))) {
+                        (false == erase(*other_child, string + 1))) {
                         return false;
                     }
 
@@ -161,7 +189,7 @@ private:
                     std::unique_ptr<trie_node_>& other_child =
                         curr.children_[c | 0x20U];
                     if (!other_child ||
-                        (false == erase(*other_child, string++))) {
+                        (false == erase(*other_child, string + 1))) {
                         return false;
                     }
 
@@ -177,7 +205,7 @@ private:
     }
 
     const bool is_case_insensitive_;
-    detail::trie_node<value_type> root_node_;
+    trie_node_ root_node_;
 };
 
 } // namespace hutzn
