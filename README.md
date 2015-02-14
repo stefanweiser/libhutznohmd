@@ -3,7 +3,7 @@ implementing it according to the principles of the
 [Representational State Transfer]
 (http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm "Roy Thomas
 Fieldings dissertation") architectural style by providing easy to use, reliable,
-robust, scalable and well tested functionality.
+robust, well tested and (scalable) functionality.
 
 Build
 -----

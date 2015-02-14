@@ -43,7 +43,7 @@ implementing it according to the principles of the
 [Representational State Transfer]
 (http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm "Roy Thomas
 Fieldings dissertation") architectural style by providing easy to use, reliable,
-robust, scalable and well tested functionality.
+robust, well tested and (scalable) functionality.
 
 @section sec_general_information General Information
 
@@ -279,17 +279,8 @@ These links may help you to get started developing the library:
 @section sec_principles Development Principles
 
 To reach a homogenous code base, it is indispensable to have some principles
-about working with the code.
-
-I spent much time on porting and maintaining code of software dinosaurs and
-therefore reengineering the meaning of it. Often I chose to rewrite it component
-by component, because the original code is somewhat bloated. Sometimes I got
-tired of fixing or removing the one-thousand-and-first idea of slightly
-improving the performance at the expense of a massively higher risk of raising
-maintenance costs, where another improvement would serve the same purpose, but
-more reliable.
-
-However, here are some principles, that are essential for this library:
+about working with the code. Here are some principles, that are essential for
+this library:
 
 - @b KISS: The code has to be as simple as possible. Any non-intuitive solution
 for a problem should be refactored or at least documented.
@@ -322,6 +313,7 @@ For documentation:
 - @b doxygen >= 1.8.8
 - @b dot >= 2.26
 - @b java >= 1.6
+- A network connection to download PlantUML.
 
 For coverage:
 - @b gcov >= 4.8
