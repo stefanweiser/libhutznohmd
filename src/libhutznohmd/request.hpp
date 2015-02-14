@@ -156,24 +156,23 @@ namespace hutzn {
 }
 @enduml
 
-All the headers defined by the current HTTP standard are listed. Every header
-field documentation is splitted into three parts:
+A part of all headers defined by the current HTTP standard are listed. Every
+header field documentation is splitted into three parts:
 - @a Description: What and how does it influence the system? What can you
 expect? Informations on the content.
 - @a Example: A common example on how to use it.
 - @a Default: Which value the server supposes, if the header field is missing.
 - @a Implementation @a Status: Since when is it implemented by the library.
 
-@section sec_basic_both_directions Both Directions
+@section sec_basic_request_and_response Request- and Response-Specific
 
 @subsection sub_content_length Content-Length
 
-The header field of the @c Content-Length must be added by the client in
-requests, if the request carries any payload data. The server will add this
-header field, if the payload data of the response is not empty. It must then
-contain the size of the payload in bytes. Thus it must be an unsigned integer.
-The size is limited to \f$2^{31}-1\f$. In case of an overflow the request is
-getting invalid and rejected.
+The header field of the @c Content-Length must be set on any request or
+response, that takes content. It must then contain the size of the content in
+bytes. Thus it must be an unsigned integer. The size is limited to
+\f$2^{31}-1\f$. In case of an overflow the request is getting invalid and
+rejected.
 
 The content length could be retrieved by @ref
 hutzn::request::request_interface::content_length and is set on a response
@@ -217,9 +216,7 @@ Content-MD5: Q2hlY2sgSW50ZWdyaXR5IQ==
 
 @subsubsection subsub_content_md5_default Default:
 
-@code
-Content-MD5:
-@endcode
+not present
 
 @subsubsection subsub_content_md5_implemented Implementation Status:
 
@@ -230,7 +227,7 @@ unimplemented
 A content type header defines how the application should interpret the content.
 It consists of a MIME type. The request processor use this header field to
 select the right request handler. The response also takes a content type. These
-types are set automatically by the request processor.
+types are set and used automatically by the request processor.
 
 @subsubsection subsub_content_type_example Example:
 
@@ -303,13 +300,13 @@ unimplemented
 
 @subsection sub_connection Connection
 
-Determines, what to do with the connection after the request is finished. Two
-values are possible: @c close and @c keep-alive.
+Determines, what to do with the connection after the request is finished. There
+is only one possible value: @c close.
 
-In case of @c close the connection will be closed after the response is sent and
-in case of @c keep-alive the connection will be kept open until the client
-closes the connection or a predefined time duration elapsed without activity on
-the connection.
+In case of @c close the connection will be closed after the response is sent.
+This was the default behaviour on @c HTTP/1.0. Default on @c HTTP/1.1 is now to
+keep the connection alive till the client closes the connection or a predefined
+time elapsed without activity on the connection.
 
 This time duration can be configured for the request processor in its factory
 function @ref hutzn::demux::make_request_processor. It shall be deemed to be a
@@ -319,20 +316,16 @@ closed. See @ref sec_lifetime_connection for more information.
 @subsubsection subsub_connection_example Example:
 
 @code
-Connection: keep-alive
+Connection: close
 @endcode
 
 @subsubsection subsub_connection_default Default:
 
 till @c HTTP/1.0:
-@code
-Connection: close
-@endcode
+not present, closes the connection immediately
 
 since @c HTTP/1.1:
-@code
-Connection: keep-alive
-@endcode
+not present, keeps the connection open till client closes or timeout
 
 @subsubsection subsub_connection_implemented Implementation Status:
 
@@ -340,9 +333,9 @@ unimplemented
 
 @subsection sub_expect Expect
 
-It contains expectations of the client about the response. If the server does
-not understand the expectation or cannot fulfill it, it will respond with the
-error code 417 (Expectation failed).
+Contains expectations of the client about the response. If the server does not
+understand the expectation or cannot fulfill it, it will respond with the error
+code 417 (Expectation failed).
 
 Currently only the expectation "100-continue" is defined. It is used to check
 validity of the request header before sending the payload data. This propably
@@ -356,9 +349,7 @@ Expect: 100-continue
 
 @subsubsection subsub_expect_default Default:
 
-@code
-Expect:
-@endcode
+not present
 
 @subsubsection subsub_expect_implemented Implementation Status:
 
@@ -376,9 +367,7 @@ From: user@example.com
 
 @subsubsection subsub_from_default Default:
 
-@code
-From:
-@endcode
+not present
 
 @subsubsection subsub_from_implemented Implementation Status:
 
@@ -398,9 +387,7 @@ Host: example.com
 
 @subsubsection subsub_host_default Default:
 
-@code
-Host:
-@endcode
+not present
 
 @subsubsection subsub_host_implemented Implementation Status:
 
@@ -408,7 +395,7 @@ unimplemented
 
 @subsection sub_referer Referer
 
-Contains the URI, from which the requests URI was obtained from.
+Contains the URI, from which the request URI was obtained from.
 
 @subsubsection subsub_referer_example Example:
 
@@ -418,9 +405,7 @@ Referer: http://www.example.com/
 
 @subsubsection subsub_referer_default Default:
 
-@code
-Referer:
-@endcode
+not present
 
 @subsubsection subsub_referer_implemented Implementation Status:
 

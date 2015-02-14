@@ -44,7 +44,7 @@ NOTE: This definitions are getting used in later versions.
 
 @page page_encoding Encoding
 
-@section sec_encoding_both_directions Both Directions
+@section sec_encoding_request_and_response Request- and Response-Specific
 
 @subsection sub_content_encoding Content-Encoding
 
@@ -95,7 +95,7 @@ NOTE: This definitions are getting used in later versions.
 
 @page page_caching Caching
 
-@section sec_caching_both_directions Both Directions
+@section sec_caching_request_and_response Request- and Response-Specific
 
 @subsection sub_cache_control Cache-Control
 
