@@ -29,30 +29,34 @@ namespace hutzn
 TEST(dynamic_trie, initial_trie_node)
 {
     trie<int> t = trie<int>(false);
-    EXPECT_EQ(t.find("abc", 3), std::make_tuple(false, 0));
+    static const std::string str1 = "abc";
+    EXPECT_EQ(t.find(str1.c_str(), 3), std::make_tuple(0, 0));
 }
 
 TEST(dynamic_trie, insert_and_remove_node)
 {
     trie<int> t = trie<int>(false);
-    EXPECT_TRUE(t.insert("abc", 1));
+    static const std::string str1 = "abc";
+    EXPECT_TRUE(t.insert(str1.c_str(), 1));
     EXPECT_FALSE(t.erase("ab"));
     EXPECT_FALSE(t.erase("abcd"));
-    EXPECT_TRUE(t.erase("abc"));
-    EXPECT_EQ(t.find("abc", 3), std::make_tuple(false, 0));
+    EXPECT_TRUE(t.erase(str1.c_str()));
+    EXPECT_EQ(t.find(str1.c_str(), 3), std::make_tuple(0, 0));
 }
 
 TEST(dynamic_trie, find_divergent_strings)
 {
     trie<int> t = trie<int>(false);
-    EXPECT_TRUE(t.insert("abc", 1));
-    EXPECT_TRUE(t.insert("def", 2));
-    EXPECT_EQ(t.find("abc", 3), std::make_tuple(true, 1));
-    EXPECT_EQ(t.find("abcd", 4), std::make_tuple(true, 1));
-    EXPECT_EQ(t.find("abcdef", 6), std::make_tuple(true, 1));
-    EXPECT_EQ(t.find("def", 3), std::make_tuple(true, 2));
-    EXPECT_EQ(t.find("defg", 4), std::make_tuple(true, 2));
-    EXPECT_EQ(t.find("defgh", 6), std::make_tuple(true, 2));
+    static const std::string str1 = "abc";
+    static const std::string str2 = "def";
+    EXPECT_TRUE(t.insert(str1.c_str(), 1));
+    EXPECT_TRUE(t.insert(str2.c_str(), 2));
+    EXPECT_EQ(t.find("abc", 3), std::make_tuple(str1.length(), 1));
+    EXPECT_EQ(t.find("abcd", 4), std::make_tuple(str1.length(), 1));
+    EXPECT_EQ(t.find("abcdef", 6), std::make_tuple(str1.length(), 1));
+    EXPECT_EQ(t.find("def", 3), std::make_tuple(str2.length(), 2));
+    EXPECT_EQ(t.find("defg", 4), std::make_tuple(str2.length(), 2));
+    EXPECT_EQ(t.find("defgh", 6), std::make_tuple(str2.length(), 2));
     EXPECT_FALSE(t.erase("abcdef"));
     EXPECT_TRUE(t.erase("abc"));
     EXPECT_FALSE(t.erase("defghi"));
@@ -62,62 +66,69 @@ TEST(dynamic_trie, find_divergent_strings)
 TEST(dynamic_trie, reinsert)
 {
     trie<int> t = trie<int>(false);
-    EXPECT_TRUE(t.insert("abc", 1));
-    EXPECT_FALSE(t.insert("abc", 1));
-    EXPECT_TRUE(t.erase("abc"));
-    EXPECT_FALSE(t.erase("abc"));
+    static const std::string str1 = "abc";
+    EXPECT_TRUE(t.insert(str1.c_str(), 1));
+    EXPECT_FALSE(t.insert(str1.c_str(), 1));
+    EXPECT_TRUE(t.erase(str1.c_str()));
+    EXPECT_FALSE(t.erase(str1.c_str()));
 }
 
 TEST(dynamic_trie, find_part_strings)
 {
     trie<int> t = trie<int>(false);
-    EXPECT_TRUE(t.insert("abc", 1));
-    EXPECT_TRUE(t.insert("abcdef", 2));
-    EXPECT_EQ(t.find("abc", 3), std::make_tuple(true, 1));
-    EXPECT_EQ(t.find("abcd", 4), std::make_tuple(true, 1));
-    EXPECT_EQ(t.find("abcdef", 6), std::make_tuple(true, 2));
-    EXPECT_EQ(t.find("abcdefgh", 8), std::make_tuple(true, 2));
-    EXPECT_TRUE(t.erase("abc"));
-    EXPECT_TRUE(t.erase("abcdef"));
+    static const std::string str1 = "abc";
+    static const std::string str2 = "abcdef";
+    EXPECT_TRUE(t.insert(str1.c_str(), 1));
+    EXPECT_TRUE(t.insert(str2.c_str(), 2));
+    EXPECT_EQ(t.find("abc", 3), std::make_tuple(str1.length(), 1));
+    EXPECT_EQ(t.find("abcd", 4), std::make_tuple(str1.length(), 1));
+    EXPECT_EQ(t.find("abcdef", 6), std::make_tuple(str2.length(), 2));
+    EXPECT_EQ(t.find("abcdefgh", 8), std::make_tuple(str2.length(), 2));
+    EXPECT_TRUE(t.erase(str1.c_str()));
+    EXPECT_TRUE(t.erase(str2.c_str()));
 }
 
 TEST(dynamic_trie, case_sensitive_reinsert)
 {
     trie<int> t = trie<int>(true);
-    EXPECT_TRUE(t.insert("abc", 1));
-    EXPECT_FALSE(t.insert("ABC", 2));
-    EXPECT_TRUE(t.erase("ABC"));
-    EXPECT_FALSE(t.erase("abc"));
+    static const std::string str1 = "abc";
+    static const std::string str2 = "ABC";
+    EXPECT_TRUE(t.insert(str1.c_str(), 1));
+    EXPECT_FALSE(t.insert(str2.c_str(), 2));
+    EXPECT_TRUE(t.erase(str2.c_str()));
+    EXPECT_FALSE(t.erase(str1.c_str()));
 }
 
 TEST(dynamic_trie, case_sensitive_find)
 {
     trie<int> t = trie<int>(true);
-    EXPECT_TRUE(t.insert("abc", 1));
-    EXPECT_EQ(t.find("abc", 3), std::make_tuple(true, 1));
-    EXPECT_EQ(t.find("Abc", 3), std::make_tuple(true, 1));
-    EXPECT_EQ(t.find("aBc", 3), std::make_tuple(true, 1));
-    EXPECT_EQ(t.find("abC", 3), std::make_tuple(true, 1));
-    EXPECT_EQ(t.find("aBC", 3), std::make_tuple(true, 1));
-    EXPECT_EQ(t.find("AbC", 3), std::make_tuple(true, 1));
-    EXPECT_EQ(t.find("ABc", 3), std::make_tuple(true, 1));
-    EXPECT_EQ(t.find("ABC", 3), std::make_tuple(true, 1));
-    EXPECT_TRUE(t.erase("abc"));
+    static const std::string str1 = "abc";
+    EXPECT_TRUE(t.insert(str1.c_str(), 1));
+    EXPECT_EQ(t.find("abc", 3), std::make_tuple(str1.length(), 1));
+    EXPECT_EQ(t.find("Abc", 3), std::make_tuple(str1.length(), 1));
+    EXPECT_EQ(t.find("aBc", 3), std::make_tuple(str1.length(), 1));
+    EXPECT_EQ(t.find("abC", 3), std::make_tuple(str1.length(), 1));
+    EXPECT_EQ(t.find("aBC", 3), std::make_tuple(str1.length(), 1));
+    EXPECT_EQ(t.find("AbC", 3), std::make_tuple(str1.length(), 1));
+    EXPECT_EQ(t.find("ABc", 3), std::make_tuple(str1.length(), 1));
+    EXPECT_EQ(t.find("ABC", 3), std::make_tuple(str1.length(), 1));
+    EXPECT_TRUE(t.erase(str1.c_str()));
 }
 
 TEST(dynamic_trie, case_sensitive_special_characters)
 {
     trie<int> t = trie<int>(true);
-    EXPECT_TRUE(t.insert("a b c", 1));
-    EXPECT_EQ(t.find("a b c", 5), std::make_tuple(true, 1));
-    EXPECT_EQ(t.find("A b c", 5), std::make_tuple(true, 1));
-    EXPECT_EQ(t.find("a B c", 5), std::make_tuple(true, 1));
-    EXPECT_EQ(t.find("a b C", 5), std::make_tuple(true, 1));
-    EXPECT_EQ(t.find("a B C", 5), std::make_tuple(true, 1));
-    EXPECT_EQ(t.find("A b C", 5), std::make_tuple(true, 1));
-    EXPECT_EQ(t.find("A B c", 5), std::make_tuple(true, 1));
-    EXPECT_EQ(t.find("A B C", 5), std::make_tuple(true, 1));
-    EXPECT_TRUE(t.erase("a b c"));
+    static const std::string str1 = "a b c";
+    EXPECT_TRUE(t.insert(str1.c_str(), 1));
+    EXPECT_EQ(t.find("a b c", 5), std::make_tuple(str1.length(), 1));
+    EXPECT_EQ(t.find("A b c", 5), std::make_tuple(str1.length(), 1));
+    EXPECT_EQ(t.find("a B c", 5), std::make_tuple(str1.length(), 1));
+    EXPECT_EQ(t.find("a b C", 5), std::make_tuple(str1.length(), 1));
+    EXPECT_EQ(t.find("a B C", 5), std::make_tuple(str1.length(), 1));
+    EXPECT_EQ(t.find("A b C", 5), std::make_tuple(str1.length(), 1));
+    EXPECT_EQ(t.find("A B c", 5), std::make_tuple(str1.length(), 1));
+    EXPECT_EQ(t.find("A B C", 5), std::make_tuple(str1.length(), 1));
+    EXPECT_TRUE(t.erase(str1.c_str()));
 }
 
 } // namespace hutzn

@@ -74,11 +74,11 @@ public:
 
     value_type parse_type(const std::string& string)
     {
-        bool success;
+        size_t bytes_read;
         value_type result;
-        std::tie(success, result) =
+        std::tie(bytes_read, result) =
             types_.find(string.c_str(), string.length());
-        if (true == success) {
+        if (bytes_read > 0) {
             return result;
         }
         return value_type::INVALID;

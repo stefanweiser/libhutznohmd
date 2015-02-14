@@ -49,6 +49,8 @@ template <typename value_type>
 class trie
 {
 public:
+    using find_result_type = std::tuple<size_t, value_type>;
+
     static_assert(sizeof(uint8_t) == sizeof(char),
                   "The trie implementation need a char type that has 8 bits or "
                   "it would compromise some type convertions.");
@@ -59,10 +61,10 @@ public:
     {
     }
 
-    std::tuple<bool, value_type> find(const char* const string,
-                                      const size_t max_length) const
+    find_result_type find(const char* const string,
+                          const size_t max_length) const
     {
-        return find(root_node_, string, max_length);
+        return find(root_node_, string, string, max_length);
     }
 
     bool insert(const char* string, const value_type& value)
@@ -78,24 +80,35 @@ public:
 private:
     using trie_node_ = detail::trie_node<value_type>;
 
-    std::tuple<bool, value_type> find(const trie_node_& node,
-                                      const char* const string,
-                                      const size_t characters_remaining) const
+    find_result_type generateFindResult(const trie_node_& node,
+                                        const char* const original_string,
+                                        const char* const string) const
+    {
+        const size_t used_chars =
+            node.has_value_ ? static_cast<size_t>(string - original_string) : 0;
+        return std::make_tuple(used_chars, node.value_);
+    }
+
+    find_result_type find(const trie_node_& node,
+                          const char* const original_string,
+                          const char* const string,
+                          const size_t characters_remaining) const
     {
         if (0 == characters_remaining) {
-            return std::make_tuple(node.has_value_, node.value_);
+            return generateFindResult(node, original_string, string);
         }
 
-        std::tuple<bool, value_type> result;
+        find_result_type result;
 
         const std::unique_ptr<trie_node_>& child =
             node.children_[static_cast<uint8_t>(*string)];
         if (child) {
-            result = find(*child, string + 1, characters_remaining - 1);
+            result = find(*child, original_string, string + 1,
+                          characters_remaining - 1);
         }
 
-        if (false == std::get<0>(result)) {
-            return std::make_tuple(node.has_value_, node.value_);
+        if (0 == std::get<0>(result)) {
+            return generateFindResult(node, original_string, string);
         }
         return result;
     }
