@@ -166,43 +166,6 @@ expect? Informations on the content.
 
 @section sec_basic_both_directions Both Directions
 
-@subsection sub_connection Connection
-
-Determines, what to do with the connection after the request is finished. Two
-values are possible: @c close and @c keep-alive.
-
-In case of @c close the connection will be closed after the response is sent and
-in case of @c keep-alive the connection will be kept open until the client
-closes the connection or a predefined time duration elapsed without activity on
-the connection.
-
-This time duration can be configured for the request processor in its factory
-function @ref hutzn::demux::make_request_processor. It shall be deemed to be a
-lower bound. It could take longer till the connection is effectively getting
-closed. See @ref sec_lifetime_connection for more information.
-
-@subsubsection subsub_connection_example Example:
-
-@code
-Connection: keep-alive
-@endcode
-
-@subsubsection subsub_connection_default Default:
-
-till @c HTTP/1.0:
-@code
-Connection: close
-@endcode
-
-since @c HTTP/1.1:
-@code
-Connection: keep-alive
-@endcode
-
-@subsubsection subsub_connection_implemented Implementation Status:
-
-unimplemented
-
 @subsection sub_content_length Content-Length
 
 The header field of the @c Content-Length must be added by the client in
@@ -326,6 +289,43 @@ Accept: * / *
 @endcode
 
 @subsubsection subsub_accept_implemented Implementation Status:
+
+unimplemented
+
+@subsection sub_connection Connection
+
+Determines, what to do with the connection after the request is finished. Two
+values are possible: @c close and @c keep-alive.
+
+In case of @c close the connection will be closed after the response is sent and
+in case of @c keep-alive the connection will be kept open until the client
+closes the connection or a predefined time duration elapsed without activity on
+the connection.
+
+This time duration can be configured for the request processor in its factory
+function @ref hutzn::demux::make_request_processor. It shall be deemed to be a
+lower bound. It could take longer till the connection is effectively getting
+closed. See @ref sec_lifetime_connection for more information.
+
+@subsubsection subsub_connection_example Example:
+
+@code
+Connection: keep-alive
+@endcode
+
+@subsubsection subsub_connection_default Default:
+
+till @c HTTP/1.0:
+@code
+Connection: close
+@endcode
+
+since @c HTTP/1.1:
+@code
+Connection: keep-alive
+@endcode
+
+@subsubsection subsub_connection_implemented Implementation Status:
 
 unimplemented
 
