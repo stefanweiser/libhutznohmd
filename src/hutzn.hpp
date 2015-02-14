@@ -689,7 +689,7 @@ enum class version {
 };
 
 //! Every request and response has several header fields. Those fields are of a
-// specific type.
+//! specific type.
 enum class header_type {
     //! A header, that is not part of the implementation.
     CUSTOM = 0,
@@ -707,12 +707,12 @@ enum class header_type {
     ACCEPT_LANGUAGE,
 
     //! If set, the sender supports byte serving for bandwidth optimization.
-    // Normally this is only
+    //! Normally this is only
     //! capable for constant data.
     ACCEPT_RANGES,
 
     //! List of allowed methods for the requested resource. Part of the
-    // response.
+    //! response.
     ALLOW,
 
     //! Contains authorization credentials.
@@ -752,44 +752,41 @@ enum class header_type {
     DATE,
 
     //! Defines a tag for the contained entity. Can be used for conditional
-    // requests.
+    //! requests.
     ETAG,
 
     //! Includes expectations for the server. If those cannot be met, the server
-    // must respond 417.
+    //! must respond 417.
     EXPECT,
 
     //! A timestamp, when the response considered stale.
     EXPIRES,
 
     //! Contains a mailbox entry, which defines who controls source of the
-    // request.
+    //! request.
     FROM,
 
     //! Specifies an internet host and maybe a port used for the request.
     HOST,
 
     //! Responds only if the entity tag matches to the current or any past
-    // entity of that resource.
+    //! entity of that resource.
     IF_MATCH,
 
     //! Responds only if the request variant has been modified since that
-    // timestamp.
+    //! timestamp.
     IF_MODIFIED_SINCE,
 
     //! Responds only if the entity tag does not match to the current or any
-    // past entity of that
-    //! resource.
+    //! past entity of that resource.
     IF_NONE_MATCH,
 
     //! A condition that short circuits a second request, if a conditional
-    // request would otherwise
-    //! fail.
+    //! request would otherwise fail.
     IF_RANGE,
 
     //! The requested operation will be performed, if the resource has been
-    // unmodified since that
-    //! timestamp.
+    //! unmodified since that timestamp.
     IF_UNMODIFIED_SINCE,
 
     //! Indicated when the resource has been modified last time.
@@ -820,11 +817,11 @@ enum class header_type {
     USER_AGENT,
 
     //! Contains a set of header fields, that determine the validity of a cached
-    // response.
+    //! response.
     VARY,
 
     //! Contains a challenge with informations for the client on how to
-    // authenticate to the server.
+    //! authenticate to the server.
     WWW_AUTHENTICATE
 };
 
