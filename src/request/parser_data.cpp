@@ -27,8 +27,10 @@ namespace request
 parser_data::parser_data()
 {
     const size_t type_size = static_cast<size_t>(mime_type::COUNT) - 1;
-    static const char* const type_names[type_size] = {
-        "*", "application", "audio", "image", "text", "video"};
+    static const char* const type_names[] = {"*",     "application", "audio",
+                                             "image", "text",        "video"};
+    static_assert((sizeof(type_names) / sizeof(*type_names)) == type_size,
+                  "Sizes of mime type and the type strings does not match.");
 
     // The invalid value is getting ignored.
     for (uint8_t i = 0; i < type_size; i++) {
@@ -36,7 +38,10 @@ parser_data::parser_data()
     }
 
     const size_t subtype_size = static_cast<size_t>(mime_subtype::COUNT) - 1;
-    static const char* const subtype_names[subtype_size] = {"*", "plain"};
+    static const char* const subtype_names[] = {"*", "plain"};
+    static_assert(
+        (sizeof(subtype_names) / sizeof(*subtype_names)) == subtype_size,
+        "Sizes of mime subtype and the subtype strings does not match.");
 
     // The invalid value is getting ignored.
     for (uint8_t i = 0; i < subtype_size; i++) {
