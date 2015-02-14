@@ -550,22 +550,25 @@ enum class mime_type : uint8_t {
 
     //! The character *. Used to catch all types or declaring that the subtype
     //! is not of interest.
-    WILDCARD = 1,
+    WILDCARD,
 
     //! "application"
-    APPLICATION = 2,
+    APPLICATION,
 
     //! "audio"
-    AUDIO = 3,
+    AUDIO,
 
     //! "image"
-    IMAGE = 4,
+    IMAGE,
 
     //! "text"
-    TEXT = 5,
+    TEXT,
 
     //! "video"
-    VIDEO = 6
+    VIDEO,
+
+    //! Used internally to count the number of initial elements.
+    COUNT
 };
 
 //! The subtype of a MIME-Type defines the concrete format of the
@@ -577,10 +580,13 @@ enum class mime_subtype : uint16_t {
 
     //! The character *. Used to catch all subtypes or declaring that the
     //! subtype is not of interest.
-    WILDCARD = 1,
+    WILDCARD,
 
     //! "plain" means, that the content is not in any specific format.
-    PLAIN = 2
+    PLAIN,
+
+    //! Used internally to count the number of initial elements.
+    COUNT
 };
 
 //! Used to describe a MIME type combination. Often this type is used.
