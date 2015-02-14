@@ -25,6 +25,8 @@ namespace request
 {
 
 parser_data::parser_data()
+    : mime_types_(true)
+    , mime_subtypes_(true)
 {
 }
 

@@ -20,6 +20,7 @@
 #define LIBHUTZNOHMD_REQEUST_PARSER_DATA_HPP
 
 #include <libhutznohmd/demux.hpp>
+#include <utility/trie.hpp>
 
 namespace hutzn
 {
@@ -31,6 +32,10 @@ class parser_data
 {
 public:
     explicit parser_data();
+
+private:
+    trie<mime_type> mime_types_;
+    trie<mime_subtype> mime_subtypes_;
 };
 
 } // namespace request
