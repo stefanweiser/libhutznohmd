@@ -16,14 +16,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_REQEUST_PARSER_DATA_HPP
-#define LIBHUTZNOHMD_REQEUST_PARSER_DATA_HPP
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
-#include <map>
+#include <request/parser_data.hpp>
 
-#include <libhutznohmd/demux.hpp>
-#include <request/mime_data.hpp>
-#include <utility/trie.hpp>
+using namespace testing;
 
 namespace hutzn
 {
@@ -31,24 +29,24 @@ namespace hutzn
 namespace request
 {
 
-class parser_data
+TEST(parser_data, parse_mime_type_default)
 {
-public:
-    explicit parser_data();
-    mime_type register_mime_type(const std::string& type);
-    mime_subtype register_mime_subtype(const std::string& subtype);
-    bool unregister_mime_type(const mime_type& type);
-    bool unregister_mime_subtype(const mime_subtype& subtype);
-    mime_type parse_mime_type(const std::string& string);
-    mime_subtype parse_mime_subtype(const std::string& string);
+    parser_data p;
+    EXPECT_EQ(p.parse_mime_type("*"), mime_type::WILDCARD);
+    EXPECT_EQ(p.parse_mime_type("application"), mime_type::APPLICATION);
+    EXPECT_EQ(p.parse_mime_type("audio"), mime_type::AUDIO);
+    EXPECT_EQ(p.parse_mime_type("image"), mime_type::IMAGE);
+    EXPECT_EQ(p.parse_mime_type("text"), mime_type::TEXT);
+    EXPECT_EQ(p.parse_mime_type("video"), mime_type::VIDEO);
+}
 
-private:
-    mime_data<mime_type, uint8_t> mime_types_;
-    mime_data<mime_subtype, uint16_t> mime_subtypes_;
-};
+TEST(parser_data, parse_mime_subtype_default)
+{
+    parser_data p;
+    EXPECT_EQ(p.parse_mime_subtype("*"), mime_subtype::WILDCARD);
+    EXPECT_EQ(p.parse_mime_subtype("plain"), mime_subtype::PLAIN);
+}
 
 } // namespace request
 
 } // namespace hutzn
-
-#endif // LIBHUTZNOHMD_REQEUST_PARSER_DATA_HPP

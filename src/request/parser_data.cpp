@@ -24,6 +24,26 @@ namespace hutzn
 namespace request
 {
 
+parser_data::parser_data()
+{
+    const size_t type_size = static_cast<size_t>(mime_type::COUNT) - 1;
+    static const char* const type_names[type_size] = {
+        "*", "application", "audio", "image", "text", "video"};
+
+    // The invalid value is getting ignored.
+    for (uint8_t i = 0; i < type_size; i++) {
+        mime_types_.register_type(type_names[i]);
+    }
+
+    const size_t subtype_size = static_cast<size_t>(mime_subtype::COUNT) - 1;
+    static const char* const subtype_names[subtype_size] = {"*", "plain"};
+
+    // The invalid value is getting ignored.
+    for (uint8_t i = 0; i < subtype_size; i++) {
+        mime_subtypes_.register_type(subtype_names[i]);
+    }
+}
+
 mime_type parser_data::register_mime_type(const std::string& type)
 {
     return mime_types_.register_type(type);
