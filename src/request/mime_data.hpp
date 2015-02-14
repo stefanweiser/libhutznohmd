@@ -72,12 +72,11 @@ public:
         return false;
     }
 
-    value_type parse_type(const std::string& string)
+    value_type parse_type(const char* const string, const size_t max_length)
     {
         size_t bytes_read;
         value_type result;
-        std::tie(bytes_read, result) =
-            types_.find(string.c_str(), string.length());
+        std::tie(bytes_read, result) = types_.find(string, max_length);
         if (bytes_read > 0) {
             return result;
         }

@@ -32,19 +32,19 @@ namespace request
 TEST(parser_data, parse_mime_type_default)
 {
     parser_data p;
-    EXPECT_EQ(p.parse_mime_type("*"), mime_type::WILDCARD);
-    EXPECT_EQ(p.parse_mime_type("application"), mime_type::APPLICATION);
-    EXPECT_EQ(p.parse_mime_type("audio"), mime_type::AUDIO);
-    EXPECT_EQ(p.parse_mime_type("image"), mime_type::IMAGE);
-    EXPECT_EQ(p.parse_mime_type("text"), mime_type::TEXT);
-    EXPECT_EQ(p.parse_mime_type("video"), mime_type::VIDEO);
+    EXPECT_EQ(p.parse_mime_type("*", 1), mime_type::WILDCARD);
+    EXPECT_EQ(p.parse_mime_type("application", 11), mime_type::APPLICATION);
+    EXPECT_EQ(p.parse_mime_type("audio", 5), mime_type::AUDIO);
+    EXPECT_EQ(p.parse_mime_type("image", 5), mime_type::IMAGE);
+    EXPECT_EQ(p.parse_mime_type("text", 4), mime_type::TEXT);
+    EXPECT_EQ(p.parse_mime_type("video", 5), mime_type::VIDEO);
 }
 
 TEST(parser_data, parse_mime_subtype_default)
 {
     parser_data p;
-    EXPECT_EQ(p.parse_mime_subtype("*"), mime_subtype::WILDCARD);
-    EXPECT_EQ(p.parse_mime_subtype("plain"), mime_subtype::PLAIN);
+    EXPECT_EQ(p.parse_mime_subtype("*", 1), mime_subtype::WILDCARD);
+    EXPECT_EQ(p.parse_mime_subtype("plain", 5), mime_subtype::PLAIN);
 }
 
 } // namespace request

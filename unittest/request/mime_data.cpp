@@ -33,8 +33,8 @@ namespace request
 TEST(mime_data, initialization)
 {
     mime_data<mime_type, uint8_t> t;
-    EXPECT_EQ(t.parse_type("abc"), mime_type::INVALID);
-    EXPECT_EQ(t.parse_type("ABC"), mime_type::INVALID);
+    EXPECT_EQ(t.parse_type("abc", 3), mime_type::INVALID);
+    EXPECT_EQ(t.parse_type("ABC", 3), mime_type::INVALID);
 }
 
 TEST(mime_data, registering_unregistering)
@@ -72,8 +72,8 @@ TEST(mime_data, parse_type_successful)
     mime_data<mime_type, uint8_t> t;
     mime_type type = t.register_type("abc");
     EXPECT_NE(type, mime_type::INVALID);
-    EXPECT_EQ(t.parse_type("abc"), type);
-    EXPECT_EQ(t.parse_type("abcdef"), type);
+    EXPECT_EQ(t.parse_type("abc", 3), type);
+    EXPECT_EQ(t.parse_type("abcdef", 6), type);
     EXPECT_TRUE(t.unregister_type(type));
 }
 
@@ -82,13 +82,13 @@ TEST(mime_data, parse_type_successful_case_sensitive)
     mime_data<mime_type, uint8_t> t;
     mime_type type = t.register_type("abc");
     EXPECT_NE(type, mime_type::INVALID);
-    EXPECT_EQ(t.parse_type("Abc"), type);
-    EXPECT_EQ(t.parse_type("aBc"), type);
-    EXPECT_EQ(t.parse_type("abC"), type);
-    EXPECT_EQ(t.parse_type("ABc"), type);
-    EXPECT_EQ(t.parse_type("aBC"), type);
-    EXPECT_EQ(t.parse_type("AbC"), type);
-    EXPECT_EQ(t.parse_type("ABC"), type);
+    EXPECT_EQ(t.parse_type("Abc", 3), type);
+    EXPECT_EQ(t.parse_type("aBc", 3), type);
+    EXPECT_EQ(t.parse_type("abC", 3), type);
+    EXPECT_EQ(t.parse_type("ABc", 3), type);
+    EXPECT_EQ(t.parse_type("aBC", 3), type);
+    EXPECT_EQ(t.parse_type("AbC", 3), type);
+    EXPECT_EQ(t.parse_type("ABC", 3), type);
     EXPECT_TRUE(t.unregister_type(type));
 }
 
@@ -97,7 +97,7 @@ TEST(mime_data, parse_type_failure)
     mime_data<mime_type, uint8_t> t;
     mime_type type = t.register_type("abc");
     EXPECT_NE(type, mime_type::INVALID);
-    EXPECT_EQ(t.parse_type("xyzabcdef"), mime_type::INVALID);
+    EXPECT_EQ(t.parse_type("xyzabcdef", 9), mime_type::INVALID);
     EXPECT_TRUE(t.unregister_type(type));
 }
 
