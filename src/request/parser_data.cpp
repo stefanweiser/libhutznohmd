@@ -25,18 +25,32 @@ namespace request
 {
 
 parser_data::parser_data()
-    : mime_types_(true)
+    : next_mime_type_value_(1)
+    , next_mime_subtype_value_(1)
+    , mime_types_(true)
     , mime_subtypes_(true)
 {
+    static_assert(sizeof(hutzn::request::mime_type) ==
+                      sizeof(decltype(next_mime_type_value_)),
+                  "Mime type and next value is not of the same type");
+    static_assert(sizeof(hutzn::request::mime_subtype) ==
+                      sizeof(decltype(next_mime_subtype_value_)),
+                  "Mime subtype and next value is not of the same type");
 }
 
 hutzn::request::mime_type
 parser_data::register_mime_type(const std::string& type)
 {
-    hutzn::request::mime_type result = hutzn::request::mime_type::INVALID;
-    if (true == mime_types_.insert(type.c_str(), result)) {
-        registered_mime_types_[result] = type;
-        return result;
+    if (0 == next_mime_type_value_) {
+        return hutzn::request::mime_type::INVALID;
+    }
+
+    hutzn::request::mime_type value =
+        static_cast<hutzn::request::mime_type>(next_mime_type_value_);
+    if (true == mime_types_.insert(type.c_str(), value)) {
+        next_mime_type_value_++;
+        registered_mime_types_[value] = type;
+        return value;
     }
     return hutzn::request::mime_type::INVALID;
 }
@@ -44,10 +58,16 @@ parser_data::register_mime_type(const std::string& type)
 hutzn::request::mime_subtype
 parser_data::register_mime_subtype(const std::string& subtype)
 {
-    hutzn::request::mime_subtype result = hutzn::request::mime_subtype::INVALID;
-    if (true == mime_subtypes_.insert(subtype.c_str(), result)) {
-        registered_mime_subtypes_[result] = subtype;
-        return result;
+    if (0 == next_mime_subtype_value_) {
+        return hutzn::request::mime_subtype::INVALID;
+    }
+
+    hutzn::request::mime_subtype value =
+        static_cast<hutzn::request::mime_subtype>(next_mime_subtype_value_);
+    if (true == mime_subtypes_.insert(subtype.c_str(), value)) {
+        next_mime_subtype_value_++;
+        registered_mime_subtypes_[value] = subtype;
+        return value;
     }
     return hutzn::request::mime_subtype::INVALID;
 }

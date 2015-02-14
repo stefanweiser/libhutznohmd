@@ -46,6 +46,8 @@ public:
                                                     const size_t length);
 
 private:
+    uint8_t next_mime_type_value_;
+    uint16_t next_mime_subtype_value_;
     std::map<mime_type, std::string> registered_mime_types_;
     std::map<mime_subtype, std::string> registered_mime_subtypes_;
     trie<mime_type> mime_types_;
