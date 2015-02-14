@@ -820,8 +820,10 @@ public:
     //! fragment.
     virtual const char* path() const = 0;
 
-    //! The host name used by the request client. This is currently just
-    //! an information.
+    //! The host name used by the request client. It could be part of the
+    //! request line or the header field Host. If a host is present at both
+    //! places, the header field Host overwrites that one in the request line.
+    //! This is currently just an information.
     virtual const char* host() const = 0;
 
     //! Returns a value of a key, that is in the query part of the URL.
@@ -831,8 +833,7 @@ public:
     virtual const char* fragment() const = 0;
 
     //! Returns the used HTTP version. This influences server behaviour
-    //(e.g.
-    //! connection duration).
+    //! (e.g. connection duration).
     virtual http_version version() const = 0;
 
     //! Returns the content of any custom header field. Only those, which are

@@ -99,7 +99,7 @@ int main()
     hutzn::buffer request;
     if (true == connection->read(request, 1024)) {
         hutzn::buffer response;
-        // parse the http request and build a response.
+        // Parse the HTTP request and build a response.
         connection->send(response);
     }
     return 0;
