@@ -24,105 +24,36 @@ namespace hutzn
 namespace request
 {
 
-parser_data::parser_data()
-    : next_mime_type_value_(1)
-    , next_mime_subtype_value_(1)
-    , mime_types_(true)
-    , mime_subtypes_(true)
+mime_type parser_data::register_mime_type(const std::string& type)
 {
-    static_assert(sizeof(hutzn::request::mime_type) ==
-                      sizeof(decltype(next_mime_type_value_)),
-                  "Mime type and next value is not of the same type");
-    static_assert(sizeof(hutzn::request::mime_subtype) ==
-                      sizeof(decltype(next_mime_subtype_value_)),
-                  "Mime subtype and next value is not of the same type");
+    return mime_types_.register_type(type);
 }
 
-hutzn::request::mime_type
-parser_data::register_mime_type(const std::string& type)
+mime_subtype parser_data::register_mime_subtype(const std::string& subtype)
 {
-    if (0 == next_mime_type_value_) {
-        return hutzn::request::mime_type::INVALID;
-    }
-
-    hutzn::request::mime_type value =
-        static_cast<hutzn::request::mime_type>(next_mime_type_value_);
-    if (true == mime_types_.insert(type.c_str(), value)) {
-        next_mime_type_value_++;
-        registered_mime_types_[value] = type;
-        return value;
-    }
-    return hutzn::request::mime_type::INVALID;
+    return mime_subtypes_.register_type(subtype);
 }
 
-hutzn::request::mime_subtype
-parser_data::register_mime_subtype(const std::string& subtype)
+bool parser_data::unregister_mime_type(const mime_type& type)
 {
-    if (0 == next_mime_subtype_value_) {
-        return hutzn::request::mime_subtype::INVALID;
-    }
-
-    hutzn::request::mime_subtype value =
-        static_cast<hutzn::request::mime_subtype>(next_mime_subtype_value_);
-    if (true == mime_subtypes_.insert(subtype.c_str(), value)) {
-        next_mime_subtype_value_++;
-        registered_mime_subtypes_[value] = subtype;
-        return value;
-    }
-    return hutzn::request::mime_subtype::INVALID;
+    return mime_types_.unregister_type(type);
 }
 
-bool parser_data::unregister_mime_type(const hutzn::request::mime_type& type)
+bool parser_data::unregister_mime_subtype(const mime_subtype& subtype)
 {
-    auto it = registered_mime_types_.find(type);
-    if (it != registered_mime_types_.end()) {
-        const bool result = mime_types_.erase(it->second.c_str());
-
-        // The registration of that type is based on the existence in the trie
-        // and not in the map. Therefore ignoring this result is mandatory.
-        registered_mime_types_.erase(it);
-        return result;
-    }
-    return false;
+    return mime_subtypes_.unregister_type(subtype);
 }
 
-bool parser_data::unregister_mime_subtype(
-    const hutzn::request::mime_subtype& subtype)
+mime_type parser_data::parse_mime_type(const char* const string,
+                                       const size_t length)
 {
-    auto it = registered_mime_subtypes_.find(subtype);
-    if (it != registered_mime_subtypes_.end()) {
-        const bool result = mime_subtypes_.erase(it->second.c_str());
-
-        // The registration of that type is based on the existence in the trie
-        // and not in the map. Therefore ignoring this result is mandatory.
-        registered_mime_subtypes_.erase(it);
-        return result;
-    }
-    return false;
+    return mime_types_.parse_type(string, length);
 }
 
-hutzn::request::mime_type parser_data::parse_mime_type(const char* const string,
-                                                       const size_t length)
+mime_subtype parser_data::parse_mime_subtype(const char* const string,
+                                             const size_t length)
 {
-    bool success;
-    hutzn::request::mime_type result;
-    std::tie(success, result) = mime_types_.find(string, length);
-    if (true == success) {
-        return result;
-    }
-    return hutzn::request::mime_type::INVALID;
-}
-
-hutzn::request::mime_subtype
-parser_data::parse_mime_subtype(const char* const string, const size_t length)
-{
-    bool success;
-    hutzn::request::mime_subtype result;
-    std::tie(success, result) = mime_subtypes_.find(string, length);
-    if (true == success) {
-        return result;
-    }
-    return hutzn::request::mime_subtype::INVALID;
+    return mime_subtypes_.parse_type(string, length);
 }
 
 } // namespace request

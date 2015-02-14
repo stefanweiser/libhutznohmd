@@ -22,6 +22,7 @@
 #include <map>
 
 #include <libhutznohmd/demux.hpp>
+#include <request/mime_data.hpp>
 #include <utility/trie.hpp>
 
 namespace hutzn
@@ -33,25 +34,17 @@ namespace request
 class parser_data
 {
 public:
-    explicit parser_data();
-
-    hutzn::request::mime_type register_mime_type(const std::string& type);
-    hutzn::request::mime_subtype
-    register_mime_subtype(const std::string& subtype);
-    bool unregister_mime_type(const hutzn::request::mime_type& type);
-    bool unregister_mime_subtype(const hutzn::request::mime_subtype& subtype);
-    hutzn::request::mime_type parse_mime_type(const char* const string,
-                                              const size_t length);
-    hutzn::request::mime_subtype parse_mime_subtype(const char* const string,
-                                                    const size_t length);
+    mime_type register_mime_type(const std::string& type);
+    mime_subtype register_mime_subtype(const std::string& subtype);
+    bool unregister_mime_type(const mime_type& type);
+    bool unregister_mime_subtype(const mime_subtype& subtype);
+    mime_type parse_mime_type(const char* const string, const size_t length);
+    mime_subtype parse_mime_subtype(const char* const string,
+                                    const size_t length);
 
 private:
-    uint8_t next_mime_type_value_;
-    uint16_t next_mime_subtype_value_;
-    std::map<mime_type, std::string> registered_mime_types_;
-    std::map<mime_subtype, std::string> registered_mime_subtypes_;
-    trie<mime_type> mime_types_;
-    trie<mime_subtype> mime_subtypes_;
+    mime_data<mime_type, uint8_t> mime_types_;
+    mime_data<mime_subtype, uint16_t> mime_subtypes_;
 };
 
 } // namespace request
