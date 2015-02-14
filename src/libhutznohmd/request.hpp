@@ -175,6 +175,11 @@ contain the size of the payload in bytes. Thus it must be an unsigned integer.
 The size is limited to \f$2^{31}-1\f$. In case of an overflow the request is
 getting invalid and rejected.
 
+The content length could be retrieved by @ref
+hutzn::request::request_interface::content_length and is set on a response
+automatically when a content is set by @ref
+hutzn::request::response_interface::set_content.
+
 @subsubsection subsub_content_length_example Example:
 
 @code
@@ -193,9 +198,11 @@ unimplemented
 
 @subsection sub_content_md5 Content-MD5
 
-This header field is optional and carries a MD5 hash sum. This hash sum is used
-to check the content for transmission errors. If the header field is missing,
-the content is not verified with MD5.
+This header field is optional and carries a MD5 hash sum. This hash sum is
+automatically used to check the content for transmission errors. If the header
+field is missing, the content is not verified with MD5. To enable this header
+on the response, set the second parameter of @ref
+hutzn::request::response_interface::set_content to true.
 
 @note For two reasons this is no security feature:
 -# An attacker that is able to modify the header field or the content is
@@ -222,7 +229,8 @@ unimplemented
 
 A content type header defines how the application should interpret the content.
 It consists of a MIME type. The request processor use this header field to
-select the right request handler. The response also takes a content type.
+select the right request handler. The response also takes a content type. These
+types are set automatically by the request processor.
 
 @subsubsection subsub_content_type_example Example:
 
@@ -243,7 +251,8 @@ unimplemented
 @subsection sub_date Date
 
 Contains the timestamp, when the message was generated. The request processor
-will also add a timestamp to the response, when the response was generated.
+will also automatically add a timestamp to the response, pointing to the time
+when the response was generated.
 
 @subsubsection subsub_date_example Example:
 
@@ -442,7 +451,8 @@ unimplemented
 @subsection sub_allow Allow
 
 Contains all available methods for the requested resource. This field is
-available in responses with the error code of 405 (Method not allowed).
+automatically added by the request processor in responses with the error code of
+405 (Method not allowed).
 
 @subsubsection subsub_allow_example Example:
 
@@ -460,8 +470,10 @@ unimplemented
 
 @subsection sub_content_location Content-Location
 
-Points to the original URI of the requested resource. Should be set, when a
-resource is available under different URIs.
+Points to the original URI path of the requested resource. Should be set by
+calling @ref hutzn::request::response_interface::set_content_location, when a
+resource is available under different URIs and the requested URI path is not the
+primary URI.
 
 @subsubsection subsub_content_location_example Example:
 
@@ -479,8 +491,9 @@ unimplemented
 
 @subsection sub_location Location
 
-Contains the location the client should be guided to. Could contain the URI of a
-created resource or the URI of a moved one.
+Contains the location the client should be guided to. Is set, when @ref
+hutzn::request::response_interface::set_location is called and could contain the
+URI of a created resource or the URI of a moved one.
 
 @subsubsection subsub_location_example Example:
 
@@ -499,7 +512,8 @@ unimplemented
 @subsection sub_retry_after Retry-After
 
 Tells the client, that it should repeat the request later to get a proper
-result.
+result. Is set, when @ref hutzn::request::response_interface::set_retry_after
+is getting called with a time greater 0 and cleared if called with 0.
 
 @subsubsection subsub_retry_after_example Example:
 
@@ -519,7 +533,8 @@ unimplemented
 @subsection sub_server Server
 
 Set to the server/version fingerprint. This is deactivated per default for
-security reasons.
+security reasons and can be activated by calling @ref
+hutzn::request::response_interface::set_server on the response.
 
 @subsubsection subsub_server_example Example:
 
@@ -886,11 +901,13 @@ class response_interface
 public:
     virtual ~response_interface();
 
-    virtual bool set_status_code(const http_status_code& status_code) = 0;
-    virtual bool set_version(const http_version& version) = 0;
-    virtual bool set_header(const std::string& key,
-                            const std::string& value) = 0;
-    virtual bool set_content(const hutzn::buffer& content) = 0;
+    virtual bool set_header(const char* const key, const char* const value) = 0;
+    virtual void set_content(const hutzn::buffer& content,
+                             const bool set_md5) = 0;
+    virtual void set_content_location(const char* const content_location) = 0;
+    virtual void set_location(const char* const location) = 0;
+    virtual bool set_retry_after(const time_t retry_time) = 0;
+    virtual void set_server(const char* const fingerprint) = 0;
 };
 
 } // namespace request
