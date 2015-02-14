@@ -124,7 +124,7 @@ std::bind(&Foo::bar, foo_pointer, _1, _2);
 The following example registers a resource handler and sets an error handler
 for status code 404:
 
-@code
+@code{.cpp}
 class C
 {
 // ...
@@ -167,13 +167,13 @@ Allowing @c std::bind conceals an important detail from the user. The user
 could expose the "this" pointer of an object. This complicates lifetime. See
 @ref sec_lifetime_callbacks "lifetime of callbacks" for further information.
 
-Every registered handler needs a mime type. While the library's list is never
+Every registered handler needs a MIME type. While the library's list is never
 complete, it could be extended by the user. You can register own MIME types and
 subtypes. There are no lifetime scopes of this registrations, because normally
 you want to do the registration and unregistration only once during the
 demultiplexer's lifetime.
 
-@code
+@code{.cpp}
 int main()
 {
     hutzn::demux::demux_pointer d = hutzn::demux::make_demultiplexer();
@@ -211,10 +211,10 @@ struct request_handler_id
     //! are reserved for internal usage.
     hutzn::request::http_verb method;
 
-    //! All known and registered mime types could be used.
+    //! All known and registered MIME types could be used.
     hutzn::request::mime_type type;
 
-    //! All known and registered mime subtypes could be used.
+    //! All known and registered MIME subtypes could be used.
     hutzn::request::mime_subtype subtype;
 };
 
