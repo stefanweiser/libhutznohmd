@@ -772,6 +772,17 @@ enum class http_status_code : uint16_t {
     HTTP_VERSION_NOT_SUPPORTED = 505
 };
 
+//! States the HTTP expectation extension of the expect header field. If
+//! the expect content is not known, use UNKNOWN.
+enum class http_expectation : uint8_t {
+    //! The client expects an extension the server does not support.
+    UNKNOWN = 0,
+
+    //! The client expects status code 100. This is used to check, whether a
+    //! request would be processed or rejected before sending huge packets.
+    CONTINUE = 1
+};
+
 class request_interface
 {
 public:
@@ -783,17 +794,17 @@ public:
 
     //! The used URL without scheme, authorization, host, port, queries or
     //! fragment.
-    virtual std::string path() const = 0;
+    virtual const char* path() const = 0;
 
     //! The host name used by the request client. This is currently just
     //! an information.
-    virtual std::string host() const = 0;
+    virtual const char* host() const = 0;
 
     //! Returns a value of a key, that is in the query part of the URL.
-    virtual std::string query(const std::string& key) const = 0;
+    virtual const char* query(const char* const key) const = 0;
 
     //! Returns the fragment of the URL.
-    virtual std::string fragment() const = 0;
+    virtual const char* fragment() const = 0;
 
     //! Returns the used HTTP version. This influences server behaviour (e.g.
     //! connection duration).
@@ -827,6 +838,8 @@ public:
     //! get the next item just recall it. The function returns false, if the end
     //! of the list is reached and true in any other case. Till the end of the
     //! function is reached, the parameters are getting modified by the call.
+    //! This functionality is mainly used by the request processor, that tries
+    //! to find the best request handler for the request.
     //!
     //! @code{.cpp}
     //! void* handle = nullptr;
@@ -838,6 +851,20 @@ public:
     //! @endcode
     virtual bool accept(void*& handle, mime_type& type,
                         mime_subtype& subtype) const = 0;
+
+    //! Returns the expectation of the client. If the expectation is not
+    //! implemented it returns UNKNOWN. Then the request processor will return
+    //! status code 417 due to unmet expectation.
+    virtual http_expectation expect() const = 0;
+
+    //! Returns the content of the from field.
+    virtual const char* from() const = 0;
+
+    //! Returns the content of the referer field.
+    virtual const char* referer() const = 0;
+
+    //! Returns the content of the user agent field.
+    virtual const char* user_agent() const = 0;
 };
 
 class response_interface
