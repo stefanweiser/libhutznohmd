@@ -43,7 +43,8 @@ implementing it according to the principles of the
 [Representational State Transfer]
 (http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm "Roy Thomas
 Fieldings dissertation") architectural style by providing easy to use, reliable,
-robust, well tested and (scalable) functionality.
+robust and well tested (and scalable) functionality. It implements this feature
+set on a HTTP/1.1 server (based on RFC2616).
 
 @section sec_general_information General Information
 

@@ -156,28 +156,15 @@ namespace hutzn {
 }
 @enduml
 
-All the headers defined by the current HTTP standard are listed in the following
-subpages.
--# @subpage page_basic_http_support
--# @subpage page_encoding
--# @subpage page_auth
--# @subpage page_caching
--# @subpage page_cookies
--# @subpage page_byte_serving
--# @subpage page_conditional
-
-Every header field documentation is splitted into three parts:
+All the headers defined by the current HTTP standard are listed. Every header
+field documentation is splitted into three parts:
 - @a Description: What and how does it influence the system? What can you
 expect? Informations on the content.
 - @a Example: A common example on how to use it.
 - @a Default: Which value the server supposes, if the header field is missing.
-- @a Implementation Status: Since when is it implemented by the library.
+- @a Implementation @a Status: Since when is it implemented by the library.
 
-
-
-@page page_basic_http_support Basic HTTP support
-
-@section sec_basic_common Common
+@section sec_basic_both_directions Both Directions
 
 @subsection sub_connection Connection
 
@@ -222,8 +209,8 @@ The header field of the @c Content-Length must be added by the client in
 requests, if the request carries any payload data. The server will add this
 header field, if the payload data of the response is not empty. It must then
 contain the size of the payload in bytes. Thus it must be an unsigned integer.
-The size is limited to \f$2^{31}-1\f$. In case of an overflow the request
-invalid and therefore rejected.
+The size is limited to \f$2^{31}-1\f$. In case of an overflow the request is
+getting invalid and rejected.
 
 @subsubsection subsub_content_length_example Example:
 
@@ -244,13 +231,13 @@ unimplemented
 @subsection sub_content_md5 Content-MD5
 
 This header field is optional and carries a MD5 hash sum. This hash sum is used
-to verify the content. If the header field is missing, the content is not
-verified with MD5. Thus there is no default value.
+to check the content for transmission errors. If the header field is missing,
+the content is not verified with MD5.
 
-@note This is no security feature, because of 2 reasons:
--# Collisions for MD5 could be found within reasonable time by recent hardware.
+@note For two reasons this is no security feature:
 -# An attacker that is able to modify the header field or the content is
 everytime also able to modify both.
+-# Collisions for MD5 could be found within reasonable time by recent hardware.
 
 @subsubsection subsub_content_md5_example Example:
 
@@ -271,7 +258,8 @@ unimplemented
 @subsection sub_content_type Content-Type
 
 A content type header defines how the application should interpret the content.
-It consists of one MIME type.
+It consists of a MIME type. The request processor use this header field to
+select the right request handler. The response also takes a content type.
 
 @subsubsection subsub_content_type_example Example:
 
@@ -291,8 +279,8 @@ unimplemented
 
 @subsection sub_date Date
 
-This header contains the timestamp, when the message was generated. The request
-processor will add its timestamp to the response.
+Contains the timestamp, when the message was generated. The request processor
+will also add a timestamp to the response, when the response was generated.
 
 @subsubsection subsub_date_example Example:
 
@@ -317,8 +305,9 @@ unimplemented
 Defines preferable response representations. The content of this header field is
 a list of MIME types, which are sorted by a q-value (quality). The higher the
 quality value is, the more preferable it is for the server to returns such
-a resource represenation. If no quality value is defined, the highest value of
-1.0 is assumed.
+a resource represenation. If two MIME types have the same quality values, the
+first one is more preferable (although this is not defined by the HTTP/1.1
+standard). If no quality value is defined, the highest value of 1.0 is assumed.
 
 Internally it is getting matched against the available request handler for this
 resource to pick up the most preferable resource representation that is
@@ -342,11 +331,13 @@ unimplemented
 
 @subsection sub_expect Expect
 
-It contains expectations of the client about the response. A server, that does
-not understand the expectation or cannot fulfill it, must respond with the
+It contains expectations of the client about the response. If the server does
+not understand the expectation or cannot fulfill it, it will respond with the
 error code 417 (Expectation failed).
 
-Currently only the expectation "100-continue" is defined by the standard.
+Currently only the expectation "100-continue" is defined. It is used to check
+validity of the request header before sending the payload data. This propably
+saves bandwidth if the server would not accept the request.
 
 @subsubsection subsub_expect_example Example:
 
@@ -486,24 +477,6 @@ not present
 
 unimplemented
 
-@subsection sub_etag ETag
-
-Contains the current value of the entity tag.
-
-@subsubsection subsub_etag_example Example:
-
-@code
-ETag: "0123456789abcdef"
-@endcode
-
-@subsubsection subsub_etag_default Default:
-
-not present
-
-@subsubsection subsub_etag_implemented Implementation Status:
-
-unimplemented
-
 @subsection sub_location Location
 
 Contains the location the client should be guided to. Could contain the URI of a
@@ -545,8 +518,8 @@ unimplemented
 
 @subsection sub_server Server
 
-Tells the client, which server and version it requests from. This is deactivated
-per default for security reasons.
+Set to the server/version fingerprint. This is deactivated per default for
+security reasons.
 
 @subsubsection subsub_server_example Example:
 
@@ -561,157 +534,6 @@ not present
 @subsubsection subsub_server_implemented Implementation Status:
 
 unimplemented
-
-
-
-@page page_encoding Encoding
-
-@section sec_encoding_common Common
-
-@subsection sub_content_encoding Content-Encoding
-
-<td>TBD</td>
-<td><pre>Content-Encoding: gzip</pre></td>
-
-@subsection sub_content_language Content-Language
-
-<td>TBD</td>
-<td><pre>Content-Language: en-US</pre></td>
-
-@section sec_encoding_request Request-Specific
-
-@subsection sub_accept_charset Accept-Charset
-
-<td>TBD</td>
-<td><pre>Accept-Charset: utf-8</pre></td>
-
-@subsection sub_accept_encoding Accept-Encoding
-
-<td>TBD</td>
-<td><pre>Accept-Encoding: gzip</pre></td>
-
-@subsection sub_accept_language Accept-Language
-
-<td>TBD</td>
-<td><pre>Accept-Language: en-US</pre></td>
-
-
-
-@page page_auth Authentification / Authorization
-
-@section sec_auth_request Request-Specific
-
-@subsection sub_authorization Authorization
-
-<td>TBD</td>
-<td><pre>Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==</pre></td>
-
-@section sec_auth_response Response-Specific
-
-@subsection sub_www_authenticate WWW-Authenticate
-
-<td>TBD</td>
-<td><pre>WWW-Authenticate: Basic</pre></td>
-
-
-
-@page page_caching Caching
-
-@section sec_caching_common Common
-
-@subsection sub_cache_control Cache-Control
-
-<td>TBD</td>
-<td><pre>Cache-Control: no-cache</pre></td>
-
-@section sec_caching_response Response-Specific
-
-@subsection sub_expires Expires
-
-<td>TBD</td>
-<td><pre>Expires: Wed, 13 May 2014 22:10:48 GMT</pre></td>
-
-@subsection sub_last_modified Last-Modified
-
-<td>TBD</td>
-<td><pre>Last-Modified: Wed, 13 May 2014 22:10:48 GMT</pre></td>
-
-@subsection sub_content_pragma Pragma
-
-<td>TBD</td>
-<td><pre>Pragma: no-cache</pre></td>
-
-
-
-@page page_cookies Cookies
-
-@section sec_cookies_request Request-Specific
-
-@subsection sub_cookie Cookie
-
-<td>TBD</td>
-<td><pre>Cookie: id=123</pre></td>
-
-@section sec_cookies_response Response-Specific
-
-@subsection sub_set_cookie Set-Cookie
-
-<td>TBD</td>
-<td><pre>Set-Cookie: id=123</pre></td>
-
-
-
-@page page_byte_serving Byte-Serving
-
-@section sec_byte_serving_request Request-Specific
-
-@subsection sub_range Range
-
-<td>TBD</td>
-<td><pre>Range: bytes=0-2048</pre></td>
-
-@section sec_byte_serving_response Response-Specific
-
-@subsection sub_accept_ranges Accept-Ranges
-
-<td>TBD</td>
-<td><pre>Accept-Ranges: bytes</pre></td>
-
-@subsection sub_content_range Content-Range
-
-<td>TBD</td>
-<td><pre>Content-Range: 0-2048/4096</pre></td>
-
-
-
-@page page_conditional Conditional Requests
-
-@section sec_conditional_request Request-Specific
-
-@subsection sub_if_match If-Match
-
-<td>TBD</td>
-<td><pre>If-Match: "0123456789abcdef"</pre></td>
-
-@subsection sub_if_modified_since If-Modified-Since
-
-<td>TBD</td>
-<td><pre>If-Modified-Since: Wed, 13 May 2014 22:10:48 GMT</pre></td>
-
-@subsection sub_if_none_match If-None-Match
-
-<td>TBD</td>
-<td><pre>If-None-Match: "0123456789abcdef"</pre></td>
-
-@subsection sub_if_range If-Range
-
-<td>TBD</td>
-<td><pre>If-Range: "0123456789abcdef"</pre></td>
-
-@subsection sub_if_unmodified_since If-Unmodified-Since
-
-<td>TBD</td>
-<td><pre>If-Unmodified-Since: Wed, 13 May 2014 22:10:48 GMT</pre></td>
 
 */
 
