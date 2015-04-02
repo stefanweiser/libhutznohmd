@@ -47,14 +47,14 @@ public:
     bool set_host(const char* const new_host);
     void set_port(const uint16_t& new_port);
 
-    virtual bool valid() const;
-    virtual const uri_scheme& scheme() const;
-    virtual const char* userinfo() const;
-    virtual const char* host() const;
-    virtual const uint16_t& port() const;
-    virtual const char* path() const;
-    virtual const char* query() const;
-    virtual const char* fragment() const;
+    bool valid() const override;
+    const uri_scheme& scheme() const override;
+    const char* userinfo() const override;
+    const char* host() const override;
+    const uint16_t& port() const override;
+    const char* path() const override;
+    const char* query() const override;
+    const char* fragment() const override;
 
 private:
     bool parse_scheme_and_authority(int32_t& character, const bool skip_scheme);

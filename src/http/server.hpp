@@ -40,8 +40,8 @@ public:
     server(const hutzn::socket::listener_pointer& s,
            const transaction_function& transaction_functor);
 
-    virtual void run();
-    virtual void stop();
+    void run() override;
+    void stop() override;
 
     void parse_request(const hutzn::socket::connection_pointer& connection);
 

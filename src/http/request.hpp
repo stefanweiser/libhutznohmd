@@ -47,14 +47,14 @@ public:
                      const parameters& param);
     bool parse();
 
-    virtual hutzn::method method() const;
-    virtual const uri_interface& request_uri() const;
-    virtual hutzn::http::version version() const;
-    virtual const std::map<std::string, std::string>& headers() const;
-    virtual const hutzn::buffer& data() const;
-    virtual const media_type_interface& data_content_type() const;
-    virtual time_t date() const;
-    virtual bool keeps_connection() const;
+    hutzn::method method() const override;
+    const uri_interface& request_uri() const override;
+    hutzn::http::version version() const override;
+    const std::map<std::string, std::string>& headers() const override;
+    const hutzn::buffer& data() const override;
+    const media_type_interface& data_content_type() const override;
+    time_t date() const override;
+    bool keeps_connection() const;
 
     int32_t get();
     int32_t peek();

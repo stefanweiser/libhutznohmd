@@ -43,13 +43,13 @@ public:
 
     bool parse(const lexer& l, int32_t& character);
 
-    virtual media_type_interface::mime_type type() const;
-    virtual media_type_interface::mime_subtype subtype() const;
-    virtual const char* custom_type() const;
-    virtual const char* custom_subtype() const;
-    virtual const std::map<std::string, std::string>& parameters() const;
-    virtual uint8_t quality() const;
-    virtual uint8_t specification_grade() const;
+    media_type_interface::mime_type type() const override;
+    media_type_interface::mime_subtype subtype() const override;
+    const char* custom_type() const override;
+    const char* custom_subtype() const override;
+    const std::map<std::string, std::string>& parameters() const override;
+    uint8_t quality() const override;
+    uint8_t specification_grade() const override;
 
 private:
     void parse_type(int32_t& character);

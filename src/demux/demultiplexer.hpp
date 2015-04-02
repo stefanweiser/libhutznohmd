@@ -36,22 +36,22 @@ class demultiplexer : public demux_interface
 public:
     explicit demultiplexer();
 
-    virtual request_handler_callback
-    determine_request_handler(const hutzn::request::request_interface& request);
+    request_handler_callback determine_request_handler(
+        const hutzn::request::request_interface& request) override;
 
-    virtual handler_pointer connect(const request_handler_id& id,
-                                    const request_handler_callback& fn);
+    handler_pointer connect(const request_handler_id& id,
+                            const request_handler_callback& fn) override;
 
-    virtual hutzn::request::mime_type
-    register_mime_type(const std::string& type);
+    hutzn::request::mime_type
+    register_mime_type(const std::string& type) override;
 
-    virtual hutzn::request::mime_subtype
-    register_mime_subtype(const std::string& subtype);
+    hutzn::request::mime_subtype
+    register_mime_subtype(const std::string& subtype) override;
 
-    virtual bool unregister_mime_type(const hutzn::request::mime_type& type);
+    bool unregister_mime_type(const hutzn::request::mime_type& type) override;
 
-    virtual bool
-    unregister_mime_subtype(const hutzn::request::mime_subtype& subtype);
+    bool unregister_mime_subtype(
+        const hutzn::request::mime_subtype& subtype) override;
 
     std::shared_ptr<hutzn::request::parser_data> request_parser_data() const;
 

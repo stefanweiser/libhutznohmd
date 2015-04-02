@@ -39,13 +39,13 @@ public:
 
     explicit connection(const int& s);
     explicit connection(const int& s, const sockaddr_in& address);
-    virtual ~connection() override;
-    virtual void close() override;
-    virtual bool receive(hutzn::buffer& data, const size_t& max_size) override;
-    virtual bool send(const hutzn::buffer& data) override;
-    virtual bool send(const std::string& data) override;
-    virtual bool set_lingering_timeout(const int& timeout) override;
-    virtual int socket() const override;
+    ~connection() override;
+    void close() override;
+    bool receive(hutzn::buffer& data, const size_t& max_size) override;
+    bool send(const hutzn::buffer& data) override;
+    bool send(const std::string& data) override;
+    bool set_lingering_timeout(const int& timeout) override;
+    int socket() const override;
 
     bool connect();
 

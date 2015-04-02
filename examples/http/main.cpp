@@ -27,13 +27,12 @@ class connection : public hutzn::socket::connection_interface
 public:
     explicit connection(const std::string& filename);
 
-    virtual bool connect();
-    virtual void close();
-    virtual bool receive(hutzn::buffer& data, const size_t& max_size);
-    virtual bool send(const hutzn::buffer& data);
-    virtual bool send(const std::string& data);
-    virtual bool set_lingering_timeout(const int& timeout);
-    virtual int socket() const;
+    void close() override;
+    bool receive(hutzn::buffer& data, const size_t& max_size) override;
+    bool send(const hutzn::buffer& data) override;
+    bool send(const std::string& data) override;
+    bool set_lingering_timeout(const int& timeout) override;
+    int socket() const override;
 
 private:
     std::ifstream stream_;
@@ -44,11 +43,6 @@ connection::connection(const std::string& filename)
 {
     std::cout << " stream is_open() = " << stream_.is_open() << "."
               << std::endl;
-}
-
-bool connection::connect()
-{
-    return false;
 }
 
 void connection::close()

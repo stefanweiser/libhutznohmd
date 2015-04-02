@@ -42,7 +42,6 @@ class base_parser
 public:
     explicit base_parser(const anonymous_int_function& get_functor,
                          const anonymous_int_function& peek_functor);
-    virtual ~base_parser();
 
     bool parse_connection(int32_t& character);
     bool parse_content_length(int32_t& character);
