@@ -55,8 +55,8 @@ void response::deliver()
     connection_->send(data_);
 }
 
-void
-response::set_status_code(const hutzn::request::http_status_code& status_code)
+void response::set_status_code(
+    const hutzn::request::http_status_code& status_code)
 {
     status_code_ = status_code;
 }
@@ -88,9 +88,8 @@ void response::deliver_version(std::ostream& os,
     }
 }
 
-void
-response::deliver_status_code_text(std::ostream& os,
-                                   const hutzn::request::http_status_code& code)
+void response::deliver_status_code_text(
+    std::ostream& os, const hutzn::request::http_status_code& code)
 {
     static const std::map<hutzn::request::http_status_code,
                           std::string> status_code_text = {

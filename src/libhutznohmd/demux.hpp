@@ -274,27 +274,27 @@ public:
     //! type was not already registered. You could use the custom MIME type
     //! afterwards. If the MIME type already exists, it returns
     //! hutzn::request::mime_type::INVALID.
-    virtual hutzn::request::mime_type
-    register_mime_type(const std::string& type) = 0;
+    virtual hutzn::request::mime_type register_mime_type(
+        const std::string& type) = 0;
 
     //! Registers a custom MIME subtype and returns a new mime_subtype value if
     //! that type was not already registered. You could use the custom MIME
     //! subtype afterwards. If the MIME subtype already exists, it returns
     //! hutzn::request::mime_subtype::INVALID.
-    virtual hutzn::request::mime_subtype
-    register_mime_subtype(const std::string& subtype) = 0;
+    virtual hutzn::request::mime_subtype register_mime_subtype(
+        const std::string& subtype) = 0;
 
     //! Unregisters a MIME type and returns true, if it was found and
     //! successfully unregistered. To successfully unregister a MIME type, it is
     //! necessary, that no registered request handler uses it.
-    virtual bool
-    unregister_mime_type(const hutzn::request::mime_type& type) = 0;
+    virtual bool unregister_mime_type(
+        const hutzn::request::mime_type& type) = 0;
 
     //! Unregisters a MIME subtype and returns true, if it was found and
     //! successfully unregistered. To successfully unregister a MIME subtype, it
     //! is necessary, that no registered request handler uses it.
-    virtual bool
-    unregister_mime_subtype(const hutzn::request::mime_subtype& subtype) = 0;
+    virtual bool unregister_mime_subtype(
+        const hutzn::request::mime_subtype& subtype) = 0;
 };
 
 //! Demultiplexers should always be used with reference counted pointers.
@@ -321,15 +321,15 @@ public:
     //! is answered by a request or an error handler. Returns true, if one
     //! request was successfully answered (either as error or not) and false
     //! when the block device got closed during read or send on the connection.
-    virtual bool
-    handle_one_request(socket::block_device_interface& device) const = 0;
+    virtual bool handle_one_request(
+        socket::block_device_interface& device) const = 0;
 
     //! Connects an error handler to a specific status code. Returns a handler
     //! object, which acts as the error handler's lifetime scope. If there is
     //! already one registered, it returns null.
-    virtual handler_pointer
-    set_error_handler(const hutzn::request::http_status_code& code,
-                      const error_handler_callback& fn) = 0;
+    virtual handler_pointer set_error_handler(
+        const hutzn::request::http_status_code& code,
+        const error_handler_callback& fn) = 0;
 };
 
 //! The request processor should always be a reference counted pointer
@@ -337,9 +337,9 @@ using request_processor_pointer = std::shared_ptr<request_processor_interface>;
 
 //! Creates a new request processor. Needs a query pointer and a connection
 //! timeout in seconds.
-request_processor_pointer
-make_request_processor(const demux_query_pointer& query_interface,
-                       const uint64_t& connection_timeout_in_sec = 30);
+request_processor_pointer make_request_processor(
+    const demux_query_pointer& query_interface,
+    const uint64_t& connection_timeout_in_sec = 30);
 
 } // namespace demux
 

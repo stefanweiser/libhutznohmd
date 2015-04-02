@@ -42,21 +42,21 @@ public:
     handler_pointer connect(const request_handler_id& id,
                             const request_handler_callback& fn) override;
 
-    hutzn::request::mime_type
-    register_mime_type(const std::string& type) override;
+    hutzn::request::mime_type register_mime_type(
+        const std::string& type) override;
 
-    hutzn::request::mime_subtype
-    register_mime_subtype(const std::string& subtype) override;
+    hutzn::request::mime_subtype register_mime_subtype(
+        const std::string& subtype) override;
 
     bool unregister_mime_type(const hutzn::request::mime_type& type) override;
 
     bool unregister_mime_subtype(
         const hutzn::request::mime_subtype& subtype) override;
 
-    std::shared_ptr<hutzn::request::parser_data> request_parser_data() const;
+    hutzn::request::parser_data_pointer request_parser_data() const;
 
 private:
-    std::shared_ptr<hutzn::request::parser_data> request_parser_data_;
+    hutzn::request::parser_data_pointer request_parser_data_;
 };
 
 } // namespace demux

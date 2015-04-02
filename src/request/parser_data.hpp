@@ -49,6 +49,8 @@ private:
     mime_data<mime_subtype, uint16_t> mime_subtypes_;
 };
 
+using parser_data_pointer = std::shared_ptr<parser_data>;
+
 } // namespace request
 
 } // namespace hutzn

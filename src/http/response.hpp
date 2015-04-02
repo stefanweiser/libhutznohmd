@@ -46,9 +46,8 @@ public:
 
 private:
     static void deliver_version(std::ostream& os, const version& version);
-    static void
-    deliver_status_code_text(std::ostream& os,
-                             const hutzn::request::http_status_code& code);
+    static void deliver_status_code_text(
+        std::ostream& os, const hutzn::request::http_status_code& code);
 
     hutzn::socket::connection_pointer connection_;
 
