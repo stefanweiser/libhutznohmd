@@ -34,13 +34,14 @@ template <typename value_type, typename arithmetic_type>
 class mime_data
 {
 public:
+    static_assert(sizeof(value_type) == sizeof(arithmetic_type),
+                  "Value and arithmetic type is not of the same size.");
+
     explicit mime_data()
         : next_value_(1)
         , registered_types_()
         , types_(true)
     {
-        static_assert(sizeof(value_type) == sizeof(arithmetic_type),
-                      "Value and arithmetic type is not of the same size.");
     }
 
     value_type register_type(const std::string& type)
