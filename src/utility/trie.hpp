@@ -29,106 +29,142 @@
 namespace hutzn
 {
 
+//! Implements a trie to map a string to a specific value. It could be case
+//! sensitive or case insensitive and provides the basic operations insert, find
+//! and erase. The find operation will search for stored trie tokens at the
+//! search string's begin. It will always find the longest result.
 template <typename value_type>
 class trie
 {
 public:
-    using find_result_type = std::tuple<size_t, value_type>;
+    //! Result structure for each find operation.
+    struct find_result_type
+    {
+        //! Number of characters, that were used to get a valid token. Is zero
+        //! if no token was found (the value is undefined then).
+        size_t used_size;
+
+        //! Found value or undefined if no value was found.
+        value_type value;
+
+        bool operator==(const find_result_type& rhs) const
+        {
+            return (rhs.used_size == used_size) && (rhs.value == value);
+        }
+    };
 
     static_assert(sizeof(uint8_t) == sizeof(char),
                   "The trie implementation need a char type that has 8 bits or "
                   "it would compromise some type convertions.");
 
+    //! Determines whether the trie and all it's operations are acting case
+    //! sensitive or not.
     trie(const bool is_case_insensitive)
         : is_case_insensitive_(is_case_insensitive)
-        , root_node_{}
+        , root_node_()
     {
     }
 
-    find_result_type find(const char* const string,
+    //! Returns the longest match inside the trie. At most max_length characters
+    //! are read. It returns a structure of used length to get this token and
+    //! result value. If no token is found, the result's used size is zero.
+    find_result_type find(const char* const search_string,
                           const size_t max_length) const
     {
-        return find(root_node_, string, string, max_length);
+        return find(root_node_, search_string, search_string, max_length);
     }
 
-    bool insert(const char* string, const value_type& value)
+    //! Inserts a token with it's value into the trie. Returns whether the token
+    //! was not already in the trie and the token was therefore inserted.
+    bool insert(const char* token, const value_type& value)
     {
-        return insert(root_node_, string, value);
+        return insert(root_node_, token, value);
     }
 
-    bool erase(const char* string)
+    //! Erases a token. Returns whether the token could be erased.
+    bool erase(const char* token)
     {
-        return erase(root_node_, string);
+        return erase(root_node_, token);
     }
 
 private:
     struct trie_node
     {
-        bool has_value_{false};
-        value_type value_{value_type()};
-        std::array<std::unique_ptr<trie_node>, 256> children_;
-        size_t used_children_{0};
+        trie_node()
+            : has_value(false)
+            , value()
+            , children()
+            , used_children(0)
+        {
+        }
+
+        bool has_value;
+        value_type value;
+        std::array<std::unique_ptr<trie_node>, 256> children;
+        size_t used_children;
     };
 
-    find_result_type generateFindResult(const trie_node& node,
-                                        const char* const original_string,
-                                        const char* const string) const
+    find_result_type generate_find_result(const trie_node& node,
+                                          const char* const original_string,
+                                          const char* const string) const
     {
         const size_t used_chars =
-            node.has_value_ ? static_cast<size_t>(string - original_string) : 0;
-        return std::make_tuple(used_chars, node.value_);
+            node.has_value ? static_cast<size_t>(string - original_string) : 0;
+        return find_result_type{used_chars, node.value};
     }
 
     find_result_type find(const trie_node& node,
-                          const char* const original_string,
-                          const char* const string,
+                          const char* const original_search_string,
+                          const char* const search_string,
                           const size_t characters_remaining) const
     {
         if (0 == characters_remaining) {
-            return generateFindResult(node, original_string, string);
+            return generate_find_result(node, original_search_string,
+                                        search_string);
         }
 
-        find_result_type result;
+        find_result_type result{0, value_type()};
 
         const std::unique_ptr<trie_node>& child =
-            node.children_[static_cast<uint8_t>(*string)];
+            node.children[static_cast<uint8_t>(*search_string)];
         if (child) {
-            result = find(*child, original_string, string + 1,
+            result = find(*child, original_search_string, search_string + 1,
                           characters_remaining - 1);
         }
 
-        if (0 == std::get<0>(result)) {
-            return generateFindResult(node, original_string, string);
+        if (0 == result.used_size) {
+            return generate_find_result(node, original_search_string,
+                                        search_string);
         }
         return result;
     }
 
     trie_node& get_or_create_child(trie_node& curr, const uint8_t c)
     {
-        if (!curr.children_[c]) {
-            curr.children_[c] = std::unique_ptr<trie_node>(new trie_node);
-            curr.used_children_++;
+        if (!curr.children[c]) {
+            curr.children[c] = std::unique_ptr<trie_node>(new trie_node);
+            curr.used_children++;
         }
-        return *curr.children_[c];
+        return *curr.children[c];
     }
 
-    bool insert(trie_node& curr, const char* string, const value_type& value)
+    bool insert(trie_node& curr, const char* token, const value_type& value)
     {
-        const uint8_t c = static_cast<uint8_t>(*string);
+        const uint8_t c = static_cast<uint8_t>(*token);
         if (c == 0) {
 
             // Check if node is already possessed.
-            if (true == curr.has_value_) {
+            if (true == curr.has_value) {
                 return false;
             }
 
-            curr.has_value_ = true;
-            curr.value_ = value;
+            curr.has_value = true;
+            curr.value = value;
 
         } else {
 
             if (false ==
-                insert(get_or_create_child(curr, c), string + 1, value)) {
+                insert(get_or_create_child(curr, c), token + 1, value)) {
                 return false;
             }
 
@@ -136,14 +172,14 @@ private:
                 if (true == check_range<uint8_t, 'a', 'z'>(c)) {
 
                     if (false == insert(get_or_create_child(curr, c & 0xDFU),
-                                        string + 1, value)) {
+                                        token + 1, value)) {
                         return false;
                     }
 
                 } else if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
 
                     if (false == insert(get_or_create_child(curr, c | 0x20U),
-                                        string + 1, value)) {
+                                        token + 1, value)) {
                         return false;
                     }
                 }
@@ -153,26 +189,26 @@ private:
         return true;
     }
 
-    bool erase(trie_node& curr, const char* string)
+    bool erase(trie_node& curr, const char* token)
     {
-        const uint8_t c = static_cast<uint8_t>(*string);
+        const uint8_t c = static_cast<uint8_t>(*token);
         if (c == 0) {
 
             // Check if node is not possessed.
-            if (false == curr.has_value_) {
+            if (false == curr.has_value) {
                 return false;
             }
 
-            curr.has_value_ = false;
+            curr.has_value = false;
 
         } else {
 
-            std::unique_ptr<trie_node>& child = curr.children_[c];
-            if (!child || (false == erase(*child, string + 1))) {
+            std::unique_ptr<trie_node>& child = curr.children[c];
+            if (!child || (false == erase(*child, token + 1))) {
                 return false;
             }
 
-            if ((0 == child->used_children_) && (false == child->has_value_)) {
+            if ((0 == child->used_children) && (false == child->has_value)) {
                 child.reset();
             }
 
@@ -180,28 +216,28 @@ private:
                 if (true == check_range<uint8_t, 'a', 'z'>(c)) {
 
                     std::unique_ptr<trie_node>& other_child =
-                        curr.children_[c & 0xDFU];
+                        curr.children[c & 0xDFU];
                     if (!other_child ||
-                        (false == erase(*other_child, string + 1))) {
+                        (false == erase(*other_child, token + 1))) {
                         return false;
                     }
 
-                    if ((0 == other_child->used_children_) &&
-                        (false == other_child->has_value_)) {
+                    if ((0 == other_child->used_children) &&
+                        (false == other_child->has_value)) {
                         other_child.reset();
                     }
 
                 } else if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
 
                     std::unique_ptr<trie_node>& other_child =
-                        curr.children_[c | 0x20U];
+                        curr.children[c | 0x20U];
                     if (!other_child ||
-                        (false == erase(*other_child, string + 1))) {
+                        (false == erase(*other_child, token + 1))) {
                         return false;
                     }
 
-                    if ((0 == other_child->used_children_) &&
-                        (false == other_child->has_value_)) {
+                    if ((0 == other_child->used_children) &&
+                        (false == other_child->has_value)) {
                         other_child.reset();
                     }
                 }

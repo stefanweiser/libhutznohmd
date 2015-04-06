@@ -36,6 +36,7 @@ class mime_data
 public:
     explicit mime_data()
         : next_value_(1)
+        , registered_types_()
         , types_(true)
     {
         static_assert(sizeof(value_type) == sizeof(arithmetic_type),
@@ -74,11 +75,9 @@ public:
 
     value_type parse_type(const char* const string, const size_t max_length)
     {
-        size_t bytes_read;
-        value_type result;
-        std::tie(bytes_read, result) = types_.find(string, max_length);
-        if (bytes_read > 0) {
-            return result;
+        auto result = types_.find(string, max_length);
+        if (result.used_size > 0) {
+            return result.value;
         }
         return value_type::INVALID;
     }
