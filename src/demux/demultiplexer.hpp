@@ -20,6 +20,7 @@
 #define LIBHUTZNOHMD_DEMUX_DEMULTIPLEXER_HPP
 
 #include <memory>
+#include <mutex>
 
 #include <libhutznohmd/demux.hpp>
 
@@ -42,6 +43,8 @@ public:
     handler_pointer connect(const request_handler_id& id,
                             const request_handler_callback& fn) override;
 
+    bool disconnect(const request_handler_id& id);
+
     hutzn::request::mime_type register_mime_type(
         const std::string& type) override;
 
@@ -54,6 +57,18 @@ public:
         const hutzn::request::mime_subtype& subtype) override;
 
 private:
+    using input_result_mime_tuple =
+        std::tuple<hutzn::request::mime, hutzn::request::mime>;
+    using resource_mime_map =
+        std::map<input_result_mime_tuple, request_handler_callback>;
+    using resource_method_map =
+        std::map<hutzn::request::http_verb, resource_mime_map>;
+    using resource_map = std::map<std::string, resource_method_map>;
+
+    std::mutex resource_callbacks_mutex_;
+    resource_map resource_callbacks_;
+
+    std::mutex request_parser_data_mutex_;
     hutzn::request::parser_data_pointer request_parser_data_;
 };
 
