@@ -25,6 +25,8 @@ namespace request
 {
 
 parser_data::parser_data()
+    : mime_types_()
+    , mime_subtypes_()
 {
     const size_t type_size = static_cast<size_t>(mime_type::COUNT) - 1;
     static const char* const type_names[] = {"*",     "application", "audio",
