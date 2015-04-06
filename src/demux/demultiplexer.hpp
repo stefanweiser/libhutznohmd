@@ -53,8 +53,6 @@ public:
     bool unregister_mime_subtype(
         const hutzn::request::mime_subtype& subtype) override;
 
-    hutzn::request::parser_data_pointer request_parser_data() const;
-
 private:
     hutzn::request::parser_data_pointer request_parser_data_;
 };

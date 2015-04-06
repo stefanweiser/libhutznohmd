@@ -69,11 +69,6 @@ bool demultiplexer::unregister_mime_subtype(
     return request_parser_data_->unregister_mime_subtype(subtype);
 }
 
-hutzn::request::parser_data_pointer demultiplexer::request_parser_data() const
-{
-    return request_parser_data_;
-}
-
 } // namespace demux
 
 } // namespace hutzn
