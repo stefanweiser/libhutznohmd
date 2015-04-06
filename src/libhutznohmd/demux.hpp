@@ -145,9 +145,9 @@ public:
     }
 };
 
-void registerHandlers(C* const c,
-                      hutzn::demux::request_processor_interface& r,
-                      hutzn::demux::demux_interface& m)
+void register_handlers(C* const c,
+                       hutzn::demux::request_processor_interface& r,
+                       hutzn::demux::demux_interface& m)
 {
     hutzn::demux::request_handler_id i{
         "/",
