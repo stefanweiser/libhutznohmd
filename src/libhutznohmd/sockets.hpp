@@ -38,8 +38,8 @@ are the two types of sockets, that are used by network communication
 protocols.
 
 A listener is defined as an endpoint, to which connection endpoints can connect
-to. Once a connection has been established, it connects two programs via a
-network. This connection is represented by a connection object.
+to. Once a connection has been established, it connects two programs. This
+connection is represented by a connection object.
 
 @startuml{data_source_sink_classes.svg}
 namespace hutzn {
