@@ -35,6 +35,48 @@ TEST(demultiplexer, construction)
     EXPECT_NE(demultiplexer.get(), nullptr);
 }
 
+TEST(demultiplexer, connect_disconnect)
+{
+    demux_pointer demultiplexer = make_demultiplexer();
+    ASSERT_NE(demultiplexer.get(), nullptr);
+
+    request_handler_id id{
+        "/", hutzn::request::http_verb::GET,
+        hutzn::request::mime(hutzn::request::mime_type::WILDCARD,
+                             hutzn::request::mime_subtype::WILDCARD),
+        hutzn::request::mime(hutzn::request::mime_type::TEXT,
+                             hutzn::request::mime_subtype::PLAIN)};
+    auto fn = [](const hutzn::request::request_interface&,
+                 hutzn::request::response_interface&) {
+        return hutzn::request::http_status_code::OK;
+    };
+    handler_pointer handler1 = demultiplexer->connect(id, fn);
+
+    EXPECT_NE(handler1.get(), nullptr);
+}
+
+TEST(demultiplexer, connect_twice)
+{
+    demux_pointer demultiplexer = make_demultiplexer();
+    ASSERT_NE(demultiplexer.get(), nullptr);
+
+    request_handler_id id{
+        "/", hutzn::request::http_verb::GET,
+        hutzn::request::mime(hutzn::request::mime_type::WILDCARD,
+                             hutzn::request::mime_subtype::WILDCARD),
+        hutzn::request::mime(hutzn::request::mime_type::TEXT,
+                             hutzn::request::mime_subtype::PLAIN)};
+    auto fn = [](const hutzn::request::request_interface&,
+                 hutzn::request::response_interface&) {
+        return hutzn::request::http_status_code::OK;
+    };
+    handler_pointer handler1 = demultiplexer->connect(id, fn);
+    handler_pointer handler2 = demultiplexer->connect(id, fn);
+
+    EXPECT_NE(handler1.get(), nullptr);
+    EXPECT_EQ(handler2.get(), nullptr);
+}
+
 } // namespace demux
 
 } // namespace hutzn
