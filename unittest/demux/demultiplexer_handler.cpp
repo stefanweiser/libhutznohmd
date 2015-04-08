@@ -16,9 +16,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <demux/demultiplexer.hpp>
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
-#include "demultiplex_handler.hpp"
+#include <demux/demultiplex_handler.hpp>
+
+using namespace testing;
 
 namespace hutzn
 {
@@ -26,16 +29,8 @@ namespace hutzn
 namespace demux
 {
 
-demultiplex_handler::demultiplex_handler(demux_disconnect_interface& demuxer,
-                                         const request_handler_id& id)
-    : demuxer_(demuxer)
-    , id_(id)
+TEST(demultiplexer_handler, disconnect)
 {
-}
-
-demultiplex_handler::~demultiplex_handler()
-{
-    demuxer_.disconnect(id_);
 }
 
 } // namespace demux

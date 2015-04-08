@@ -16,9 +16,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <demux/demultiplexer.hpp>
-
-#include "demultiplex_handler.hpp"
+#include "demux_disconnect_interface.hpp"
 
 namespace hutzn
 {
@@ -26,16 +24,8 @@ namespace hutzn
 namespace demux
 {
 
-demultiplex_handler::demultiplex_handler(demux_disconnect_interface& demuxer,
-                                         const request_handler_id& id)
-    : demuxer_(demuxer)
-    , id_(id)
+demux_disconnect_interface::~demux_disconnect_interface()
 {
-}
-
-demultiplex_handler::~demultiplex_handler()
-{
-    demuxer_.disconnect(id_);
 }
 
 } // namespace demux

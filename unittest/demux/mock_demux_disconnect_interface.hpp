@@ -16,9 +16,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <demux/demultiplexer.hpp>
+#ifndef LIBHUTZNOHMD_LIBHUTZNOHMD_MOCK_DEMUX_HPP
+#define LIBHUTZNOHMD_LIBHUTZNOHMD_MOCK_DEMUX_HPP
 
-#include "demultiplex_handler.hpp"
+#include <gmock/gmock.h>
+
+#include <demux/demux_disconnect_interface.hpp>
 
 namespace hutzn
 {
@@ -26,18 +29,17 @@ namespace hutzn
 namespace demux
 {
 
-demultiplex_handler::demultiplex_handler(demux_disconnect_interface& demuxer,
-                                         const request_handler_id& id)
-    : demuxer_(demuxer)
-    , id_(id)
+class demux_disconnect_interface_mock : public demux_disconnect_interface
 {
-}
+public:
+    MOCK_METHOD1(disconnect, bool(const request_handler_id&));
+};
 
-demultiplex_handler::~demultiplex_handler()
-{
-    demuxer_.disconnect(id_);
-}
+using demux_disconnect_mock_pointer =
+    std::shared_ptr<demux_disconnect_interface_mock>;
 
 } // namespace demux
 
 } // namespace hutzn
+
+#endif // LIBHUTZNOHMD_LIBHUTZNOHMD_MOCK_DEMUX_HPP

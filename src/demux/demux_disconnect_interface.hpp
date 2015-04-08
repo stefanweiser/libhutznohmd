@@ -16,9 +16,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <demux/demultiplexer.hpp>
+#ifndef LIBHUTZNOHMD_DEMUX_DEMUX_DISCONNECT_INTERFACE_HPP
+#define LIBHUTZNOHMD_DEMUX_DEMUX_DISCONNECT_INTERFACE_HPP
 
-#include "demultiplex_handler.hpp"
+#include <libhutznohmd/demux.hpp>
 
 namespace hutzn
 {
@@ -26,18 +27,16 @@ namespace hutzn
 namespace demux
 {
 
-demultiplex_handler::demultiplex_handler(demux_disconnect_interface& demuxer,
-                                         const request_handler_id& id)
-    : demuxer_(demuxer)
-    , id_(id)
+class demux_disconnect_interface
 {
-}
+public:
+    virtual ~demux_disconnect_interface();
 
-demultiplex_handler::~demultiplex_handler()
-{
-    demuxer_.disconnect(id_);
-}
+    virtual bool disconnect(const request_handler_id& id) = 0;
+};
 
 } // namespace demux
 
 } // namespace hutzn
+
+#endif // LIBHUTZNOHMD_DEMUX_DEMUX_DISCONNECT_INTERFACE_HPP

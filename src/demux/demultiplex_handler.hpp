@@ -23,24 +23,24 @@
 
 #include <libhutznohmd/demux.hpp>
 
+#include <demux/demux_disconnect_interface.hpp>
+
 namespace hutzn
 {
 
 namespace demux
 {
 
-class demultiplexer;
-
 class demultiplex_handler : public handler_interface
 {
 public:
-    explicit demultiplex_handler(demultiplexer& demuxer,
+    explicit demultiplex_handler(demux_disconnect_interface& demuxer,
                                  const request_handler_id& id);
 
     ~demultiplex_handler() override;
 
 private:
-    demultiplexer& demuxer_;
+    demux_disconnect_interface& demuxer_;
     request_handler_id id_;
 };
 

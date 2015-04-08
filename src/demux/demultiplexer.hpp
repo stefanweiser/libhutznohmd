@@ -26,13 +26,15 @@
 
 #include <request/parser_data.hpp>
 
+#include <demux/demux_disconnect_interface.hpp>
+
 namespace hutzn
 {
 
 namespace demux
 {
 
-class demultiplexer : public demux_interface
+class demultiplexer : public demux_interface, public demux_disconnect_interface
 {
 public:
     explicit demultiplexer();
@@ -43,7 +45,7 @@ public:
     handler_pointer connect(const request_handler_id& id,
                             const request_handler_callback& fn) override;
 
-    bool disconnect(const request_handler_id& id);
+    bool disconnect(const request_handler_id& id) override;
 
     hutzn::request::mime_type register_mime_type(
         const std::string& type) override;
