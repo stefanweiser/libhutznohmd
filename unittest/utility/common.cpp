@@ -58,6 +58,8 @@ TEST(common, is_valid_url_path_invalid)
     EXPECT_FALSE(is_valid_url_path("/foo/bar//"));
     EXPECT_FALSE(is_valid_url_path("foo"));
     EXPECT_FALSE(is_valid_url_path("foo/bar"));
+    EXPECT_FALSE(is_valid_url_path("/#"));
+    EXPECT_FALSE(is_valid_url_path("/?"));
 }
 
 } // namespace hutzn
