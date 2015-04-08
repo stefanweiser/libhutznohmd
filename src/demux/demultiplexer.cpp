@@ -52,12 +52,16 @@ handler_pointer demultiplexer::connect(const request_handler_id& id,
         return handler_pointer();
     }
 
-    std::lock_guard<std::mutex> lock(resource_callbacks_mutex_);
+    std::unique_lock<std::mutex> lock(resource_callbacks_mutex_);
     resource_mime_map& mime_map = resource_callbacks_[id.path][id.method];
     auto mime_tuple = std::make_tuple(id.input_type, id.result_type);
     auto it = mime_map.find(mime_tuple);
     if (it == mime_map.end()) {
         mime_map[mime_tuple] = fn;
+
+        // The id have been inserted. There is no need to keep the lock, when
+        // creating the resulting handler.
+        lock.unlock();
         return std::make_shared<demultiplex_handler>(*this, id);
     }
     return handler_pointer();
