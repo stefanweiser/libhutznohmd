@@ -95,7 +95,8 @@ def execute_clean(args):
 
 def execute_coverage(args):
     execute_clean(args)
-    execute_bootstrap(Struct(target='coverage'))
+    args.target = 'coverage'
+    execute_bootstrap(args)
     check_call(['make', '-j' + str(cpu_count()), 'coverage'], cwd=build_path)
 
 
