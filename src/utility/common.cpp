@@ -16,29 +16,45 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_UTILITY_COMMON_HPP
-#define LIBHUTZNOHMD_UTILITY_COMMON_HPP
+#include <utility/character_validation.hpp>
 
-#include <string>
+#include "common.hpp"
 
 namespace hutzn
 {
 
-template <typename type, const type lower_bound, const type upper_bound>
-bool check_range(const type& value)
+bool is_valid_url_path(const std::string& path)
 {
-    static_assert(lower_bound <= upper_bound,
-                  "Lower bound must be less or equal to upper bound.");
-    if ((value < lower_bound) || (value > upper_bound)) {
-        return false;
+    const char slash = '/';
+    bool must_be_a_slash = true;
+    bool could_be_a_slash = true;
+
+    for (const char& c : path) {
+        if (true == must_be_a_slash) {
+            if (c != slash) {
+                return false;
+            }
+            must_be_a_slash = false;
+        }
+
+        if (true == could_be_a_slash) {
+            if (c == slash) {
+                could_be_a_slash = false;
+            } else {
+                could_be_a_slash = true;
+            }
+        } else {
+            if (c == slash) {
+                return false;
+            }
+            could_be_a_slash = true;
+        }
+
+        if (false == is_valid_uri_path_character(static_cast<uint8_t>(c))) {
+            return false;
+        }
     }
     return true;
 }
 
-//! Checks if a given url path is valid. The path must begin with a slash and
-//! double slashs are not allowed. Returns true, if the the path is valid.
-bool is_valid_url_path(const std::string& path);
-
 } // namespace hutzn
-
-#endif // LIBHUTZNOHMD_UTILITY_COMMON_HPP
