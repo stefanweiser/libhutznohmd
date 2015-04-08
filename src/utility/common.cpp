@@ -23,7 +23,7 @@
 namespace hutzn
 {
 
-bool is_valid_url_path(const std::string& path)
+bool is_valid_uri_path(const std::string& path)
 {
     const char slash = '/';
     bool must_be_a_slash = true;

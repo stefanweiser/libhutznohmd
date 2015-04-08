@@ -46,20 +46,20 @@ TEST(common, check_range_lower_bound)
 
 TEST(common, is_valid_url_path_valid)
 {
-    EXPECT_TRUE(is_valid_url_path("/foo/bar"));
-    EXPECT_TRUE(is_valid_url_path("/foo/bar/"));
-    EXPECT_TRUE(is_valid_url_path("/"));
+    EXPECT_TRUE(is_valid_uri_path("/foo/bar"));
+    EXPECT_TRUE(is_valid_uri_path("/foo/bar/"));
+    EXPECT_TRUE(is_valid_uri_path("/"));
 }
 
 TEST(common, is_valid_url_path_invalid)
 {
-    EXPECT_FALSE(is_valid_url_path("//"));
-    EXPECT_FALSE(is_valid_url_path("/foo//bar"));
-    EXPECT_FALSE(is_valid_url_path("/foo/bar//"));
-    EXPECT_FALSE(is_valid_url_path("foo"));
-    EXPECT_FALSE(is_valid_url_path("foo/bar"));
-    EXPECT_FALSE(is_valid_url_path("/#"));
-    EXPECT_FALSE(is_valid_url_path("/?"));
+    EXPECT_FALSE(is_valid_uri_path("//"));
+    EXPECT_FALSE(is_valid_uri_path("/foo//bar"));
+    EXPECT_FALSE(is_valid_uri_path("/foo/bar//"));
+    EXPECT_FALSE(is_valid_uri_path("foo"));
+    EXPECT_FALSE(is_valid_uri_path("foo/bar"));
+    EXPECT_FALSE(is_valid_uri_path("/#"));
+    EXPECT_FALSE(is_valid_uri_path("/?"));
 }
 
 } // namespace hutzn

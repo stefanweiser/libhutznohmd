@@ -37,7 +37,7 @@ bool check_range(const type& value)
 
 //! Checks if a given url path is valid. The path must begin with a slash and
 //! double slashs are not allowed. Returns true, if the the path is valid.
-bool is_valid_url_path(const std::string& path);
+bool is_valid_uri_path(const std::string& path);
 
 } // namespace hutzn
 
