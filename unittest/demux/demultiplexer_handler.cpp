@@ -19,6 +19,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
+#include <demux/mock_demux_disconnect_interface.hpp>
 #include <demux/demultiplex_handler.hpp>
 
 using namespace testing;
@@ -29,8 +30,26 @@ namespace hutzn
 namespace demux
 {
 
+bool operator==(const request_handler_id& lhs, const request_handler_id& rhs)
+{
+    return ((lhs.path == rhs.path) && (lhs.method == rhs.method) &&
+            (lhs.input_type == rhs.input_type) &&
+            (lhs.result_type == rhs.result_type));
+}
+
 TEST(demultiplexer_handler, disconnect)
 {
+    demux_disconnect_mock_pointer demuxer =
+        std::make_shared<demux_disconnect_interface_mock>();
+
+    request_handler_id id{
+        "/", hutzn::request::http_verb::GET,
+        hutzn::request::mime(hutzn::request::mime_type::WILDCARD,
+                             hutzn::request::mime_subtype::WILDCARD),
+        hutzn::request::mime(hutzn::request::mime_type::TEXT,
+                             hutzn::request::mime_subtype::PLAIN)};
+    EXPECT_CALL(*demuxer, disconnect(id)).Times(1).WillOnce(Return(true));
+    demultiplex_handler d(*demuxer, id);
 }
 
 } // namespace demux
