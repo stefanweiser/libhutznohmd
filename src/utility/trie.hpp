@@ -128,15 +128,6 @@ private:
             return result;
         }
 
-        trie_node& obtain_child(const uint8_t c)
-        {
-            if (!children_[c]) {
-                children_[c] = std::unique_ptr<trie_node>(new trie_node());
-                used_children_++;
-            }
-            return *children_[c];
-        }
-
         bool insert(const char* token, const value_type& value,
                     const bool is_case_insensitive)
         {
@@ -155,26 +146,28 @@ private:
 
                 const char* next = token + 1;
 
-                if (false ==
-                    obtain_child(c).insert(next, value, is_case_insensitive)) {
+                if (!children_[c]) {
+                    children_[c] = std::make_shared<trie_node>();
+                    used_children_++;
+                }
+                auto& child = children_[c];
+
+                if (false == child->insert(next, value, is_case_insensitive)) {
                     return false;
                 }
 
                 if (true == is_case_insensitive) {
                     if (true == check_range<uint8_t, 'a', 'z'>(c)) {
-
-                        if (false ==
-                            obtain_child(c & 0xDFU)
-                                .insert(next, value, is_case_insensitive)) {
-                            return false;
+                        auto& other = children_[c & 0xDFU];
+                        if (nullptr == other.get()) {
+                            other = child;
+                            used_children_++;
                         }
-
                     } else if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
-
-                        if (false ==
-                            obtain_child(c | 0x20U)
-                                .insert(next, value, is_case_insensitive)) {
-                            return false;
+                        auto& other = children_[c | 0x20U];
+                        if (nullptr == other.get()) {
+                            other = child;
+                            used_children_++;
                         }
                     }
                 }
@@ -199,7 +192,7 @@ private:
 
                 const char* next = token + 1;
 
-                std::unique_ptr<trie_node>& child = children_[c];
+                auto& child = children_[c];
                 if (!child ||
                     (false == child->erase(next, is_case_insensitive))) {
                     return false;
@@ -208,35 +201,26 @@ private:
                 if ((0 == child->used_children_) &&
                     (false == child->has_value_)) {
                     child.reset();
+                    used_children_--;
                 }
 
                 if (true == is_case_insensitive) {
                     if (true == check_range<uint8_t, 'a', 'z'>(c)) {
 
                         auto& other_child = children_[c & 0xDFU];
-                        if (!other_child ||
-                            (false ==
-                             other_child->erase(next, is_case_insensitive))) {
-                            return false;
-                        }
-
                         if ((0 == other_child->used_children_) &&
                             (false == other_child->has_value_)) {
                             other_child.reset();
+                            used_children_--;
                         }
 
                     } else if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
 
                         auto& other_child = children_[c | 0x20U];
-                        if (!other_child ||
-                            (false ==
-                             other_child->erase(next, is_case_insensitive))) {
-                            return false;
-                        }
-
                         if ((0 == other_child->used_children_) &&
                             (false == other_child->has_value_)) {
                             other_child.reset();
+                            used_children_--;
                         }
                     }
                 }
@@ -248,7 +232,7 @@ private:
     private:
         bool has_value_;
         value_type value_;
-        std::array<std::unique_ptr<trie_node>, 256> children_;
+        std::array<std::shared_ptr<trie_node>, 256> children_;
         size_t used_children_;
     };
 
