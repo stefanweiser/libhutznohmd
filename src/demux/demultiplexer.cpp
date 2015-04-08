@@ -48,11 +48,29 @@ request_handler_callback demultiplexer::determine_request_handler(
 handler_pointer demultiplexer::connect(const request_handler_id& id,
                                        const request_handler_callback& fn)
 {
+    // Check for invalid uri paths.
     if (false == is_valid_uri_path(id.path)) {
         return handler_pointer();
     }
 
     std::unique_lock<std::mutex> lock(resource_callbacks_mutex_);
+
+    // Check whether the input mime type or subtype is unregistered.
+    hutzn::request::mime_type type = id.input_type.first;
+    hutzn::request::mime_subtype subtype = id.input_type.second;
+    if ((false == request_parser_data_->is_mime_type_registered(type)) ||
+        (false == request_parser_data_->is_mime_subtype_registered(subtype))) {
+        return handler_pointer();
+    }
+
+    // Check whether the result mime type or subtype is unregistered.
+    type = id.result_type.first;
+    subtype = id.result_type.second;
+    if ((false == request_parser_data_->is_mime_type_registered(type)) ||
+        (false == request_parser_data_->is_mime_subtype_registered(subtype))) {
+        return handler_pointer();
+    }
+
     resource_mime_map& mime_map = resource_callbacks_[id.path][id.method];
     auto mime_tuple = std::make_tuple(id.input_type, id.result_type);
     auto it = mime_map.find(mime_tuple);

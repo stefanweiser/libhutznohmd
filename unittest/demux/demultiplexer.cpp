@@ -97,6 +97,39 @@ TEST(demultiplexer, connect_wrong_path)
     EXPECT_EQ(handler.get(), nullptr);
 }
 
+TEST(demultiplexer, connect_wrong_mime_types)
+{
+    demux_pointer demultiplexer = make_demultiplexer();
+    ASSERT_NE(demultiplexer.get(), nullptr);
+
+    request_handler_id id{
+        "/", hutzn::request::http_verb::GET,
+        hutzn::request::mime(hutzn::request::mime_type::WILDCARD,
+                             hutzn::request::mime_subtype::WILDCARD),
+        hutzn::request::mime(hutzn::request::mime_type::TEXT,
+                             hutzn::request::mime_subtype::PLAIN)};
+    auto fn = [](const hutzn::request::request_interface&,
+                 hutzn::request::response_interface&) {
+        return hutzn::request::http_status_code::OK;
+    };
+
+    auto test_id = id;
+    test_id.input_type.first = static_cast<hutzn::request::mime_type>(100);
+    EXPECT_EQ(demultiplexer->connect(test_id, fn).get(), nullptr);
+
+    test_id = id;
+    test_id.input_type.second = static_cast<hutzn::request::mime_subtype>(100);
+    EXPECT_EQ(demultiplexer->connect(test_id, fn).get(), nullptr);
+
+    test_id = id;
+    test_id.result_type.first = static_cast<hutzn::request::mime_type>(100);
+    EXPECT_EQ(demultiplexer->connect(test_id, fn).get(), nullptr);
+
+    test_id = id;
+    test_id.result_type.second = static_cast<hutzn::request::mime_subtype>(100);
+    EXPECT_EQ(demultiplexer->connect(test_id, fn).get(), nullptr);
+}
+
 } // namespace demux
 
 } // namespace hutzn
