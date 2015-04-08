@@ -268,7 +268,8 @@ public:
     //! Connects a request handler to a resource. Returns a handler object,
     //! which acts as lifetime scope of the request handler. If there is already
     //! a handler with the same request handler id registered, the operation
-    //! returns an empty handler.
+    //! will fail. It also fails, if the given path is not valid. When the
+    //! operation fails it returns an empty handler.
     virtual handler_pointer connect(const request_handler_id& id,
                                     const request_handler_callback& fn) = 0;
 

@@ -48,6 +48,10 @@ request_handler_callback demultiplexer::determine_request_handler(
 handler_pointer demultiplexer::connect(const request_handler_id& id,
                                        const request_handler_callback& fn)
 {
+    if (false == is_valid_uri_path(id.path)) {
+        return handler_pointer();
+    }
+
     std::lock_guard<std::mutex> lock(resource_callbacks_mutex_);
     resource_mime_map& mime_map = resource_callbacks_[id.path][id.method];
     auto mime_tuple = std::make_tuple(id.input_type, id.result_type);
