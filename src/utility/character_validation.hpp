@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_HTTP_PARSER_UTILITY_CHARACTER_COMPARE_HPP
-#define LIBHUTZNOHMD_HTTP_PARSER_UTILITY_CHARACTER_COMPARE_HPP
+#ifndef LIBHUTZNOHMD_UTILITY_CHARACTER_VALIDATION_HPP
+#define LIBHUTZNOHMD_UTILITY_CHARACTER_VALIDATION_HPP
 
 #include <array>
 #include <type_traits>
@@ -25,9 +25,6 @@
 #include <utility/common.hpp>
 
 namespace hutzn
-{
-
-namespace http
 {
 
 //! Converts a letter into the corresponding lower case letter.
@@ -192,8 +189,6 @@ static bool is_valid_quoted_string_character(uint8_t c)
     return (quoted_string_validity_map[c] != 0);
 }
 
-} // namespace http
-
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_HTTP_PARSER_UTILITY_CHARACTER_COMPARE_HPP
+#endif // LIBHUTZNOHMD_UTILITY_CHARACTER_VALIDATION_HPP

@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_COMMON_HPP
-#define LIBHUTZNOHMD_COMMON_HPP
+#ifndef LIBHUTZNOHMD_UTILITY_COMMON_HPP
+#define LIBHUTZNOHMD_UTILITY_COMMON_HPP
 
 namespace hutzn
 {
@@ -35,4 +35,4 @@ bool check_range(const type& value)
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_COMMON_HPP
+#endif // LIBHUTZNOHMD_UTILITY_COMMON_HPP

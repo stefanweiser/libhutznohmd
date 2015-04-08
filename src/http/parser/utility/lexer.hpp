@@ -22,8 +22,9 @@
 #include <cstddef>
 #include <string>
 
+#include <utility/character_validation.hpp>
+
 #include <http/parser/utility/anonymous_int_function.hpp>
-#include <http/parser/utility/character_handling.hpp>
 #include <http/parser/utility/push_back_string.hpp>
 
 namespace hutzn

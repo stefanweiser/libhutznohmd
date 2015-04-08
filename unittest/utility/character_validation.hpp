@@ -21,7 +21,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <http/parser/utility/character_handling.hpp>
+#include <utility/character_validation.hpp>
 
 using namespace testing;
 

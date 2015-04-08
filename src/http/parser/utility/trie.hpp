@@ -24,7 +24,8 @@
 #include <tuple>
 #include <vector>
 
-#include <http/parser/utility/character_handling.hpp>
+#include <utility/character_validation.hpp>
+
 #include <http/parser/utility/lexer.hpp>
 #include <http/parser/utility/push_back_string.hpp>
 #include <utility/common.hpp>

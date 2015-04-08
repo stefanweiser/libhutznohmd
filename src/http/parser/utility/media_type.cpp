@@ -18,7 +18,8 @@
 
 #include <array>
 
-#include <http/parser/utility/character_handling.hpp>
+#include <utility/character_validation.hpp>
+
 #include <http/parser/utility/trie.hpp>
 
 #include "media_type.hpp"
