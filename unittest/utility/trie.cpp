@@ -35,14 +35,14 @@ inline find_result_type_ make_find_result_type(const size_t used_size,
     return find_result_type_{used_size, value};
 }
 
-TEST(dynamic_trie, initial_trie_node)
+TEST(trie, initial_trie_node)
 {
     auto t = trie_(false);
     static const std::string str1 = "abc";
     EXPECT_EQ(t.find(str1.c_str(), 3), make_find_result_type(0, 0));
 }
 
-TEST(dynamic_trie, insert_and_remove_node)
+TEST(trie, insert_and_remove_node)
 {
     auto t = trie_(false);
     static const std::string str1 = "abc";
@@ -53,7 +53,7 @@ TEST(dynamic_trie, insert_and_remove_node)
     EXPECT_EQ(t.find(str1.c_str(), 3), make_find_result_type(0, 0));
 }
 
-TEST(dynamic_trie, find_divergent_strings)
+TEST(trie, find_divergent_strings)
 {
     auto t = trie_(false);
     static const std::string str1 = "abc";
@@ -72,7 +72,7 @@ TEST(dynamic_trie, find_divergent_strings)
     EXPECT_TRUE(t.erase("def"));
 }
 
-TEST(dynamic_trie, reinsert)
+TEST(trie, reinsert)
 {
     auto t = trie_(false);
     static const std::string str1 = "abc";
@@ -82,7 +82,7 @@ TEST(dynamic_trie, reinsert)
     EXPECT_FALSE(t.erase(str1.c_str()));
 }
 
-TEST(dynamic_trie, find_part_strings)
+TEST(trie, find_part_strings)
 {
     auto t = trie_(false);
     static const std::string str1 = "abc";
@@ -97,7 +97,7 @@ TEST(dynamic_trie, find_part_strings)
     EXPECT_TRUE(t.erase(str2.c_str()));
 }
 
-TEST(dynamic_trie, case_sensitive_reinsert)
+TEST(trie, case_sensitive_reinsert)
 {
     auto t = trie_(true);
     static const std::string str1 = "abc";
@@ -108,7 +108,7 @@ TEST(dynamic_trie, case_sensitive_reinsert)
     EXPECT_FALSE(t.erase(str1.c_str()));
 }
 
-TEST(dynamic_trie, case_sensitive_find)
+TEST(trie, case_sensitive_find)
 {
     auto t = trie_(true);
     static const std::string str1 = "abc";
@@ -124,7 +124,7 @@ TEST(dynamic_trie, case_sensitive_find)
     EXPECT_TRUE(t.erase(str1.c_str()));
 }
 
-TEST(dynamic_trie, case_sensitive_special_characters)
+TEST(trie, case_sensitive_special_characters)
 {
     auto t = trie_(true);
     static const std::string str1 = "a b c";
