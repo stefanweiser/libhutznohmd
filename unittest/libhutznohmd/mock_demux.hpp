@@ -48,6 +48,19 @@ public:
 
 using demux_mock_pointer = std::shared_ptr<demux_interface_mock>;
 
+class request_processor_interface_mock : public request_processor_interface
+{
+public:
+    MOCK_CONST_METHOD1(handle_one_request,
+                       bool(socket::block_device_interface&));
+    MOCK_METHOD2(set_error_handler,
+                 handler_pointer(const hutzn::request::http_status_code&,
+                                 const error_handler_callback&));
+};
+
+using request_processor_mock_pointer =
+    std::shared_ptr<request_processor_interface_mock>;
+
 } // namespace demux
 
 } // namespace hutzn
