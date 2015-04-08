@@ -83,6 +83,11 @@ public:
         return value_type::INVALID;
     }
 
+    bool is_registered(const value_type& type) const
+    {
+        return (registered_types_.find(type) != registered_types_.end());
+    }
+
 private:
     arithmetic_type next_value_;
     std::map<value_type, std::string> registered_types_;

@@ -43,6 +43,8 @@ public:
                               const size_t max_length);
     mime_subtype parse_mime_subtype(const char* const string,
                                     const size_t max_length);
+    bool is_mime_type_registered(const mime_type& type) const;
+    bool is_mime_subtype_registered(const mime_subtype& subtype) const;
 
 private:
     mime_data<mime_type, uint8_t> mime_types_;

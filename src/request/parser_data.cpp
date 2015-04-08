@@ -83,6 +83,16 @@ mime_subtype parser_data::parse_mime_subtype(const char* const string,
     return mime_subtypes_.parse_type(string, max_length);
 }
 
+bool parser_data::is_mime_type_registered(const mime_type& type) const
+{
+    return mime_types_.is_registered(type);
+}
+
+bool parser_data::is_mime_subtype_registered(const mime_subtype& subtype) const
+{
+    return mime_subtypes_.is_registered(subtype);
+}
+
 } // namespace request
 
 } // namespace hutzn

@@ -92,6 +92,16 @@ TEST(mime_data, parse_type_successful_case_sensitive)
     EXPECT_TRUE(t.unregister_type(type));
 }
 
+TEST(mime_data, is_registered)
+{
+    mime_data<mime_type, uint8_t> t;
+    mime_type type = t.register_type("abc");
+    EXPECT_NE(type, mime_type::INVALID);
+    EXPECT_TRUE(t.is_registered(type));
+    EXPECT_TRUE(t.unregister_type(type));
+    EXPECT_FALSE(t.is_registered(type));
+}
+
 TEST(mime_data, parse_type_failure)
 {
     mime_data<mime_type, uint8_t> t;
