@@ -19,6 +19,8 @@
 #ifndef LIBHUTZNOHMD_UTILITY_COMMON_HPP
 #define LIBHUTZNOHMD_UTILITY_COMMON_HPP
 
+#include <string>
+
 namespace hutzn
 {
 
@@ -29,6 +31,38 @@ bool check_range(const type& value)
                   "Lower bound must be less or equal to upper bound.");
     if ((value < lower_bound) || (value > upper_bound)) {
         return false;
+    }
+    return true;
+}
+
+//! Checks if a given url path is valid. The path must begin with a slash and
+//! double slashs are not allowed. Returns true, if the the path is valid.
+static bool is_valid_url_path(const std::string& path)
+{
+    const char slash = '/';
+    bool must_be_a_slash = true;
+    bool could_be_a_slash = true;
+
+    for (const char& c : path) {
+        if (true == must_be_a_slash) {
+            if (c != slash) {
+                return false;
+            }
+            must_be_a_slash = false;
+        }
+
+        if (true == could_be_a_slash) {
+            if (c == slash) {
+                could_be_a_slash = false;
+            } else {
+                could_be_a_slash = true;
+            }
+        } else {
+            if (c == slash) {
+                return false;
+            }
+            could_be_a_slash = true;
+        }
     }
     return true;
 }
