@@ -134,8 +134,15 @@ bool connection::connect()
         return false;
     }
 
-    const sockaddr* address = reinterpret_cast<const sockaddr*>(&address_);
-    if (connect_signal_safe(socket_, address, sizeof(address_)) != 0) {
+    union
+    {
+        sockaddr base;
+        sockaddr_in in;
+    } s;
+
+    s.in = address_;
+
+    if (connect_signal_safe(socket_, &s.base, sizeof(s.in)) != 0) {
         close();
         return false;
     }

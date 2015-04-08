@@ -48,9 +48,14 @@ std::shared_ptr<listener> listener::create(const std::string& host,
 
     std::shared_ptr<listener> result = std::make_shared<listener>(socket);
 
-    sockaddr_in address = fill_address(host, port);
-    int result1 = bind(result->socket_, reinterpret_cast<sockaddr*>(&address),
-                       sizeof(address));
+    union
+    {
+        sockaddr base;
+        sockaddr_in in;
+    } s;
+
+    s.in = fill_address(host, port);
+    int result1 = bind(result->socket_, &s.base, sizeof(s.in));
     int result2 = ::listen(result->socket_, 4);
     if ((result1 == -1) || (result2 == -1)) {
         return std::shared_ptr<listener>();
@@ -73,10 +78,14 @@ listener::~listener()
 
 connection_pointer listener::accept() const
 {
-    sockaddr_in address;
-    socklen_t size = sizeof(address);
-    const int client = accept_signal_safe(
-        socket_, reinterpret_cast<sockaddr*>(&address), &size);
+    union
+    {
+        sockaddr base;
+        sockaddr_in in;
+    } s;
+
+    socklen_t size = sizeof(s.in);
+    const int client = accept_signal_safe(socket_, &s.base, &size);
     if (client == -1) {
         return connection_pointer();
     }
