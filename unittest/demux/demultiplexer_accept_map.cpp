@@ -142,7 +142,7 @@ TEST_F(demultiplexer_accept_map_test, erase_two_existent_when_two_are_inserted)
 TEST_F(demultiplexer_accept_map_test, find_in_empty_vector)
 {
     demultiplexer_accept_map map;
-    EXPECT_FALSE(map.find_in_vector(none_));
+    EXPECT_FALSE(map.find_ordered(none_));
 }
 
 TEST_F(demultiplexer_accept_map_test, find_none_in_vector)
@@ -152,7 +152,7 @@ TEST_F(demultiplexer_accept_map_test, find_none_in_vector)
     response_interface_mock response;
     map.insert(none_, make_request_handler(http_status_code::OK));
 
-    request_handler_callback none_fn = map.find_in_vector(none_);
+    request_handler_callback none_fn = map.find_ordered(none_);
 
     ASSERT_TRUE(!!none_fn);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
@@ -166,7 +166,7 @@ TEST_F(demultiplexer_accept_map_test, find_none_in_vector_second_time)
     map.insert(text_plain_, make_request_handler(http_status_code::FOUND));
     map.insert(none_, make_request_handler(http_status_code::OK));
 
-    request_handler_callback none_fn = map.find_in_vector(none_);
+    request_handler_callback none_fn = map.find_ordered(none_);
 
     ASSERT_TRUE(!!none_fn);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
@@ -180,7 +180,7 @@ TEST_F(demultiplexer_accept_map_test, find_wildcard_type_in_vector)
     map.insert(none_, make_request_handler(http_status_code::OK));
 
     const mime wildcard = mime(mime_type::WILDCARD, mime_subtype::NONE);
-    request_handler_callback none_fn = map.find_in_vector(wildcard);
+    request_handler_callback none_fn = map.find_ordered(wildcard);
 
     ASSERT_TRUE(!!none_fn);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
@@ -194,7 +194,7 @@ TEST_F(demultiplexer_accept_map_test, find_wildcard_subtype_in_vector)
     map.insert(none_, make_request_handler(http_status_code::OK));
 
     const mime wildcard = mime(mime_type::NONE, mime_subtype::WILDCARD);
-    request_handler_callback none_fn = map.find_in_vector(wildcard);
+    request_handler_callback none_fn = map.find_ordered(wildcard);
 
     ASSERT_TRUE(!!none_fn);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
@@ -208,7 +208,7 @@ TEST_F(demultiplexer_accept_map_test, find_wildcard_in_vector)
     map.insert(none_, make_request_handler(http_status_code::OK));
 
     const mime wildcard = mime(mime_type::WILDCARD, mime_subtype::WILDCARD);
-    request_handler_callback none_fn = map.find_in_vector(wildcard);
+    request_handler_callback none_fn = map.find_ordered(wildcard);
 
     ASSERT_TRUE(!!none_fn);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);

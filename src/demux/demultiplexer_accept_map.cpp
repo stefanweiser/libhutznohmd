@@ -70,7 +70,7 @@ request_handler_callback demultiplexer_accept_map::find(
         const bool has_any_wildcard = (type.first == mime_type::WILDCARD) ||
                                       (type.second == mime_subtype::WILDCARD);
         if (true == has_any_wildcard) {
-            if (request_handler_callback result = find_in_vector(type)) {
+            if (request_handler_callback result = find_ordered(type)) {
                 return result;
             }
         } else {
@@ -83,7 +83,7 @@ request_handler_callback demultiplexer_accept_map::find(
     return request_handler_callback();
 }
 
-request_handler_callback demultiplexer_accept_map::find_in_vector(
+request_handler_callback demultiplexer_accept_map::find_ordered(
     const mime& type) const
 {
     for (const mime& value : vector_) {

@@ -21,24 +21,51 @@
 
 #include <map>
 
+#include <libhutznohmd/request.hpp>
 #include <libhutznohmd/demux.hpp>
 
 namespace hutzn
 {
 
+//! Stores request handler callbacks by a mime type of the accept header as key.
+//! All request handler callbacks are stored in its insertion order. Therefore
+//! it implements a first-come-first-serve idea, when multiple handlers match
+//! the accept headers precedence. This data structure is not multi threading
+//! safe.
 class demultiplexer_accept_map
 {
 public:
     explicit demultiplexer_accept_map();
 
+    //! Returns the number of elements stored in the data structure.
     size_t size() const;
+
+    //! Inserts a new value into the data structure. Returns true when the
+    //! element was inserted successfully. It is not allowed to insert wildcard
+    //! elements to the data structure.
     bool insert(const mime& type, const request_handler_callback& fn);
+
+    //! Erases a previously stored element from the data structure and returns
+    //! true, when the element was successfully erased.
     bool erase(const mime& type);
+
+    //! Negotiates the most matching request handler by looping over all accept
+    //! mime types. It expects, that the request interface returns those mime
+    //! types in the desired precedence. The function returns the first matching
+    //! request handler. If a type contains a wildcard, the insertion order is
+    //! respected.
     request_handler_callback find(const request_interface& request) const;
-    request_handler_callback find_in_vector(const mime& type) const;
+
+    //! Tries to find and returns a matching request handler for a given mime
+    //! type respecting the insertion order. Wildcards are treated correctly as
+    //! any element while searching.
+    request_handler_callback find_ordered(const mime& type) const;
 
 private:
+    //! Stores the request handler callbacks by its mime type keys.
     std::map<mime, request_handler_callback> map_;
+
+    //! Stores the insertion order.
     std::vector<mime> vector_;
 };
 
