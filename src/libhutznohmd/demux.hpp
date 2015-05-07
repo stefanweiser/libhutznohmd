@@ -213,12 +213,13 @@ struct request_handler_id
     //! are reserved for internal usage.
     hutzn::request::http_verb method;
 
-    //! Describes the type that the request handler takes. INVALID is not
+    //! Describes the type that the request handler takes. Will be compared to
+    //! the request's content type. INVALID is not
     //! allowed here.
     hutzn::request::mime input_type;
 
-    //! Describes the type that the request handler returns. INVALID is not
-    //! allowed here.
+    //! Describes the type that the request handler returns. Will be matched
+    //! to the request's accepted types. INVALID is not allowed here.
     hutzn::request::mime result_type;
 };
 

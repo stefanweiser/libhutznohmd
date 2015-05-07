@@ -40,8 +40,39 @@ demultiplexer::demultiplexer()
 }
 
 request_handler_callback demultiplexer::determine_request_handler(
-    const hutzn::request::request_interface& /*request*/)
+    const hutzn::request::request_interface& request)
 {
+    std::lock_guard<std::mutex> lock(resource_callbacks_mutex_);
+
+    const char* const path = request.path();
+    const auto resource_it = resource_callbacks_.find(path);
+    if (resource_it == resource_callbacks_.end()) {
+        return request_handler_callback();
+    }
+    const auto& resource_map = resource_it->second;
+
+    const hutzn::request::http_verb verb = request.method();
+    const auto method_it = resource_map.find(verb);
+    if (method_it == resource_map.end()) {
+        return request_handler_callback();
+    }
+    const auto& method_map = method_it->second;
+
+    const hutzn::request::mime content_type = request.content_type();
+    if ((content_type.first == hutzn::request::mime_type::WILDCARD) ||
+        (content_type.second == hutzn::request::mime_subtype::WILDCARD)) {
+        return request_handler_callback();
+    }
+
+    void* handle = nullptr;
+    hutzn::request::mime accept_type;
+    while (true == request.accept(handle, accept_type)) {
+        const auto handler_it =
+            method_map.find(std::make_tuple(content_type, accept_type));
+        if (handler_it != method_map.end()) {
+            return handler_it->second;
+        }
+    }
     return request_handler_callback();
 }
 
