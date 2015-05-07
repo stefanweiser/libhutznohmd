@@ -45,7 +45,7 @@ protected:
     {
         static request_handler_id result{
             "/", http_verb::GET, mime(mime_type::TEXT, mime_subtype::PLAIN),
-            mime(mime_type::WILDCARD, mime_subtype::WILDCARD)};
+            mime(mime_type::IMAGE, mime_subtype::PLAIN)};
         return result;
     }
 
