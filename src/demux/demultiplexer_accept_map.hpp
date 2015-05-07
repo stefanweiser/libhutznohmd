@@ -26,6 +26,8 @@
 namespace hutzn
 {
 
+//! @brief Associates mime types with request handler callbacks.
+//!
 //! Stores request handler callbacks by a mime type of the accept header as key.
 //! All request handler callbacks are stored in its insertion order. Therefore
 //! it implements a first-come-first-serve idea, when multiple handlers match
@@ -36,30 +38,35 @@ class demultiplexer_accept_map
 public:
     explicit demultiplexer_accept_map();
 
-    //! Returns the number of elements stored in the data structure.
+    //! @brief Returns the number of elements stored in the data structure.
     size_t size() const;
 
-    //! Inserts a new value into the data structure. Returns true when the
-    //! element was inserted successfully. It is not allowed to insert wildcard
-    //! elements to the data structure.
+    //! @brief Inserts a new value into the data structure.
+    //!
+    //! Returns true when the element was inserted successfully. It is not
+    //! allowed to insert wildcard elements to the data structure.
     bool insert(const mime& type, const request_handler_callback& fn);
 
-    //! Erases a previously stored element from the data structure and returns
-    //! true, when the element was successfully erased.
+    //! @brief Erases a previously stored element from the data structure.
+    //!
+    //! Returns true, when the element was successfully erased.
     bool erase(const mime& type);
 
-    //! Negotiates the most matching request handler for a given mime type. The
-    //! function returns the first matching request handler. If a type contains
-    //! a wildcard, the insertion order is respected.
+    //! @brief Negotiates the most matching request handler for a given mime
+    //! type.
     //!
-    //! As an example, the following mime types are given inserted from left to
-    //! right:
+    //! The function returns the first matching request handler. If a type
+    //! contains a wildcard, the insertion order is respected. As an example,
+    //! the following mime types are given as inserted from left to right:
     //! @code{.unparsed}
-    //! application/xml, text/xml, text/plain
+    //! insert(application/xml);
+    //! insert(text/xml);
+    //! insert(text/plain);
+    //!
+    //! find(text/plain) returns handler of text/plain;
+    //! find(text/ *) returns handler of text/xml;
+    //! find(* /xml) returns handler of application/xml;
     //! @endcode
-    //! While @c find(text/plain) will return the handler of @c text/plain,
-    //! @c find(text/*) will return the handler of @c text/xml. @c find(*/xml)
-    //! will return the handler of @c application/xml.
     request_handler_callback find(const mime& type) const;
 
 private:
