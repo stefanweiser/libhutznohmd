@@ -92,6 +92,20 @@ TEST_F(demultiplexer_accept_map_test, inserted_two_different)
     EXPECT_TRUE(map.insert(text_plain_, request_handler_callback()));
 }
 
+TEST_F(demultiplexer_accept_map_test, inserting_wildcard_is_failing)
+{
+    demultiplexer_accept_map map;
+
+    mime type = mime(mime_type::WILDCARD, mime_subtype::PLAIN);
+    EXPECT_FALSE(map.insert(type, request_handler_callback()));
+
+    type = mime(mime_type::TEXT, mime_subtype::WILDCARD);
+    EXPECT_FALSE(map.insert(type, request_handler_callback()));
+
+    type = mime(mime_type::WILDCARD, mime_subtype::WILDCARD);
+    EXPECT_FALSE(map.insert(type, request_handler_callback()));
+}
+
 TEST_F(demultiplexer_accept_map_test, erase_nonexistent)
 {
     demultiplexer_accept_map map;
@@ -137,7 +151,9 @@ TEST_F(demultiplexer_accept_map_test, find_none_in_vector)
     request_interface_mock request;
     response_interface_mock response;
     map.insert(none_, make_request_handler(http_status_code::OK));
+
     request_handler_callback none_fn = map.find_in_vector(none_);
+
     ASSERT_TRUE(!!none_fn);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
 }
@@ -149,7 +165,9 @@ TEST_F(demultiplexer_accept_map_test, find_none_in_vector_second_time)
     response_interface_mock response;
     map.insert(text_plain_, make_request_handler(http_status_code::FOUND));
     map.insert(none_, make_request_handler(http_status_code::OK));
+
     request_handler_callback none_fn = map.find_in_vector(none_);
+
     ASSERT_TRUE(!!none_fn);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
 }
@@ -160,8 +178,10 @@ TEST_F(demultiplexer_accept_map_test, find_wildcard_type_in_vector)
     request_interface_mock request;
     response_interface_mock response;
     map.insert(none_, make_request_handler(http_status_code::OK));
+
     const mime wildcard = mime(mime_type::WILDCARD, mime_subtype::NONE);
     request_handler_callback none_fn = map.find_in_vector(wildcard);
+
     ASSERT_TRUE(!!none_fn);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
 }
@@ -172,8 +192,10 @@ TEST_F(demultiplexer_accept_map_test, find_wildcard_subtype_in_vector)
     request_interface_mock request;
     response_interface_mock response;
     map.insert(none_, make_request_handler(http_status_code::OK));
+
     const mime wildcard = mime(mime_type::NONE, mime_subtype::WILDCARD);
     request_handler_callback none_fn = map.find_in_vector(wildcard);
+
     ASSERT_TRUE(!!none_fn);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
 }
@@ -184,8 +206,10 @@ TEST_F(demultiplexer_accept_map_test, find_wildcard_in_vector)
     request_interface_mock request;
     response_interface_mock response;
     map.insert(none_, make_request_handler(http_status_code::OK));
+
     const mime wildcard = mime(mime_type::WILDCARD, mime_subtype::WILDCARD);
     request_handler_callback none_fn = map.find_in_vector(wildcard);
+
     ASSERT_TRUE(!!none_fn);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
 }

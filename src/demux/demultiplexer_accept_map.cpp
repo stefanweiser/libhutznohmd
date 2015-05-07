@@ -37,6 +37,11 @@ size_t demultiplexer_accept_map::size() const
 bool demultiplexer_accept_map::insert(const mime& type,
                                       const request_handler_callback& fn)
 {
+    if ((type.first == mime_type::WILDCARD) ||
+        (type.second == mime_subtype::WILDCARD)) {
+        return false;
+    }
+
     auto it = map_.find(type);
     if (it == map_.end()) {
         map_[type] = fn;
