@@ -34,7 +34,7 @@ bool operator==(const request_handler_id& lhs, const request_handler_id& rhs)
             (lhs.accept_type == rhs.accept_type));
 }
 
-TEST(demultiplexer_handler, disconnect)
+TEST(demultiplex_handler, disconnect)
 {
     demux_disconnect_mock_pointer demuxer =
         std::make_shared<demux_disconnect_interface_mock>();

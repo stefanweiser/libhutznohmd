@@ -28,16 +28,31 @@
 namespace hutzn
 {
 
+//! @brief Serves as handle for a registered request handler.
+//!
+//! It is created when a request handler gets registered and unregisters it
+//! on destruction. It is required to release all demultiplex handlers before
+//! destroying the demultiplexer.
 class demultiplex_handler : public handler_interface
 {
 public:
+    //! @brief Connects the request handler with the demultiplexer's disconnect
+    //! interface.
     explicit demultiplex_handler(demux_disconnect_interface& demuxer,
                                  const request_handler_id& id);
 
+    //! @brief Disconnects the request handler from the demultiplexer.
+    //!
+    //! Ensure, that the demultiplexer is still existing when destroying an
+    //! instance of a demultiplex handler.
     ~demultiplex_handler() override;
 
 private:
+    //! References the demultiplexer where the request handler was registered
+    //! at.
     demux_disconnect_interface& demuxer_;
+
+    //! This id is needed as key to disconnect the request handler.
     request_handler_id id_;
 };
 
