@@ -88,26 +88,28 @@ handler_pointer demultiplexer::connect(const request_handler_id& id,
     std::unique_lock<std::mutex> lock(resource_callbacks_mutex_);
 
     // Check whether the input mime type or subtype is unregistered.
-    mime_type type = id.input_type.first;
-    mime_subtype subtype = id.input_type.second;
+    mime_type type = id.content_type.first;
+    mime_subtype subtype = id.content_type.second;
     if ((false == request_parser_data_->is_mime_type_registered(type)) ||
         (false == request_parser_data_->is_mime_subtype_registered(subtype))) {
         return handler_pointer();
     }
 
     // Check whether the result mime type or subtype is unregistered.
-    type = id.result_type.first;
-    subtype = id.result_type.second;
+    type = id.accept_type.first;
+    subtype = id.accept_type.second;
     if ((false == request_parser_data_->is_mime_type_registered(type)) ||
         (false == request_parser_data_->is_mime_subtype_registered(subtype))) {
         return handler_pointer();
     }
 
-    resource_mime_accept_map& accept_map =
-        resource_callbacks_[id.path][id.method][id.input_type];
-    auto it = accept_map.find(id.result_type);
+    // Get specific map with handlers.
+    auto& accept_map = resource_callbacks_[id.path][id.method][id.content_type];
+
+    // Check if there is already a registered request handler.
+    auto it = accept_map.find(id.accept_type);
     if (it == accept_map.end()) {
-        accept_map[id.result_type] = fn;
+        accept_map[id.accept_type] = fn;
 
         // The id have been inserted. There is no need to keep the lock, when
         // creating the resulting handler.
@@ -136,18 +138,18 @@ bool demultiplexer::disconnect(const request_handler_id& id)
     auto& method_map = method_it->second;
 
     // Getting target accept map.
-    auto accept_it = method_map.find(id.input_type);
+    auto accept_it = method_map.find(id.content_type);
     if (accept_it == method_map.end()) {
         return false;
     }
     auto& accept_map = accept_it->second;
 
     // Erase handler id.
-    const bool result = (accept_map.erase(id.result_type) > 0);
+    const bool result = (accept_map.erase(id.accept_type) > 0);
 
     // Clean up empty maps.
     if (accept_map.size() == 0) {
-        method_map.erase(id.input_type);
+        method_map.erase(id.content_type);
         if (method_map.size() == 0) {
             resource_map.erase(id.method);
             if (resource_map.size() == 0) {

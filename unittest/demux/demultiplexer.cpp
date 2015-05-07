@@ -96,19 +96,19 @@ TEST_F(demultiplexer_test, connect_wrong_mime_types)
     ASSERT_NE(demultiplexer_.get(), nullptr);
 
     auto test_id = id();
-    test_id.input_type.first = static_cast<mime_type>(100);
+    test_id.content_type.first = static_cast<mime_type>(100);
     EXPECT_EQ(demultiplexer_->connect(test_id, &handler_fn).get(), nullptr);
 
     test_id = id();
-    test_id.input_type.second = static_cast<mime_subtype>(100);
+    test_id.content_type.second = static_cast<mime_subtype>(100);
     EXPECT_EQ(demultiplexer_->connect(test_id, &handler_fn).get(), nullptr);
 
     test_id = id();
-    test_id.result_type.first = static_cast<mime_type>(100);
+    test_id.content_type.first = static_cast<mime_type>(100);
     EXPECT_EQ(demultiplexer_->connect(test_id, &handler_fn).get(), nullptr);
 
     test_id = id();
-    test_id.result_type.second = static_cast<mime_subtype>(100);
+    test_id.content_type.second = static_cast<mime_subtype>(100);
     EXPECT_EQ(demultiplexer_->connect(test_id, &handler_fn).get(), nullptr);
 }
 
@@ -193,7 +193,7 @@ TEST_F(demultiplexer_test, determine_request_handler_success_1)
     EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
     EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(http_verb::GET));
     EXPECT_CALL(*request, content_type()).Times(1).WillOnce(
-        Return(test_id.input_type));
+        Return(test_id.content_type));
     EXPECT_CALL(*request, accept(_, _)).Times(1).WillOnce(
         Invoke([](void*&, mime& m) {
             m.first = mime_type::WILDCARD;
@@ -215,7 +215,7 @@ TEST_F(demultiplexer_test, determine_request_handler_success_2)
     EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
     EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(http_verb::GET));
     EXPECT_CALL(*request, content_type()).Times(1).WillOnce(
-        Return(test_id.input_type));
+        Return(test_id.content_type));
     EXPECT_CALL(*request, accept(_, _))
         .Times(2)
         .WillOnce(Invoke([](void*&, mime& m) {

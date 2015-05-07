@@ -30,8 +30,8 @@ namespace hutzn
 bool operator==(const request_handler_id& lhs, const request_handler_id& rhs)
 {
     return ((lhs.path == rhs.path) && (lhs.method == rhs.method) &&
-            (lhs.input_type == rhs.input_type) &&
-            (lhs.result_type == rhs.result_type));
+            (lhs.content_type == rhs.content_type) &&
+            (lhs.accept_type == rhs.accept_type));
 }
 
 TEST(demultiplexer_handler, disconnect)

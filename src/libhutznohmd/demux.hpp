@@ -203,13 +203,12 @@ struct request_handler_id
     http_verb method;
 
     //! Describes the type that the request handler takes. Will be compared to
-    //! the request's content type. INVALID is not
-    //! allowed here.
-    mime input_type;
+    //! the request's content type. INVALID is not allowed here.
+    mime content_type;
 
     //! Describes the type that the request handler returns. Will be matched
     //! to the request's accepted types. INVALID is not allowed here.
-    mime result_type;
+    mime accept_type;
 };
 
 //! Scopes the request or error handler's lifetime. The handler gets
