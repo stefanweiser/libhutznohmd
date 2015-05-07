@@ -43,13 +43,13 @@ public:
 
     //! @brief Inserts a new value into the data structure.
     //!
-    //! Returns true when the element was inserted successfully. It is not
+    //! Returns @c true when the element was inserted successfully. It is not
     //! allowed to insert wildcard elements to the data structure.
     bool insert(const mime& type, const request_handler_callback& fn);
 
     //! @brief Erases a previously stored element from the data structure.
     //!
-    //! Returns true, when the element was successfully erased.
+    //! Returns @c true, when the element was successfully erased.
     bool erase(const mime& type);
 
     //! @brief Negotiates the most matching request handler for a given mime

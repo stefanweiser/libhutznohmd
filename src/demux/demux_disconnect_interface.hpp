@@ -24,17 +24,21 @@
 namespace hutzn
 {
 
-//! When connecting a request handler to a demultiplexer, you'll need to
-//! disconnect it later. This is done by releasing the handler. The handler in
-//! turn will disconnect the request handler from its demultiplexer. This is an
+//! @brief Provides a standardized way to disconnect a request handler from a
+//! demultiplexer.
+//!
+//! When connecting a request handler to a demultiplexer, it has to be
+//! disconnect later. This is done by releasing the handler. The handler in turn
+//! will disconnect the request handler from its demultiplexer. This is an
 //! internal interface.
 class demux_disconnect_interface
 {
 public:
     virtual ~demux_disconnect_interface();
 
-    //! Disconnects the handler with the given id from the demultiplexer.
-    //! Returns true when the disconnect was successful and false when the
+    //! @brief Disconnects the handler with the given id from the demultiplexer.
+    //!
+    //! Returns @c true when the disconnect was successful and @c false when the
     //! handler with the given id could not be found.
     virtual bool disconnect(const request_handler_id& id) = 0;
 };
