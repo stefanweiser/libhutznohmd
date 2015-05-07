@@ -58,6 +58,9 @@ private:
     using resource_method_map = std::map<http_verb, resource_mime_content_map>;
     using resource_map = std::map<std::string, resource_method_map>;
 
+    static request_handler_callback determine_request_handler_from_accept_map(
+        const resource_mime_accept_map& map, const request_interface& request);
+
     std::mutex resource_callbacks_mutex_;
     resource_map resource_callbacks_;
 

@@ -72,17 +72,7 @@ request_handler_callback demultiplexer::determine_request_handler(
     const auto& accept_map = content_it->second;
 
     // Loop over the accept types for a matching request handler.
-    void* handle = nullptr;
-    mime accept_type;
-    while (true == request.accept(handle, accept_type)) {
-        const auto accept_it = accept_map.find(accept_type);
-        if (accept_it != accept_map.end()) {
-            return accept_it->second;
-        }
-    }
-
-    // Nothing found.
-    return request_handler_callback();
+    return determine_request_handler_from_accept_map(accept_map, request);
 }
 
 handler_pointer demultiplexer::connect(const request_handler_id& id,
@@ -191,6 +181,21 @@ bool demultiplexer::unregister_mime_subtype(const mime_subtype& subtype)
 {
     std::lock_guard<std::mutex> lock(request_parser_data_mutex_);
     return request_parser_data_->unregister_mime_subtype(subtype);
+}
+
+request_handler_callback demultiplexer::
+    determine_request_handler_from_accept_map(
+        const resource_mime_accept_map& map, const request_interface& request)
+{
+    void* handle = nullptr;
+    mime accept_type;
+    while (true == request.accept(handle, accept_type)) {
+        const auto accept_it = map.find(accept_type);
+        if (accept_it != map.end()) {
+            return accept_it->second;
+        }
+    }
+    return request_handler_callback();
 }
 
 } // namespace hutzn
