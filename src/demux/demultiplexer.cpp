@@ -72,7 +72,7 @@ request_handler_callback demultiplexer::determine_request_handler(
     const auto& accept_map = content_it->second;
 
     // Loop over the accept types for a matching request handler.
-    return determine_request_handler_from_accept_map(accept_map, request);
+    return accept_map.find(request);
 }
 
 handler_pointer demultiplexer::connect(const request_handler_id& id,
@@ -105,10 +105,7 @@ handler_pointer demultiplexer::connect(const request_handler_id& id,
     auto& accept_map = resource_callbacks_[id.path][id.method][id.content_type];
 
     // Check if there is already a registered request handler.
-    auto it = accept_map.find(id.accept_type);
-    if (it == accept_map.end()) {
-        accept_map[id.accept_type] = fn;
-
+    if (true == accept_map.insert(id.accept_type, fn)) {
         // The id have been inserted. There is no need to keep the lock, when
         // creating the resulting handler.
         lock.unlock();
@@ -143,7 +140,7 @@ bool demultiplexer::disconnect(const request_handler_id& id)
     auto& accept_map = accept_it->second;
 
     // Erase handler id.
-    const bool result = (accept_map.erase(id.accept_type) > 0);
+    const bool result = accept_map.erase(id.accept_type);
 
     // Clean up empty maps.
     if (accept_map.size() == 0) {
@@ -181,21 +178,6 @@ bool demultiplexer::unregister_mime_subtype(const mime_subtype& subtype)
 {
     std::lock_guard<std::mutex> lock(request_parser_data_mutex_);
     return request_parser_data_->unregister_mime_subtype(subtype);
-}
-
-request_handler_callback demultiplexer::
-    determine_request_handler_from_accept_map(
-        const resource_mime_accept_map& map, const request_interface& request)
-{
-    void* handle = nullptr;
-    mime accept_type;
-    while (true == request.accept(handle, accept_type)) {
-        const auto accept_it = map.find(accept_type);
-        if (accept_it != map.end()) {
-            return accept_it->second;
-        }
-    }
-    return request_handler_callback();
 }
 
 } // namespace hutzn
