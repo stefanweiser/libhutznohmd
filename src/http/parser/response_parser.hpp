@@ -48,7 +48,7 @@ public:
                              const anonymous_int_function& peek_functor);
     void parse();
     bool valid() const;
-    const hutzn::http::version& version() const;
+    const http::version& version() const;
     const std::map<std::string, std::string>& headers() const;
     const size_t& content_length() const;
     const media_type_interface& content_type() const;

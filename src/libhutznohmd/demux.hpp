@@ -103,8 +103,8 @@ resource handler requires to define a callback function that must have the
 signature:
 
 @code{.cpp}
-http_status_code foo(const hutzn::request_interface&,
-                     const hutzn::response_interface&);
+http_status_code foo(const request_interface&,
+                     const response_interface&);
 @endcode
 
 Because the registration takes a @c std::function the user has the choice to
@@ -124,37 +124,37 @@ class C
 // ...
 
 public:
-    hutzn::http_status_code
-    foo(const hutzn::request_interface&,
-        const hutzn::response_interface&)
+    http_status_code
+    foo(const request_interface&,
+        const response_interface&)
     {
         // Do something.
-        return hutzn::http_status_code::OK;
+        return http_status_code::OK;
     }
 
-    void error_handler(const hutzn::request_interface&,
-                       const hutzn::response_interface&)
+    void error_handler(const request_interface&,
+                       const response_interface&)
     {
         // Do something.
     }
 };
 
 void register_handlers(C* const c,
-                       hutzn::request_processor_interface& r,
-                       hutzn::demux_interface& m)
+                       request_processor_interface& r,
+                       demux_interface& m)
 {
-    hutzn::request_handler_id i{
+    request_handler_id i{
         "/",
-        hutzn::http_verb::GET,
-        std::make_pair(hutzn::mime_type::WILDCARD,
-                       hutzn::mime_subtype::WILDCARD),
-        std::make_pair(hutzn::mime_type::TEXT,
-                       hutzn::mime_subtype::PLAIN)
+        http_verb::GET,
+        std::make_pair(mime_type::WILDCARD,
+                       mime_subtype::WILDCARD),
+        std::make_pair(mime_type::TEXT,
+                       mime_subtype::PLAIN)
     };
 
     using namespace std::placeholders;
     m.connect(i, std::bind(&C::foo, c, _1, _2));
-    r.set_error_handler(hutzn::http_status_code::NOT_FOUND,
+    r.set_error_handler(http_status_code::NOT_FOUND,
                         std::bind(&C::error_handler, c, _1, _2));
 }
 @endcode
@@ -172,8 +172,8 @@ demultiplexer's lifetime.
 @code{.cpp}
 int main()
 {
-    hutzn::demux_pointer d = hutzn::make_demultiplexer();
-    hutzn::mime_type x_type;
+    demux_pointer d = make_demultiplexer();
+    mime_type x_type;
     d->register_mime_type("example", x_type);
 
     // Do something.
@@ -200,16 +200,16 @@ struct request_handler_id
 
     //! Only GET, PUT, DELETE and POST are allowed verbs here. All other verbs
     //! are reserved for internal usage.
-    hutzn::http_verb method;
+    http_verb method;
 
     //! Describes the type that the request handler takes. Will be compared to
     //! the request's content type. INVALID is not
     //! allowed here.
-    hutzn::mime input_type;
+    mime input_type;
 
     //! Describes the type that the request handler returns. Will be matched
     //! to the request's accepted types. INVALID is not allowed here.
-    hutzn::mime result_type;
+    mime result_type;
 };
 
 //! Scopes the request or error handler's lifetime. The handler gets
@@ -226,8 +226,8 @@ using handler_pointer = std::shared_ptr<handler_interface>;
 
 //! Is used when the demultiplexer calls a request handler back in order to get
 //! a response on a request.
-using request_handler_callback = std::function<hutzn::http_status_code(
-    const hutzn::request_interface&, hutzn::response_interface&)>;
+using request_handler_callback = std::function<
+    http_status_code(const request_interface&, response_interface&)>;
 
 //! Demultiplexes the requests. It is necessary, that no call to this component
 //! blocks its users longer as needed. Any query that currently could not get
@@ -239,7 +239,7 @@ public:
     virtual ~demux_query_interface();
 
     virtual request_handler_callback determine_request_handler(
-        const hutzn::request_interface& request) = 0;
+        const request_interface& request) = 0;
 };
 
 //! Demultiplexers should always be used with reference counted pointers.
@@ -266,26 +266,24 @@ public:
     //! Registers a custom MIME type and returns a new mime_type value if that
     //! type was not already registered. You could use the custom MIME type
     //! afterwards. If the MIME type already exists, it returns
-    //! hutzn::mime_type::INVALID.
-    virtual hutzn::mime_type register_mime_type(const std::string& type) = 0;
+    //! mime_type::INVALID.
+    virtual mime_type register_mime_type(const std::string& type) = 0;
 
     //! Registers a custom MIME subtype and returns a new mime_subtype value if
     //! that type was not already registered. You could use the custom MIME
     //! subtype afterwards. If the MIME subtype already exists, it returns
-    //! hutzn::mime_subtype::INVALID.
-    virtual hutzn::mime_subtype register_mime_subtype(
-        const std::string& subtype) = 0;
+    //! mime_subtype::INVALID.
+    virtual mime_subtype register_mime_subtype(const std::string& subtype) = 0;
 
     //! Unregisters a MIME type and returns true, if it was found and
     //! successfully unregistered. To successfully unregister a MIME type, it is
     //! necessary, that no registered request handler uses it.
-    virtual bool unregister_mime_type(const hutzn::mime_type& type) = 0;
+    virtual bool unregister_mime_type(const mime_type& type) = 0;
 
     //! Unregisters a MIME subtype and returns true, if it was found and
     //! successfully unregistered. To successfully unregister a MIME subtype, it
     //! is necessary, that no registered request handler uses it.
-    virtual bool unregister_mime_subtype(
-        const hutzn::mime_subtype& subtype) = 0;
+    virtual bool unregister_mime_subtype(const mime_subtype& subtype) = 0;
 };
 
 //! Demultiplexers should always be used with reference counted pointers.
@@ -295,8 +293,8 @@ using demux_pointer = std::shared_ptr<demux_interface>;
 demux_pointer make_demultiplexer();
 
 //! Is used by the demultiplexer in case of an error to get a useful response.
-using error_handler_callback = std::function<
-    void(const hutzn::request_interface&, hutzn::response_interface&)>;
+using error_handler_callback =
+    std::function<void(const request_interface&, response_interface&)>;
 
 //! Waits for, parses and handles the requests. Calls to the request and error
 //! handlers. Queries the correct request handler from a given demultiplexer.
@@ -317,8 +315,7 @@ public:
     //! object, which acts as the error handler's lifetime scope. If there is
     //! already one registered, it returns null.
     virtual handler_pointer set_error_handler(
-        const hutzn::http_status_code& code,
-        const error_handler_callback& fn) = 0;
+        const http_status_code& code, const error_handler_callback& fn) = 0;
 };
 
 //! The request processor should always be a reference counted pointer

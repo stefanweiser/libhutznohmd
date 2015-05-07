@@ -32,8 +32,8 @@ namespace hutzn
 @page page_data_source_and_sink Data source and sink
 
 Each restful application has to communicate with its users. To fulfill this
-necessity this library defines @ref hutzn::connection_interface "connections"
-and @ref hutzn::listener_interface "listeners", which are the two types of
+necessity this library defines @ref connection_interface "connections"
+and @ref listener_interface "listeners", which are the two types of
 sockets, that are used by network communication protocols.
 
 A listener is defined as an endpoint, to which connection endpoints can connect
@@ -91,11 +91,11 @@ getting unused.
 @code{.cpp}
 int main()
 {
-    auto listener = hutzn::listen("0.0.0.0", 80);
+    auto listener = listen("0.0.0.0", 80);
     auto connection = listener->accept();
-    hutzn::buffer request;
+    buffer request;
     if (true == connection->read(request, 1024)) {
-        hutzn::buffer response;
+        buffer response;
         // Parse the HTTP request and build a response.
         connection->send(response);
     }
@@ -134,14 +134,14 @@ public:
     //! content and gets extended by the new data. Returning true indicates,
     //! that something has been read. False means, that the connection were
     //! closed. This makes the connection useless.
-    virtual bool receive(hutzn::buffer& data, const size_t& max_size) = 0;
+    virtual bool receive(buffer& data, const size_t& max_size) = 0;
 
     //! Invokes a blocking send operation. Returns true when all data were
     //! successfully sent. In case of a closed connection or a connection
     //! shut down during the send it will return false.
-    virtual bool send(const hutzn::buffer& data) = 0;
+    virtual bool send(const buffer& data) = 0;
 
-    //! @see connection_interface::send(const hutzn::buffer&)
+    //! @see connection_interface::send(const buffer&)
     //! This function behaves equally, but takes a string instead of a binary
     //! buffer.
     virtual bool send(const std::string& data) = 0;

@@ -67,7 +67,7 @@ void connection::close()
     shutdown(socket_, SHUT_RDWR);
 }
 
-bool connection::receive(hutzn::buffer& data, const size_t& max_size)
+bool connection::receive(buffer& data, const size_t& max_size)
 {
     if (false == is_connected_) {
         return false;
@@ -82,7 +82,7 @@ bool connection::receive(hutzn::buffer& data, const size_t& max_size)
     return (received > 0);
 }
 
-bool connection::send(const hutzn::buffer& data)
+bool connection::send(const buffer& data)
 {
     return send(data.data(), data.size());
 }

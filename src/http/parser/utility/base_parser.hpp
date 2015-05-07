@@ -68,7 +68,7 @@ public:
 
     push_back_string<40> header_key_;
     push_back_string<1000> header_value_;
-    hutzn::http::version version_;
+    http::version version_;
     std::map<std::string, std::string> headers_;
     size_t content_length_;
     media_type content_type_;

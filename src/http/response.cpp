@@ -30,7 +30,7 @@ namespace hutzn
 namespace http
 {
 
-response::response(const hutzn::connection_pointer& connection)
+response::response(const connection_pointer& connection)
     : connection_(connection)
     , status_code_(http_status_code::INTERNAL_SERVER_ERROR)
     , version_(version::HTTP_1_1)
@@ -55,12 +55,12 @@ void response::deliver()
     connection_->send(data_);
 }
 
-void response::set_status_code(const hutzn::http_status_code& status_code)
+void response::set_status_code(const http_status_code& status_code)
 {
     status_code_ = status_code;
 }
 
-void response::set_version(const hutzn::http::version& version)
+void response::set_version(const http::version& version)
 {
     version_ = version;
 }
@@ -70,17 +70,16 @@ void response::set_header(const std::string& key, const std::string& value)
     headers_[key] = value;
 }
 
-void response::set_data(const hutzn::buffer& data)
+void response::set_data(const buffer& data)
 {
     data_ = data;
 }
 
-void response::deliver_version(std::ostream& os,
-                               const hutzn::http::version& version)
+void response::deliver_version(std::ostream& os, const http::version& version)
 {
-    if (version == hutzn::http::version::HTTP_1_0) {
+    if (version == http::version::HTTP_1_0) {
         os << "HTTP/1.0 ";
-    } else if (version == hutzn::http::version::HTTP_1_1) {
+    } else if (version == http::version::HTTP_1_1) {
         os << "HTTP/1.1 ";
     } else {
         os << "HTTP/?.?";
@@ -88,10 +87,9 @@ void response::deliver_version(std::ostream& os,
 }
 
 void response::deliver_status_code_text(std::ostream& os,
-                                        const hutzn::http_status_code& code)
+                                        const http_status_code& code)
 {
-    static const std::map<hutzn::http_status_code,
-                          std::string> status_code_text = {
+    static const std::map<http_status_code, std::string> status_code_text = {
         {http_status_code::CONTINUE, "100 Continue"},
         {http_status_code::SWITCHING_PROTOCOLS, "101 Switching Protocols"},
         {http_status_code::OK, "200 Ok"},

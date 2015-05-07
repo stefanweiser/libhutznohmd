@@ -33,35 +33,32 @@ namespace http
 
 TEST(response, set_and_deliver)
 {
-    auto socket = std::make_shared<hutzn::connection_interface_mock>();
+    auto socket = std::make_shared<connection_interface_mock>();
     response response(socket);
 
     response.set_data({'0'});
     response.set_header("Content-Length", "1");
-    response.set_status_code(hutzn::http_status_code::OK);
+    response.set_status_code(http_status_code::OK);
     response.set_version(version::HTTP_1_1);
 
-    EXPECT_CALL(*socket, send(An<const hutzn::buffer&>()))
-        .Times(1)
-        .WillRepeatedly(Return(true));
+    EXPECT_CALL(*socket, send(An<const buffer&>())).Times(1).WillRepeatedly(
+        Return(true));
     EXPECT_CALL(*socket, send(An<const std::string&>()))
         .Times(1)
         .WillRepeatedly(Return(true));
     response.deliver();
 
     response.set_version(version::HTTP_1_0);
-    EXPECT_CALL(*socket, send(An<const hutzn::buffer&>()))
-        .Times(1)
-        .WillRepeatedly(Return(true));
+    EXPECT_CALL(*socket, send(An<const buffer&>())).Times(1).WillRepeatedly(
+        Return(true));
     EXPECT_CALL(*socket, send(An<const std::string&>()))
         .Times(1)
         .WillRepeatedly(Return(true));
     response.deliver();
 
     response.set_version(version::HTTP_UNKNOWN);
-    EXPECT_CALL(*socket, send(An<const hutzn::buffer&>()))
-        .Times(1)
-        .WillRepeatedly(Return(true));
+    EXPECT_CALL(*socket, send(An<const buffer&>())).Times(1).WillRepeatedly(
+        Return(true));
     EXPECT_CALL(*socket, send(An<const std::string&>()))
         .Times(1)
         .WillRepeatedly(Return(true));

@@ -75,7 +75,7 @@ TEST(request_parser, construction_destruction)
     fixture f("");
     EXPECT_FALSE(f.parser_.valid());
     EXPECT_EQ(f.str_.second, f.str_.first.size());
-    EXPECT_EQ(f.parser_.method(), hutzn::method::UNKNOWN);
+    EXPECT_EQ(f.parser_.method(), method::UNKNOWN);
     EXPECT_EQ(f.parser_.version(), version::HTTP_UNKNOWN);
     EXPECT_EQ(f.parser_.request_uri().valid(), false);
     EXPECT_EQ(f.parser_.headers().empty(), true);
@@ -87,7 +87,7 @@ TEST(request_parser, options_request)
     f.parser_.parse();
     EXPECT_TRUE(f.parser_.valid());
     EXPECT_EQ(f.str_.second, f.str_.first.size());
-    EXPECT_EQ(f.parser_.method(), hutzn::method::OPTIONS);
+    EXPECT_EQ(f.parser_.method(), method::OPTIONS);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().path(), std::string("/"));
     EXPECT_EQ(f.parser_.headers().empty(), true);
@@ -100,7 +100,7 @@ TEST(request_parser, get_request)
         f.parser_.parse();
         EXPECT_TRUE(f.parser_.valid());
         EXPECT_EQ(f.str_.second, f.str_.first.size());
-        EXPECT_EQ(f.parser_.method(), hutzn::method::GET);
+        EXPECT_EQ(f.parser_.method(), method::GET);
         EXPECT_EQ(f.parser_.version(), version::HTTP_1_0);
         EXPECT_EQ(f.parser_.request_uri().path(), std::string("/"));
         EXPECT_EQ(f.parser_.headers().empty(), true);
@@ -120,7 +120,7 @@ TEST(request_parser, head_request)
     f.parser_.parse();
     EXPECT_TRUE(f.parser_.valid());
     EXPECT_EQ(f.str_.second, f.str_.first.size());
-    EXPECT_EQ(f.parser_.method(), hutzn::method::HEAD);
+    EXPECT_EQ(f.parser_.method(), method::HEAD);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().path(), std::string("/"));
     EXPECT_EQ(f.parser_.headers().empty(), true);
@@ -132,7 +132,7 @@ TEST(request_parser, post_request)
     f.parser_.parse();
     EXPECT_TRUE(f.parser_.valid());
     EXPECT_EQ(f.str_.second, f.str_.first.size());
-    EXPECT_EQ(f.parser_.method(), hutzn::method::POST);
+    EXPECT_EQ(f.parser_.method(), method::POST);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().path(), std::string("/"));
     EXPECT_EQ(f.parser_.headers().empty(), true);
@@ -148,7 +148,7 @@ TEST(request_parser, put_request)
     f.parser_.parse();
     EXPECT_TRUE(f.parser_.valid());
     EXPECT_EQ(f.str_.second, f.str_.first.size());
-    EXPECT_EQ(f.parser_.method(), hutzn::method::PUT);
+    EXPECT_EQ(f.parser_.method(), method::PUT);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().path(), std::string("/bla"));
     EXPECT_EQ(f.parser_.headers().empty(), true);
@@ -163,7 +163,7 @@ TEST(request_parser, delete_request)
     f.parser_.parse();
     EXPECT_TRUE(f.parser_.valid());
     EXPECT_EQ(f.str_.second, f.str_.first.size());
-    EXPECT_EQ(f.parser_.method(), hutzn::method::DELETE);
+    EXPECT_EQ(f.parser_.method(), method::DELETE);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().path(), std::string("/"));
     EXPECT_EQ(f.parser_.headers().size(), 2);
@@ -177,7 +177,7 @@ TEST(request_parser, trace_request)
     f.parser_.parse();
     EXPECT_TRUE(f.parser_.valid());
     EXPECT_EQ(f.str_.second, f.str_.first.size());
-    EXPECT_EQ(f.parser_.method(), hutzn::method::TRACE);
+    EXPECT_EQ(f.parser_.method(), method::TRACE);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().path(), std::string("/"));
     EXPECT_EQ(f.parser_.headers().empty(), true);
@@ -189,7 +189,7 @@ TEST(request_parser, connect_request)
     f.parser_.parse();
     EXPECT_TRUE(f.parser_.valid());
     EXPECT_EQ(f.str_.second, f.str_.first.size());
-    EXPECT_EQ(f.parser_.method(), hutzn::method::CONNECT);
+    EXPECT_EQ(f.parser_.method(), method::CONNECT);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().path(), std::string("/"));
     EXPECT_EQ(f.parser_.headers().size(), 1);
@@ -201,7 +201,7 @@ TEST(request_parser, same_header_name_request)
     f.parser_.parse();
     EXPECT_TRUE(f.parser_.valid());
     EXPECT_EQ(f.str_.second, f.str_.first.size());
-    EXPECT_EQ(f.parser_.method(), hutzn::method::GET);
+    EXPECT_EQ(f.parser_.method(), method::GET);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_0);
     EXPECT_EQ(f.parser_.request_uri().path(), std::string("/"));
     EXPECT_EQ(f.parser_.headers().size(), 1);
@@ -214,7 +214,7 @@ TEST(request_parser, same_custom_header_name_request)
     f.parser_.parse();
     EXPECT_TRUE(f.parser_.valid());
     EXPECT_EQ(f.str_.second, f.str_.first.size());
-    EXPECT_EQ(f.parser_.method(), hutzn::method::GET);
+    EXPECT_EQ(f.parser_.method(), method::GET);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_0);
     EXPECT_EQ(f.parser_.request_uri().path(), std::string("/"));
     EXPECT_EQ(f.parser_.headers().size(), 1);
@@ -256,7 +256,7 @@ TEST(request_parser, unknown_content_length_in_request)
     f.parser_.parse();
     EXPECT_FALSE(f.parser_.valid());
     EXPECT_EQ(f.str_.second, 37);
-    EXPECT_EQ(f.parser_.method(), hutzn::method::DELETE);
+    EXPECT_EQ(f.parser_.method(), method::DELETE);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().path(), std::string("/"));
     EXPECT_EQ(f.parser_.headers().size(), 0);
@@ -269,7 +269,7 @@ TEST(request_parser, unknown_date_in_request)
     f.parser_.parse();
     EXPECT_FALSE(f.parser_.valid());
     EXPECT_EQ(f.str_.second, 31);
-    EXPECT_EQ(f.parser_.method(), hutzn::method::DELETE);
+    EXPECT_EQ(f.parser_.method(), method::DELETE);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().path(), std::string("/"));
     EXPECT_EQ(f.parser_.headers().size(), 0);
@@ -282,7 +282,7 @@ TEST(request_parser, unknown_method_in_request)
     f.parser_.parse();
     EXPECT_FALSE(f.parser_.valid());
     EXPECT_EQ(f.str_.second, 4);
-    EXPECT_EQ(f.parser_.method(), hutzn::method::UNKNOWN);
+    EXPECT_EQ(f.parser_.method(), method::UNKNOWN);
     EXPECT_EQ(f.parser_.version(), version::HTTP_UNKNOWN);
     EXPECT_EQ(f.parser_.request_uri().valid(), false);
     EXPECT_EQ(f.parser_.headers().size(), 0);
@@ -295,7 +295,7 @@ TEST(request_parser, unknown_url_in_request)
     f.parser_.parse();
     EXPECT_FALSE(f.parser_.valid());
     EXPECT_EQ(f.str_.second, 8);
-    EXPECT_EQ(f.parser_.method(), hutzn::method::DELETE);
+    EXPECT_EQ(f.parser_.method(), method::DELETE);
     EXPECT_EQ(f.parser_.version(), version::HTTP_UNKNOWN);
     EXPECT_EQ(f.parser_.request_uri().valid(), false);
     EXPECT_EQ(f.parser_.headers().size(), 0);
@@ -308,7 +308,7 @@ TEST(request_parser, unknown_version_in_request)
     f.parser_.parse();
     EXPECT_FALSE(f.parser_.valid());
     EXPECT_EQ(f.str_.second, 15);
-    EXPECT_EQ(f.parser_.method(), hutzn::method::DELETE);
+    EXPECT_EQ(f.parser_.method(), method::DELETE);
     EXPECT_EQ(f.parser_.version(), version::HTTP_UNKNOWN);
     EXPECT_EQ(f.parser_.request_uri().path(), std::string("/"));
     EXPECT_EQ(f.parser_.headers().size(), 0);
@@ -321,7 +321,7 @@ TEST(request_parser, unknown_first_line_end_in_request)
     f.parser_.parse();
     EXPECT_FALSE(f.parser_.valid());
     EXPECT_EQ(f.str_.second, 18);
-    EXPECT_EQ(f.parser_.method(), hutzn::method::DELETE);
+    EXPECT_EQ(f.parser_.method(), method::DELETE);
     EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
     EXPECT_EQ(f.parser_.request_uri().path(), std::string("/"));
     EXPECT_EQ(f.parser_.headers().size(), 0);
@@ -334,7 +334,7 @@ TEST(request_parser, http_error)
     f.parser_.parse();
     EXPECT_FALSE(f.parser_.valid());
     EXPECT_EQ(f.str_.second, 1);
-    EXPECT_EQ(f.parser_.method(), hutzn::method::UNKNOWN);
+    EXPECT_EQ(f.parser_.method(), method::UNKNOWN);
     EXPECT_EQ(f.parser_.version(), version::HTTP_UNKNOWN);
     EXPECT_EQ(f.parser_.request_uri().valid(), false);
     EXPECT_EQ(f.parser_.headers().empty(), true);

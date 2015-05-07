@@ -39,10 +39,9 @@ TEST(demultiplexer_handler, disconnect)
     demux_disconnect_mock_pointer demuxer =
         std::make_shared<demux_disconnect_interface_mock>();
 
-    request_handler_id id{
-        "/", hutzn::http_verb::GET,
-        hutzn::mime(hutzn::mime_type::WILDCARD, hutzn::mime_subtype::WILDCARD),
-        hutzn::mime(hutzn::mime_type::TEXT, hutzn::mime_subtype::PLAIN)};
+    request_handler_id id{"/", http_verb::GET,
+                          mime(mime_type::WILDCARD, mime_subtype::WILDCARD),
+                          mime(mime_type::TEXT, mime_subtype::PLAIN)};
     EXPECT_CALL(*demuxer, disconnect(id)).Times(1).WillOnce(Return(true));
     demultiplex_handler d(*demuxer, id);
 }

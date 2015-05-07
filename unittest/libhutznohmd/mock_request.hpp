@@ -40,8 +40,8 @@ public:
     MOCK_CONST_METHOD0(date, time_t());
     MOCK_CONST_METHOD0(content, void*());
     MOCK_CONST_METHOD0(content_length, size_t());
-    MOCK_CONST_METHOD0(content_type, hutzn::mime());
-    MOCK_CONST_METHOD2(accept, bool(void*&, hutzn::mime&));
+    MOCK_CONST_METHOD0(content_type, mime());
+    MOCK_CONST_METHOD2(accept, bool(void*&, mime&));
     MOCK_CONST_METHOD0(expect, http_expectation());
     MOCK_CONST_METHOD0(from, const char*());
     MOCK_CONST_METHOD0(referer, const char*());
@@ -54,7 +54,7 @@ class response_interface_mock : public response_interface
 {
 public:
     MOCK_METHOD2(set_header, bool(const char* const, const char* const));
-    MOCK_METHOD2(set_content, void(const hutzn::buffer&, const bool));
+    MOCK_METHOD2(set_content, void(const buffer&, const bool));
     MOCK_METHOD1(set_content_location, void(const char* const));
     MOCK_METHOD1(set_location, void(const char* const));
     MOCK_METHOD1(set_retry_after, bool(const time_t));

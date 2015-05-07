@@ -43,15 +43,15 @@ public:
         bool check_md5;
     };
 
-    explicit request(const hutzn::connection_pointer& connection,
+    explicit request(const connection_pointer& connection,
                      const parameters& param);
     bool parse();
 
     hutzn::method method() const override;
     const uri_interface& request_uri() const override;
-    hutzn::http::version version() const override;
+    http::version version() const override;
     const std::map<std::string, std::string>& headers() const override;
-    const hutzn::buffer& data() const override;
+    const buffer& data() const override;
     const media_type_interface& data_content_type() const override;
     time_t date() const override;
     bool keeps_connection() const;
@@ -60,10 +60,10 @@ public:
     int32_t peek();
 
 private:
-    hutzn::connection_pointer connection_;
-    hutzn::buffer buffer_;
-    hutzn::http::request_parser request_parser_;
-    hutzn::buffer data_;
+    connection_pointer connection_;
+    buffer buffer_;
+    http::request_parser request_parser_;
+    buffer data_;
     size_t index_;
     parameters parameters_;
 };

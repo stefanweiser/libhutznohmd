@@ -173,9 +173,9 @@ bytes. Thus it must be an unsigned integer. The size is limited to
 rejected.
 
 The content length could be retrieved by @ref
-hutzn::request_interface::content_length and is set on a response
+request_interface::content_length and is set on a response
 automatically when a content is set by @ref
-hutzn::response_interface::set_content.
+response_interface::set_content.
 
 @subsubsection subsub_content_length_example Example:
 
@@ -199,7 +199,7 @@ This header field is optional and carries a MD5 hash sum. This hash sum is
 automatically used to check the content for transmission errors. If the header
 field is missing, the content is not verified with MD5. To enable this header
 on the response, set the second parameter of @ref
-hutzn::response_interface::set_content to true.
+response_interface::set_content to true.
 
 @note For two reasons this is no security feature:
 -# An attacker that is able to modify the header field or the content is
@@ -307,7 +307,7 @@ keep the connection alive till the client closes the connection or a predefined
 time elapsed without activity on the connection.
 
 This time duration can be configured for the request processor in its factory
-function @ref hutzn::make_request_processor. It shall be deemed to be a lower
+function @ref make_request_processor. It shall be deemed to be a lower
 bound. It could take longer till the connection is effectively getting closed.
 See @ref sec_lifetime_connection for more information.
 
@@ -454,7 +454,7 @@ unimplemented
 @subsection sub_content_location Content-Location
 
 Points to the original URI path of the requested resource. Should be set by
-calling @ref hutzn::response_interface::set_content_location, when a
+calling @ref response_interface::set_content_location, when a
 resource is available under different URIs and the requested URI path is not the
 primary URI.
 
@@ -475,7 +475,7 @@ unimplemented
 @subsection sub_location Location
 
 Contains the location the client should be guided to. Is set, when @ref
-hutzn::response_interface::set_location is called and could contain the
+response_interface::set_location is called and could contain the
 URI of a created resource or the URI of a moved one.
 
 @subsubsection subsub_location_example Example:
@@ -495,7 +495,7 @@ unimplemented
 @subsection sub_retry_after Retry-After
 
 Tells the client, that it should repeat the request later to get a proper
-result. Is set, when @ref hutzn::response_interface::set_retry_after
+result. Is set, when @ref response_interface::set_retry_after
 is getting called with a time greater 0 and cleared if called with 0.
 
 @subsubsection subsub_retry_after_example Example:
@@ -517,7 +517,7 @@ unimplemented
 
 Set to the server/version fingerprint. This is deactivated per default for
 security reasons and can be activated by calling @ref
-hutzn::response_interface::set_server on the response.
+response_interface::set_server on the response.
 
 @subsubsection subsub_server_example Example:
 
@@ -639,8 +639,8 @@ enum class http_verb : uint8_t {
 //! "speaking" status code in the response in that case:
 //!
 //! @code{.cpp}
-//! constexpr hutzn::http_status_code xy =
-//!     static_cast<hutzn::http_status_code>(111);
+//! constexpr http_status_code xy =
+//!     static_cast<http_status_code>(111);
 //! @endcode
 enum class http_status_code : uint16_t {
     //! Since HTTP/1.1
@@ -840,7 +840,7 @@ public:
     virtual void* content() const = 0;
 
     //! Returns the length of the buffer returned by
-    //! @ref hutzn::request_interface::content(). If there is no
+    //! @ref request_interface::content(). If there is no
     //! content it returns 0.
     virtual size_t content_length() const = 0;
 
@@ -900,8 +900,7 @@ public:
     //! Sets or overwrites the content and implicitly the content length of the
     //! response. The second parameter controls, whether a Content-MD5 field
     //! is generated or not.
-    virtual void set_content(const hutzn::buffer& content,
-                             const bool set_md5) = 0;
+    virtual void set_content(const buffer& content, const bool set_md5) = 0;
 
     //! Sets or overwrites the Content-Location header field.
     virtual void set_content_location(const char* const content_location) = 0;

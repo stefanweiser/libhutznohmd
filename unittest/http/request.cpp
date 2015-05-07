@@ -34,17 +34,17 @@ namespace http
 
 TEST(request, empty_body)
 {
-    auto socket = std::make_shared<hutzn::connection_interface_mock>();
+    auto socket = std::make_shared<connection_interface_mock>();
     request request(socket, request::parameters{true});
 
     EXPECT_CALL(*socket, receive(_, _)).Times(1).WillOnce(
-        Invoke([](hutzn::buffer& data, const size_t & /*max_size*/) -> bool {
+        Invoke([](buffer& data, const size_t & /*max_size*/) -> bool {
             std::stringstream stream;
             stream << "GET / HTTP/1.1\r\n";
             stream << "Content-MD5: 1B2M2Y8AsgTpgAmY7PhCfg==\r\n";
             stream << "\r\n";
             std::string request_data = stream.str();
-            data = hutzn::buffer(request_data.begin(), request_data.end());
+            data = buffer(request_data.begin(), request_data.end());
             return true;
         }));
     EXPECT_TRUE(request.parse());
@@ -55,14 +55,14 @@ TEST(request, empty_body)
 
     EXPECT_EQ(request.headers().size(), 0);
     EXPECT_EQ(calculate_md5(request.data()), sum);
-    EXPECT_EQ(request.data(), hutzn::buffer());
+    EXPECT_EQ(request.data(), buffer());
     EXPECT_EQ(request.data_content_type().type(),
               media_type_interface::mime_type::CUSTOM);
     EXPECT_EQ(request.data_content_type().subtype(),
               media_type_interface::mime_subtype::CUSTOM);
     EXPECT_EQ(request.data_content_type().custom_type(), std::string());
     EXPECT_EQ(request.data_content_type().custom_subtype(), std::string());
-    EXPECT_EQ(request.method(), hutzn::method::GET);
+    EXPECT_EQ(request.method(), method::GET);
     EXPECT_EQ(request.request_uri().path(), std::string("/"));
     EXPECT_EQ(request.version(), version::HTTP_1_1);
     EXPECT_EQ(request.keeps_connection(), true);
@@ -70,17 +70,17 @@ TEST(request, empty_body)
 
 TEST(request, wrong_md5)
 {
-    auto socket = std::make_shared<hutzn::connection_interface_mock>();
+    auto socket = std::make_shared<connection_interface_mock>();
     request request(socket, request::parameters{true});
 
     EXPECT_CALL(*socket, receive(_, _)).Times(1).WillOnce(
-        Invoke([](hutzn::buffer& data, const size_t & /*max_size*/) -> bool {
+        Invoke([](buffer& data, const size_t & /*max_size*/) -> bool {
             std::stringstream stream;
             stream << "GET / HTTP/1.1\r\n";
             stream << "Content-MD5: 2B2M2Y8AsgTpgAmY7PhCfg==\r\n";
             stream << "\r\n";
             std::string request_data = stream.str();
-            data = hutzn::buffer(request_data.begin(), request_data.end());
+            data = buffer(request_data.begin(), request_data.end());
             return true;
         }));
     EXPECT_FALSE(request.parse());
@@ -91,8 +91,8 @@ TEST(request, wrong_md5)
 
     EXPECT_EQ(request.headers().size(), 0);
     EXPECT_EQ(calculate_md5(request.data()), sum);
-    EXPECT_EQ(request.data(), hutzn::buffer());
-    EXPECT_EQ(request.method(), hutzn::method::GET);
+    EXPECT_EQ(request.data(), buffer());
+    EXPECT_EQ(request.method(), method::GET);
     EXPECT_EQ(request.request_uri().path(), std::string("/"));
     EXPECT_EQ(request.version(), version::HTTP_1_1);
     EXPECT_EQ(request.keeps_connection(), true);
@@ -100,17 +100,17 @@ TEST(request, wrong_md5)
 
 TEST(request, wrong_md5_but_no_check)
 {
-    auto socket = std::make_shared<hutzn::connection_interface_mock>();
+    auto socket = std::make_shared<connection_interface_mock>();
     request request(socket, request::parameters{false});
 
     EXPECT_CALL(*socket, receive(_, _)).Times(1).WillOnce(
-        Invoke([](hutzn::buffer& data, const size_t & /*max_size*/) -> bool {
+        Invoke([](buffer& data, const size_t & /*max_size*/) -> bool {
             std::stringstream stream;
             stream << "GET / HTTP/1.1\r\n";
             stream << "Content-MD5: 2B2M2Y8AsgTpgAmY7PhCfg==\r\n";
             stream << "\r\n";
             std::string request_data = stream.str();
-            data = hutzn::buffer(request_data.begin(), request_data.end());
+            data = buffer(request_data.begin(), request_data.end());
             return true;
         }));
     EXPECT_TRUE(request.parse());
@@ -121,8 +121,8 @@ TEST(request, wrong_md5_but_no_check)
 
     EXPECT_EQ(request.headers().size(), 0);
     EXPECT_EQ(calculate_md5(request.data()), sum);
-    EXPECT_EQ(request.data(), hutzn::buffer());
-    EXPECT_EQ(request.method(), hutzn::method::GET);
+    EXPECT_EQ(request.data(), buffer());
+    EXPECT_EQ(request.method(), method::GET);
     EXPECT_EQ(request.request_uri().path(), std::string("/"));
     EXPECT_EQ(request.version(), version::HTTP_1_1);
     EXPECT_EQ(request.keeps_connection(), true);
@@ -130,11 +130,11 @@ TEST(request, wrong_md5_but_no_check)
 
 TEST(request, parse)
 {
-    auto socket = std::make_shared<hutzn::connection_interface_mock>();
+    auto socket = std::make_shared<connection_interface_mock>();
     request request(socket, request::parameters{true});
 
     EXPECT_CALL(*socket, receive(_, _)).Times(1).WillOnce(
-        Invoke([](hutzn::buffer& data, const size_t & /*max_size*/) -> bool {
+        Invoke([](buffer& data, const size_t & /*max_size*/) -> bool {
             std::stringstream stream;
             stream << "GET / HTTP/1.1\r\n";
             stream << "Content-Length: 1\r\n";
@@ -145,15 +145,15 @@ TEST(request, parse)
             stream << "\r\n";
             stream << "00";
             std::string request_data = stream.str();
-            data = hutzn::buffer(request_data.begin(), request_data.end());
+            data = buffer(request_data.begin(), request_data.end());
             return true;
         }));
     EXPECT_TRUE(request.parse());
 
     EXPECT_EQ(request.headers().size(), 0);
-    EXPECT_EQ(request.data(), hutzn::buffer({'0'}));
+    EXPECT_EQ(request.data(), buffer({'0'}));
     EXPECT_EQ(request.date(), 951868800);
-    EXPECT_EQ(request.method(), hutzn::method::GET);
+    EXPECT_EQ(request.method(), method::GET);
     EXPECT_EQ(request.request_uri().path(), std::string("/"));
     EXPECT_EQ(request.version(), version::HTTP_1_1);
     EXPECT_EQ(request.keeps_connection(), false);
@@ -161,55 +161,52 @@ TEST(request, parse)
 
 TEST(request, parse_false_return)
 {
-    auto socket = std::make_shared<hutzn::connection_interface_mock>();
+    auto socket = std::make_shared<connection_interface_mock>();
     request request(socket, request::parameters{true});
 
     EXPECT_CALL(*socket, receive(_, _))
         .Times(2)
-        .WillOnce(Invoke(
-            [](hutzn::buffer& data, const size_t & /*max_size*/) -> bool {
-                std::stringstream stream;
-                stream << "GET / HTTP/1.1\r\n";
-                stream << "Content-Length: 1\r\n";
-                stream << "\r\n";
-                std::string request_data = stream.str();
-                data = hutzn::buffer(request_data.begin(), request_data.end());
-                return true;
-            }))
-        .WillRepeatedly(
-            Invoke([](hutzn::buffer& /*data*/, const size_t & /*max_size*/)
-                       -> bool { return false; }));
+        .WillOnce(Invoke([](buffer& data, const size_t & /*max_size*/) -> bool {
+            std::stringstream stream;
+            stream << "GET / HTTP/1.1\r\n";
+            stream << "Content-Length: 1\r\n";
+            stream << "\r\n";
+            std::string request_data = stream.str();
+            data = buffer(request_data.begin(), request_data.end());
+            return true;
+        }))
+        .WillRepeatedly(Invoke([](buffer& /*data*/, const size_t & /*max_size*/)
+                                   -> bool { return false; }));
     EXPECT_TRUE(request.parse());
 
     EXPECT_EQ(request.headers().size(), 0);
     EXPECT_EQ(request.data().empty(), true);
-    EXPECT_EQ(request.method(), hutzn::method::GET);
+    EXPECT_EQ(request.method(), method::GET);
     EXPECT_EQ(request.request_uri().path(), std::string("/"));
     EXPECT_EQ(request.version(), version::HTTP_1_1);
 }
 
 TEST(request, parse_large_request)
 {
-    auto socket = std::make_shared<hutzn::connection_interface_mock>();
+    auto socket = std::make_shared<connection_interface_mock>();
     request request(socket, request::parameters{true});
 
     EXPECT_CALL(*socket, receive(_, _))
         .Times(3)
-        .WillOnce(Invoke(
-            [](hutzn::buffer& data, const size_t & /*max_size*/) -> bool {
-                std::stringstream stream;
-                stream << "GET / HTTP/1.1\r\n";
-                stream << "Content-Length: 2000\r\n";
-                stream << "Accept: text/html,\r\n";
-                stream << " text/xml\r\n";
-                stream << "\r\n";
-                std::string request_data = stream.str();
-                data = hutzn::buffer(request_data.begin(), request_data.end());
-                return true;
-            }))
-        .WillRepeatedly(Invoke(
-            [](hutzn::buffer& data, const size_t & /*max_size*/) -> bool {
-                hutzn::buffer content(1000, '0');
+        .WillOnce(Invoke([](buffer& data, const size_t & /*max_size*/) -> bool {
+            std::stringstream stream;
+            stream << "GET / HTTP/1.1\r\n";
+            stream << "Content-Length: 2000\r\n";
+            stream << "Accept: text/html,\r\n";
+            stream << " text/xml\r\n";
+            stream << "\r\n";
+            std::string request_data = stream.str();
+            data = buffer(request_data.begin(), request_data.end());
+            return true;
+        }))
+        .WillRepeatedly(
+            Invoke([](buffer& data, const size_t & /*max_size*/) -> bool {
+                buffer content(1000, '0');
                 data.insert(data.end(), content.begin(), content.end());
                 return true;
             }));
@@ -218,18 +215,18 @@ TEST(request, parse_large_request)
     EXPECT_EQ(request.headers().size(), 0);
     EXPECT_EQ(request.headers().find("abc"), request.headers().end());
     EXPECT_EQ(request.data().size(), 2000);
-    EXPECT_EQ(request.data(), hutzn::buffer(2000, '0'));
+    EXPECT_EQ(request.data(), buffer(2000, '0'));
     time_t compare_time = time(NULL);
     EXPECT_LE(request.date(), compare_time);
     EXPECT_GE(request.date(), compare_time - 2);
-    EXPECT_EQ(request.method(), hutzn::method::GET);
+    EXPECT_EQ(request.method(), method::GET);
     EXPECT_EQ(request.request_uri().path(), std::string("/"));
     EXPECT_EQ(request.version(), version::HTTP_1_1);
 }
 
 TEST(request, no_needed_vailable)
 {
-    auto socket = std::make_shared<hutzn::connection_interface_mock>();
+    auto socket = std::make_shared<connection_interface_mock>();
     request request(socket, request::parameters{true});
 
     EXPECT_CALL(*socket, receive(_, _)).Times(1).WillRepeatedly(Return(false));

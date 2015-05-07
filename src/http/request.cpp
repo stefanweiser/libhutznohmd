@@ -41,8 +41,7 @@ int32_t peek_char(void* handle)
     return static_cast<request*>(handle)->peek();
 }
 
-request::request(const hutzn::connection_pointer& connection,
-                 const parameters& param)
+request::request(const connection_pointer& connection, const parameters& param)
     : connection_(connection)
     , buffer_()
     , request_parser_(anonymous_int_function(&get_char, this),
@@ -88,7 +87,7 @@ bool request::parse()
     return result;
 }
 
-hutzn::method request::method() const
+method request::method() const
 {
     return request_parser_.method();
 }
@@ -98,9 +97,9 @@ const uri_interface& request::request_uri() const
     return request_parser_.request_uri();
 }
 
-hutzn::http::version request::version() const
+http::version request::version() const
 {
-    return static_cast<hutzn::http::version>(request_parser_.version());
+    return static_cast<http::version>(request_parser_.version());
 }
 
 const std::map<std::string, std::string>& request::headers() const
@@ -108,7 +107,7 @@ const std::map<std::string, std::string>& request::headers() const
     return request_parser_.headers();
 }
 
-const hutzn::buffer& request::data() const
+const buffer& request::data() const
 {
     return data_;
 }

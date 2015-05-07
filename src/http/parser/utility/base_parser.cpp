@@ -39,7 +39,7 @@ base_parser::base_parser(const anonymous_int_function& get_functor,
     , state_(parser_state::UNFINISHED)
     , header_key_()
     , header_value_()
-    , version_(hutzn::http::version::HTTP_UNKNOWN)
+    , version_(http::version::HTTP_UNKNOWN)
     , headers_()
     , content_length_(0)
     , content_type_()

@@ -32,12 +32,12 @@ demultiplexer::demultiplexer()
     : resource_callbacks_mutex_()
     , resource_callbacks_()
     , request_parser_data_mutex_()
-    , request_parser_data_(std::make_shared<hutzn::parser_data>())
+    , request_parser_data_(std::make_shared<parser_data>())
 {
 }
 
 request_handler_callback demultiplexer::determine_request_handler(
-    const hutzn::request_interface& request)
+    const request_interface& request)
 {
     std::lock_guard<std::mutex> lock(resource_callbacks_mutex_);
 
@@ -48,21 +48,21 @@ request_handler_callback demultiplexer::determine_request_handler(
     }
     const auto& resource_map = resource_it->second;
 
-    const hutzn::http_verb verb = request.method();
+    const http_verb verb = request.method();
     const auto method_it = resource_map.find(verb);
     if (method_it == resource_map.end()) {
         return request_handler_callback();
     }
     const auto& method_map = method_it->second;
 
-    const hutzn::mime content_type = request.content_type();
-    if ((content_type.first == hutzn::mime_type::WILDCARD) ||
-        (content_type.second == hutzn::mime_subtype::WILDCARD)) {
+    const mime content_type = request.content_type();
+    if ((content_type.first == mime_type::WILDCARD) ||
+        (content_type.second == mime_subtype::WILDCARD)) {
         return request_handler_callback();
     }
 
     void* handle = nullptr;
-    hutzn::mime accept_type;
+    mime accept_type;
     while (true == request.accept(handle, accept_type)) {
         const auto handler_it =
             method_map.find(std::make_tuple(content_type, accept_type));
@@ -84,8 +84,8 @@ handler_pointer demultiplexer::connect(const request_handler_id& id,
     std::unique_lock<std::mutex> lock(resource_callbacks_mutex_);
 
     // Check whether the input mime type or subtype is unregistered.
-    hutzn::mime_type type = id.input_type.first;
-    hutzn::mime_subtype subtype = id.input_type.second;
+    mime_type type = id.input_type.first;
+    mime_subtype subtype = id.input_type.second;
     if ((false == request_parser_data_->is_mime_type_registered(type)) ||
         (false == request_parser_data_->is_mime_subtype_registered(subtype))) {
         return handler_pointer();
@@ -130,26 +130,25 @@ bool demultiplexer::disconnect(const request_handler_id& id)
     return result;
 }
 
-hutzn::mime_type demultiplexer::register_mime_type(const std::string& type)
+mime_type demultiplexer::register_mime_type(const std::string& type)
 {
     std::lock_guard<std::mutex> lock(request_parser_data_mutex_);
     return request_parser_data_->register_mime_type(type);
 }
 
-hutzn::mime_subtype demultiplexer::register_mime_subtype(
-    const std::string& subtype)
+mime_subtype demultiplexer::register_mime_subtype(const std::string& subtype)
 {
     std::lock_guard<std::mutex> lock(request_parser_data_mutex_);
     return request_parser_data_->register_mime_subtype(subtype);
 }
 
-bool demultiplexer::unregister_mime_type(const hutzn::mime_type& type)
+bool demultiplexer::unregister_mime_type(const mime_type& type)
 {
     std::lock_guard<std::mutex> lock(request_parser_data_mutex_);
     return request_parser_data_->unregister_mime_type(type);
 }
 
-bool demultiplexer::unregister_mime_subtype(const hutzn::mime_subtype& subtype)
+bool demultiplexer::unregister_mime_subtype(const mime_subtype& subtype)
 {
     std::lock_guard<std::mutex> lock(request_parser_data_mutex_);
     return request_parser_data_->unregister_mime_subtype(subtype);

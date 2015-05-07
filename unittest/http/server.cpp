@@ -37,25 +37,22 @@ TEST(server, parsing_request)
     auto transaction =
         [&called](const request_interface& /*request*/,
                   response_interface& /*response*/) { called = true; };
-    server server(hutzn::listener_pointer(), transaction);
+    server server(listener_pointer(), transaction);
 
-    auto socket = std::make_shared<hutzn::connection_interface_mock>();
+    auto socket = std::make_shared<connection_interface_mock>();
     EXPECT_CALL(*socket, receive(_, _))
-        .WillOnce(Invoke(
-            [](hutzn::buffer& data, const size_t & /*max_size*/) -> bool {
-                std::stringstream stream;
-                stream << "GET / HTTP/1.1\r\n";
-                stream << "\r\n";
-                std::string request_data = stream.str();
-                data = hutzn::buffer(request_data.begin(), request_data.end());
-                return true;
-            }))
-        .WillRepeatedly(
-            Invoke([](hutzn::buffer& /*data*/, const size_t & /*max_size*/)
-                       -> bool { return false; }));
-    EXPECT_CALL(*socket, send(An<const hutzn::buffer&>()))
-        .Times(1)
-        .WillRepeatedly(Return(true));
+        .WillOnce(Invoke([](buffer& data, const size_t & /*max_size*/) -> bool {
+            std::stringstream stream;
+            stream << "GET / HTTP/1.1\r\n";
+            stream << "\r\n";
+            std::string request_data = stream.str();
+            data = buffer(request_data.begin(), request_data.end());
+            return true;
+        }))
+        .WillRepeatedly(Invoke([](buffer& /*data*/, const size_t & /*max_size*/)
+                                   -> bool { return false; }));
+    EXPECT_CALL(*socket, send(An<const buffer&>())).Times(1).WillRepeatedly(
+        Return(true));
     EXPECT_CALL(*socket, send(An<const std::string&>()))
         .Times(1)
         .WillRepeatedly(Return(true));

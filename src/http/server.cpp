@@ -30,11 +30,11 @@ namespace http
 server_pointer create_server(const std::string& host, const uint16_t& port,
                              const transaction_function& transaction_functor)
 {
-    auto socket = hutzn::listen(host, port);
+    auto socket = listen(host, port);
     return std::make_shared<server>(socket, transaction_functor);
 }
 
-server::server(const hutzn::listener_pointer& s,
+server::server(const listener_pointer& s,
                const transaction_function& transaction_functor)
     : threads_()
     , socket_(s)
@@ -65,24 +65,24 @@ void server::stop()
     socket_->stop();
 }
 
-void server::parse_request(const hutzn::connection_pointer& connection)
+void server::parse_request(const connection_pointer& connection)
 {
-    request request(connection, request::parameters{true});
-    request.parse();
+    request req(connection, request::parameters{true});
+    req.parse();
 
-    response response(connection);
+    response resp(connection);
     if (transaction_functor_) {
-        transaction_functor_(request, response);
+        transaction_functor_(req, resp);
     }
-    response.deliver();
+    resp.deliver();
 
     // Close the connection if needed.
-    if (false == request.keeps_connection()) {
+    if (false == req.keeps_connection()) {
         connection->close();
     }
 }
 
-const hutzn::listener_pointer& server::socket() const
+const listener_pointer& server::socket() const
 {
     return socket_;
 }

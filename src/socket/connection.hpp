@@ -38,8 +38,8 @@ public:
     explicit connection(const int& s, const sockaddr_in& address);
     ~connection() override;
     void close() override;
-    bool receive(hutzn::buffer& data, const size_t& max_size) override;
-    bool send(const hutzn::buffer& data) override;
+    bool receive(buffer& data, const size_t& max_size) override;
+    bool send(const buffer& data) override;
     bool send(const std::string& data) override;
     bool set_lingering_timeout(const int& timeout) override;
     int socket() const override;

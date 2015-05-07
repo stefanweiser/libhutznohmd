@@ -31,8 +31,8 @@ class connection_interface_mock : public connection_interface
 public:
     MOCK_METHOD0(connect, bool());
     MOCK_METHOD0(close, void());
-    MOCK_METHOD2(receive, bool(hutzn::buffer&, const size_t&));
-    MOCK_METHOD1(send, bool(const hutzn::buffer&));
+    MOCK_METHOD2(receive, bool(buffer&, const size_t&));
+    MOCK_METHOD1(send, bool(const buffer&));
     MOCK_METHOD1(send, bool(const std::string&));
     MOCK_METHOD1(set_lingering_timeout, bool(const int&));
     MOCK_CONST_METHOD0(socket, int());

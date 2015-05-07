@@ -470,7 +470,7 @@ abort and the bug has to be fixed. This enables you to choose whether to use
 exception handling or not. Sadly there is currently no way to enforce this
 gurantee without loosing the ability to test with google-mock. There is also one
 exception from this rule. The member function
-@ref hutzn::request_processor_interface::handle_one_request may indirectly throw
+@ref request_processor_interface::handle_one_request may indirectly throw
 an exception, because it is necessary to call a request handler or an error
 handler which is part of the server. The library will not enforce those handler
 functions to fulfill this no-throw policy.
@@ -839,13 +839,13 @@ public:
     virtual const uri_interface& request_uri() const = 0;
 
     //! Requested HTTP version.
-    virtual hutzn::http::version version() const = 0;
+    virtual http::version version() const = 0;
 
     //! Returns the custom header of the specified key.
     virtual const std::map<std::string, std::string>& headers() const = 0;
 
     //! Returns the data buffer.
-    virtual const hutzn::buffer& data() const = 0;
+    virtual const buffer& data() const = 0;
 
     //! Returns the conent type of the data buffer.
     virtual const media_type_interface& data_content_type() const = 0;
@@ -861,18 +861,17 @@ public:
     virtual ~response_interface();
 
     //! Sets the status code.
-    virtual void set_status_code(
-        const hutzn::http_status_code& status_code) = 0;
+    virtual void set_status_code(const http_status_code& status_code) = 0;
 
     //! Sets the HTTP version.
-    virtual void set_version(const hutzn::http::version& version) = 0;
+    virtual void set_version(const http::version& version) = 0;
 
     //! Sets a header by key to a value.
     virtual void set_header(const std::string& key,
                             const std::string& value) = 0;
 
     //! Sets the content data.
-    virtual void set_data(const hutzn::buffer& data) = 0;
+    virtual void set_data(const buffer& data) = 0;
 };
 
 //! Callback type, used for every http transaction.

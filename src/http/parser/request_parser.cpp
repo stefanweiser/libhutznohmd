@@ -82,23 +82,23 @@ void request_parser::parse()
 
     character = common_.lexer_.get_non_whitespace();
     {
-        using value_type = std::tuple<hutzn::http::version, connection_type>;
+        using value_type = std::tuple<http::version, connection_type>;
         using value_info = trie<value_type>::value_info;
         static const std::vector<value_info> types = {
-            {value_info{"http/1.0", value_type{hutzn::http::version::HTTP_1_0,
+            {value_info{"http/1.0", value_type{http::version::HTTP_1_0,
                                                connection_type::CLOSE}},
-             value_info{"http/1.1", value_type{hutzn::http::version::HTTP_1_1,
+             value_info{"http/1.1", value_type{http::version::HTTP_1_1,
                                                connection_type::KEEP_ALIVE}}}};
 
         static const trie<value_type> t(
-            types, value_type{hutzn::http::version::HTTP_UNKNOWN,
-                              connection_type::ERROR});
+            types,
+            value_type{http::version::HTTP_UNKNOWN, connection_type::ERROR});
         push_back_string<32> tmp;
         std::tie(common_.version_, common_.connection_) =
             t.parse(character, tmp, common_.lexer_);
     }
 
-    if ((hutzn::http::version::HTTP_UNKNOWN == common_.version_) ||
+    if ((http::version::HTTP_UNKNOWN == common_.version_) ||
         (character != '\n')) {
         common_.state_ = parser_state::ERROR;
         return;
@@ -117,7 +117,7 @@ bool request_parser::valid() const
     return (parser_state::SUCCEEDED == common_.state_);
 }
 
-const hutzn::http::version& request_parser::version() const
+const http::version& request_parser::version() const
 {
     return common_.version_;
 }
