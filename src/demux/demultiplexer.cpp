@@ -90,7 +90,9 @@ handler_pointer demultiplexer::connect(const request_handler_id& id,
     mime_subtype subtype = id.content_type.second;
     if ((false == request_parser_data_->is_mime_type_registered(type)) ||
         (false == request_parser_data_->is_mime_subtype_registered(subtype))) {
-        return handler_pointer();
+        if ((type != mime_type::NONE) && (subtype != mime_subtype::NONE)) {
+            return handler_pointer();
+        }
     }
 
     // Check whether the result mime type or subtype is unregistered.
@@ -98,7 +100,9 @@ handler_pointer demultiplexer::connect(const request_handler_id& id,
     subtype = id.accept_type.second;
     if ((false == request_parser_data_->is_mime_type_registered(type)) ||
         (false == request_parser_data_->is_mime_subtype_registered(subtype))) {
-        return handler_pointer();
+        if ((type != mime_type::NONE) && (subtype != mime_subtype::NONE)) {
+            return handler_pointer();
+        }
     }
 
     // Get specific map with handlers.
