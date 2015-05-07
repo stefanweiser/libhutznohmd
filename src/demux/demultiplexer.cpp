@@ -120,20 +120,42 @@ handler_pointer demultiplexer::connect(const request_handler_id& id,
 bool demultiplexer::disconnect(const request_handler_id& id)
 {
     std::lock_guard<std::mutex> lock(resource_callbacks_mutex_);
-    resource_mime_accept_map& accept_map =
-        resource_callbacks_[id.path][id.method][id.input_type];
+
+    // Getting target resource map.
+    auto resource_it = resource_callbacks_.find(id.path);
+    if (resource_it == resource_callbacks_.end()) {
+        return false;
+    }
+    auto& resource_map = resource_it->second;
+
+    // Getting target method map.
+    auto method_it = resource_map.find(id.method);
+    if (method_it == resource_map.end()) {
+        return false;
+    }
+    auto& method_map = method_it->second;
+
+    // Getting target accept map.
+    auto accept_it = method_map.find(id.input_type);
+    if (accept_it == method_map.end()) {
+        return false;
+    }
+    auto& accept_map = accept_it->second;
+
+    // Erase handler id.
     const bool result = (accept_map.erase(id.result_type) > 0);
 
     // Clean up empty maps.
     if (accept_map.size() == 0) {
-        resource_callbacks_[id.path][id.method].erase(id.input_type);
-        if (resource_callbacks_[id.path][id.method].size() == 0) {
-            resource_callbacks_[id.path].erase(id.method);
-            if (resource_callbacks_[id.path].size() == 0) {
+        method_map.erase(id.input_type);
+        if (method_map.size() == 0) {
+            resource_map.erase(id.method);
+            if (resource_map.size() == 0) {
                 resource_callbacks_.erase(id.path);
             }
         }
     }
+
     return result;
 }
 
