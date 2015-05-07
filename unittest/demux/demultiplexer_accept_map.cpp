@@ -249,29 +249,6 @@ TEST_F(demultiplexer_accept_map_test,
     EXPECT_FALSE(map.find(request));
 }
 
-TEST_F(demultiplexer_accept_map_test,
-       find_nothing_accepted_when_one_is_inserted)
-{
-    demultiplexer_accept_map map;
-    request_interface_mock request;
-    map.insert(none_, make_request_handler(http_status_code::OK));
-    EXPECT_CALL(request, accept(_, _)).Times(1).WillOnce(Return(false));
-
-    EXPECT_FALSE(map.find(request));
-}
-
-TEST_F(demultiplexer_accept_map_test,
-       find_nothing_accepted_when_two_are_inserted)
-{
-    demultiplexer_accept_map map;
-    request_interface_mock request;
-    map.insert(none_, make_request_handler(http_status_code::OK));
-    map.insert(text_plain_, make_request_handler(http_status_code::FOUND));
-    EXPECT_CALL(request, accept(_, _)).Times(1).WillOnce(Return(false));
-
-    EXPECT_FALSE(map.find(request));
-}
-
 TEST_F(demultiplexer_accept_map_test, find_none_accepted_while_none_is_inserted)
 {
     demultiplexer_accept_map map;
