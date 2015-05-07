@@ -23,9 +23,6 @@
 namespace hutzn
 {
 
-namespace demux
-{
-
 demultiplex_handler::demultiplex_handler(demux_disconnect_interface& demuxer,
                                          const request_handler_id& id)
     : demuxer_(demuxer)
@@ -37,7 +34,5 @@ demultiplex_handler::~demultiplex_handler()
 {
     demuxer_.disconnect(id_);
 }
-
-} // namespace demux
 
 } // namespace hutzn

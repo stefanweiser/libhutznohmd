@@ -23,9 +23,6 @@
 namespace hutzn
 {
 
-namespace demux
-{
-
 demux_pointer make_demultiplexer()
 {
     return std::make_shared<demultiplexer>();
@@ -157,7 +154,5 @@ bool demultiplexer::unregister_mime_subtype(const hutzn::mime_subtype& subtype)
     std::lock_guard<std::mutex> lock(request_parser_data_mutex_);
     return request_parser_data_->unregister_mime_subtype(subtype);
 }
-
-} // namespace demux
 
 } // namespace hutzn

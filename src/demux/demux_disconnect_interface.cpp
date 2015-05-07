@@ -21,13 +21,8 @@
 namespace hutzn
 {
 
-namespace demux
-{
-
 demux_disconnect_interface::~demux_disconnect_interface()
 {
 }
-
-} // namespace demux
 
 } // namespace hutzn

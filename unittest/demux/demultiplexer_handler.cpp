@@ -27,9 +27,6 @@ using namespace testing;
 namespace hutzn
 {
 
-namespace demux
-{
-
 bool operator==(const request_handler_id& lhs, const request_handler_id& rhs)
 {
     return ((lhs.path == rhs.path) && (lhs.method == rhs.method) &&
@@ -49,7 +46,5 @@ TEST(demultiplexer_handler, disconnect)
     EXPECT_CALL(*demuxer, disconnect(id)).Times(1).WillOnce(Return(true));
     demultiplex_handler d(*demuxer, id);
 }
-
-} // namespace demux
 
 } // namespace hutzn

@@ -51,51 +51,49 @@ namespace hutzn {
   interface request_interface
   interface response_interface
 
-  namespace demux {
-    class request_handler_id {
-      +path: string
-      +method: http_verb
-      +input_type: mime
-      +return_type: mime
-    }
-
-    interface handler_interface
-
-    interface request_processor_interface {
-      +handle_one_request(device: block_device): bool
-      +set_error_handler(reason: http_status_code, fn): handler
-    }
-
-    interface demux_query_interface {
-      +determine_request_handler(type: mime): fn
-    }
-
-    interface demux_interface {
-      +connect(id: request_handler_id, fn): handler
-      +register_mime_type(type: string, result: mime_type): bool
-      +unregister_mime_type(type: mime_type): bool
-      +register_mime_subtype(subtype: string, result: mime_subtype): bool
-      +unregister_mime_subtype(subtype: mime_subtype): bool
-    }
-
-    class handler
-    class request_processor
-    class demultiplexer
-
-    hutzn.block_device_interface -- request_processor_interface: < uses
-    hutzn.request_interface -- request_processor_interface: < uses
-    hutzn.response_interface -- request_processor_interface: < uses
-    handler_interface -- request_processor_interface: < returns
-    request_handler_id -- demux_interface: < uses
-    handler_interface -- demux_interface: < returns
-
-    handler_interface <|-- handler: implements
-    request_processor_interface <|-- request_processor: implements
-    demux_query_interface "1" o-- "1" request_processor
-    demux_query_interface <|-- demultiplexer: implements
-    demux_interface <|-- demultiplexer: implements
-    demux_query_interface <|-- demux_interface: "derives from"
+  class request_handler_id {
+    +path: string
+    +method: http_verb
+    +input_type: mime
+    +return_type: mime
   }
+
+  interface handler_interface
+
+  interface request_processor_interface {
+    +handle_one_request(device: block_device): bool
+    +set_error_handler(reason: http_status_code, fn): handler
+  }
+
+  interface demux_query_interface {
+    +determine_request_handler(type: mime): fn
+  }
+
+  interface demux_interface {
+    +connect(id: request_handler_id, fn): handler
+    +register_mime_type(type: string, result: mime_type): bool
+    +unregister_mime_type(type: mime_type): bool
+    +register_mime_subtype(subtype: string, result: mime_subtype): bool
+    +unregister_mime_subtype(subtype: mime_subtype): bool
+  }
+
+  class handler
+  class request_processor
+  class demultiplexer
+
+  hutzn.block_device_interface -- request_processor_interface: < uses
+  hutzn.request_interface -- request_processor_interface: < uses
+  hutzn.response_interface -- request_processor_interface: < uses
+  handler_interface -- request_processor_interface: < returns
+  request_handler_id -- demux_interface: < uses
+  handler_interface -- demux_interface: < returns
+
+  handler_interface <|-- handler: implements
+  request_processor_interface <|-- request_processor: implements
+  demux_query_interface "1" o-- "1" request_processor
+  demux_query_interface <|-- demultiplexer: implements
+  demux_interface <|-- demultiplexer: implements
+  demux_query_interface <|-- demux_interface: "derives from"
 }
 @enduml
 
@@ -142,10 +140,10 @@ public:
 };
 
 void register_handlers(C* const c,
-                       hutzn::demux::request_processor_interface& r,
-                       hutzn::demux::demux_interface& m)
+                       hutzn::request_processor_interface& r,
+                       hutzn::demux_interface& m)
 {
-    hutzn::demux::request_handler_id i{
+    hutzn::request_handler_id i{
         "/",
         hutzn::http_verb::GET,
         std::make_pair(hutzn::mime_type::WILDCARD,
@@ -174,7 +172,7 @@ demultiplexer's lifetime.
 @code{.cpp}
 int main()
 {
-    hutzn::demux::demux_pointer d = hutzn::demux::make_demultiplexer();
+    hutzn::demux_pointer d = hutzn::make_demultiplexer();
     hutzn::mime_type x_type;
     d->register_mime_type("example", x_type);
 
@@ -190,11 +188,6 @@ sense. Nevertheless the registration of types and subtypes is indepent, because
 it makes the implementation much easier.
 
 */
-
-//! This namespace contains all demultiplexer related code and data. This
-//! includes the HTTP parser and the request demultiplexer.
-namespace demux
-{
 
 //! These informations are used by the demultiplexer to choose the right
 //! handler.
@@ -336,8 +329,6 @@ using request_processor_pointer = std::shared_ptr<request_processor_interface>;
 request_processor_pointer make_request_processor(
     const demux_query_pointer& query_interface,
     const uint64_t& connection_timeout_in_sec = 30);
-
-} // namespace demux
 
 } // namespace hutzn
 

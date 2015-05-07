@@ -27,9 +27,6 @@ using namespace testing;
 namespace hutzn
 {
 
-namespace demux
-{
-
 class demultiplexer_test : public ::testing::Test
 {
 public:
@@ -194,9 +191,9 @@ TEST_F(demultiplexer_test, request_handler_determination_success_1)
         Return(hutzn::http_verb::GET));
     EXPECT_CALL(*request, content_type()).Times(1).WillOnce(Return(ct));
     EXPECT_CALL(*request, accept(_, _)).Times(1).WillOnce(
-        Invoke([](void*&, hutzn::mime& mime) {
-            mime.first = hutzn::mime_type::TEXT;
-            mime.second = hutzn::mime_subtype::PLAIN;
+        Invoke([](void*&, hutzn::mime& m) {
+            m.first = hutzn::mime_type::TEXT;
+            m.second = hutzn::mime_subtype::PLAIN;
             return true;
         }));
 
@@ -220,20 +217,18 @@ TEST_F(demultiplexer_test, request_handler_determination_success_2)
     EXPECT_CALL(*request, content_type()).Times(1).WillOnce(Return(ct));
     EXPECT_CALL(*request, accept(_, _))
         .Times(2)
-        .WillOnce(Invoke([](void*&, hutzn::mime& mime) {
-            mime.first = hutzn::mime_type::AUDIO;
-            mime.second = hutzn::mime_subtype::WILDCARD;
+        .WillOnce(Invoke([](void*&, hutzn::mime& m) {
+            m.first = hutzn::mime_type::AUDIO;
+            m.second = hutzn::mime_subtype::WILDCARD;
             return true;
         }))
-        .WillOnce(Invoke([](void*&, hutzn::mime& mime) {
-            mime.first = hutzn::mime_type::TEXT;
-            mime.second = hutzn::mime_subtype::PLAIN;
+        .WillOnce(Invoke([](void*&, hutzn::mime& m) {
+            m.first = hutzn::mime_type::TEXT;
+            m.second = hutzn::mime_subtype::PLAIN;
             return true;
         }));
 
     EXPECT_TRUE(!!demultiplexer_->determine_request_handler(*request));
 }
-
-} // namespace demux
 
 } // namespace hutzn

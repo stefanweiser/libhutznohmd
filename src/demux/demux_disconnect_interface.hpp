@@ -24,9 +24,6 @@
 namespace hutzn
 {
 
-namespace demux
-{
-
 //! When connecting a request handler to a demultiplexer, you'll need to
 //! disconnect it later. This is done by releasing the handler. The handler in
 //! turn will disconnect the request handler from its demultiplexer. This is an
@@ -41,8 +38,6 @@ public:
     //! handler with the given id could not be found.
     virtual bool disconnect(const request_handler_id& id) = 0;
 };
-
-} // namespace demux
 
 } // namespace hutzn
 

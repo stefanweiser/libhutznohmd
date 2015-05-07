@@ -307,9 +307,9 @@ keep the connection alive till the client closes the connection or a predefined
 time elapsed without activity on the connection.
 
 This time duration can be configured for the request processor in its factory
-function @ref hutzn::demux::make_request_processor. It shall be deemed to be a
-lower bound. It could take longer till the connection is effectively getting
-closed. See @ref sec_lifetime_connection for more information.
+function @ref hutzn::make_request_processor. It shall be deemed to be a lower
+bound. It could take longer till the connection is effectively getting closed.
+See @ref sec_lifetime_connection for more information.
 
 @subsubsection subsub_connection_example Example:
 

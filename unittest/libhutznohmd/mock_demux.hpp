@@ -26,9 +26,6 @@
 namespace hutzn
 {
 
-namespace demux
-{
-
 class demux_interface_mock : public demux_interface
 {
 public:
@@ -56,8 +53,6 @@ public:
 
 using request_processor_mock_pointer =
     std::shared_ptr<request_processor_interface_mock>;
-
-} // namespace demux
 
 } // namespace hutzn
 

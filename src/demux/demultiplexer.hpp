@@ -31,9 +31,6 @@
 namespace hutzn
 {
 
-namespace demux
-{
-
 class demultiplexer : public demux_interface, public demux_disconnect_interface
 {
 public:
@@ -69,8 +66,6 @@ private:
     std::mutex request_parser_data_mutex_;
     hutzn::parser_data_pointer request_parser_data_;
 };
-
-} // namespace demux
 
 } // namespace hutzn
 

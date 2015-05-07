@@ -26,9 +26,6 @@
 namespace hutzn
 {
 
-namespace demux
-{
-
 class demux_disconnect_interface_mock : public demux_disconnect_interface
 {
 public:
@@ -37,8 +34,6 @@ public:
 
 using demux_disconnect_mock_pointer =
     std::shared_ptr<demux_disconnect_interface_mock>;
-
-} // namespace demux
 
 } // namespace hutzn
 

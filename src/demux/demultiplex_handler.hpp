@@ -28,9 +28,6 @@
 namespace hutzn
 {
 
-namespace demux
-{
-
 class demultiplex_handler : public handler_interface
 {
 public:
@@ -43,8 +40,6 @@ private:
     demux_disconnect_interface& demuxer_;
     request_handler_id id_;
 };
-
-} // namespace demux
 
 } // namespace hutzn
 

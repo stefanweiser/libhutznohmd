@@ -470,10 +470,10 @@ abort and the bug has to be fixed. This enables you to choose whether to use
 exception handling or not. Sadly there is currently no way to enforce this
 gurantee without loosing the ability to test with google-mock. There is also one
 exception from this rule. The member function
-@ref hutzn::demux::request_processor_interface::handle_one_request may
-indirectly throw an exception, because it is necessary to call a request handler
-or an error handler which is part of the server. The library will not enforce
-those handler functions to fulfill this no-throw policy.
+@ref hutzn::request_processor_interface::handle_one_request may indirectly throw
+an exception, because it is necessary to call a request handler or an error
+handler which is part of the server. The library will not enforce those handler
+functions to fulfill this no-throw policy.
 
 @section sec_thread_safety Thread safety
 
