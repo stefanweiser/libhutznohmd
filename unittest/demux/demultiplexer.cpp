@@ -104,15 +104,15 @@ TEST_F(demultiplexer_test, connect_wrong_mime_types)
     EXPECT_EQ(demultiplexer_->connect(test_id, &handler_fn).get(), nullptr);
 
     test_id = id();
-    test_id.content_type.first = static_cast<mime_type>(100);
+    test_id.accept_type.first = static_cast<mime_type>(100);
     EXPECT_EQ(demultiplexer_->connect(test_id, &handler_fn).get(), nullptr);
 
     test_id = id();
-    test_id.content_type.second = static_cast<mime_subtype>(100);
+    test_id.accept_type.second = static_cast<mime_subtype>(100);
     EXPECT_EQ(demultiplexer_->connect(test_id, &handler_fn).get(), nullptr);
 }
 
-TEST_F(demultiplexer_test, determine_request_handler_failed_1)
+TEST_F(demultiplexer_test, determine_request_unknown_path)
 {
     ASSERT_NE(demultiplexer_.get(), nullptr);
 
@@ -122,7 +122,7 @@ TEST_F(demultiplexer_test, determine_request_handler_failed_1)
     EXPECT_FALSE(demultiplexer_->determine_request_handler(*request));
 }
 
-TEST_F(demultiplexer_test, determine_request_handler_failed_2)
+TEST_F(demultiplexer_test, determine_request_unknown_method)
 {
     ASSERT_NE(demultiplexer_.get(), nullptr);
     handler_pointer handler = demultiplexer_->connect(id(), &handler_fn);
@@ -135,14 +135,14 @@ TEST_F(demultiplexer_test, determine_request_handler_failed_2)
     EXPECT_FALSE(demultiplexer_->determine_request_handler(*request));
 }
 
-TEST_F(demultiplexer_test, determine_request_handler_failed_3)
+TEST_F(demultiplexer_test, determine_request_handler_wildcard_content_type)
 {
     ASSERT_NE(demultiplexer_.get(), nullptr);
     handler_pointer handler = demultiplexer_->connect(id(), &handler_fn);
     ASSERT_NE(handler.get(), nullptr);
 
     auto request = std::make_shared<request_interface_mock>();
-    const auto ct = mime(mime_type::WILDCARD, mime_subtype::WILDCARD);
+    const auto ct = mime(mime_type::WILDCARD, mime_subtype::PLAIN);
     EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
     EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(http_verb::GET));
     EXPECT_CALL(*request, content_type()).Times(1).WillOnce(Return(ct));
@@ -150,7 +150,22 @@ TEST_F(demultiplexer_test, determine_request_handler_failed_3)
     EXPECT_FALSE(demultiplexer_->determine_request_handler(*request));
 }
 
-TEST_F(demultiplexer_test, determine_request_handler_failed_4)
+TEST_F(demultiplexer_test, determine_request_handler_wildcard_content_subtype)
+{
+    ASSERT_NE(demultiplexer_.get(), nullptr);
+    handler_pointer handler = demultiplexer_->connect(id(), &handler_fn);
+    ASSERT_NE(handler.get(), nullptr);
+
+    auto request = std::make_shared<request_interface_mock>();
+    const auto ct = mime(mime_type::TEXT, mime_subtype::WILDCARD);
+    EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
+    EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(http_verb::GET));
+    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(Return(ct));
+
+    EXPECT_FALSE(demultiplexer_->determine_request_handler(*request));
+}
+
+TEST_F(demultiplexer_test, determine_request_handler_unknown_content_type)
 {
     ASSERT_NE(demultiplexer_.get(), nullptr);
     handler_pointer handler = demultiplexer_->connect(id(), &handler_fn);
@@ -165,7 +180,7 @@ TEST_F(demultiplexer_test, determine_request_handler_failed_4)
     EXPECT_FALSE(demultiplexer_->determine_request_handler(*request));
 }
 
-TEST_F(demultiplexer_test, determine_request_handler_failed_5)
+TEST_F(demultiplexer_test, determine_request_handler_unknown_accept_type)
 {
     ASSERT_NE(demultiplexer_.get(), nullptr);
     handler_pointer handler = demultiplexer_->connect(id(), &handler_fn);
