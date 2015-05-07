@@ -46,28 +46,32 @@ request_handler_callback demultiplexer::determine_request_handler(
     if (resource_it == resource_callbacks_.end()) {
         return request_handler_callback();
     }
-    const auto& resource_map = resource_it->second;
+    const auto& method_map = resource_it->second;
 
     const http_verb verb = request.method();
-    const auto method_it = resource_map.find(verb);
-    if (method_it == resource_map.end()) {
+    const auto method_it = method_map.find(verb);
+    if (method_it == method_map.end()) {
         return request_handler_callback();
     }
-    const auto& method_map = method_it->second;
+    const auto& content_map = method_it->second;
 
     const mime content_type = request.content_type();
     if ((content_type.first == mime_type::WILDCARD) ||
         (content_type.second == mime_subtype::WILDCARD)) {
         return request_handler_callback();
     }
+    const auto content_it = content_map.find(content_type);
+    if (content_it == content_map.end()) {
+        return request_handler_callback();
+    }
+    const auto& accept_map = content_it->second;
 
     void* handle = nullptr;
     mime accept_type;
     while (true == request.accept(handle, accept_type)) {
-        const auto handler_it =
-            method_map.find(std::make_tuple(content_type, accept_type));
-        if (handler_it != method_map.end()) {
-            return handler_it->second;
+        const auto accept_it = accept_map.find(accept_type);
+        if (accept_it != accept_map.end()) {
+            return accept_it->second;
         }
     }
     return request_handler_callback();
@@ -99,11 +103,11 @@ handler_pointer demultiplexer::connect(const request_handler_id& id,
         return handler_pointer();
     }
 
-    resource_mime_map& mime_map = resource_callbacks_[id.path][id.method];
-    auto mime_tuple = std::make_tuple(id.input_type, id.result_type);
-    auto it = mime_map.find(mime_tuple);
-    if (it == mime_map.end()) {
-        mime_map[mime_tuple] = fn;
+    resource_mime_accept_map& accept_map =
+        resource_callbacks_[id.path][id.method][id.input_type];
+    auto it = accept_map.find(id.result_type);
+    if (it == accept_map.end()) {
+        accept_map[id.result_type] = fn;
 
         // The id have been inserted. There is no need to keep the lock, when
         // creating the resulting handler.
@@ -116,15 +120,18 @@ handler_pointer demultiplexer::connect(const request_handler_id& id,
 bool demultiplexer::disconnect(const request_handler_id& id)
 {
     std::lock_guard<std::mutex> lock(resource_callbacks_mutex_);
-    resource_mime_map& mime_map = resource_callbacks_[id.path][id.method];
-    auto mime_tuple = std::make_tuple(id.input_type, id.result_type);
-    const bool result = (mime_map.erase(mime_tuple) > 0);
+    resource_mime_accept_map& accept_map =
+        resource_callbacks_[id.path][id.method][id.input_type];
+    const bool result = (accept_map.erase(id.result_type) > 0);
 
     // Clean up empty maps.
-    if (mime_map.size() == 0) {
-        resource_callbacks_[id.path].erase(id.method);
-        if (resource_callbacks_[id.path].size() == 0) {
-            resource_callbacks_.erase(id.path);
+    if (accept_map.size() == 0) {
+        resource_callbacks_[id.path][id.method].erase(id.input_type);
+        if (resource_callbacks_[id.path][id.method].size() == 0) {
+            resource_callbacks_[id.path].erase(id.method);
+            if (resource_callbacks_[id.path].size() == 0) {
+                resource_callbacks_.erase(id.path);
+            }
         }
     }
     return result;

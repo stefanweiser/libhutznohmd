@@ -53,10 +53,9 @@ public:
     bool unregister_mime_subtype(const mime_subtype& subtype) override;
 
 private:
-    using input_result_mime_tuple = std::tuple<mime, mime>;
-    using resource_mime_map =
-        std::map<input_result_mime_tuple, request_handler_callback>;
-    using resource_method_map = std::map<http_verb, resource_mime_map>;
+    using resource_mime_accept_map = std::map<mime, request_handler_callback>;
+    using resource_mime_content_map = std::map<mime, resource_mime_accept_map>;
+    using resource_method_map = std::map<http_verb, resource_mime_content_map>;
     using resource_map = std::map<std::string, resource_method_map>;
 
     std::mutex resource_callbacks_mutex_;

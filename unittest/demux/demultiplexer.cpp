@@ -44,9 +44,8 @@ protected:
     request_handler_id id()
     {
         static request_handler_id result{
-            "/", http_verb::GET,
-            mime(mime_type::WILDCARD, mime_subtype::WILDCARD),
-            mime(mime_type::TEXT, mime_subtype::PLAIN)};
+            "/", http_verb::GET, mime(mime_type::TEXT, mime_subtype::PLAIN),
+            mime(mime_type::WILDCARD, mime_subtype::WILDCARD)};
         return result;
     }
 
@@ -158,6 +157,21 @@ TEST_F(demultiplexer_test, determine_request_handler_failed_4)
     ASSERT_NE(handler.get(), nullptr);
 
     auto request = std::make_shared<request_interface_mock>();
+    const auto ct = mime(mime_type::VIDEO, mime_subtype::PLAIN);
+    EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
+    EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(http_verb::GET));
+    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(Return(ct));
+
+    EXPECT_FALSE(demultiplexer_->determine_request_handler(*request));
+}
+
+TEST_F(demultiplexer_test, determine_request_handler_failed_5)
+{
+    ASSERT_NE(demultiplexer_.get(), nullptr);
+    handler_pointer handler = demultiplexer_->connect(id(), &handler_fn);
+    ASSERT_NE(handler.get(), nullptr);
+
+    auto request = std::make_shared<request_interface_mock>();
     const auto ct = mime(mime_type::TEXT, mime_subtype::PLAIN);
     EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
     EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(http_verb::GET));
@@ -172,19 +186,18 @@ TEST_F(demultiplexer_test, determine_request_handler_success_1)
 {
     ASSERT_NE(demultiplexer_.get(), nullptr);
     request_handler_id test_id = id();
-    const auto ct = mime(mime_type::TEXT, mime_subtype::PLAIN);
-    test_id.input_type = ct;
     handler_pointer handler = demultiplexer_->connect(test_id, &handler_fn);
     ASSERT_NE(handler.get(), nullptr);
 
     auto request = std::make_shared<request_interface_mock>();
     EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
     EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(http_verb::GET));
-    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(Return(ct));
+    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(
+        Return(test_id.input_type));
     EXPECT_CALL(*request, accept(_, _)).Times(1).WillOnce(
         Invoke([](void*&, mime& m) {
-            m.first = mime_type::TEXT;
-            m.second = mime_subtype::PLAIN;
+            m.first = mime_type::WILDCARD;
+            m.second = mime_subtype::WILDCARD;
             return true;
         }));
 
@@ -195,15 +208,14 @@ TEST_F(demultiplexer_test, determine_request_handler_success_2)
 {
     ASSERT_NE(demultiplexer_.get(), nullptr);
     request_handler_id test_id = id();
-    const auto ct = mime(mime_type::TEXT, mime_subtype::PLAIN);
-    test_id.input_type = ct;
     handler_pointer handler = demultiplexer_->connect(test_id, &handler_fn);
     ASSERT_NE(handler.get(), nullptr);
 
     auto request = std::make_shared<request_interface_mock>();
     EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
     EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(http_verb::GET));
-    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(Return(ct));
+    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(
+        Return(test_id.input_type));
     EXPECT_CALL(*request, accept(_, _))
         .Times(2)
         .WillOnce(Invoke([](void*&, mime& m) {
@@ -212,8 +224,8 @@ TEST_F(demultiplexer_test, determine_request_handler_success_2)
             return true;
         }))
         .WillOnce(Invoke([](void*&, mime& m) {
-            m.first = mime_type::TEXT;
-            m.second = mime_subtype::PLAIN;
+            m.first = mime_type::WILDCARD;
+            m.second = mime_subtype::WILDCARD;
             return true;
         }));
 
