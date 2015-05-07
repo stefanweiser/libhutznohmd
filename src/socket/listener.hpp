@@ -28,9 +28,6 @@
 namespace hutzn
 {
 
-namespace socket
-{
-
 class listener : public listener_interface
 {
 public:
@@ -49,8 +46,6 @@ private:
     bool is_listening_;
     int socket_;
 };
-
-} // namespace socket
 
 } // namespace hutzn
 

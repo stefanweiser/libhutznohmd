@@ -26,9 +26,6 @@
 namespace hutzn
 {
 
-namespace socket
-{
-
 class connection_interface_mock : public connection_interface
 {
 public:
@@ -54,8 +51,6 @@ public:
 };
 
 using listener_mock_pointer = std::shared_ptr<listener_interface_mock>;
-
-} // namespace socket
 
 } // namespace hutzn
 

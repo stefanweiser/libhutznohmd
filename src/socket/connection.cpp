@@ -27,9 +27,6 @@
 namespace hutzn
 {
 
-namespace socket
-{
-
 std::shared_ptr<connection> connection::create(const std::string& host,
                                                const uint16_t& port)
 {
@@ -95,7 +92,7 @@ bool connection::send(const std::string& data)
     return send(data.data(), data.size());
 }
 
-bool connection::send(const char* buffer, const size_t& size)
+bool connection::send(const char* data, const size_t& size)
 {
     if (false == is_connected_) {
         return false;
@@ -105,7 +102,7 @@ bool connection::send(const char* buffer, const size_t& size)
 
     do {
         const size_t block_size = size - static_cast<size_t>(total_sent_size);
-        const void* const p = buffer + total_sent_size;
+        const void* const p = data + total_sent_size;
         const ssize_t sent_size = send_signal_safe(socket_, p, block_size, 0);
 
         if (sent_size <= 0) {
@@ -150,7 +147,5 @@ bool connection::connect()
     is_connected_ = true;
     return true;
 }
-
-} // namespace socket
 
 } // namespace hutzn

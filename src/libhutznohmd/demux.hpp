@@ -46,9 +46,7 @@ functor could be found, the request processor will respond an error document.
 
 @startuml{demultiplexer_classes.svg}
 namespace hutzn {
-  namespace socket {
-    interface block_device_interface
-  }
+  interface block_device_interface
 
   namespace request {
     interface request_interface
@@ -326,8 +324,7 @@ public:
     //! is answered by a request or an error handler. Returns true, if one
     //! request was successfully answered (either as error or not) and false
     //! when the block device got closed during read or send on the connection.
-    virtual bool handle_one_request(
-        socket::block_device_interface& device) const = 0;
+    virtual bool handle_one_request(block_device_interface& device) const = 0;
 
     //! Connects an error handler to a specific status code. Returns a handler
     //! object, which acts as the error handler's lifetime scope. If there is

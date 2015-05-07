@@ -37,19 +37,19 @@ namespace http
 class server : public server_interface
 {
 public:
-    server(const hutzn::socket::listener_pointer& s,
+    server(const hutzn::listener_pointer& s,
            const transaction_function& transaction_functor);
 
     void run() override;
     void stop() override;
 
-    void parse_request(const hutzn::socket::connection_pointer& connection);
+    void parse_request(const hutzn::connection_pointer& connection);
 
-    const hutzn::socket::listener_pointer& socket() const;
+    const hutzn::listener_pointer& socket() const;
 
 private:
     std::set<std::shared_ptr<std::thread>> threads_;
-    hutzn::socket::listener_pointer socket_;
+    hutzn::listener_pointer socket_;
     transaction_function transaction_functor_;
     bool shutdown_;
 };

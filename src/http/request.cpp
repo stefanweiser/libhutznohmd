@@ -41,7 +41,7 @@ int32_t peek_char(void* handle)
     return static_cast<request*>(handle)->peek();
 }
 
-request::request(const hutzn::socket::connection_pointer& connection,
+request::request(const hutzn::connection_pointer& connection,
                  const parameters& param)
     : connection_(connection)
     , buffer_()

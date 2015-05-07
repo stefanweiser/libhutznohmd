@@ -34,7 +34,7 @@ namespace http
 
 TEST(request, empty_body)
 {
-    auto socket = std::make_shared<hutzn::socket::connection_interface_mock>();
+    auto socket = std::make_shared<hutzn::connection_interface_mock>();
     request request(socket, request::parameters{true});
 
     EXPECT_CALL(*socket, receive(_, _)).Times(1).WillOnce(
@@ -70,7 +70,7 @@ TEST(request, empty_body)
 
 TEST(request, wrong_md5)
 {
-    auto socket = std::make_shared<hutzn::socket::connection_interface_mock>();
+    auto socket = std::make_shared<hutzn::connection_interface_mock>();
     request request(socket, request::parameters{true});
 
     EXPECT_CALL(*socket, receive(_, _)).Times(1).WillOnce(
@@ -100,7 +100,7 @@ TEST(request, wrong_md5)
 
 TEST(request, wrong_md5_but_no_check)
 {
-    auto socket = std::make_shared<hutzn::socket::connection_interface_mock>();
+    auto socket = std::make_shared<hutzn::connection_interface_mock>();
     request request(socket, request::parameters{false});
 
     EXPECT_CALL(*socket, receive(_, _)).Times(1).WillOnce(
@@ -130,7 +130,7 @@ TEST(request, wrong_md5_but_no_check)
 
 TEST(request, parse)
 {
-    auto socket = std::make_shared<hutzn::socket::connection_interface_mock>();
+    auto socket = std::make_shared<hutzn::connection_interface_mock>();
     request request(socket, request::parameters{true});
 
     EXPECT_CALL(*socket, receive(_, _)).Times(1).WillOnce(
@@ -161,7 +161,7 @@ TEST(request, parse)
 
 TEST(request, parse_false_return)
 {
-    auto socket = std::make_shared<hutzn::socket::connection_interface_mock>();
+    auto socket = std::make_shared<hutzn::connection_interface_mock>();
     request request(socket, request::parameters{true});
 
     EXPECT_CALL(*socket, receive(_, _))
@@ -190,7 +190,7 @@ TEST(request, parse_false_return)
 
 TEST(request, parse_large_request)
 {
-    auto socket = std::make_shared<hutzn::socket::connection_interface_mock>();
+    auto socket = std::make_shared<hutzn::connection_interface_mock>();
     request request(socket, request::parameters{true});
 
     EXPECT_CALL(*socket, receive(_, _))
@@ -229,7 +229,7 @@ TEST(request, parse_large_request)
 
 TEST(request, no_needed_vailable)
 {
-    auto socket = std::make_shared<hutzn::socket::connection_interface_mock>();
+    auto socket = std::make_shared<hutzn::connection_interface_mock>();
     request request(socket, request::parameters{true});
 
     EXPECT_CALL(*socket, receive(_, _)).Times(1).WillRepeatedly(Return(false));

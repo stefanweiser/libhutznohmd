@@ -33,7 +33,7 @@ namespace http
 
 TEST(response, set_and_deliver)
 {
-    auto socket = std::make_shared<hutzn::socket::connection_interface_mock>();
+    auto socket = std::make_shared<hutzn::connection_interface_mock>();
     response response(socket);
 
     response.set_data({'0'});

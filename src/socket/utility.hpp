@@ -27,9 +27,6 @@
 namespace hutzn
 {
 
-namespace socket
-{
-
 //! Calls the API function close and handles interfering signals. This means,
 //! that the function will return when the file descriptor is closed.
 void close_signal_safe(const int file_descriptor);
@@ -61,8 +58,6 @@ ssize_t receive_signal_safe(const int file_descriptor, void* const buffer,
 //! Converts a host string and a port into a sockaddr_in struct, that is needed
 //! when communicating with other API functions of the network stack.
 sockaddr_in fill_address(const std::string& host, const uint16_t& port);
-
-} // namespace socket
 
 } // namespace hutzn
 

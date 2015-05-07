@@ -35,7 +35,7 @@ namespace http
 class response : public response_interface
 {
 public:
-    explicit response(const hutzn::socket::connection_pointer& connection);
+    explicit response(const hutzn::connection_pointer& connection);
     void deliver();
 
     void set_status_code(
@@ -49,7 +49,7 @@ private:
     static void deliver_status_code_text(
         std::ostream& os, const hutzn::request::http_status_code& code);
 
-    hutzn::socket::connection_pointer connection_;
+    hutzn::connection_pointer connection_;
 
     hutzn::request::http_status_code status_code_;
     version version_;

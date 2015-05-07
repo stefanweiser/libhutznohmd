@@ -22,7 +22,7 @@
 #include <hutzn.hpp>
 #include <http/request.hpp>
 
-class connection : public hutzn::socket::connection_interface
+class connection : public hutzn::connection_interface
 {
 public:
     explicit connection(const std::string& filename);

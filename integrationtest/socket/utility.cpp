@@ -27,7 +27,7 @@ namespace hutzn
 
 TEST(socket_utility, fill_address_ok)
 {
-    sockaddr_in address = socket::fill_address("127.0.0.1", 0x8000);
+    sockaddr_in address = fill_address("127.0.0.1", 0x8000);
     EXPECT_EQ(address.sin_family, AF_INET);
     EXPECT_EQ(address.sin_port, ntohs(0x8000));
     EXPECT_EQ(address.sin_addr.s_addr, ntohl(0x7F000001));
@@ -35,13 +35,13 @@ TEST(socket_utility, fill_address_ok)
 
 TEST(socket_utility, fill_address_error)
 {
-    sockaddr_in address = socket::fill_address("127:0:0:1", 0x8000);
+    sockaddr_in address = fill_address("127:0:0:1", 0x8000);
     EXPECT_EQ(address.sin_family, AF_UNSPEC);
 }
 
 TEST(socket_utility, fill_address_no_dns)
 {
-    sockaddr_in address = socket::fill_address("example.com", 0x8000);
+    sockaddr_in address = fill_address("example.com", 0x8000);
     EXPECT_EQ(address.sin_family, AF_UNSPEC);
 }
 

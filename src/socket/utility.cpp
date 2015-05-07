@@ -26,9 +26,6 @@
 namespace hutzn
 {
 
-namespace socket
-{
-
 void close_signal_safe(const int file_descriptor)
 {
     int result;
@@ -116,7 +113,5 @@ sockaddr_in fill_address(const std::string& host, const uint16_t& port)
 
     return address;
 }
-
-} // namespace socket
 
 } // namespace hutzn

@@ -38,13 +38,13 @@ void disable_time_wait(int socket)
 
 int get_socket(const http::server_pointer& server)
 {
-    auto listener = std::dynamic_pointer_cast<http::server>(server)->socket();
-    return std::dynamic_pointer_cast<socket::listener>(listener)->socket();
+    auto l = std::dynamic_pointer_cast<http::server>(server)->socket();
+    return std::dynamic_pointer_cast<listener>(l)->socket();
 }
 
-int get_socket(const socket::connection_pointer& connection)
+int get_socket(const connection_pointer& c)
 {
-    return std::dynamic_pointer_cast<socket::connection>(connection)->socket();
+    return std::dynamic_pointer_cast<connection>(c)->socket();
 }
 
 } // namespace
@@ -68,7 +68,7 @@ TEST(server, normal_use_case_http_1_1)
 
     std::thread thread(std::bind(&http::server_interface::run, server.get()));
 
-    auto connection = socket::connection::create("127.0.0.1", 10000);
+    auto connection = connection::create("127.0.0.1", 10000);
     EXPECT_TRUE(connection->connect());
     disable_time_wait(get_socket(connection));
     std::string request = "GET / HTTP/1.1\r\n\r\n";
@@ -94,7 +94,7 @@ TEST(server, normal_use_case_http_1_0)
 
     std::thread thread(std::bind(&http::server_interface::run, server.get()));
 
-    auto connection = socket::connection::create("127.0.0.1", 10000);
+    auto connection = connection::create("127.0.0.1", 10000);
     EXPECT_TRUE(connection->connect());
     disable_time_wait(get_socket(connection));
     std::string request = "GET / HTTP/1.0\r\n\r\n";

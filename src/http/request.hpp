@@ -43,7 +43,7 @@ public:
         bool check_md5;
     };
 
-    explicit request(const hutzn::socket::connection_pointer& connection,
+    explicit request(const hutzn::connection_pointer& connection,
                      const parameters& param);
     bool parse();
 
@@ -60,7 +60,7 @@ public:
     int32_t peek();
 
 private:
-    hutzn::socket::connection_pointer connection_;
+    hutzn::connection_pointer connection_;
     hutzn::buffer buffer_;
     hutzn::http::request_parser request_parser_;
     hutzn::buffer data_;

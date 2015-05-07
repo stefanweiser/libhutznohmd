@@ -28,9 +28,6 @@
 namespace hutzn
 {
 
-namespace socket
-{
-
 class connection : public connection_interface
 {
 public:
@@ -56,8 +53,6 @@ private:
     int socket_;
     const sockaddr_in address_;
 };
-
-} // namespace socket
 
 } // namespace hutzn
 

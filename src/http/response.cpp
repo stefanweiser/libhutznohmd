@@ -30,7 +30,7 @@ namespace hutzn
 namespace http
 {
 
-response::response(const hutzn::socket::connection_pointer& connection)
+response::response(const hutzn::connection_pointer& connection)
     : connection_(connection)
     , status_code_(request::http_status_code::INTERNAL_SERVER_ERROR)
     , version_(version::HTTP_1_1)

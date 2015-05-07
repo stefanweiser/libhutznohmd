@@ -30,9 +30,6 @@
 namespace hutzn
 {
 
-namespace socket
-{
-
 listener_pointer listen(const std::string& host, const uint16_t& port)
 {
     return listener::create(host, port);
@@ -114,7 +111,5 @@ int listener::socket() const
 {
     return socket_;
 }
-
-} // namespace socket
 
 } // namespace hutzn

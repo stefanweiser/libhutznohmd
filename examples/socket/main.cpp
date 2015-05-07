@@ -28,7 +28,7 @@ void client()
     const hutzn::buffer data = {0, 1, 2, 3};
 
     std::cout << "  connecting" << std::endl;
-    auto connection = hutzn::socket::connection::create("127.0.0.1", 30000);
+    auto connection = hutzn::connection::create("127.0.0.1", 30000);
     if (false == connection->connect()) {
         std::cout << "  client not connected" << std::endl;
         abort();
@@ -61,7 +61,7 @@ int main()
     std::cout << "example_socket" << std::endl;
 
     std::cout << "  listening" << std::endl;
-    auto listener = hutzn::socket::listen("127.0.0.1", 30000);
+    auto listener = hutzn::listen("127.0.0.1", 30000);
     std::thread thread(&client);
 
     std::cout << "  accepting" << std::endl;

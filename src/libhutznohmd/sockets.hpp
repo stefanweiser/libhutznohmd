@@ -32,10 +32,9 @@ namespace hutzn
 @page page_data_source_and_sink Data source and sink
 
 Each restful application has to communicate with its users. To fulfill this
-necessity this library defines @ref hutzn::socket::connection_interface
-"connections" and @ref hutzn::socket::listener_interface "listeners", which
-are the two types of sockets, that are used by network communication
-protocols.
+necessity this library defines @ref hutzn::connection_interface "connections"
+and @ref hutzn::listener_interface "listeners", which are the two types of
+sockets, that are used by network communication protocols.
 
 A listener is defined as an endpoint, to which connection endpoints can connect
 to. Once a connection has been established, it connects two programs. This
@@ -45,35 +44,33 @@ connection is represented by a connection object.
 namespace hutzn {
   class buffer <<typedef>>
 
-  namespace socket {
-    interface block_device_interface {
-      +receive(data: buffer, max_size: size): boolean
-      +send(data: buffer): boolean
-      +send(data: string): boolean
-    }
-
-    interface connection_interface {
-      +close()
-      +set_lingering_timeout(timeout: seconds)
-      +socket(): file_descriptor
-    }
-
-    interface listener_interface {
-      +accept(): connection_interface
-      +listening(): boolean
-      +stop()
-      +set_lingering_timeout(timeout: seconds)
-      +socket(): file_descriptor
-    }
-
-    class connection
-
-    class listener
-
-    block_device_interface <|-- connection_interface
-    connection_interface <|-- connection: <<implements>>
-    listener_interface <|-- listener: <<implements>>
+  interface block_device_interface {
+    +receive(data: buffer, max_size: size): boolean
+    +send(data: buffer): boolean
+    +send(data: string): boolean
   }
+
+  interface connection_interface {
+    +close()
+    +set_lingering_timeout(timeout: seconds)
+    +socket(): file_descriptor
+  }
+
+  interface listener_interface {
+    +accept(): connection_interface
+    +listening(): boolean
+    +stop()
+    +set_lingering_timeout(timeout: seconds)
+    +socket(): file_descriptor
+  }
+
+  class connection
+
+  class listener
+
+  block_device_interface <|-- connection_interface
+  connection_interface <|-- connection: <<implements>>
+  listener_interface <|-- listener: <<implements>>
 }
 @enduml
 
@@ -94,7 +91,7 @@ getting unused.
 @code{.cpp}
 int main()
 {
-    auto listener = hutzn::socket::listen("0.0.0.0", 80);
+    auto listener = hutzn::listen("0.0.0.0", 80);
     auto connection = listener->accept();
     hutzn::buffer request;
     if (true == connection->read(request, 1024)) {
@@ -123,11 +120,6 @@ some important decisions:
 //! Universal data buffer type. Could contain unprintable content or binary
 //! data.
 using buffer = std::vector<char>;
-
-//! This namespace contains all connection-related code and data. These
-//! connections are naturally all about network sockets.
-namespace socket
-{
 
 //! A block device is an object, which could be used to send and receive data
 //! blockwise. These blocks could be of custom size.
@@ -227,8 +219,6 @@ using listener_pointer = std::shared_ptr<listener_interface>;
 //! listens on the given host/port combination. You may want to accept the
 //! incoming connections afterwards.
 listener_pointer listen(const std::string& host, const uint16_t& port);
-
-} // namespace socket
 
 } // namespace hutzn
 
