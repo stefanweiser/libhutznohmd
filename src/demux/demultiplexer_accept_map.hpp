@@ -37,6 +37,8 @@ public:
     request_handler_callback find(const request_interface& request) const;
 
 private:
+    request_handler_callback find_in_vector(const mime& type) const;
+
     std::map<mime, request_handler_callback> map_;
     std::vector<mime> vector_;
 };

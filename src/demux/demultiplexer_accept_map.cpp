@@ -60,11 +60,38 @@ request_handler_callback demultiplexer_accept_map::find(
     const request_interface& request) const
 {
     void* handle = nullptr;
-    mime accept_type;
-    while (true == request.accept(handle, accept_type)) {
-        const auto accept_it = map_.find(accept_type);
-        if (accept_it != map_.end()) {
-            return accept_it->second;
+    mime type;
+    while (true == request.accept(handle, type)) {
+        const bool has_any_wildcard = (type.first == mime_type::WILDCARD) ||
+                                      (type.second == mime_subtype::WILDCARD);
+        if (true == has_any_wildcard) {
+            if (request_handler_callback result = find_in_vector(type)) {
+                return result;
+            }
+        } else {
+            const auto accept_it = map_.find(type);
+            if (accept_it != map_.end()) {
+                return accept_it->second;
+            }
+        }
+    }
+    return request_handler_callback();
+}
+
+request_handler_callback demultiplexer_accept_map::find_in_vector(
+    const mime& type) const
+{
+    for (const mime& value : vector_) {
+        const bool type_equal_or_wildcard =
+            (type.first == value.first) || (type.first == mime_type::WILDCARD);
+        const bool subtype_equal_or_wildcard =
+            (type.second == value.second) ||
+            (type.second == mime_subtype::WILDCARD);
+
+        if ((true == type_equal_or_wildcard) &&
+            (true == subtype_equal_or_wildcard)) {
+            auto it = map_.find(value);
+            return it->second;
         }
     }
     return request_handler_callback();
