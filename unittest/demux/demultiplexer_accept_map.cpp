@@ -125,6 +125,71 @@ TEST_F(demultiplexer_accept_map_test, erase_two_existent_when_two_are_inserted)
     EXPECT_EQ(map.size(), 0);
 }
 
+TEST_F(demultiplexer_accept_map_test, find_in_empty_vector)
+{
+    demultiplexer_accept_map map;
+    EXPECT_FALSE(map.find_in_vector(none_));
+}
+
+TEST_F(demultiplexer_accept_map_test, find_none_in_vector)
+{
+    demultiplexer_accept_map map;
+    request_interface_mock request;
+    response_interface_mock response;
+    map.insert(none_, make_request_handler(http_status_code::OK));
+    request_handler_callback none_fn = map.find_in_vector(none_);
+    ASSERT_TRUE(!!none_fn);
+    EXPECT_EQ(none_fn(request, response), http_status_code::OK);
+}
+
+TEST_F(demultiplexer_accept_map_test, find_none_in_vector_second_time)
+{
+    demultiplexer_accept_map map;
+    request_interface_mock request;
+    response_interface_mock response;
+    map.insert(text_plain_, make_request_handler(http_status_code::FOUND));
+    map.insert(none_, make_request_handler(http_status_code::OK));
+    request_handler_callback none_fn = map.find_in_vector(none_);
+    ASSERT_TRUE(!!none_fn);
+    EXPECT_EQ(none_fn(request, response), http_status_code::OK);
+}
+
+TEST_F(demultiplexer_accept_map_test, find_wildcard_type_in_vector)
+{
+    demultiplexer_accept_map map;
+    request_interface_mock request;
+    response_interface_mock response;
+    map.insert(none_, make_request_handler(http_status_code::OK));
+    const mime wildcard = mime(mime_type::WILDCARD, mime_subtype::NONE);
+    request_handler_callback none_fn = map.find_in_vector(wildcard);
+    ASSERT_TRUE(!!none_fn);
+    EXPECT_EQ(none_fn(request, response), http_status_code::OK);
+}
+
+TEST_F(demultiplexer_accept_map_test, find_wildcard_subtype_in_vector)
+{
+    demultiplexer_accept_map map;
+    request_interface_mock request;
+    response_interface_mock response;
+    map.insert(none_, make_request_handler(http_status_code::OK));
+    const mime wildcard = mime(mime_type::NONE, mime_subtype::WILDCARD);
+    request_handler_callback none_fn = map.find_in_vector(wildcard);
+    ASSERT_TRUE(!!none_fn);
+    EXPECT_EQ(none_fn(request, response), http_status_code::OK);
+}
+
+TEST_F(demultiplexer_accept_map_test, find_wildcard_in_vector)
+{
+    demultiplexer_accept_map map;
+    request_interface_mock request;
+    response_interface_mock response;
+    map.insert(none_, make_request_handler(http_status_code::OK));
+    const mime wildcard = mime(mime_type::WILDCARD, mime_subtype::WILDCARD);
+    request_handler_callback none_fn = map.find_in_vector(wildcard);
+    ASSERT_TRUE(!!none_fn);
+    EXPECT_EQ(none_fn(request, response), http_status_code::OK);
+}
+
 TEST_F(demultiplexer_accept_map_test, find_nothing_accepted_in_empty_map)
 {
     demultiplexer_accept_map map;

@@ -35,10 +35,9 @@ public:
     bool insert(const mime& type, const request_handler_callback& fn);
     bool erase(const mime& type);
     request_handler_callback find(const request_interface& request) const;
-
-private:
     request_handler_callback find_in_vector(const mime& type) const;
 
+private:
     std::map<mime, request_handler_callback> map_;
     std::vector<mime> vector_;
 };
