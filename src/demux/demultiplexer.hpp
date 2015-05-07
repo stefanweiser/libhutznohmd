@@ -58,6 +58,8 @@ private:
     using resource_method_map = std::map<http_verb, resource_mime_content_map>;
     using resource_map = std::map<std::string, resource_method_map>;
 
+    bool is_mime_valid(const mime& t) const;
+
     std::mutex resource_callbacks_mutex_;
     resource_map resource_callbacks_;
 

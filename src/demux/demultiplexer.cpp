@@ -93,24 +93,10 @@ handler_pointer demultiplexer::connect(const request_handler_id& id,
 
     std::unique_lock<std::mutex> lock(resource_callbacks_mutex_);
 
-    // Check whether the input mime type or subtype is unregistered.
-    mime_type type = id.content_type.first;
-    mime_subtype subtype = id.content_type.second;
-    if ((false == request_parser_data_->is_mime_type_registered(type)) ||
-        (false == request_parser_data_->is_mime_subtype_registered(subtype))) {
-        if ((type != mime_type::NONE) && (subtype != mime_subtype::NONE)) {
-            return handler_pointer();
-        }
-    }
-
-    // Check whether the result mime type or subtype is unregistered.
-    type = id.accept_type.first;
-    subtype = id.accept_type.second;
-    if ((false == request_parser_data_->is_mime_type_registered(type)) ||
-        (false == request_parser_data_->is_mime_subtype_registered(subtype))) {
-        if ((type != mime_type::NONE) && (subtype != mime_subtype::NONE)) {
-            return handler_pointer();
-        }
+    // Check whether the content and accept mime is valid.
+    if ((false == is_mime_valid(id.content_type)) ||
+        (false == is_mime_valid(id.accept_type))) {
+        return handler_pointer();
     }
 
     // Get specific map with handlers.
@@ -190,6 +176,34 @@ bool demultiplexer::unregister_mime_subtype(const mime_subtype& subtype)
 {
     std::lock_guard<std::mutex> lock(request_parser_data_mutex_);
     return request_parser_data_->unregister_mime_subtype(subtype);
+}
+
+bool demultiplexer::is_mime_valid(const mime& t) const
+{
+    const mime_type type = t.first;
+    const mime_subtype subtype = t.second;
+
+    // Either type and subtype is not unset or both are unset.
+    if (((type == mime_type::NONE) && (subtype != mime_subtype::NONE)) ||
+        ((type != mime_type::NONE) && (subtype == mime_subtype::NONE))) {
+        return false;
+    }
+
+    // Of course invalid values are not valid.
+    if ((type == mime_type::INVALID) || (subtype == mime_subtype::INVALID)) {
+        return false;
+    }
+
+    // Valid values must be registered. Unset types are unregistered but also
+    // valid.
+    if ((false == request_parser_data_->is_mime_type_registered(type)) ||
+        (false == request_parser_data_->is_mime_subtype_registered(subtype))) {
+        if ((type != mime_type::NONE) && (subtype != mime_subtype::NONE)) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 } // namespace hutzn
