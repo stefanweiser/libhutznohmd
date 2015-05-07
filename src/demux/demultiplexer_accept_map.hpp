@@ -21,7 +21,6 @@
 
 #include <map>
 
-#include <libhutznohmd/request.hpp>
 #include <libhutznohmd/demux.hpp>
 
 namespace hutzn
@@ -31,7 +30,7 @@ namespace hutzn
 //! All request handler callbacks are stored in its insertion order. Therefore
 //! it implements a first-come-first-serve idea, when multiple handlers match
 //! the accept headers precedence. This data structure is not multi threading
-//! safe.
+//! safe. It does not handle special mime types like invalid or unset ones.
 class demultiplexer_accept_map
 {
 public:
