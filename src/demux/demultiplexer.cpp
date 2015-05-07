@@ -32,7 +32,7 @@ demultiplexer::demultiplexer()
     : resource_callbacks_mutex_()
     , resource_callbacks_()
     , request_parser_data_mutex_()
-    , request_parser_data_(std::make_shared<parser_data>())
+    , request_parser_data_()
 {
 }
 
@@ -157,25 +157,25 @@ bool demultiplexer::disconnect(const request_handler_id& id)
 mime_type demultiplexer::register_mime_type(const std::string& type)
 {
     std::lock_guard<std::mutex> lock(request_parser_data_mutex_);
-    return request_parser_data_->register_mime_type(type);
+    return request_parser_data_.register_mime_type(type);
 }
 
 mime_subtype demultiplexer::register_mime_subtype(const std::string& subtype)
 {
     std::lock_guard<std::mutex> lock(request_parser_data_mutex_);
-    return request_parser_data_->register_mime_subtype(subtype);
+    return request_parser_data_.register_mime_subtype(subtype);
 }
 
 bool demultiplexer::unregister_mime_type(const mime_type& type)
 {
     std::lock_guard<std::mutex> lock(request_parser_data_mutex_);
-    return request_parser_data_->unregister_mime_type(type);
+    return request_parser_data_.unregister_mime_type(type);
 }
 
 bool demultiplexer::unregister_mime_subtype(const mime_subtype& subtype)
 {
     std::lock_guard<std::mutex> lock(request_parser_data_mutex_);
-    return request_parser_data_->unregister_mime_subtype(subtype);
+    return request_parser_data_.unregister_mime_subtype(subtype);
 }
 
 bool demultiplexer::is_mime_valid(const mime& t) const
@@ -196,8 +196,8 @@ bool demultiplexer::is_mime_valid(const mime& t) const
 
     // Valid values must be registered. Unset types are unregistered but also
     // valid.
-    if ((false == request_parser_data_->is_mime_type_registered(type)) ||
-        (false == request_parser_data_->is_mime_subtype_registered(subtype))) {
+    if ((false == request_parser_data_.is_mime_type_registered(type)) ||
+        (false == request_parser_data_.is_mime_subtype_registered(subtype))) {
         if ((type != mime_type::NONE) && (subtype != mime_subtype::NONE)) {
             return false;
         }

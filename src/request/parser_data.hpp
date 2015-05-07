@@ -23,7 +23,6 @@
 
 #include <libhutznohmd/demux.hpp>
 #include <request/mime_data.hpp>
-#include <utility/trie.hpp>
 
 namespace hutzn
 {
@@ -47,8 +46,6 @@ private:
     mime_data<mime_type, uint8_t> mime_types_;
     mime_data<mime_subtype, uint16_t> mime_subtypes_;
 };
-
-using parser_data_pointer = std::shared_ptr<parser_data>;
 
 } // namespace hutzn
 

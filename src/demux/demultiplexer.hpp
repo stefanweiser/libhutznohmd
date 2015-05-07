@@ -65,7 +65,7 @@ private:
     resource_map resource_callbacks_;
 
     std::mutex request_parser_data_mutex_;
-    parser_data_pointer request_parser_data_;
+    parser_data request_parser_data_;
 };
 
 } // namespace hutzn
