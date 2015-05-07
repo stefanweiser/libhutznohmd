@@ -27,9 +27,6 @@
 namespace hutzn
 {
 
-namespace request
-{
-
 template <typename value_type, typename arithmetic_type>
 class mime_data
 {
@@ -93,8 +90,6 @@ private:
     std::map<value_type, std::string> registered_types_;
     trie<value_type> types_;
 };
-
-} // namespace request
 
 } // namespace hutzn
 

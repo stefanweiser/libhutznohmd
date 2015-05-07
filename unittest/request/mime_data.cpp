@@ -27,9 +27,6 @@ using namespace testing;
 namespace hutzn
 {
 
-namespace request
-{
-
 TEST(mime_data, initialization)
 {
     mime_data<mime_type, uint8_t> t;
@@ -110,7 +107,5 @@ TEST(mime_data, parse_type_failure)
     EXPECT_EQ(t.parse_type("xyzabcdef", 9), mime_type::INVALID);
     EXPECT_TRUE(t.unregister_type(type));
 }
-
-} // namespace request
 
 } // namespace hutzn

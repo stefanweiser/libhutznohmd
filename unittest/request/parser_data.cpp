@@ -26,9 +26,6 @@ using namespace testing;
 namespace hutzn
 {
 
-namespace request
-{
-
 TEST(parser_data, parse_mime_type_default)
 {
     parser_data p;
@@ -46,7 +43,5 @@ TEST(parser_data, parse_mime_subtype_default)
     EXPECT_EQ(p.parse_mime_subtype("*", 1), mime_subtype::WILDCARD);
     EXPECT_EQ(p.parse_mime_subtype("plain", 5), mime_subtype::PLAIN);
 }
-
-} // namespace request
 
 } // namespace hutzn

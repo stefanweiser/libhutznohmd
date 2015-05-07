@@ -47,22 +47,20 @@ protected:
     request_handler_id id()
     {
         static request_handler_id result{
-            "/", hutzn::request::http_verb::GET,
-            hutzn::request::mime(hutzn::request::mime_type::WILDCARD,
-                                 hutzn::request::mime_subtype::WILDCARD),
-            hutzn::request::mime(hutzn::request::mime_type::TEXT,
-                                 hutzn::request::mime_subtype::PLAIN)};
+            "/", hutzn::http_verb::GET,
+            hutzn::mime(hutzn::mime_type::WILDCARD,
+                        hutzn::mime_subtype::WILDCARD),
+            hutzn::mime(hutzn::mime_type::TEXT, hutzn::mime_subtype::PLAIN)};
         return result;
     }
 
     demux_pointer demultiplexer_;
 };
 
-hutzn::request::http_status_code handler_fn(
-    const hutzn::request::request_interface&,
-    hutzn::request::response_interface&)
+hutzn::http_status_code handler_fn(const hutzn::request_interface&,
+                                   hutzn::response_interface&)
 {
-    return hutzn::request::http_status_code::OK;
+    return hutzn::http_status_code::OK;
 }
 
 TEST_F(demultiplexer_test, construction)
@@ -104,19 +102,19 @@ TEST_F(demultiplexer_test, connect_wrong_mime_types)
     ASSERT_NE(demultiplexer_.get(), nullptr);
 
     auto test_id = id();
-    test_id.input_type.first = static_cast<hutzn::request::mime_type>(100);
+    test_id.input_type.first = static_cast<hutzn::mime_type>(100);
     EXPECT_EQ(demultiplexer_->connect(test_id, &handler_fn).get(), nullptr);
 
     test_id = id();
-    test_id.input_type.second = static_cast<hutzn::request::mime_subtype>(100);
+    test_id.input_type.second = static_cast<hutzn::mime_subtype>(100);
     EXPECT_EQ(demultiplexer_->connect(test_id, &handler_fn).get(), nullptr);
 
     test_id = id();
-    test_id.result_type.first = static_cast<hutzn::request::mime_type>(100);
+    test_id.result_type.first = static_cast<hutzn::mime_type>(100);
     EXPECT_EQ(demultiplexer_->connect(test_id, &handler_fn).get(), nullptr);
 
     test_id = id();
-    test_id.result_type.second = static_cast<hutzn::request::mime_subtype>(100);
+    test_id.result_type.second = static_cast<hutzn::mime_subtype>(100);
     EXPECT_EQ(demultiplexer_->connect(test_id, &handler_fn).get(), nullptr);
 }
 
@@ -124,7 +122,7 @@ TEST_F(demultiplexer_test, request_handler_determination_failed_1)
 {
     ASSERT_NE(demultiplexer_.get(), nullptr);
 
-    auto request = std::make_shared<hutzn::request::request_interface_mock>();
+    auto request = std::make_shared<hutzn::request_interface_mock>();
     EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
 
     EXPECT_FALSE(demultiplexer_->determine_request_handler(*request));
@@ -136,10 +134,10 @@ TEST_F(demultiplexer_test, request_handler_determination_failed_2)
     handler_pointer handler = demultiplexer_->connect(id(), &handler_fn);
     ASSERT_NE(handler.get(), nullptr);
 
-    auto request = std::make_shared<hutzn::request::request_interface_mock>();
+    auto request = std::make_shared<hutzn::request_interface_mock>();
     EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
     EXPECT_CALL(*request, method()).Times(1).WillOnce(
-        Return(hutzn::request::http_verb::PUT));
+        Return(hutzn::http_verb::PUT));
 
     EXPECT_FALSE(demultiplexer_->determine_request_handler(*request));
 }
@@ -150,13 +148,12 @@ TEST_F(demultiplexer_test, request_handler_determination_failed_3)
     handler_pointer handler = demultiplexer_->connect(id(), &handler_fn);
     ASSERT_NE(handler.get(), nullptr);
 
-    auto request = std::make_shared<hutzn::request::request_interface_mock>();
+    auto request = std::make_shared<hutzn::request_interface_mock>();
     const auto ct =
-        hutzn::request::mime(hutzn::request::mime_type::WILDCARD,
-                             hutzn::request::mime_subtype::WILDCARD);
+        hutzn::mime(hutzn::mime_type::WILDCARD, hutzn::mime_subtype::WILDCARD);
     EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
     EXPECT_CALL(*request, method()).Times(1).WillOnce(
-        Return(hutzn::request::http_verb::GET));
+        Return(hutzn::http_verb::GET));
     EXPECT_CALL(*request, content_type()).Times(1).WillOnce(Return(ct));
 
     EXPECT_FALSE(demultiplexer_->determine_request_handler(*request));
@@ -168,15 +165,15 @@ TEST_F(demultiplexer_test, request_handler_determination_failed_4)
     handler_pointer handler = demultiplexer_->connect(id(), &handler_fn);
     ASSERT_NE(handler.get(), nullptr);
 
-    auto request = std::make_shared<hutzn::request::request_interface_mock>();
-    const auto ct = hutzn::request::mime(hutzn::request::mime_type::TEXT,
-                                         hutzn::request::mime_subtype::PLAIN);
+    auto request = std::make_shared<hutzn::request_interface_mock>();
+    const auto ct =
+        hutzn::mime(hutzn::mime_type::TEXT, hutzn::mime_subtype::PLAIN);
     EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
     EXPECT_CALL(*request, method()).Times(1).WillOnce(
-        Return(hutzn::request::http_verb::GET));
+        Return(hutzn::http_verb::GET));
     EXPECT_CALL(*request, content_type()).Times(1).WillOnce(Return(ct));
     EXPECT_CALL(*request, accept(_, _)).Times(1).WillOnce(
-        Invoke([](void*&, hutzn::request::mime&) { return false; }));
+        Invoke([](void*&, hutzn::mime&) { return false; }));
 
     EXPECT_FALSE(demultiplexer_->determine_request_handler(*request));
 }
@@ -185,21 +182,21 @@ TEST_F(demultiplexer_test, request_handler_determination_success_1)
 {
     ASSERT_NE(demultiplexer_.get(), nullptr);
     request_handler_id test_id = id();
-    const auto ct = hutzn::request::mime(hutzn::request::mime_type::TEXT,
-                                         hutzn::request::mime_subtype::PLAIN);
+    const auto ct =
+        hutzn::mime(hutzn::mime_type::TEXT, hutzn::mime_subtype::PLAIN);
     test_id.input_type = ct;
     handler_pointer handler = demultiplexer_->connect(test_id, &handler_fn);
     ASSERT_NE(handler.get(), nullptr);
 
-    auto request = std::make_shared<hutzn::request::request_interface_mock>();
+    auto request = std::make_shared<hutzn::request_interface_mock>();
     EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
     EXPECT_CALL(*request, method()).Times(1).WillOnce(
-        Return(hutzn::request::http_verb::GET));
+        Return(hutzn::http_verb::GET));
     EXPECT_CALL(*request, content_type()).Times(1).WillOnce(Return(ct));
     EXPECT_CALL(*request, accept(_, _)).Times(1).WillOnce(
-        Invoke([](void*&, hutzn::request::mime& mime) {
-            mime.first = hutzn::request::mime_type::TEXT;
-            mime.second = hutzn::request::mime_subtype::PLAIN;
+        Invoke([](void*&, hutzn::mime& mime) {
+            mime.first = hutzn::mime_type::TEXT;
+            mime.second = hutzn::mime_subtype::PLAIN;
             return true;
         }));
 
@@ -210,27 +207,27 @@ TEST_F(demultiplexer_test, request_handler_determination_success_2)
 {
     ASSERT_NE(demultiplexer_.get(), nullptr);
     request_handler_id test_id = id();
-    const auto ct = hutzn::request::mime(hutzn::request::mime_type::TEXT,
-                                         hutzn::request::mime_subtype::PLAIN);
+    const auto ct =
+        hutzn::mime(hutzn::mime_type::TEXT, hutzn::mime_subtype::PLAIN);
     test_id.input_type = ct;
     handler_pointer handler = demultiplexer_->connect(test_id, &handler_fn);
     ASSERT_NE(handler.get(), nullptr);
 
-    auto request = std::make_shared<hutzn::request::request_interface_mock>();
+    auto request = std::make_shared<hutzn::request_interface_mock>();
     EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
     EXPECT_CALL(*request, method()).Times(1).WillOnce(
-        Return(hutzn::request::http_verb::GET));
+        Return(hutzn::http_verb::GET));
     EXPECT_CALL(*request, content_type()).Times(1).WillOnce(Return(ct));
     EXPECT_CALL(*request, accept(_, _))
         .Times(2)
-        .WillOnce(Invoke([](void*&, hutzn::request::mime& mime) {
-            mime.first = hutzn::request::mime_type::AUDIO;
-            mime.second = hutzn::request::mime_subtype::WILDCARD;
+        .WillOnce(Invoke([](void*&, hutzn::mime& mime) {
+            mime.first = hutzn::mime_type::AUDIO;
+            mime.second = hutzn::mime_subtype::WILDCARD;
             return true;
         }))
-        .WillOnce(Invoke([](void*&, hutzn::request::mime& mime) {
-            mime.first = hutzn::request::mime_type::TEXT;
-            mime.second = hutzn::request::mime_subtype::PLAIN;
+        .WillOnce(Invoke([](void*&, hutzn::mime& mime) {
+            mime.first = hutzn::mime_type::TEXT;
+            mime.second = hutzn::mime_subtype::PLAIN;
             return true;
         }));
 

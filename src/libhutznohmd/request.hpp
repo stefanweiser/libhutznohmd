@@ -59,100 +59,98 @@ this is represented in the request interface.
 
 @startuml{request_classes.svg}
 namespace hutzn {
-  namespace request {
-    enum http_verb {
-      GET
-      PUT
-      DELETE
-      POST
-    }
-
-    enum http_version {
-      HTTP_UNKNOWN
-      HTTP_1_0
-      HTTP_1_1
-      HTTP_2_0
-    }
-
-    enum http_status_code {
-      CONTINUE
-      SWITCHING_PROTOCOLS
-      OK
-      CREATED
-      ACCEPTED
-      NON_AUTHORATIVE_INFORMATION
-      NO_CONTENT
-      MULTIPLE_CHOICES
-      MOVED_PERMANENTLY
-      FOUND
-      SEE_OTHER
-      NOT_MODIFIED
-      USE_PROXY
-      TEMPORARY_REDIRECT
-      BAD_REQUEST
-      UNAUTHORIZED
-      FORBIDDEN
-      NOT_FOUND
-      METHOD_NOT_ALLOWED
-      METHOD_NOT_ACCEPTABLE
-      PROXY_AUTHENTIFICATION_REQUIRED
-      REQUEST_TIMEOUT
-      CONFLICT
-      GONE
-      LENGTH_REQUIRED
-      PRECONDITION_FAILED
-      REQUEST_ENTITY_TOO_LARGE
-      REQUEST_URI_TOO_LONG
-      UNSUPPORTED_MEDIA_TYPE
-      EXPECTATION_FAILED
-      UPGRADE_REQUIRED
-      INTERNAL_SERVER_ERROR
-      NOT_IMPLEMENTED
-      BAD_GATEWAY
-      SERVICE_UNAVAILABLE
-      GATEWAY_TIMEOUT
-      HTTP_VERSION_NOT_SUPPORTED
-    }
-
-    enum http_status_code {
-      UNKNOWN
-      CONTINUE
-    }
-
-    interface request_interface {
-      +method(): http_verb
-      +path(): string
-      +version(): http_version
-      +keeps_connection(): bool
-      +date(): time
-      +content(): buffer
-      +content_length(): size
-      +content_type(): mime
-      +accept(in/out handle: pointer, type: mime): bool
-      +expect(): http_expectation
-      +from(): string
-      +referer(): string
-      +user_agent(): string
-    }
-
-    interface response_interface {
-      +set_status_code(status_code: http_status_code)
-      +set_version(version: http_version)
-      +set_header(key: string, value: string)
-      +set_content(content: buffer)
-    }
-
-    class request
-    class response
-
-    http_version -- request_interface: < uses
-    http_verb -- request_interface: < uses
-    http_expectation -- request_interface: < uses
-    http_version -- response_interface: < uses
-    http_status_code -- response_interface: < uses
-    request_interface <|-- request: implements
-    response_interface <|-- response: implements
+  enum http_verb {
+    GET
+    PUT
+    DELETE
+    POST
   }
+
+  enum http_version {
+    HTTP_UNKNOWN
+    HTTP_1_0
+    HTTP_1_1
+    HTTP_2_0
+  }
+
+  enum http_status_code {
+    CONTINUE
+    SWITCHING_PROTOCOLS
+    OK
+    CREATED
+    ACCEPTED
+    NON_AUTHORATIVE_INFORMATION
+    NO_CONTENT
+    MULTIPLE_CHOICES
+    MOVED_PERMANENTLY
+    FOUND
+    SEE_OTHER
+    NOT_MODIFIED
+    USE_PROXY
+    TEMPORARY_REDIRECT
+    BAD_REQUEST
+    UNAUTHORIZED
+    FORBIDDEN
+    NOT_FOUND
+    METHOD_NOT_ALLOWED
+    METHOD_NOT_ACCEPTABLE
+    PROXY_AUTHENTIFICATION_REQUIRED
+    REQUEST_TIMEOUT
+    CONFLICT
+    GONE
+    LENGTH_REQUIRED
+    PRECONDITION_FAILED
+    REQUEST_ENTITY_TOO_LARGE
+    REQUEST_URI_TOO_LONG
+    UNSUPPORTED_MEDIA_TYPE
+    EXPECTATION_FAILED
+    UPGRADE_REQUIRED
+    INTERNAL_SERVER_ERROR
+    NOT_IMPLEMENTED
+    BAD_GATEWAY
+    SERVICE_UNAVAILABLE
+    GATEWAY_TIMEOUT
+    HTTP_VERSION_NOT_SUPPORTED
+  }
+
+  enum http_status_code {
+    UNKNOWN
+    CONTINUE
+  }
+
+  interface request_interface {
+    +method(): http_verb
+    +path(): string
+    +version(): http_version
+    +keeps_connection(): bool
+    +date(): time
+    +content(): buffer
+    +content_length(): size
+    +content_type(): mime
+    +accept(in/out handle: pointer, type: mime): bool
+    +expect(): http_expectation
+    +from(): string
+    +referer(): string
+    +user_agent(): string
+  }
+
+  interface response_interface {
+    +set_status_code(status_code: http_status_code)
+    +set_version(version: http_version)
+    +set_header(key: string, value: string)
+    +set_content(content: buffer)
+  }
+
+  class request
+  class response
+
+  http_version -- request_interface: < uses
+  http_verb -- request_interface: < uses
+  http_expectation -- request_interface: < uses
+  http_version -- response_interface: < uses
+  http_status_code -- response_interface: < uses
+  request_interface <|-- request: implements
+  response_interface <|-- response: implements
 }
 @enduml
 
@@ -175,9 +173,9 @@ bytes. Thus it must be an unsigned integer. The size is limited to
 rejected.
 
 The content length could be retrieved by @ref
-hutzn::request::request_interface::content_length and is set on a response
+hutzn::request_interface::content_length and is set on a response
 automatically when a content is set by @ref
-hutzn::request::response_interface::set_content.
+hutzn::response_interface::set_content.
 
 @subsubsection subsub_content_length_example Example:
 
@@ -201,7 +199,7 @@ This header field is optional and carries a MD5 hash sum. This hash sum is
 automatically used to check the content for transmission errors. If the header
 field is missing, the content is not verified with MD5. To enable this header
 on the response, set the second parameter of @ref
-hutzn::request::response_interface::set_content to true.
+hutzn::response_interface::set_content to true.
 
 @note For two reasons this is no security feature:
 -# An attacker that is able to modify the header field or the content is
@@ -456,7 +454,7 @@ unimplemented
 @subsection sub_content_location Content-Location
 
 Points to the original URI path of the requested resource. Should be set by
-calling @ref hutzn::request::response_interface::set_content_location, when a
+calling @ref hutzn::response_interface::set_content_location, when a
 resource is available under different URIs and the requested URI path is not the
 primary URI.
 
@@ -477,7 +475,7 @@ unimplemented
 @subsection sub_location Location
 
 Contains the location the client should be guided to. Is set, when @ref
-hutzn::request::response_interface::set_location is called and could contain the
+hutzn::response_interface::set_location is called and could contain the
 URI of a created resource or the URI of a moved one.
 
 @subsubsection subsub_location_example Example:
@@ -497,7 +495,7 @@ unimplemented
 @subsection sub_retry_after Retry-After
 
 Tells the client, that it should repeat the request later to get a proper
-result. Is set, when @ref hutzn::request::response_interface::set_retry_after
+result. Is set, when @ref hutzn::response_interface::set_retry_after
 is getting called with a time greater 0 and cleared if called with 0.
 
 @subsubsection subsub_retry_after_example Example:
@@ -519,7 +517,7 @@ unimplemented
 
 Set to the server/version fingerprint. This is deactivated per default for
 security reasons and can be activated by calling @ref
-hutzn::request::response_interface::set_server on the response.
+hutzn::response_interface::set_server on the response.
 
 @subsubsection subsub_server_example Example:
 
@@ -536,11 +534,6 @@ not present
 unimplemented
 
 */
-
-//! This namespace contains all request related code and data. This includes a
-//! request (readable) and response (writeable) interface for the server side.
-namespace request
-{
 
 //! The MIME-Type consists of a group of subtypes.
 enum class mime_type : uint8_t {
@@ -646,8 +639,8 @@ enum class http_verb : uint8_t {
 //! "speaking" status code in the response in that case:
 //!
 //! @code{.cpp}
-//! constexpr hutzn::request::http_status_code xy =
-//!     static_cast<hutzn::request::http_status_code>(111);
+//! constexpr hutzn::http_status_code xy =
+//!     static_cast<hutzn::http_status_code>(111);
 //! @endcode
 enum class http_status_code : uint16_t {
     //! Since HTTP/1.1
@@ -847,7 +840,7 @@ public:
     virtual void* content() const = 0;
 
     //! Returns the length of the buffer returned by
-    //! @ref hutzn::request::request_interface::content(). If there is no
+    //! @ref hutzn::request_interface::content(). If there is no
     //! content it returns 0.
     virtual size_t content_length() const = 0;
 
@@ -932,8 +925,6 @@ public:
     //! name without a version may be a good solution.
     virtual void set_server(const char* const fingerprint) = 0;
 };
-
-} // namespace request
 
 } // namespace hutzn
 

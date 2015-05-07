@@ -21,9 +21,6 @@
 namespace hutzn
 {
 
-namespace request
-{
-
 /*
 
 NOTE: This definitions are getting used in later versions.
@@ -205,7 +202,5 @@ request_interface::~request_interface()
 response_interface::~response_interface()
 {
 }
-
-} // namespace request
 
 } // namespace hutzn

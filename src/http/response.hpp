@@ -38,20 +38,19 @@ public:
     explicit response(const hutzn::connection_pointer& connection);
     void deliver();
 
-    void set_status_code(
-        const hutzn::request::http_status_code& status_code) override;
+    void set_status_code(const hutzn::http_status_code& status_code) override;
     void set_version(const hutzn::http::version& version) override;
     void set_header(const std::string& key, const std::string& value) override;
     void set_data(const hutzn::buffer& data) override;
 
 private:
     static void deliver_version(std::ostream& os, const version& version);
-    static void deliver_status_code_text(
-        std::ostream& os, const hutzn::request::http_status_code& code);
+    static void deliver_status_code_text(std::ostream& os,
+                                         const hutzn::http_status_code& code);
 
     hutzn::connection_pointer connection_;
 
-    hutzn::request::http_status_code status_code_;
+    hutzn::http_status_code status_code_;
     version version_;
     std::map<std::string, std::string> headers_;
     hutzn::buffer data_;

@@ -32,7 +32,7 @@ namespace http
 
 response::response(const hutzn::connection_pointer& connection)
     : connection_(connection)
-    , status_code_(request::http_status_code::INTERNAL_SERVER_ERROR)
+    , status_code_(http_status_code::INTERNAL_SERVER_ERROR)
     , version_(version::HTTP_1_1)
     , headers_()
     , data_()
@@ -55,8 +55,7 @@ void response::deliver()
     connection_->send(data_);
 }
 
-void response::set_status_code(
-    const hutzn::request::http_status_code& status_code)
+void response::set_status_code(const hutzn::http_status_code& status_code)
 {
     status_code_ = status_code;
 }
@@ -88,61 +87,52 @@ void response::deliver_version(std::ostream& os,
     }
 }
 
-void response::deliver_status_code_text(
-    std::ostream& os, const hutzn::request::http_status_code& code)
+void response::deliver_status_code_text(std::ostream& os,
+                                        const hutzn::http_status_code& code)
 {
-    static const std::map<hutzn::request::http_status_code,
+    static const std::map<hutzn::http_status_code,
                           std::string> status_code_text = {
-        {request::http_status_code::CONTINUE, "100 Continue"},
-        {request::http_status_code::SWITCHING_PROTOCOLS,
-         "101 Switching Protocols"},
-        {request::http_status_code::OK, "200 Ok"},
-        {request::http_status_code::CREATED, "201 Continue"},
-        {request::http_status_code::ACCEPTED, "202 Accepted"},
-        {request::http_status_code::NON_AUTHORATIVE_INFORMATION,
+        {http_status_code::CONTINUE, "100 Continue"},
+        {http_status_code::SWITCHING_PROTOCOLS, "101 Switching Protocols"},
+        {http_status_code::OK, "200 Ok"},
+        {http_status_code::CREATED, "201 Continue"},
+        {http_status_code::ACCEPTED, "202 Accepted"},
+        {http_status_code::NON_AUTHORATIVE_INFORMATION,
          "203 Non Authorative Information"},
-        {request::http_status_code::NO_CONTENT, "204 No Content"},
-        {request::http_status_code::MULTIPLE_CHOICES, "300 Multiple Choices"},
-        {request::http_status_code::MOVED_PERMANENTLY, "301 Moved Permanently"},
-        {request::http_status_code::FOUND, "302 Found"},
-        {request::http_status_code::SEE_OTHER, "303 See Other"},
-        {request::http_status_code::NOT_MODIFIED, "304 Not Modified"},
-        {request::http_status_code::USE_PROXY, "305 Use Proxy"},
-        {request::http_status_code::TEMPORARY_REDIRECT,
-         "307 Temporary Redirect"},
-        {request::http_status_code::BAD_REQUEST, "400 Bad Request"},
-        {request::http_status_code::UNAUTHORIZED, "401 Unauthorized"},
-        {request::http_status_code::FORBIDDEN, "403 Forbidden"},
-        {request::http_status_code::NOT_FOUND, "404 Not Found"},
-        {request::http_status_code::METHOD_NOT_ALLOWED,
-         "405 Method Not Allowed"},
-        {request::http_status_code::METHOD_NOT_ACCEPTABLE,
-         "406 Method Not Acceptable"},
-        {request::http_status_code::PROXY_AUTHENTIFICATION_REQUIRED,
+        {http_status_code::NO_CONTENT, "204 No Content"},
+        {http_status_code::MULTIPLE_CHOICES, "300 Multiple Choices"},
+        {http_status_code::MOVED_PERMANENTLY, "301 Moved Permanently"},
+        {http_status_code::FOUND, "302 Found"},
+        {http_status_code::SEE_OTHER, "303 See Other"},
+        {http_status_code::NOT_MODIFIED, "304 Not Modified"},
+        {http_status_code::USE_PROXY, "305 Use Proxy"},
+        {http_status_code::TEMPORARY_REDIRECT, "307 Temporary Redirect"},
+        {http_status_code::BAD_REQUEST, "400 Bad Request"},
+        {http_status_code::UNAUTHORIZED, "401 Unauthorized"},
+        {http_status_code::FORBIDDEN, "403 Forbidden"},
+        {http_status_code::NOT_FOUND, "404 Not Found"},
+        {http_status_code::METHOD_NOT_ALLOWED, "405 Method Not Allowed"},
+        {http_status_code::METHOD_NOT_ACCEPTABLE, "406 Method Not Acceptable"},
+        {http_status_code::PROXY_AUTHENTIFICATION_REQUIRED,
          "407 Proxy Authentification Required"},
-        {request::http_status_code::REQUEST_TIMEOUT, "408 Request Timeout"},
-        {request::http_status_code::CONFLICT, "409 Conflict"},
-        {request::http_status_code::GONE, "410 Gone"},
-        {request::http_status_code::LENGTH_REQUIRED, "411 Length Required"},
-        {request::http_status_code::PRECONDITION_FAILED,
-         "412 Precondition Failed"},
-        {request::http_status_code::REQUEST_ENTITY_TOO_LARGE,
+        {http_status_code::REQUEST_TIMEOUT, "408 Request Timeout"},
+        {http_status_code::CONFLICT, "409 Conflict"},
+        {http_status_code::GONE, "410 Gone"},
+        {http_status_code::LENGTH_REQUIRED, "411 Length Required"},
+        {http_status_code::PRECONDITION_FAILED, "412 Precondition Failed"},
+        {http_status_code::REQUEST_ENTITY_TOO_LARGE,
          "413 Request Entity Too Large"},
-        {request::http_status_code::REQUEST_URI_TOO_LONG,
-         "414 Request Uri Too Long"},
-        {request::http_status_code::UNSUPPORTED_MEDIA_TYPE,
+        {http_status_code::REQUEST_URI_TOO_LONG, "414 Request Uri Too Long"},
+        {http_status_code::UNSUPPORTED_MEDIA_TYPE,
          "415 Unsupported Media Type"},
-        {request::http_status_code::EXPECTATION_FAILED,
-         "417 Expectation Failed"},
-        {request::http_status_code::UPGRADE_REQUIRED, "426 Upgrade Required"},
-        {request::http_status_code::INTERNAL_SERVER_ERROR,
-         "500 Internal Server Error"},
-        {request::http_status_code::NOT_IMPLEMENTED, "501 Not Implemented"},
-        {request::http_status_code::BAD_GATEWAY, "502 Bad Gateway"},
-        {request::http_status_code::SERVICE_UNAVAILABLE,
-         "503 Service Unavailable"},
-        {request::http_status_code::GATEWAY_TIMEOUT, "504 Gateway Timeout"},
-        {request::http_status_code::HTTP_VERSION_NOT_SUPPORTED,
+        {http_status_code::EXPECTATION_FAILED, "417 Expectation Failed"},
+        {http_status_code::UPGRADE_REQUIRED, "426 Upgrade Required"},
+        {http_status_code::INTERNAL_SERVER_ERROR, "500 Internal Server Error"},
+        {http_status_code::NOT_IMPLEMENTED, "501 Not Implemented"},
+        {http_status_code::BAD_GATEWAY, "502 Bad Gateway"},
+        {http_status_code::SERVICE_UNAVAILABLE, "503 Service Unavailable"},
+        {http_status_code::GATEWAY_TIMEOUT, "504 Gateway Timeout"},
+        {http_status_code::HTTP_VERSION_NOT_SUPPORTED,
          "505 Http Version Not Supported"}};
     auto it = status_code_text.find(code);
     if (it != status_code_text.end()) {

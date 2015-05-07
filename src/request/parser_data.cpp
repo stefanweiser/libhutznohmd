@@ -21,9 +21,6 @@
 namespace hutzn
 {
 
-namespace request
-{
-
 parser_data::parser_data()
     : mime_types_()
     , mime_subtypes_()
@@ -92,7 +89,5 @@ bool parser_data::is_mime_subtype_registered(const mime_subtype& subtype) const
 {
     return mime_subtypes_.is_registered(subtype);
 }
-
-} // namespace request
 
 } // namespace hutzn

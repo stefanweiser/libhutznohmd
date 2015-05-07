@@ -28,9 +28,6 @@
 namespace hutzn
 {
 
-namespace request
-{
-
 class parser_data
 {
 public:
@@ -52,8 +49,6 @@ private:
 };
 
 using parser_data_pointer = std::shared_ptr<parser_data>;
-
-} // namespace request
 
 } // namespace hutzn
 

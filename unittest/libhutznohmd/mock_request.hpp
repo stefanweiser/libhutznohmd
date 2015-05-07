@@ -26,9 +26,6 @@
 namespace hutzn
 {
 
-namespace request
-{
-
 class request_interface_mock : public request_interface
 {
 public:
@@ -43,8 +40,8 @@ public:
     MOCK_CONST_METHOD0(date, time_t());
     MOCK_CONST_METHOD0(content, void*());
     MOCK_CONST_METHOD0(content_length, size_t());
-    MOCK_CONST_METHOD0(content_type, hutzn::request::mime());
-    MOCK_CONST_METHOD2(accept, bool(void*&, hutzn::request::mime&));
+    MOCK_CONST_METHOD0(content_type, hutzn::mime());
+    MOCK_CONST_METHOD2(accept, bool(void*&, hutzn::mime&));
     MOCK_CONST_METHOD0(expect, http_expectation());
     MOCK_CONST_METHOD0(from, const char*());
     MOCK_CONST_METHOD0(referer, const char*());
@@ -65,8 +62,6 @@ public:
 };
 
 using response_mock_pointer = std::shared_ptr<response_interface_mock>;
-
-} // namespace request
 
 } // namespace hutzn
 

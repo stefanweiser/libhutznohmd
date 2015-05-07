@@ -32,18 +32,15 @@ namespace demux
 class demux_interface_mock : public demux_interface
 {
 public:
-    MOCK_METHOD1(
-        determine_request_handler,
-        request_handler_callback(const hutzn::request::request_interface&));
+    MOCK_METHOD1(determine_request_handler,
+                 request_handler_callback(const hutzn::request_interface&));
     MOCK_METHOD2(connect, handler_pointer(const request_handler_id&,
                                           const request_handler_callback&));
-    MOCK_METHOD1(register_mime_type,
-                 hutzn::request::mime_type(const std::string&));
+    MOCK_METHOD1(register_mime_type, hutzn::mime_type(const std::string&));
     MOCK_METHOD1(register_mime_subtype,
-                 hutzn::request::mime_subtype(const std::string&));
-    MOCK_METHOD1(unregister_mime_type, bool(const hutzn::request::mime_type&));
-    MOCK_METHOD1(unregister_mime_subtype,
-                 bool(const hutzn::request::mime_subtype&));
+                 hutzn::mime_subtype(const std::string&));
+    MOCK_METHOD1(unregister_mime_type, bool(const hutzn::mime_type&));
+    MOCK_METHOD1(unregister_mime_subtype, bool(const hutzn::mime_subtype&));
 };
 
 using demux_mock_pointer = std::shared_ptr<demux_interface_mock>;
@@ -53,7 +50,7 @@ class request_processor_interface_mock : public request_processor_interface
 public:
     MOCK_CONST_METHOD1(handle_one_request, bool(block_device_interface&));
     MOCK_METHOD2(set_error_handler,
-                 handler_pointer(const hutzn::request::http_status_code&,
+                 handler_pointer(const hutzn::http_status_code&,
                                  const error_handler_callback&));
 };
 
