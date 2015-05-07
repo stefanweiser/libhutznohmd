@@ -16,6 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
+
 #include "demultiplexer_accept_map.hpp"
 
 namespace hutzn
@@ -23,6 +25,7 @@ namespace hutzn
 
 demultiplexer_accept_map::demultiplexer_accept_map()
     : map_()
+    , vector_()
 {
 }
 
@@ -37,6 +40,7 @@ bool demultiplexer_accept_map::insert(const mime& type,
     auto it = map_.find(type);
     if (it == map_.end()) {
         map_[type] = fn;
+        vector_.push_back(type);
         return true;
     }
     return false;
@@ -44,7 +48,12 @@ bool demultiplexer_accept_map::insert(const mime& type,
 
 bool demultiplexer_accept_map::erase(const mime& type)
 {
-    return (map_.erase(type) > 0);
+    auto it = map_.find(type);
+    if (it != map_.end()) {
+        std::remove(vector_.begin(), vector_.end(), type);
+        return (map_.erase(type) > 0);
+    }
+    return false;
 }
 
 request_handler_callback demultiplexer_accept_map::find(

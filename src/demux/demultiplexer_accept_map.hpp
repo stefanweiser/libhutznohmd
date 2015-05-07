@@ -37,9 +37,8 @@ public:
     request_handler_callback find(const request_interface& request) const;
 
 private:
-    using accept_map = std::map<mime, request_handler_callback>;
-
-    accept_map map_;
+    std::map<mime, request_handler_callback> map_;
+    std::vector<mime> vector_;
 };
 
 } // namespace hutzn
