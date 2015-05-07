@@ -91,15 +91,17 @@ handler_pointer demultiplexer::connect(const request_handler_id& id,
         return handler_pointer();
     }
 
-    std::unique_lock<std::mutex> lock(resource_callbacks_mutex_);
-
-    // Check whether the content and accept mime is valid.
-    if ((false == is_mime_valid(id.content_type)) ||
-        (false == is_mime_valid(id.accept_type))) {
-        return handler_pointer();
+    {
+        // Check whether the content and accept mime is valid.
+        std::lock_guard<std::mutex> lock(request_parser_data_mutex_);
+        if ((false == is_mime_valid(id.content_type)) ||
+            (false == is_mime_valid(id.accept_type))) {
+            return handler_pointer();
+        }
     }
 
     // Get specific map with handlers.
+    std::unique_lock<std::mutex> lock(resource_callbacks_mutex_);
     auto& accept_map = resource_callbacks_[id.path][id.method][id.content_type];
 
     // Check if there is already a registered request handler.
