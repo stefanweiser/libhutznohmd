@@ -30,6 +30,21 @@ namespace hutzn
 class demultiplexer_accept_map_test : public ::testing::Test
 {
 protected:
+    static std::function<bool(void*&, mime&)> make_accept_fn(const mime& type)
+    {
+        return [type](void*&, mime& t) {
+            t = type;
+            return true;
+        };
+    }
+
+    static request_handler_callback make_request_handler(
+        const http_status_code& code)
+    {
+        return [code](const request_interface&,
+                      response_interface&) { return code; };
+    }
+
     const mime none_{mime_type::NONE, mime_subtype::NONE};
     const mime text_plain_{mime_type::TEXT, mime_subtype::PLAIN};
 };
@@ -108,6 +123,110 @@ TEST_F(demultiplexer_accept_map_test, erase_two_existent_when_two_are_inserted)
     EXPECT_TRUE(map.erase(none_));
     EXPECT_TRUE(map.erase(text_plain_));
     EXPECT_EQ(map.size(), 0);
+}
+
+TEST_F(demultiplexer_accept_map_test, find_nothing_accepted_in_empty_map)
+{
+    demultiplexer_accept_map map;
+    request_interface_mock request;
+    EXPECT_CALL(request, accept(_, _)).Times(1).WillOnce(Return(false));
+
+    EXPECT_FALSE(map.find(request));
+}
+
+TEST_F(demultiplexer_accept_map_test, find_none_accepted_in_empty_map)
+{
+    demultiplexer_accept_map map;
+    request_interface_mock request;
+    EXPECT_CALL(request, accept(_, _))
+        .Times(2)
+        .WillOnce(Invoke(make_accept_fn(none_)))
+        .WillOnce(Return(false));
+
+    EXPECT_FALSE(map.find(request));
+}
+
+TEST_F(demultiplexer_accept_map_test,
+       find_none_and_text_plain_accepted_in_empty_map)
+{
+    demultiplexer_accept_map map;
+    request_interface_mock request;
+    EXPECT_CALL(request, accept(_, _))
+        .Times(3)
+        .WillOnce(Invoke(make_accept_fn(none_)))
+        .WillOnce(Invoke(make_accept_fn(text_plain_)))
+        .WillOnce(Return(false));
+
+    EXPECT_FALSE(map.find(request));
+}
+
+TEST_F(demultiplexer_accept_map_test,
+       find_nothing_accepted_when_one_is_inserted)
+{
+    demultiplexer_accept_map map;
+    request_interface_mock request;
+    map.insert(none_, make_request_handler(http_status_code::OK));
+    EXPECT_CALL(request, accept(_, _)).Times(1).WillOnce(Return(false));
+
+    EXPECT_FALSE(map.find(request));
+}
+
+TEST_F(demultiplexer_accept_map_test,
+       find_nothing_accepted_when_two_are_inserted)
+{
+    demultiplexer_accept_map map;
+    request_interface_mock request;
+    map.insert(none_, make_request_handler(http_status_code::OK));
+    map.insert(text_plain_, make_request_handler(http_status_code::FOUND));
+    EXPECT_CALL(request, accept(_, _)).Times(1).WillOnce(Return(false));
+
+    EXPECT_FALSE(map.find(request));
+}
+
+TEST_F(demultiplexer_accept_map_test, find_none_accepted_while_none_is_inserted)
+{
+    demultiplexer_accept_map map;
+    request_interface_mock request;
+    response_interface_mock response;
+    map.insert(none_, make_request_handler(http_status_code::OK));
+    EXPECT_CALL(request, accept(_, _)).Times(1).WillOnce(
+        Invoke(make_accept_fn(none_)));
+
+    request_handler_callback none_fn = map.find(request);
+    ASSERT_TRUE(!!none_fn);
+    EXPECT_EQ(none_fn(request, response), http_status_code::OK);
+}
+
+TEST_F(demultiplexer_accept_map_test,
+       find_none_accepted_while_both_are_inserted)
+{
+    demultiplexer_accept_map map;
+    request_interface_mock request;
+    response_interface_mock response;
+    map.insert(none_, make_request_handler(http_status_code::OK));
+    map.insert(text_plain_, make_request_handler(http_status_code::FOUND));
+    EXPECT_CALL(request, accept(_, _)).Times(1).WillOnce(
+        Invoke(make_accept_fn(none_)));
+
+    request_handler_callback none_fn = map.find(request);
+    ASSERT_TRUE(!!none_fn);
+    EXPECT_EQ(none_fn(request, response), http_status_code::OK);
+}
+
+TEST_F(demultiplexer_accept_map_test,
+       find_text_plain_accepted_while_both_are_inserted)
+{
+    demultiplexer_accept_map map;
+    request_interface_mock request;
+    response_interface_mock response;
+    map.insert(none_, make_request_handler(http_status_code::OK));
+    map.insert(text_plain_, make_request_handler(http_status_code::FOUND));
+    EXPECT_CALL(request, accept(_, _)).Times(1).WillOnce(
+        Invoke(make_accept_fn(text_plain_)));
+
+    request_handler_callback text_plain_fn = map.find(request);
+    ASSERT_TRUE(!!text_plain_fn);
+    EXPECT_EQ(text_plain_fn(request, response), http_status_code::FOUND);
 }
 
 } // namespace hutzn
