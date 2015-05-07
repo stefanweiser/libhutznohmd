@@ -41,6 +41,7 @@ request_handler_callback demultiplexer::determine_request_handler(
 {
     std::lock_guard<std::mutex> lock(resource_callbacks_mutex_);
 
+    // Determine map of demanded resource.
     const char* const path = request.path();
     const auto resource_it = resource_callbacks_.find(path);
     if (resource_it == resource_callbacks_.end()) {
@@ -48,6 +49,7 @@ request_handler_callback demultiplexer::determine_request_handler(
     }
     const auto& method_map = resource_it->second;
 
+    // Determine map of demanded http method.
     const http_verb verb = request.method();
     const auto method_it = method_map.find(verb);
     if (method_it == method_map.end()) {
@@ -55,17 +57,21 @@ request_handler_callback demultiplexer::determine_request_handler(
     }
     const auto& content_map = method_it->second;
 
+    // A wildcard content type is not allowed.
     const mime content_type = request.content_type();
     if ((content_type.first == mime_type::WILDCARD) ||
         (content_type.second == mime_subtype::WILDCARD)) {
         return request_handler_callback();
     }
+
+    // Determine map of demanded content type.
     const auto content_it = content_map.find(content_type);
     if (content_it == content_map.end()) {
         return request_handler_callback();
     }
     const auto& accept_map = content_it->second;
 
+    // Loop over the accept types for a matching request handler.
     void* handle = nullptr;
     mime accept_type;
     while (true == request.accept(handle, accept_type)) {
@@ -74,6 +80,8 @@ request_handler_callback demultiplexer::determine_request_handler(
             return accept_it->second;
         }
     }
+
+    // Nothing found.
     return request_handler_callback();
 }
 
