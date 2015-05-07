@@ -25,7 +25,8 @@ parser_data::parser_data()
     : mime_types_()
     , mime_subtypes_()
 {
-    const size_t type_size = static_cast<size_t>(mime_type::COUNT) - 1;
+    const size_t type_size = static_cast<size_t>(mime_type::COUNT) -
+                             mime_data<mime_type, uint8_t>::special_value_count;
     static const char* const type_names[] = {"*",     "application", "audio",
                                              "image", "text",        "video"};
     static_assert((sizeof(type_names) / sizeof(*type_names)) == type_size,
@@ -36,7 +37,9 @@ parser_data::parser_data()
         mime_types_.register_type(type_names[i]);
     }
 
-    const size_t subtype_size = static_cast<size_t>(mime_subtype::COUNT) - 1;
+    const size_t subtype_size =
+        static_cast<size_t>(mime_subtype::COUNT) -
+        mime_data<mime_subtype, uint16_t>::special_value_count;
     static const char* const subtype_names[] = {"*", "plain"};
     static_assert(
         (sizeof(subtype_names) / sizeof(*subtype_names)) == subtype_size,

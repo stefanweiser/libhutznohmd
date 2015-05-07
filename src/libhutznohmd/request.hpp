@@ -541,6 +541,9 @@ enum class mime_type : uint8_t {
     //! response.
     INVALID = 0,
 
+    //! No type available.
+    NONE,
+
     //! The character *. Used to catch all types or declaring that the subtype
     //! is not of interest.
     WILDCARD,
@@ -570,6 +573,9 @@ enum class mime_subtype : uint16_t {
     //! The subtype is invalid. The implementation should reject the request or
     //! response.
     INVALID = 0,
+
+    //! No subtype available.
+    NONE,
 
     //! The character *. Used to catch all subtypes or declaring that the
     //! subtype is not of interest.
