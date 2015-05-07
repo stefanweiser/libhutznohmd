@@ -25,7 +25,7 @@
 #include <libhutznohmd/demux.hpp>
 
 #include <request/parser_data.hpp>
-#include <demux/demultiplexer_accept_map.hpp>
+#include <demux/demultiplexer_ordered_mime_map.hpp>
 
 #include <demux/demux_disconnect_interface.hpp>
 
@@ -54,7 +54,8 @@ public:
     bool unregister_mime_subtype(const mime_subtype& subtype) override;
 
 private:
-    using resource_mime_content_map = std::map<mime, demultiplexer_accept_map>;
+    using resource_mime_content_map =
+        std::map<mime, demultiplexer_ordered_mime_map>;
     using resource_method_map = std::map<http_verb, resource_mime_content_map>;
     using resource_map = std::map<std::string, resource_method_map>;
 

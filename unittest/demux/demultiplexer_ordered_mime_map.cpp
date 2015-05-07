@@ -20,14 +20,14 @@
 #include <gmock/gmock.h>
 
 #include <libhutznohmd/mock_request.hpp>
-#include <demux/demultiplexer_accept_map.hpp>
+#include <demux/demultiplexer_ordered_mime_map.hpp>
 
 using namespace testing;
 
 namespace hutzn
 {
 
-class demultiplexer_accept_map_test : public ::testing::Test
+class demultiplexer_ordered_mime_map_test : public ::testing::Test
 {
 protected:
     static std::function<bool(void*&, mime&)> make_accept_fn(const mime& type)
@@ -49,52 +49,52 @@ protected:
     const mime text_plain_{mime_type::TEXT, mime_subtype::PLAIN};
 };
 
-TEST_F(demultiplexer_accept_map_test, size_of_empty)
+TEST_F(demultiplexer_ordered_mime_map_test, size_of_empty)
 {
-    demultiplexer_accept_map map;
+    demultiplexer_ordered_mime_map map;
     EXPECT_EQ(map.size(), 0);
 }
 
-TEST_F(demultiplexer_accept_map_test, size_of_one_inserted)
+TEST_F(demultiplexer_ordered_mime_map_test, size_of_one_inserted)
 {
-    demultiplexer_accept_map map;
+    demultiplexer_ordered_mime_map map;
     map.insert(none_, request_handler_callback());
     EXPECT_EQ(map.size(), 1);
 }
 
-TEST_F(demultiplexer_accept_map_test, size_of_twice_inserted_the_same)
+TEST_F(demultiplexer_ordered_mime_map_test, size_of_twice_inserted_the_same)
 {
-    demultiplexer_accept_map map;
+    demultiplexer_ordered_mime_map map;
     map.insert(none_, request_handler_callback());
     map.insert(none_, request_handler_callback());
     EXPECT_EQ(map.size(), 1);
 }
 
-TEST_F(demultiplexer_accept_map_test, size_of_inserted_two_different)
+TEST_F(demultiplexer_ordered_mime_map_test, size_of_inserted_two_different)
 {
-    demultiplexer_accept_map map;
+    demultiplexer_ordered_mime_map map;
     map.insert(none_, request_handler_callback());
     map.insert(text_plain_, request_handler_callback());
     EXPECT_EQ(map.size(), 2);
 }
 
-TEST_F(demultiplexer_accept_map_test, twice_inserted_the_same)
+TEST_F(demultiplexer_ordered_mime_map_test, twice_inserted_the_same)
 {
-    demultiplexer_accept_map map;
+    demultiplexer_ordered_mime_map map;
     EXPECT_TRUE(map.insert(none_, request_handler_callback()));
     EXPECT_FALSE(map.insert(none_, request_handler_callback()));
 }
 
-TEST_F(demultiplexer_accept_map_test, inserted_two_different)
+TEST_F(demultiplexer_ordered_mime_map_test, inserted_two_different)
 {
-    demultiplexer_accept_map map;
+    demultiplexer_ordered_mime_map map;
     EXPECT_TRUE(map.insert(none_, request_handler_callback()));
     EXPECT_TRUE(map.insert(text_plain_, request_handler_callback()));
 }
 
-TEST_F(demultiplexer_accept_map_test, inserting_wildcard_is_failing)
+TEST_F(demultiplexer_ordered_mime_map_test, inserting_wildcard_is_failing)
 {
-    demultiplexer_accept_map map;
+    demultiplexer_ordered_mime_map map;
 
     mime type = mime(mime_type::WILDCARD, mime_subtype::PLAIN);
     EXPECT_FALSE(map.insert(type, request_handler_callback()));
@@ -106,32 +106,34 @@ TEST_F(demultiplexer_accept_map_test, inserting_wildcard_is_failing)
     EXPECT_FALSE(map.insert(type, request_handler_callback()));
 }
 
-TEST_F(demultiplexer_accept_map_test, erase_nonexistent)
+TEST_F(demultiplexer_ordered_mime_map_test, erase_nonexistent)
 {
-    demultiplexer_accept_map map;
+    demultiplexer_ordered_mime_map map;
     EXPECT_FALSE(map.erase(none_));
 }
 
-TEST_F(demultiplexer_accept_map_test, erase_existent_when_one_is_inserted)
+TEST_F(demultiplexer_ordered_mime_map_test, erase_existent_when_one_is_inserted)
 {
-    demultiplexer_accept_map map;
+    demultiplexer_ordered_mime_map map;
     map.insert(none_, request_handler_callback());
     EXPECT_TRUE(map.erase(none_));
     EXPECT_EQ(map.size(), 0);
 }
 
-TEST_F(demultiplexer_accept_map_test, erase_existent_when_two_are_inserted)
+TEST_F(demultiplexer_ordered_mime_map_test,
+       erase_existent_when_two_are_inserted)
 {
-    demultiplexer_accept_map map;
+    demultiplexer_ordered_mime_map map;
     map.insert(none_, request_handler_callback());
     map.insert(text_plain_, request_handler_callback());
     EXPECT_TRUE(map.erase(none_));
     EXPECT_EQ(map.size(), 1);
 }
 
-TEST_F(demultiplexer_accept_map_test, erase_two_existent_when_two_are_inserted)
+TEST_F(demultiplexer_ordered_mime_map_test,
+       erase_two_existent_when_two_are_inserted)
 {
-    demultiplexer_accept_map map;
+    demultiplexer_ordered_mime_map map;
     map.insert(none_, request_handler_callback());
     map.insert(text_plain_, request_handler_callback());
     EXPECT_TRUE(map.erase(none_));
@@ -139,15 +141,15 @@ TEST_F(demultiplexer_accept_map_test, erase_two_existent_when_two_are_inserted)
     EXPECT_EQ(map.size(), 0);
 }
 
-TEST_F(demultiplexer_accept_map_test, find_in_empty_vector)
+TEST_F(demultiplexer_ordered_mime_map_test, find_in_empty_vector)
 {
-    demultiplexer_accept_map map;
+    demultiplexer_ordered_mime_map map;
     EXPECT_FALSE(map.find(none_));
 }
 
-TEST_F(demultiplexer_accept_map_test, find_none_in_vector)
+TEST_F(demultiplexer_ordered_mime_map_test, find_none_in_vector)
 {
-    demultiplexer_accept_map map;
+    demultiplexer_ordered_mime_map map;
     request_interface_mock request;
     response_interface_mock response;
     map.insert(none_, make_request_handler(http_status_code::OK));
@@ -158,9 +160,9 @@ TEST_F(demultiplexer_accept_map_test, find_none_in_vector)
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
 }
 
-TEST_F(demultiplexer_accept_map_test, find_none_in_vector_second_time)
+TEST_F(demultiplexer_ordered_mime_map_test, find_none_in_vector_second_time)
 {
-    demultiplexer_accept_map map;
+    demultiplexer_ordered_mime_map map;
     request_interface_mock request;
     response_interface_mock response;
     map.insert(text_plain_, make_request_handler(http_status_code::FOUND));
@@ -172,9 +174,9 @@ TEST_F(demultiplexer_accept_map_test, find_none_in_vector_second_time)
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
 }
 
-TEST_F(demultiplexer_accept_map_test, find_wildcard_type_in_vector)
+TEST_F(demultiplexer_ordered_mime_map_test, find_wildcard_type_in_vector)
 {
-    demultiplexer_accept_map map;
+    demultiplexer_ordered_mime_map map;
     request_interface_mock request;
     response_interface_mock response;
     map.insert(none_, make_request_handler(http_status_code::OK));
@@ -186,9 +188,9 @@ TEST_F(demultiplexer_accept_map_test, find_wildcard_type_in_vector)
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
 }
 
-TEST_F(demultiplexer_accept_map_test, find_wildcard_subtype_in_vector)
+TEST_F(demultiplexer_ordered_mime_map_test, find_wildcard_subtype_in_vector)
 {
-    demultiplexer_accept_map map;
+    demultiplexer_ordered_mime_map map;
     request_interface_mock request;
     response_interface_mock response;
     map.insert(none_, make_request_handler(http_status_code::OK));
@@ -200,9 +202,9 @@ TEST_F(demultiplexer_accept_map_test, find_wildcard_subtype_in_vector)
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
 }
 
-TEST_F(demultiplexer_accept_map_test, find_wildcard_in_vector)
+TEST_F(demultiplexer_ordered_mime_map_test, find_wildcard_in_vector)
 {
-    demultiplexer_accept_map map;
+    demultiplexer_ordered_mime_map map;
     request_interface_mock request;
     response_interface_mock response;
     map.insert(none_, make_request_handler(http_status_code::OK));

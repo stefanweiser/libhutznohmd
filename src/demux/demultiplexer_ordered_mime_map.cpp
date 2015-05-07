@@ -18,24 +18,24 @@
 
 #include <algorithm>
 
-#include "demultiplexer_accept_map.hpp"
+#include "demultiplexer_ordered_mime_map.hpp"
 
 namespace hutzn
 {
 
-demultiplexer_accept_map::demultiplexer_accept_map()
+demultiplexer_ordered_mime_map::demultiplexer_ordered_mime_map()
     : map_()
     , vector_()
 {
 }
 
-size_t demultiplexer_accept_map::size() const
+size_t demultiplexer_ordered_mime_map::size() const
 {
     return map_.size();
 }
 
-bool demultiplexer_accept_map::insert(const mime& type,
-                                      const request_handler_callback& fn)
+bool demultiplexer_ordered_mime_map::insert(const mime& type,
+                                            const request_handler_callback& fn)
 {
     if ((type.first == mime_type::WILDCARD) ||
         (type.second == mime_subtype::WILDCARD)) {
@@ -51,7 +51,7 @@ bool demultiplexer_accept_map::insert(const mime& type,
     return false;
 }
 
-bool demultiplexer_accept_map::erase(const mime& type)
+bool demultiplexer_ordered_mime_map::erase(const mime& type)
 {
     auto it = map_.find(type);
     if (it != map_.end()) {
@@ -61,7 +61,8 @@ bool demultiplexer_accept_map::erase(const mime& type)
     return false;
 }
 
-request_handler_callback demultiplexer_accept_map::find(const mime& type) const
+request_handler_callback demultiplexer_ordered_mime_map::find(
+    const mime& type) const
 {
     const bool has_any_wildcard = (type.first == mime_type::WILDCARD) ||
                                   (type.second == mime_subtype::WILDCARD);
@@ -78,7 +79,7 @@ request_handler_callback demultiplexer_accept_map::find(const mime& type) const
     return request_handler_callback();
 }
 
-request_handler_callback demultiplexer_accept_map::find_ordered(
+request_handler_callback demultiplexer_ordered_mime_map::find_ordered(
     const mime& type) const
 {
     for (const mime& value : vector_) {

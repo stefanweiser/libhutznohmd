@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_DEMUX_DEMULTIPLEXER_ACCEPT_MAP_HPP
-#define LIBHUTZNOHMD_DEMUX_DEMULTIPLEXER_ACCEPT_MAP_HPP
+#ifndef LIBHUTZNOHMD_DEMUX_DEMULTIPLEXER_ORDERED_MIME_MAP_HPP
+#define LIBHUTZNOHMD_DEMUX_DEMULTIPLEXER_ORDERED_MIME_MAP_HPP
 
 #include <map>
 
@@ -33,10 +33,10 @@ namespace hutzn
 //! it implements a first-come-first-serve idea, when multiple handlers match
 //! the accept headers precedence. This data structure is not multi threading
 //! safe. It does not handle special mime types like invalid or unset ones.
-class demultiplexer_accept_map
+class demultiplexer_ordered_mime_map
 {
 public:
-    explicit demultiplexer_accept_map();
+    explicit demultiplexer_ordered_mime_map();
 
     //! @brief Returns the number of elements stored in the data structure.
     size_t size() const;
@@ -84,4 +84,4 @@ private:
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_DEMUX_DEMULTIPLEXER_ACCEPT_MAP_HPP
+#endif // LIBHUTZNOHMD_DEMUX_DEMULTIPLEXER_ORDERED_MIME_MAP_HPP
