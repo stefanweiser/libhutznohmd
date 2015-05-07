@@ -82,9 +82,9 @@ namespace hutzn {
     class request_processor
     class demultiplexer
 
-    hutzn.socket.block_device_interface -- request_processor_interface: < uses
-    hutzn.request.request_interface -- request_processor_interface: < uses
-    hutzn.request.response_interface -- request_processor_interface: < uses
+    hutzn.block_device_interface -- request_processor_interface: < uses
+    hutzn.request_interface -- request_processor_interface: < uses
+    hutzn.response_interface -- request_processor_interface: < uses
     handler_interface -- request_processor_interface: < returns
     request_handler_id -- demux_interface: < uses
     handler_interface -- demux_interface: < returns
