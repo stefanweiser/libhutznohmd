@@ -72,7 +72,15 @@ request_handler_callback demultiplexer::determine_request_handler(
     const auto& accept_map = content_it->second;
 
     // Loop over the accept types for a matching request handler.
-    return accept_map.find(request);
+    void* handle = nullptr;
+    mime type;
+    while (true == request.accept(handle, type)) {
+        request_handler_callback result = accept_map.find(type);
+        if (!!result) {
+            return result;
+        }
+    }
+    return request_handler_callback();
 }
 
 handler_pointer demultiplexer::connect(const request_handler_id& id,

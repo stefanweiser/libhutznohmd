@@ -142,7 +142,7 @@ TEST_F(demultiplexer_accept_map_test, erase_two_existent_when_two_are_inserted)
 TEST_F(demultiplexer_accept_map_test, find_in_empty_vector)
 {
     demultiplexer_accept_map map;
-    EXPECT_FALSE(map.find_ordered(none_));
+    EXPECT_FALSE(map.find(none_));
 }
 
 TEST_F(demultiplexer_accept_map_test, find_none_in_vector)
@@ -152,7 +152,7 @@ TEST_F(demultiplexer_accept_map_test, find_none_in_vector)
     response_interface_mock response;
     map.insert(none_, make_request_handler(http_status_code::OK));
 
-    request_handler_callback none_fn = map.find_ordered(none_);
+    request_handler_callback none_fn = map.find(none_);
 
     ASSERT_TRUE(!!none_fn);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
@@ -166,7 +166,7 @@ TEST_F(demultiplexer_accept_map_test, find_none_in_vector_second_time)
     map.insert(text_plain_, make_request_handler(http_status_code::FOUND));
     map.insert(none_, make_request_handler(http_status_code::OK));
 
-    request_handler_callback none_fn = map.find_ordered(none_);
+    request_handler_callback none_fn = map.find(none_);
 
     ASSERT_TRUE(!!none_fn);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
@@ -180,7 +180,7 @@ TEST_F(demultiplexer_accept_map_test, find_wildcard_type_in_vector)
     map.insert(none_, make_request_handler(http_status_code::OK));
 
     const mime wildcard = mime(mime_type::WILDCARD, mime_subtype::NONE);
-    request_handler_callback none_fn = map.find_ordered(wildcard);
+    request_handler_callback none_fn = map.find(wildcard);
 
     ASSERT_TRUE(!!none_fn);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
@@ -194,7 +194,7 @@ TEST_F(demultiplexer_accept_map_test, find_wildcard_subtype_in_vector)
     map.insert(none_, make_request_handler(http_status_code::OK));
 
     const mime wildcard = mime(mime_type::NONE, mime_subtype::WILDCARD);
-    request_handler_callback none_fn = map.find_ordered(wildcard);
+    request_handler_callback none_fn = map.find(wildcard);
 
     ASSERT_TRUE(!!none_fn);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
@@ -208,91 +208,10 @@ TEST_F(demultiplexer_accept_map_test, find_wildcard_in_vector)
     map.insert(none_, make_request_handler(http_status_code::OK));
 
     const mime wildcard = mime(mime_type::WILDCARD, mime_subtype::WILDCARD);
-    request_handler_callback none_fn = map.find_ordered(wildcard);
+    request_handler_callback none_fn = map.find(wildcard);
 
     ASSERT_TRUE(!!none_fn);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
-}
-
-TEST_F(demultiplexer_accept_map_test, find_nothing_accepted_in_empty_map)
-{
-    demultiplexer_accept_map map;
-    request_interface_mock request;
-    EXPECT_CALL(request, accept(_, _)).Times(1).WillOnce(Return(false));
-
-    EXPECT_FALSE(map.find(request));
-}
-
-TEST_F(demultiplexer_accept_map_test, find_none_accepted_in_empty_map)
-{
-    demultiplexer_accept_map map;
-    request_interface_mock request;
-    EXPECT_CALL(request, accept(_, _))
-        .Times(2)
-        .WillOnce(Invoke(make_accept_fn(none_)))
-        .WillOnce(Return(false));
-
-    EXPECT_FALSE(map.find(request));
-}
-
-TEST_F(demultiplexer_accept_map_test,
-       find_none_and_text_plain_accepted_in_empty_map)
-{
-    demultiplexer_accept_map map;
-    request_interface_mock request;
-    EXPECT_CALL(request, accept(_, _))
-        .Times(3)
-        .WillOnce(Invoke(make_accept_fn(none_)))
-        .WillOnce(Invoke(make_accept_fn(text_plain_)))
-        .WillOnce(Return(false));
-
-    EXPECT_FALSE(map.find(request));
-}
-
-TEST_F(demultiplexer_accept_map_test, find_none_accepted_while_none_is_inserted)
-{
-    demultiplexer_accept_map map;
-    request_interface_mock request;
-    response_interface_mock response;
-    map.insert(none_, make_request_handler(http_status_code::OK));
-    EXPECT_CALL(request, accept(_, _)).Times(1).WillOnce(
-        Invoke(make_accept_fn(none_)));
-
-    request_handler_callback none_fn = map.find(request);
-    ASSERT_TRUE(!!none_fn);
-    EXPECT_EQ(none_fn(request, response), http_status_code::OK);
-}
-
-TEST_F(demultiplexer_accept_map_test,
-       find_none_accepted_while_both_are_inserted)
-{
-    demultiplexer_accept_map map;
-    request_interface_mock request;
-    response_interface_mock response;
-    map.insert(none_, make_request_handler(http_status_code::OK));
-    map.insert(text_plain_, make_request_handler(http_status_code::FOUND));
-    EXPECT_CALL(request, accept(_, _)).Times(1).WillOnce(
-        Invoke(make_accept_fn(none_)));
-
-    request_handler_callback none_fn = map.find(request);
-    ASSERT_TRUE(!!none_fn);
-    EXPECT_EQ(none_fn(request, response), http_status_code::OK);
-}
-
-TEST_F(demultiplexer_accept_map_test,
-       find_text_plain_accepted_while_both_are_inserted)
-{
-    demultiplexer_accept_map map;
-    request_interface_mock request;
-    response_interface_mock response;
-    map.insert(none_, make_request_handler(http_status_code::OK));
-    map.insert(text_plain_, make_request_handler(http_status_code::FOUND));
-    EXPECT_CALL(request, accept(_, _)).Times(1).WillOnce(
-        Invoke(make_accept_fn(text_plain_)));
-
-    request_handler_callback text_plain_fn = map.find(request);
-    ASSERT_TRUE(!!text_plain_fn);
-    EXPECT_EQ(text_plain_fn(request, response), http_status_code::FOUND);
 }
 
 } // namespace hutzn

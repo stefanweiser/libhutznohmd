@@ -49,19 +49,17 @@ public:
     //! true, when the element was successfully erased.
     bool erase(const mime& type);
 
-    //! Negotiates the most matching request handler by looping over all accept
-    //! mime types. It expects, that the request interface returns those mime
-    //! types in the desired precedence. The function returns the first matching
-    //! request handler. If a type contains a wildcard, the insertion order is
-    //! respected.
-    request_handler_callback find(const request_interface& request) const;
+    //! Negotiates the most matching request handler for a given mime type. The
+    //! function returns the first matching request handler. If a type contains
+    //! a wildcard, the insertion order is respected.
+    request_handler_callback find(const mime& type) const;
 
+private:
     //! Tries to find and returns a matching request handler for a given mime
     //! type respecting the insertion order. Wildcards are treated correctly as
     //! any element while searching.
     request_handler_callback find_ordered(const mime& type) const;
 
-private:
     //! Stores the request handler callbacks by its mime type keys.
     std::map<mime, request_handler_callback> map_;
 

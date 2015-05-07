@@ -61,23 +61,18 @@ bool demultiplexer_accept_map::erase(const mime& type)
     return false;
 }
 
-request_handler_callback demultiplexer_accept_map::find(
-    const request_interface& request) const
+request_handler_callback demultiplexer_accept_map::find(const mime& type) const
 {
-    void* handle = nullptr;
-    mime type;
-    while (true == request.accept(handle, type)) {
-        const bool has_any_wildcard = (type.first == mime_type::WILDCARD) ||
-                                      (type.second == mime_subtype::WILDCARD);
-        if (true == has_any_wildcard) {
-            if (request_handler_callback result = find_ordered(type)) {
-                return result;
-            }
-        } else {
-            const auto accept_it = map_.find(type);
-            if (accept_it != map_.end()) {
-                return accept_it->second;
-            }
+    const bool has_any_wildcard = (type.first == mime_type::WILDCARD) ||
+                                  (type.second == mime_subtype::WILDCARD);
+    if (true == has_any_wildcard) {
+        if (request_handler_callback result = find_ordered(type)) {
+            return result;
+        }
+    } else {
+        const auto accept_it = map_.find(type);
+        if (accept_it != map_.end()) {
+            return accept_it->second;
         }
     }
     return request_handler_callback();
