@@ -52,6 +52,15 @@ public:
     //! Negotiates the most matching request handler for a given mime type. The
     //! function returns the first matching request handler. If a type contains
     //! a wildcard, the insertion order is respected.
+    //!
+    //! As an example, the following mime types are given inserted from left to
+    //! right:
+    //! @code{.unparsed}
+    //! application/xml, text/xml, text/plain
+    //! @endcode
+    //! While @c find(text/plain) will return the handler of @c text/plain,
+    //! @c find(text/*) will return the handler of @c text/xml. @c find(*/xml)
+    //! will return the handler of @c application/xml.
     request_handler_callback find(const mime& type) const;
 
 private:
