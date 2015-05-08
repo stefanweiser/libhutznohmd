@@ -42,7 +42,6 @@ public:
     bool send(const buffer& data) override;
     bool send(const std::string& data) override;
     bool set_lingering_timeout(const int& timeout) override;
-    int socket() const override;
 
     bool connect();
 

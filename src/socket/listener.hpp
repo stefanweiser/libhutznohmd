@@ -40,7 +40,6 @@ public:
     bool listening() const override;
     void stop() override;
     bool set_lingering_timeout(const int& timeout) override;
-    int socket() const override;
 
 private:
     bool is_listening_;

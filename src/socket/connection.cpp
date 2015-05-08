@@ -120,11 +120,6 @@ bool connection::set_lingering_timeout(const int& timeout)
     return setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0;
 }
 
-int connection::socket() const
-{
-    return socket_;
-}
-
 bool connection::connect()
 {
     if (true == is_connected_) {

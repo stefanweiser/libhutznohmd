@@ -172,9 +172,6 @@ public:
     //! sometimes it is necessary to overwrite this timeout (e.g. when
     //! integration testing sockets or this socket implementation).
     virtual bool set_lingering_timeout(const int& timeout) = 0;
-
-    //! Returns the file descriptor of the underlying socket.
-    virtual int socket() const = 0;
 };
 
 //! A connection is always handled via reference counted pointers.
@@ -206,9 +203,6 @@ public:
 
     //! @see connection_interface::set_lingering_timeout(const int&)
     virtual bool set_lingering_timeout(const int& timeout) = 0;
-
-    //! Returns the file descriptor of the underlying socket.
-    virtual int socket() const = 0;
 };
 
 //! A listener is always handled via reference counted pointers.

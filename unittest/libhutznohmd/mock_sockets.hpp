@@ -35,7 +35,6 @@ public:
     MOCK_METHOD1(send, bool(const buffer&));
     MOCK_METHOD1(send, bool(const std::string&));
     MOCK_METHOD1(set_lingering_timeout, bool(const int&));
-    MOCK_CONST_METHOD0(socket, int());
 };
 
 using connection_mock_pointer = std::shared_ptr<connection_interface_mock>;
@@ -47,7 +46,6 @@ public:
     MOCK_CONST_METHOD0(listening, bool());
     MOCK_METHOD0(stop, void());
     MOCK_METHOD1(set_lingering_timeout, bool(const int&));
-    MOCK_CONST_METHOD0(socket, int());
 };
 
 using listener_mock_pointer = std::shared_ptr<listener_interface_mock>;

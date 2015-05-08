@@ -32,7 +32,6 @@ public:
     bool send(const hutzn::buffer& data) override;
     bool send(const std::string& data) override;
     bool set_lingering_timeout(const int& timeout) override;
-    int socket() const override;
 
 private:
     std::ifstream stream_;
@@ -77,11 +76,6 @@ bool connection::send(const std::string& /*data*/)
 bool connection::set_lingering_timeout(const int& /*timeout*/)
 {
     return true;
-}
-
-int connection::socket() const
-{
-    return 0;
 }
 
 int main()

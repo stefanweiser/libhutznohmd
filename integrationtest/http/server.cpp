@@ -30,21 +30,15 @@ namespace hutzn
 namespace
 {
 
-void disable_time_wait(int socket)
+void disable_time_wait(const http::server_pointer& server)
 {
-    linger l = linger{1, 0};
-    setsockopt(socket, SOL_SOCKET, SO_LINGER, &l, sizeof(l));
+    auto listener = std::dynamic_pointer_cast<http::server>(server)->socket();
+    listener->set_lingering_timeout(0);
 }
 
-int get_socket(const http::server_pointer& server)
+void disable_time_wait(const connection_pointer& connection)
 {
-    auto l = std::dynamic_pointer_cast<http::server>(server)->socket();
-    return std::dynamic_pointer_cast<listener>(l)->socket();
-}
-
-int get_socket(const connection_pointer& c)
-{
-    return std::dynamic_pointer_cast<connection>(c)->socket();
+    connection->set_lingering_timeout(0);
 }
 
 } // namespace
@@ -53,7 +47,7 @@ TEST(server, construction_destruction)
 {
     auto s =
         http::create_server("127.0.0.1", 10000, http::transaction_function());
-    disable_time_wait(get_socket(s));
+    disable_time_wait(s);
 }
 
 TEST(server, normal_use_case_http_1_1)
@@ -64,13 +58,13 @@ TEST(server, normal_use_case_http_1_1)
                   http::response_interface& /*response*/) { called = true; };
 
     auto server = http::create_server("127.0.0.1", 10000, transaction);
-    disable_time_wait(get_socket(server));
+    disable_time_wait(server);
 
     std::thread thread(std::bind(&http::server_interface::run, server.get()));
 
     auto connection = connection::create("127.0.0.1", 10000);
     EXPECT_TRUE(connection->connect());
-    disable_time_wait(get_socket(connection));
+    disable_time_wait(connection);
     std::string request = "GET / HTTP/1.1\r\n\r\n";
     EXPECT_FALSE(called);
     EXPECT_TRUE(connection->send(request));
@@ -90,13 +84,13 @@ TEST(server, normal_use_case_http_1_0)
                   http::response_interface& /*response*/) { called = true; };
 
     auto server = http::create_server("127.0.0.1", 10000, transaction);
-    disable_time_wait(get_socket(server));
+    disable_time_wait(server);
 
     std::thread thread(std::bind(&http::server_interface::run, server.get()));
 
     auto connection = connection::create("127.0.0.1", 10000);
     EXPECT_TRUE(connection->connect());
-    disable_time_wait(get_socket(connection));
+    disable_time_wait(connection);
     std::string request = "GET / HTTP/1.0\r\n\r\n";
     EXPECT_FALSE(called);
     EXPECT_TRUE(connection->send(request));

@@ -75,6 +75,10 @@ listener::~listener()
 
 connection_pointer listener::accept() const
 {
+    if (false == is_listening_) {
+        return connection_pointer();
+    }
+
     union
     {
         sockaddr base;
@@ -105,11 +109,6 @@ bool listener::set_lingering_timeout(const int& timeout)
 {
     linger l = linger{1, timeout};
     return setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0;
-}
-
-int listener::socket() const
-{
-    return socket_;
 }
 
 } // namespace hutzn
