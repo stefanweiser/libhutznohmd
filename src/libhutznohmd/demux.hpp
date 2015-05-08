@@ -32,7 +32,7 @@ namespace hutzn
 @page page_demultiplexer Demultiplexer
 
 Once a connection is established, the client will send a request. To parse it
-and to respond to it correctly a HTTP parser is needed. HTTP on the other hand
+and to respond to it correctly a HTTP parser is needed. HTTP as protocol
 defines access to different entities on the same server. Therefore a request
 demultiplexer is necessary. It is also required that the user could register and
 unregister request and error handlers while processing a request (e.g. when
@@ -99,12 +99,11 @@ namespace hutzn {
 
 A resource starts to exist, when the first request handler is getting registered
 and ceases when the last request handler is getting destroyed. Registering a
-resource handler requires to define a callback function that must have the
-signature:
+resource handler requires the definition of a callback function that must have
+the signature:
 
 @code{.cpp}
-http_status_code foo(const request_interface&,
-                     const response_interface&);
+http_status_code foo(const request_interface&, const response_interface&);
 @endcode
 
 Because the registration takes a @c std::function the user has the choice to
@@ -124,16 +123,13 @@ class C
 // ...
 
 public:
-    http_status_code
-    foo(const request_interface&,
-        const response_interface&)
+    http_status_code foo(const request_interface&, const response_interface&)
     {
         // Do something.
         return http_status_code::OK;
     }
 
-    void error_handler(const request_interface&,
-                       const response_interface&)
+    void error_handler(const request_interface&, const response_interface&)
     {
         // Do something.
     }
@@ -146,10 +142,8 @@ void register_handlers(C* const c,
     request_handler_id i{
         "/",
         http_verb::GET,
-        std::make_pair(mime_type::WILDCARD,
-                       mime_subtype::WILDCARD),
-        std::make_pair(mime_type::TEXT,
-                       mime_subtype::PLAIN)
+        std::make_pair(mime_type::WILDCARD, mime_subtype::WILDCARD),
+        std::make_pair(mime_type::TEXT, mime_subtype::PLAIN)
     };
 
     using namespace std::placeholders;
@@ -164,9 +158,9 @@ could expose the "this" pointer of an object. This complicates lifetime. See
 @ref sec_lifetime_callbacks "lifetime of callbacks" for further information.
 
 Every registered handler needs a MIME type. While the library's list is never
-complete, it could be extended by the user. You can register own MIME types and
-subtypes. There are no lifetime scopes of this registrations, because normally
-you want to do the registration and unregistration only once during the
+complete, it could be extended by the user. The user can register own MIME types
+and subtypes. There are no lifetime scopes of this registrations, because
+usually the registration and unregistration is done only once during the
 demultiplexer's lifetime.
 
 @code{.cpp}
@@ -263,14 +257,14 @@ public:
                                     const request_handler_callback& fn) = 0;
 
     //! Registers a custom MIME type and returns a new mime_type value if that
-    //! type was not already registered. You could use the custom MIME type
+    //! type was not already registered. The custom MIME type can be used
     //! afterwards. If the MIME type already exists, it returns
     //! mime_type::INVALID.
     virtual mime_type register_mime_type(const std::string& type) = 0;
 
     //! Registers a custom MIME subtype and returns a new mime_subtype value if
-    //! that type was not already registered. You could use the custom MIME
-    //! subtype afterwards. If the MIME subtype already exists, it returns
+    //! that type was not already registered. The custom MIME subtype can be
+    //! used afterwards. If the MIME subtype already exists, it returns
     //! mime_subtype::INVALID.
     virtual mime_subtype register_mime_subtype(const std::string& subtype) = 0;
 

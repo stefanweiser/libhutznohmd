@@ -158,8 +158,8 @@ public:
     virtual ~connection_interface();
 
     //! Shuts down the connection, but remain holding the resources. This will
-    //! immediately stop any call on that connection. You could release the
-    //! connection object afterwards, because no operation will work on such a
+    //! immediately stop any call on that connection. The connection object
+    //! could be released afterwards, because no operation will work on such a
     //! connection.
     virtual void close() = 0;
 
@@ -216,8 +216,8 @@ using listener_pointer = std::shared_ptr<listener_interface>;
 
 //! Creates a listener by host and port, defining the ip address and port number
 //! the listener should listen on. It returns a listener object, that already
-//! listens on the given host/port combination. You may want to accept the
-//! incoming connections afterwards.
+//! listens on the given host/port combination. The incoming connections could
+//! get accepted as a next step afterwards.
 listener_pointer listen(const std::string& host, const uint16_t& port);
 
 } // namespace hutzn

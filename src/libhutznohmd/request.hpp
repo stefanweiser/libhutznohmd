@@ -156,8 +156,8 @@ namespace hutzn {
 
 A part of all headers defined by the current HTTP standard are listed. Every
 header field documentation is splitted into three parts:
-- @a Description: What and how does it influence the system? What can you
-expect? Informations on the content.
+- @a Description: What and how does it influence the system? What could be
+expected? Informations on the content.
 - @a Example: A common example on how to use it.
 - @a Default: Which value the server supposes, if the header field is missing.
 - @a Implementation @a Status: Since when is it implemented by the library.
@@ -614,8 +614,8 @@ enum class http_version : uint8_t {
 //! Every HTTP request has a specific verb. There are two properties to a subset
 //! of methods.
 //!
-//! -# Idempotence: You can apply the identical request n times to the same URI
-//!    without changing the result.
+//! -# Idempotence: The user can apply the identical request n times to the same
+//!    URI without changing the result.
 //! -# Side-Effect-Safety: The request does not alter the server state in any
 //!    belong. Thus it is inherently idempotent.
 //!
@@ -855,13 +855,13 @@ public:
     virtual mime content_type() const = 0;
 
     //! Gives its user access to a list of MIME types and subtype in the accept
-    //! header. To get the first item, you have to initialize the handle with a
-    //! nullptr. The handle will point to the current item after each call. To
-    //! get the next item just recall it. The function returns false, if the end
-    //! of the list is reached and true in any other case. Till the end of the
-    //! function is reached, the parameters are getting modified by the call.
-    //! This functionality is mainly used by the demultiplexer, that tries to
-    //! find the best request handler for the request.
+    //! header. To get the first item, the user has to initialize the handle
+    //! with a nullptr. The handle will point to the current item after each
+    //! call. To get the next item just recall it. The function returns false,
+    //! if the end of the list is reached and true in any other case. Till the
+    //! end of the function is reached, the parameters are getting modified by
+    //! the call. This functionality is mainly used by the demultiplexer, that
+    //! tries to find the best request handler for the request.
     //!
     //! @code{.cpp}
     //! void* handle = nullptr;
@@ -923,9 +923,9 @@ public:
     //! Sets the Server header field, which is, in fact, a fingerprint of the
     //! running server software. Usually this is used by the client to work
     //! around some idiosyncrasies. Per default this is not set for security
-    //! reasons. So you should be sure that the benefits of setting a
+    //! reasons. So the user has to decide whether the benefits of setting a
     //! fingerprint outweights its costs (e.g. if the server software is public
-    //! domain anyway, you could assume, that attackers know about the
+    //! domain, it could be assumed, that attackers know about the
     //! implementations weaknesses). Consider that setting the server software
     //! name without a version may be a good solution.
     virtual void set_server(const char* const fingerprint) = 0;

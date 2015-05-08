@@ -466,8 +466,8 @@ The implementation gurantees some properties, that get discussed here.
 
 The library will never throw an exception by itself. Raising an exception is
 defined as a fatal error for the library code. Therefore the application has to
-abort and the bug has to be fixed. This enables you to choose whether to use
-exception handling or not. Sadly there is currently no way to enforce this
+abort and the bug has to be fixed. This enables the user to choose whether to
+use exception handling or not. Sadly there is currently no way to enforce this
 gurantee without loosing the ability to test with google-mock. There is also one
 exception from this rule. The member function
 @ref request_processor_interface::handle_one_request may indirectly throw
@@ -541,8 +541,8 @@ REST:
 
 //! Every HTTP request has a specific method. There are two properties to a
 //! subset of methods.
-//! 1. Idempotence: You can apply the identical request n times to the same URI
-//!    without changing the result.
+//! 1. Idempotence: The user can apply the identical request n times to the same
+//!    URI without changing the result.
 //! 2. Side-Effect-Safety: The request does not alter the server state. Thus
 //!    it is inherently idempotent.
 enum class method : uint8_t {
