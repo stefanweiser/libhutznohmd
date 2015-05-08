@@ -29,7 +29,7 @@ namespace hutzn
 
 //! Calls the API function close and handles interfering signals. This means,
 //! that the function will return when the file descriptor is closed.
-void close_signal_safe(const int file_descriptor);
+void close_signal_safe(const int file_descriptor) noexcept(true);
 
 //! Calls the API function accept and handles interfering signals. This means,
 //! that the function will return when there is a connection in the queue. It
@@ -47,13 +47,13 @@ int connect_signal_safe(const int socket_file_descriptor,
 //! the number of sent bytes. When the socket is getting closed while sending
 //! data, it will return -1.
 ssize_t send_signal_safe(const int file_descriptor, const void* const buffer,
-                         const size_t size, const int flags);
+                         const size_t size, const int flags) noexcept(true);
 
 //! Calls the API function recv and handles interfering signals. It returns
 //! the number of received bytes. When the socket is getting closed while
 //! receiving data, it will return -1.
 ssize_t receive_signal_safe(const int file_descriptor, void* const buffer,
-                            const size_t size, const int flags);
+                            const size_t size, const int flags) noexcept(true);
 
 //! Converts a host string and a port into a sockaddr_in struct, that is needed
 //! when communicating with other API functions of the network stack.

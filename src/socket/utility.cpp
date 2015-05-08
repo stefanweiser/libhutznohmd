@@ -21,17 +21,23 @@
 #include <sys/poll.h>
 #include <unistd.h>
 
+#include <system_error>
+
 #include "utility.hpp"
 
 namespace hutzn
 {
 
-void close_signal_safe(const int file_descriptor)
+void close_signal_safe(const int file_descriptor) noexcept(true)
 {
     int result;
     do {
         result = close(file_descriptor);
     } while ((result == -1) && (errno == EINTR));
+
+    if (result == -1) {
+        throw std::system_error(errno, std::system_category());
+    }
 }
 
 int accept_signal_safe(const int socket_descriptor, sockaddr* const address,
@@ -80,22 +86,32 @@ int connect_signal_safe(const int socket_descriptor,
 }
 
 ssize_t send_signal_safe(const int file_descriptor, const void* const buffer,
-                         const size_t size, const int flags)
+                         const size_t size, const int flags) noexcept(true)
 {
     ssize_t sent;
     do {
         sent = send(file_descriptor, buffer, size, flags);
     } while ((sent == -1) && (errno == EINTR));
+
+    if (sent == -1) {
+        throw std::system_error(errno, std::system_category());
+    }
+
     return sent;
 }
 
 ssize_t receive_signal_safe(const int file_descriptor, void* const buffer,
-                            const size_t size, const int flags)
+                            const size_t size, const int flags) noexcept(true)
 {
     ssize_t received;
     do {
         received = recv(file_descriptor, buffer, size, flags);
     } while ((received == -1) && (errno == EINTR));
+
+    if (received == -1) {
+        throw std::system_error(errno, std::system_category());
+    }
+
     return received;
 }
 
