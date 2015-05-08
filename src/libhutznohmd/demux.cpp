@@ -29,7 +29,7 @@ demux_interface::~demux_interface()
 {
 }
 
-handler_interface::~handler_interface()
+handler_interface::~handler_interface() noexcept(true)
 {
 }
 

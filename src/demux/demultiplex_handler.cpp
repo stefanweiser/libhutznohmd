@@ -30,7 +30,7 @@ demultiplex_handler::demultiplex_handler(demux_disconnect_interface& demuxer,
 {
 }
 
-demultiplex_handler::~demultiplex_handler()
+demultiplex_handler::~demultiplex_handler() noexcept(true)
 {
     demuxer_.disconnect(id_);
 }

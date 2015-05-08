@@ -217,7 +217,7 @@ class handler_interface
 {
 public:
     //! Unregisters the handler.
-    virtual ~handler_interface();
+    virtual ~handler_interface() noexcept(true);
 };
 
 //! Handlers are always reference counted.
