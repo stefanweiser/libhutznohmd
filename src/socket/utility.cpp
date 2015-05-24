@@ -50,36 +50,29 @@ int accept_signal_safe(const int socket_descriptor, sockaddr* const address,
     return result;
 }
 
-int connect_signal_safe(const int socket_descriptor,
-                        const sockaddr* const address, const socklen_t size)
+int connect_signal_safe(const int socket_fd, const sockaddr* const address,
+                        const socklen_t size)
 {
     // Try to connect.
-    int result = connect(socket_descriptor, address, size);
-    if (result == -1) {
-        // If this fails, try to recover from this error state.
-        if (errno != EINTR) {
-            return result;
-        }
+    int result = connect(socket_fd, address, size);
+
+    // If this fails, try to recover from this error state.
+    if ((result == -1) && (errno == EINTR)) {
 
         // Wait till the socket gets writable.
-        pollfd p{socket_descriptor, POLLOUT, 0};
+        pollfd p{socket_fd, POLLOUT, 0};
         do {
             result = poll(&p, 1, -1);
-            if ((result == -1) && (errno != EINTR)) {
-                return result;
-            }
-        } while (result == -1);
+        } while ((result == -1) && (errno == EINTR));
 
-        // Check the error option of the socket.
-        int error;
-        socklen_t s = sizeof(error);
-        result =
-            getsockopt(socket_descriptor, SOL_SOCKET, SO_ERROR, &error, &s);
-        if (result == -1) {
-            return result;
-        }
-        if (error != 0) {
-            return -1;
+        if (result != -1) {
+            // Check the error option of the socket.
+            int error;
+            socklen_t s = sizeof(error);
+            result = getsockopt(socket_fd, SOL_SOCKET, SO_ERROR, &error, &s);
+            if (error != 0) {
+                result = -1;
+            }
         }
     }
     return result;
@@ -96,7 +89,6 @@ ssize_t send_signal_safe(const int file_descriptor, const void* const buffer,
     if (sent == -1) {
         throw std::system_error(errno, std::system_category());
     }
-
     return sent;
 }
 
@@ -111,22 +103,18 @@ ssize_t receive_signal_safe(const int file_descriptor, void* const buffer,
     if (received == -1) {
         throw std::system_error(errno, std::system_category());
     }
-
     return received;
 }
 
 sockaddr_in fill_address(const std::string& host, const uint16_t& port)
 {
     sockaddr_in address;
-
     if (0 == inet_aton(host.c_str(), &address.sin_addr)) {
         address.sin_family = AF_UNSPEC;
-        return address;
+    } else {
+        address.sin_port = htons(port);
+        address.sin_family = AF_INET;
     }
-
-    address.sin_port = htons(port);
-    address.sin_family = AF_INET;
-
     return address;
 }
 
