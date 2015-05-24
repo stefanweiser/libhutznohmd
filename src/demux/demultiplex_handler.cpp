@@ -16,8 +16,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <demux/demultiplexer.hpp>
-
 #include "demultiplex_handler.hpp"
 
 namespace hutzn
