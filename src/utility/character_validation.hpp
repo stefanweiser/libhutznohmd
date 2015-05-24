@@ -27,10 +27,13 @@ namespace hutzn
 //! Converts a letter into the corresponding lower case letter.
 static char to_lower(const char c)
 {
+    char result;
     if ((c >= 'A') && (c <= 'Z')) {
-        return (c | 0x60);
+        result = (c | 0x60);
+    } else {
+        result = c;
     }
-    return c;
+    return result;
 }
 
 //! Converts a character with hexadecimal encoding to its digit.

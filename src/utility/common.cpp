@@ -29,10 +29,12 @@ bool is_valid_uri_path(const std::string& path)
     bool must_be_a_slash = true;
     bool could_be_a_slash = true;
 
+    bool result = true;
     for (const char& c : path) {
         if (true == must_be_a_slash) {
             if (c != slash) {
-                return false;
+                result = false;
+                break;
             }
             must_be_a_slash = false;
         }
@@ -45,16 +47,18 @@ bool is_valid_uri_path(const std::string& path)
             }
         } else {
             if (c == slash) {
-                return false;
+                result = false;
+                break;
             }
             could_be_a_slash = true;
         }
 
         if (false == is_valid_uri_path_character(static_cast<uint8_t>(c))) {
-            return false;
+            result = false;
+            break;
         }
     }
-    return true;
+    return result;
 }
 
 } // namespace hutzn
