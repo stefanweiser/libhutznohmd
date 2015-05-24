@@ -19,7 +19,6 @@
 #ifndef LIBHUTZNOHMD_HUTZN_HPP
 #define LIBHUTZNOHMD_HUTZN_HPP
 
-#include <cstdint>
 #include <ctime>
 #include <functional>
 #include <map>

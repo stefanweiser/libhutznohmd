@@ -20,7 +20,6 @@
 #define LIBHUTZNOHMD_UTILITY_TRIE_HPP
 
 #include <array>
-#include <cstdint>
 
 #include <libhutznohmd/types.hpp>
 

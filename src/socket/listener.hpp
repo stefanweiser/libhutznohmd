@@ -19,7 +19,6 @@
 #ifndef LIBHUTZNOHMD_SOCKET_LISTENER_HPP
 #define LIBHUTZNOHMD_SOCKET_LISTENER_HPP
 
-#include <cstdint>
 #include <memory>
 #include <string>
 

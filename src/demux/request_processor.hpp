@@ -19,7 +19,6 @@
 #ifndef LIBHUTZNOHMD_DEMUX_REQUEST_PROCESSOR_HPP
 #define LIBHUTZNOHMD_DEMUX_REQUEST_PROCESSOR_HPP
 
-#include <cstdint>
 #include <map>
 #include <memory>
 #include <mutex>

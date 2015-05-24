@@ -19,8 +19,6 @@
 #ifndef LIBHUTZNOHMD_SOCKET_CONNECTION_HPP
 #define LIBHUTZNOHMD_SOCKET_CONNECTION_HPP
 
-#include <cstdint>
-
 #include <netinet/in.h>
 
 #include <libhutznohmd/sockets.hpp>

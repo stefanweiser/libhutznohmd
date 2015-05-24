@@ -19,8 +19,6 @@
 #ifndef LIBHUTZNOHMD_LIBHUTZNOHMD_DEMUX_HPP
 #define LIBHUTZNOHMD_LIBHUTZNOHMD_DEMUX_HPP
 
-#include <cstdint>
-
 #include <libhutznohmd/request.hpp>
 #include <libhutznohmd/sockets.hpp>
 #include <libhutznohmd/types.hpp>

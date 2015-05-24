@@ -16,7 +16,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdint>
 #include <iostream>
 #include <thread>
 #include <vector>
