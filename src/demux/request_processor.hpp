@@ -46,7 +46,7 @@ public:
         const http_status_code& code,
         const error_handler_callback& fn) override;
 
-    virtual void reset_error_handler(const http_status_code& code) override;
+    virtual bool reset_error_handler(const http_status_code& code) override;
 
 private:
     using error_handler_map =

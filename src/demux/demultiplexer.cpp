@@ -16,6 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
+
 #include <demux/demultiplex_handler.hpp>
 
 #include "demultiplexer.hpp"
@@ -127,6 +129,7 @@ bool demultiplexer::disconnect(const request_handler_id& id)
         }
     }
 
+    assert(true == result);
     return result;
 }
 

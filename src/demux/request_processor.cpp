@@ -64,10 +64,12 @@ handler_pointer request_processor::set_error_handler(
     return result;
 }
 
-void request_processor::reset_error_handler(const http_status_code& code)
+bool request_processor::reset_error_handler(const http_status_code& code)
 {
     std::lock_guard<std::mutex> lock(error_handler_mutex_);
-    assert(error_handlers_.erase(code) > 0);
+    const bool erase_result = (error_handlers_.erase(code) > 0);
+    assert(true == erase_result);
+    return erase_result;
 }
 
 } // namespace hutzn
