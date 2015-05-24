@@ -156,96 +156,70 @@ private:
         bool insert(const char* token, const value_type& value,
                     const bool is_case_insensitive)
         {
-            const uint8_t c = static_cast<uint8_t>(*token);
-            if (c == 0) {
+            bool result = false;
+            if (static_cast<uint8_t>(*token) == 0) {
 
-                // Check if node is already possessed.
-                if (true == has_value_) {
-                    return false;
+                // Check if node is not already possessed.
+                if (false == has_value_) {
+                    has_value_ = true;
+                    value_ = value;
+                    result = true;
                 }
-
-                has_value_ = true;
-                value_ = value;
 
             } else {
-
-                const char* next = token + 1;
-
-                if (nullptr == children_[c]) {
-                    children_[c] = new trie_node();
-                    used_children_++;
-                }
-                trie_node*& child = children_[c];
-
-                if (false == child->insert(next, value, is_case_insensitive)) {
-                    return false;
-                }
-
-                if (true == is_case_insensitive) {
-                    if (true == check_range<uint8_t, 'a', 'z'>(c)) {
-                        trie_node*& other = children_[c & 0xDFU];
-                        if (nullptr == other) {
-                            other = child;
-                            used_children_++;
-                        }
-                    } else if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
-                        trie_node*& other = children_[c | 0x20U];
-                        if (nullptr == other) {
-                            other = child;
-                            used_children_++;
-                        }
-                    }
-                }
+                result = insert_recursive(token, value, is_case_insensitive);
             }
 
-            return true;
+            return result;
         }
 
         bool erase(const char* token, const bool is_case_insensitive)
         {
-            const uint8_t c = static_cast<uint8_t>(*token);
-            if (c == 0) {
+            bool result = false;
+            if (static_cast<uint8_t>(*token) == 0) {
 
-                // Check if node is not possessed.
-                if (false == has_value_) {
-                    return false;
+                // Check if node is possessed.
+                if (true == has_value_) {
+                    has_value_ = false;
+                    result = true;
                 }
-
-                has_value_ = false;
 
             } else {
+                result = erase_recursive(token, is_case_insensitive);
+            }
 
-                const char* next = token + 1;
+            return result;
+        }
 
-                trie_node*& child = children_[c];
-                if ((nullptr == child) ||
-                    (false == child->erase(next, is_case_insensitive))) {
-                    return false;
-                }
+    private:
+        bool insert_recursive(const char* token, const value_type& value,
+                              const bool is_case_insensitive)
+        {
+            const uint8_t c = static_cast<uint8_t>(*token);
+            const char* next = token + 1;
 
-                bool clear_other_child = false;
-                if ((0 == child->used_children_) &&
-                    (false == child->has_value_)) {
-                    delete child;
-                    child = nullptr;
-                    used_children_--;
-                    clear_other_child = true;
-                }
+            if (nullptr == children_[c]) {
+                children_[c] = new trie_node();
+                used_children_++;
+            }
+            trie_node*& child = children_[c];
 
-                if (true == is_case_insensitive) {
-                    if (true == check_range<uint8_t, 'a', 'z'>(c)) {
+            if (false == child->insert(next, value, is_case_insensitive)) {
+                return false;
+            }
 
-                        if (true == clear_other_child) {
-                            children_[c & 0xDFU] = nullptr;
-                            used_children_--;
-                        }
-
-                    } else if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
-
-                        if (true == clear_other_child) {
-                            children_[c | 0x20U] = nullptr;
-                            used_children_--;
-                        }
+            if (true == is_case_insensitive) {
+                if (true == check_range<uint8_t, 'a', 'z'>(c)) {
+                    trie_node*& other = children_[c & 0xDFU];
+                    if (nullptr == other) {
+                        other = child;
+                        used_children_++;
+                    }
+                } else if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
+                    trie_node*& other = children_[c | 0x20U];
+                    if (nullptr == other) {
+                        other = child;
+                        used_children_++;
                     }
                 }
             }
@@ -253,7 +227,45 @@ private:
             return true;
         }
 
-    private:
+        bool erase_recursive(const char* token, const bool is_case_insensitive)
+        {
+            const uint8_t c = static_cast<uint8_t>(*token);
+            const char* next = token + 1;
+
+            trie_node*& child = children_[c];
+            if ((nullptr == child) ||
+                (false == child->erase(next, is_case_insensitive))) {
+                return false;
+            }
+
+            bool clear_other_child = false;
+            if ((0 == child->used_children_) && (false == child->has_value_)) {
+                delete child;
+                child = nullptr;
+                used_children_--;
+                clear_other_child = true;
+            }
+
+            if (true == is_case_insensitive) {
+                if (true == check_range<uint8_t, 'a', 'z'>(c)) {
+
+                    if (true == clear_other_child) {
+                        children_[c & 0xDFU] = nullptr;
+                        used_children_--;
+                    }
+
+                } else if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
+
+                    if (true == clear_other_child) {
+                        children_[c | 0x20U] = nullptr;
+                        used_children_--;
+                    }
+                }
+            }
+
+            return true;
+        }
+
         bool has_value_;
         value_type value_;
         std::array<trie_node*, 256> children_;
