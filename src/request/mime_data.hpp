@@ -47,41 +47,47 @@ public:
 
     value_type register_type(const std::string& type)
     {
-        if (0 == next_value_) {
-            return value_type::INVALID;
+        value_type result = value_type::INVALID;
+        if (next_value_ != 0) {
+            value_type value = static_cast<value_type>(next_value_);
+            if (true == types_.insert(type.c_str(), value)) {
+                next_value_++;
+                registered_types_[value] = type;
+                result = value;
+            }
         }
 
-        value_type value = static_cast<value_type>(next_value_);
-        if (true == types_.insert(type.c_str(), value)) {
-            next_value_++;
-            registered_types_[value] = type;
-            return value;
-        }
-        return value_type::INVALID;
+        return result;
     }
 
     bool unregister_type(const value_type& type)
     {
+        bool result;
         auto it = registered_types_.find(type);
         if (it != registered_types_.end()) {
-            const bool result = types_.erase(it->second.c_str());
+            const bool erase_result = types_.erase(it->second.c_str());
 
             // The registration of that type is based on the existence in the
             // trie and not in the map. Therefore ignoring this result is
             // mandatory.
             registered_types_.erase(it);
-            return result;
+            result = erase_result;
+        } else {
+            result = false;
         }
-        return false;
+        return result;
     }
 
     value_type parse_type(const char* const string, const size_t max_length)
     {
-        auto result = types_.find(string, max_length);
-        if (result.used_size > 0) {
-            return result.value;
+        value_type result;
+        auto found_element = types_.find(string, max_length);
+        if (found_element.used_size > 0) {
+            result = found_element.value;
+        } else {
+            result = value_type::INVALID;
         }
-        return value_type::INVALID;
+        return result;
     }
 
     bool is_registered(const value_type& type) const
