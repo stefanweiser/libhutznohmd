@@ -23,12 +23,12 @@
 namespace hutzn
 {
 
-demux_pointer make_demultiplexer()
+demux_pointer make_demultiplexer(void)
 {
     return std::make_shared<demultiplexer>();
 }
 
-demultiplexer::demultiplexer()
+demultiplexer::demultiplexer(void)
     : resource_callbacks_mutex_()
     , resource_callbacks_()
     , request_parser_data_mutex_()

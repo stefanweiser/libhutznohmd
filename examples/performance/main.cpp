@@ -157,7 +157,7 @@ void test_uri_parser(const std::string& uri)
               << " ns for uri: " << uri << std::endl;
 }
 
-int main()
+int main(void)
 {
     std::cout << "example_performance" << std::endl;
 

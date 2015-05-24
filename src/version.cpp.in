@@ -23,7 +23,7 @@
 namespace hutzn
 {
 
-std::string version()
+std::string version(void)
 {
     return "@LIBRARY_VERSION@";
 }

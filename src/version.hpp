@@ -24,7 +24,7 @@
 namespace hutzn
 {
 
-std::string get_version();
+std::string get_version(void);
 
 } // namespace hutzn
 

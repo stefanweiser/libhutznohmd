@@ -21,7 +21,7 @@
 namespace hutzn
 {
 
-demux_disconnect_interface::~demux_disconnect_interface()
+demux_disconnect_interface::~demux_disconnect_interface(void)
 {
 }
 

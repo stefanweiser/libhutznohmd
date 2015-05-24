@@ -21,7 +21,7 @@
 namespace hutzn
 {
 
-reset_error_handler_interface::~reset_error_handler_interface()
+reset_error_handler_interface::~reset_error_handler_interface(void)
 {
 }
 

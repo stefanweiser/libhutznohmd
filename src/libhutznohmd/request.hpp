@@ -800,31 +800,31 @@ enum class http_expectation : uint8_t {
 class request_interface
 {
 public:
-    virtual ~request_interface();
+    virtual ~request_interface(void);
 
     //! Returns the HTTP verb used by the request (GET, PUT, DELETE or POST are
     //! allowed).
-    virtual http_verb method() const = 0;
+    virtual http_verb method(void) const = 0;
 
     //! The used URL without scheme, authorization, host, port, queries or
     //! fragment.
-    virtual const char* path() const = 0;
+    virtual const char* path(void) const = 0;
 
     //! The host name used by the request client. It could be part of the
     //! request line or the header field Host. If a host is present at both
     //! places, the header field Host overwrites that one in the request line.
     //! This is currently just an information.
-    virtual const char* host() const = 0;
+    virtual const char* host(void) const = 0;
 
     //! Returns a value of a key, that is in the query part of the URL.
     virtual const char* query(const char* const key) const = 0;
 
     //! Returns the fragment of the URL.
-    virtual const char* fragment() const = 0;
+    virtual const char* fragment(void) const = 0;
 
     //! Returns the used HTTP version. This influences server behaviour
     //! (e.g. connection duration).
-    virtual http_version version() const = 0;
+    virtual http_version version(void) const = 0;
 
     //! Returns the content of any custom header field. Only those, which are
     //! available by explicit member functions are available. If the header
@@ -834,25 +834,25 @@ public:
 
     //! Returns true, if the connection will be kept after the request is
     //! processed.
-    virtual bool keeps_connection() const = 0;
+    virtual bool keeps_connection(void) const = 0;
 
     //! Returns the timestamp of the request (date header) as epoch time or 0
     //! if the header field does not exist.
-    virtual time_t date() const = 0;
+    virtual time_t date(void) const = 0;
 
     //! Returns a pointer to the begin of the content in the buffer. This data
     //! buffer is @b not null-terminated and has the length of the
     //! content-length header field. If there is no content it returns nullptr.
-    virtual void* content() const = 0;
+    virtual void* content(void) const = 0;
 
     //! Returns the length of the buffer returned by
-    //! @ref request_interface::content(). If there is no
+    //! @ref request_interface::content(void). If there is no
     //! content it returns 0.
-    virtual size_t content_length() const = 0;
+    virtual size_t content_length(void) const = 0;
 
     //! Returns the MIME type and subtype of the content if existing. Returns
     //! invalid type and subtype if no content exists.
-    virtual mime content_type() const = 0;
+    virtual mime content_type(void) const = 0;
 
     //! Gives its user access to a list of MIME types and subtype in the accept
     //! header. To get the first item, the user has to initialize the handle
@@ -875,25 +875,25 @@ public:
     //! Returns the expectation of the client. If the expectation is not
     //! implemented it returns UNKNOWN. Then the request processor will return
     //! status code 417 due to unmet expectation.
-    virtual http_expectation expect() const = 0;
+    virtual http_expectation expect(void) const = 0;
 
     //! Returns the content of the from field.
-    virtual const char* from() const = 0;
+    virtual const char* from(void) const = 0;
 
     //! Returns the content of the referer field.
-    virtual const char* referer() const = 0;
+    virtual const char* referer(void) const = 0;
 
     //! Returns the content of the user agent field. Usually this is used to
     //! work around some idiosyncrasies of some specific clients to improve the
     //! result of the web service.
-    virtual const char* user_agent() const = 0;
+    virtual const char* user_agent(void) const = 0;
 };
 
 //! The request handler uses this interface to assemble the response.
 class response_interface
 {
 public:
-    virtual ~response_interface();
+    virtual ~response_interface(void);
 
     //! Sets or overwrites a custom header. Every header field name, which is
     //! explicitly predefined by @ref page_requests gets rejected. Returns true,

@@ -38,7 +38,7 @@ public:
     static_assert(sizeof(value_type) == sizeof(arithmetic_type),
                   "Value and arithmetic type is not of the same size.");
 
-    explicit mime_data()
+    explicit mime_data(void)
         : next_value_(special_value_count)
         , registered_types_()
         , types_(true)

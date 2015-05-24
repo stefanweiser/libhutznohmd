@@ -594,31 +594,31 @@ enum class uri_scheme : uint8_t { UNKNOWN = 0, HTTP = 1, MAILTO = 2 };
 class uri_interface
 {
 public:
-    virtual ~uri_interface();
+    virtual ~uri_interface(void);
 
     //! Returns whether the containing URI is valid or not.
-    virtual bool valid() const = 0;
+    virtual bool valid(void) const = 0;
 
     //! In "http://user\@example.com:8080/?a=b#anchor" this is "http".
-    virtual const uri_scheme& scheme() const = 0;
+    virtual const uri_scheme& scheme(void) const = 0;
 
     //! In "http://user:pw\@example.com:8080/?a=b#anchor" this is "user:pw".
-    virtual const char* userinfo() const = 0;
+    virtual const char* userinfo(void) const = 0;
 
     //! In "http://user:pw\@example.com:8080/?a=b#anchor" this is "example.com".
-    virtual const char* host() const = 0;
+    virtual const char* host(void) const = 0;
 
     //! In "http://user:pw\@example.com:8080/?a=b#anchor" this is "8080".
-    virtual const uint16_t& port() const = 0;
+    virtual const uint16_t& port(void) const = 0;
 
     //! In "http://user:pw\@example.com:8080/?a=b#anchor" this is "/".
-    virtual const char* path() const = 0;
+    virtual const char* path(void) const = 0;
 
     //! In "http://user:pw\@example.com:8080/?a=b#anchor" this is "a=b".
-    virtual const char* query() const = 0;
+    virtual const char* query(void) const = 0;
 
     //! In "http://user:pw\@example.com:8080/?a=b#anchor" this is "anchor".
-    virtual const char* fragment() const = 0;
+    virtual const char* fragment(void) const = 0;
 };
 
 //! A media type is a MIME type as is used to declare how the content of some
@@ -642,35 +642,36 @@ public:
 
     enum class mime_subtype : int16_t { CUSTOM = -1, WILDCARD = 0, PLAIN = 1 };
 
-    virtual ~media_type_interface();
+    virtual ~media_type_interface(void);
 
     //! Returns the type, if the media type is known or media_type_type::CUSTOM
     //! if unknown.
-    virtual mime_type type() const = 0;
+    virtual mime_type type(void) const = 0;
 
     //! Returns the subtype, if the media type is known or
     //! media_type_subtype::CUSTOM if unknown.
-    virtual mime_subtype subtype() const = 0;
+    virtual mime_subtype subtype(void) const = 0;
 
     //! Returns the type, if the media type is not known or "" if it is known.
-    virtual const char* custom_type() const = 0;
+    virtual const char* custom_type(void) const = 0;
 
     //! Returns the subtype, if the media type is not known or "" if it is
     //! known.
-    virtual const char* custom_subtype() const = 0;
+    virtual const char* custom_subtype(void) const = 0;
 
     //! Contains all parameters, that are not parsed specifically (like e.g.
     //! "q").
-    virtual const std::map<std::string, std::string>& parameters() const = 0;
+    virtual const std::map<std::string, std::string>& parameters(
+        void) const = 0;
 
     //! The quality is expressed by the parameter "q" of the media type. It
     //! defines, how much desired this media type is.
-    virtual uint8_t quality() const = 0;
+    virtual uint8_t quality(void) const = 0;
 
     //! Returns a value, that defines how specific the media type is. The less
     //! the value, the more unspecific the media type is. These values can be
     //! used to compare media types with each other.
-    virtual uint8_t specification_grade() const = 0;
+    virtual uint8_t specification_grade(void) const = 0;
 };
 
 //! Defines the HTTP version used by the request.
@@ -830,35 +831,35 @@ enum class header_type {
 class request_interface
 {
 public:
-    virtual ~request_interface();
+    virtual ~request_interface(void);
 
     //! Requested HTTP method.
-    virtual hutzn::method method() const = 0;
+    virtual hutzn::method method(void) const = 0;
 
     //! Requested URI.
-    virtual const uri_interface& request_uri() const = 0;
+    virtual const uri_interface& request_uri(void) const = 0;
 
     //! Requested HTTP version.
-    virtual http::version version() const = 0;
+    virtual http::version version(void) const = 0;
 
     //! Returns the custom header of the specified key.
-    virtual const std::map<std::string, std::string>& headers() const = 0;
+    virtual const std::map<std::string, std::string>& headers(void) const = 0;
 
     //! Returns the data buffer.
-    virtual const buffer& data() const = 0;
+    virtual const buffer& data(void) const = 0;
 
     //! Returns the conent type of the data buffer.
-    virtual const media_type_interface& data_content_type() const = 0;
+    virtual const media_type_interface& data_content_type(void) const = 0;
 
     //! Returns the content of the date header or the current timestamp.
-    virtual time_t date() const = 0;
+    virtual time_t date(void) const = 0;
 };
 
 //! Represents all data, that get transmitted in the response.
 class response_interface
 {
 public:
-    virtual ~response_interface();
+    virtual ~response_interface(void);
 
     //! Sets the status code.
     virtual void set_status_code(const http_status_code& status_code) = 0;
@@ -882,13 +883,13 @@ using transaction_function = std::function<
 class server_interface
 {
 public:
-    virtual ~server_interface();
+    virtual ~server_interface(void);
 
     //! Runs the server. Won't return till the server shall stop.
-    virtual void run() = 0;
+    virtual void run(void) = 0;
 
     //! Stops the server from accepting further connections.
-    virtual void stop() = 0;
+    virtual void stop(void) = 0;
 };
 
 //! Shortcut redifinition for a HTTP server.

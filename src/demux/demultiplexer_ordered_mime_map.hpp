@@ -36,10 +36,10 @@ namespace hutzn
 class demultiplexer_ordered_mime_map
 {
 public:
-    explicit demultiplexer_ordered_mime_map();
+    explicit demultiplexer_ordered_mime_map(void);
 
     //! @brief Returns the number of elements stored in the data structure.
-    size_t size() const;
+    size_t size(void) const;
 
     //! @brief Inserts a new value into the data structure.
     //!

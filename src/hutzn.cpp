@@ -24,23 +24,23 @@ namespace hutzn
 namespace http
 {
 
-uri_interface::~uri_interface()
+uri_interface::~uri_interface(void)
 {
 }
 
-media_type_interface::~media_type_interface()
+media_type_interface::~media_type_interface(void)
 {
 }
 
-request_interface::~request_interface()
+request_interface::~request_interface(void)
 {
 }
 
-response_interface::~response_interface()
+response_interface::~response_interface(void)
 {
 }
 
-server_interface::~server_interface()
+server_interface::~server_interface(void)
 {
 }
 

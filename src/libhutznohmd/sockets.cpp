@@ -21,15 +21,15 @@
 namespace hutzn
 {
 
-block_device_interface::~block_device_interface()
+block_device_interface::~block_device_interface(void)
 {
 }
 
-connection_interface::~connection_interface()
+connection_interface::~connection_interface(void)
 {
 }
 
-listener_interface::~listener_interface()
+listener_interface::~listener_interface(void)
 {
 }
 

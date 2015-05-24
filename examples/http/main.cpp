@@ -27,7 +27,7 @@ class connection : public hutzn::connection_interface
 public:
     explicit connection(const std::string& filename);
 
-    void close() override;
+    void close(void) override;
     bool receive(hutzn::buffer& data, const size_t& max_size) override;
     bool send(const hutzn::buffer& data) override;
     bool send(const std::string& data) override;
@@ -44,7 +44,7 @@ connection::connection(const std::string& filename)
               << std::endl;
 }
 
-void connection::close()
+void connection::close(void)
 {
 }
 
@@ -78,7 +78,7 @@ bool connection::set_lingering_timeout(const int& /*timeout*/)
     return true;
 }
 
-int main()
+int main(void)
 {
     std::cout << "example_http" << std::endl;
 

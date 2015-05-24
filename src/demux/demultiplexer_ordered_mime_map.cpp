@@ -23,13 +23,13 @@
 namespace hutzn
 {
 
-demultiplexer_ordered_mime_map::demultiplexer_ordered_mime_map()
+demultiplexer_ordered_mime_map::demultiplexer_ordered_mime_map(void)
     : map_()
     , vector_()
 {
 }
 
-size_t demultiplexer_ordered_mime_map::size() const
+size_t demultiplexer_ordered_mime_map::size(void) const
 {
     return map_.size();
 }

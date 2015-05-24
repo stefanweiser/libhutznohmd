@@ -54,13 +54,13 @@ connection::connection(const int& socket, const sockaddr_in& address)
 {
 }
 
-connection::~connection()
+connection::~connection(void)
 {
     close();
     close_signal_safe(socket_);
 }
 
-void connection::close()
+void connection::close(void)
 {
     is_connected_ = false;
     shutdown(socket_, SHUT_RDWR);
@@ -129,7 +129,7 @@ bool connection::set_lingering_timeout(const int& timeout)
     return (setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0);
 }
 
-bool connection::connect()
+bool connection::connect(void)
 {
     bool result = false;
     if (false == is_connected_) {

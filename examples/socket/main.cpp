@@ -23,7 +23,7 @@
 
 #include <socket/connection.hpp>
 
-void client()
+void client(void)
 {
     const hutzn::buffer data = {0, 1, 2, 3};
 
@@ -54,7 +54,7 @@ void client()
     std::cout << "  client terminating" << std::endl;
 }
 
-int main()
+int main(void)
 {
     const hutzn::buffer data = {0, 1, 2, 3};
 

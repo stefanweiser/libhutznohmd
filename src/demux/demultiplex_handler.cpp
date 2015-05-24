@@ -28,7 +28,7 @@ demultiplex_handler::demultiplex_handler(demux_disconnect_interface& demuxer,
 {
 }
 
-demultiplex_handler::~demultiplex_handler() noexcept(true)
+demultiplex_handler::~demultiplex_handler(void) noexcept(true)
 {
     demuxer_.disconnect(id_);
 }

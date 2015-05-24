@@ -30,7 +30,7 @@ namespace hutzn
 class parser_data
 {
 public:
-    explicit parser_data();
+    explicit parser_data(void);
     mime_type register_mime_type(const std::string& type);
     mime_subtype register_mime_subtype(const std::string& subtype);
     bool unregister_mime_type(const mime_type& type);

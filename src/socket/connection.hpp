@@ -36,14 +36,14 @@ public:
 
     explicit connection(const int& socket);
     explicit connection(const int& socket, const sockaddr_in& address);
-    ~connection() override;
-    void close() override;
+    ~connection(void) override;
+    void close(void) override;
     bool receive(buffer& data, const size_t& max_size) override;
     bool send(const buffer& data) override;
     bool send(const std::string& data) override;
     bool set_lingering_timeout(const int& timeout) override;
 
-    bool connect();
+    bool connect(void);
 
 private:
     bool send(const char* buffer, const size_t& size);

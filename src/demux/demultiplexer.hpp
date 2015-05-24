@@ -43,7 +43,7 @@ namespace hutzn
 class demultiplexer : public demux_interface, public demux_disconnect_interface
 {
 public:
-    explicit demultiplexer();
+    explicit demultiplexer(void);
 
     request_handler_callback determine_request_handler(
         const request_interface& request) override;

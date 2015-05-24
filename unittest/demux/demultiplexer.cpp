@@ -30,18 +30,18 @@ namespace hutzn
 class demultiplexer_test : public ::testing::Test
 {
 public:
-    void SetUp() override
+    void SetUp(void) override
     {
         demultiplexer_ = make_demultiplexer();
     }
 
-    void TearDown() override
+    void TearDown(void) override
     {
         demultiplexer_.reset();
     }
 
 protected:
-    request_handler_id id()
+    request_handler_id id(void)
     {
         static request_handler_id result{
             "/", http_verb::GET, mime(mime_type::TEXT, mime_subtype::PLAIN),

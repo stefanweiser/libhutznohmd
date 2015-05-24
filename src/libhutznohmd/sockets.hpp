@@ -127,7 +127,7 @@ class block_device_interface
 {
 public:
     //! Releases the resources allocated by the block device.
-    virtual ~block_device_interface();
+    virtual ~block_device_interface(void);
 
     //! Invokes a blocking receive operation until something but at most
     //! @c max_size is read from the connection. The buffer will retain its
@@ -155,13 +155,13 @@ class connection_interface : public block_device_interface
 public:
     //! Shuts the connection down if not already done and releases the allocated
     //! resources.
-    virtual ~connection_interface();
+    virtual ~connection_interface(void);
 
     //! Shuts down the connection, but remain holding the resources. This will
     //! immediately stop any call on that connection. The connection object
     //! could be released afterwards, because no operation will work on such a
     //! connection.
-    virtual void close() = 0;
+    virtual void close(void) = 0;
 
     //! Overwrites the lingering timeout of the connection in seconds. As a part
     //! of most network stacks the operating system is keeping connections in
@@ -184,22 +184,22 @@ class listener_interface
 {
 public:
     //! Shuts down the listening. Releases all resources afterwards.
-    virtual ~listener_interface();
+    virtual ~listener_interface(void);
 
     //! Blocks until someone wants to connect to the listener or the listener
     //! gets closed. In the first case the connection gets established and
     //! returned. In case of closing the listener an empty pointer is getting
     //! returned and the listener can be released.
-    virtual connection_pointer accept() const = 0;
+    virtual connection_pointer accept(void) const = 0;
 
     //! Returns whether the listener is currently listening or not. Naturally
     //! this value is a volatile information.
-    virtual bool listening() const = 0;
+    virtual bool listening(void) const = 0;
 
     //! Shuts down the listener. This means, that any operation gets immediately
     //! stopped and the listener is useless afterwards, because no operation
     //! will succeed if it is shut.
-    virtual void stop() = 0;
+    virtual void stop(void) = 0;
 
     //! @see connection_interface::set_lingering_timeout(const int&)
     virtual bool set_lingering_timeout(const int& timeout) = 0;

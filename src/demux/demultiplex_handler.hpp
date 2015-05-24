@@ -45,7 +45,7 @@ public:
     //!
     //! Ensure, that the demultiplexer is still existing when destroying an
     //! instance of a demultiplex handler.
-    ~demultiplex_handler() noexcept(true) override;
+    ~demultiplex_handler(void) noexcept(true) override;
 
 private:
     //! References the demultiplexer where the request handler was registered

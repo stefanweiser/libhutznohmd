@@ -211,7 +211,7 @@ class handler_interface
 {
 public:
     //! Unregisters the handler.
-    virtual ~handler_interface() noexcept(true);
+    virtual ~handler_interface(void) noexcept(true);
 };
 
 //! Handlers are always reference counted.
@@ -229,7 +229,7 @@ class demux_query_interface
 {
 public:
     //! Do not destroy the demultiplexer while performing any operation on it.
-    virtual ~demux_query_interface();
+    virtual ~demux_query_interface(void);
 
     //! Determines and returns the best-fitting request handler callback, that
     //! is registered at this demultiplexer. Wildcard accept types are resolved
@@ -249,7 +249,7 @@ class demux_interface : public demux_query_interface
 {
 public:
     //! Do not destroy the demultiplexer while performing any operation on it.
-    virtual ~demux_interface();
+    virtual ~demux_interface(void);
 
     //! Connects a request handler to a resource. Returns a handler object,
     //! which acts as lifetime scope of the request handler. If there is already
@@ -287,7 +287,7 @@ public:
 using demux_pointer = std::shared_ptr<demux_interface>;
 
 //! Creates a new empty demultiplexer.
-demux_pointer make_demultiplexer();
+demux_pointer make_demultiplexer(void);
 
 //! Is used by the demultiplexer in case of an error to get a useful response.
 using error_handler_callback =
@@ -300,7 +300,7 @@ class request_processor_interface
 public:
     //! It is necessary, that no request is getting processed while destroying
     //! it.
-    virtual ~request_processor_interface();
+    virtual ~request_processor_interface(void);
 
     //! Takes a block device to answer one request. Will block until the request
     //! is answered by a request or an error handler. Returns true, if one

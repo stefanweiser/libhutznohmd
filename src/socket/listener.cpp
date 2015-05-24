@@ -68,13 +68,13 @@ listener::listener(const int& socket)
 {
 }
 
-listener::~listener()
+listener::~listener(void)
 {
     stop();
     close_signal_safe(socket_);
 }
 
-connection_pointer listener::accept() const
+connection_pointer listener::accept(void) const
 {
     connection_pointer result;
     if (true == is_listening_) {
@@ -97,12 +97,12 @@ connection_pointer listener::accept() const
     return result;
 }
 
-bool listener::listening() const
+bool listener::listening(void) const
 {
     return is_listening_;
 }
 
-void listener::stop()
+void listener::stop(void)
 {
     is_listening_ = false;
     shutdown(socket_, SHUT_RDWR);

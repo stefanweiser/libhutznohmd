@@ -35,10 +35,10 @@ public:
                                             const uint16_t& port);
 
     explicit listener(const int& socket);
-    ~listener() override;
-    connection_pointer accept() const override;
-    bool listening() const override;
-    void stop() override;
+    ~listener(void) override;
+    connection_pointer accept(void) const override;
+    bool listening(void) const override;
+    void stop(void) override;
     bool set_lingering_timeout(const int& timeout) override;
 
 private:

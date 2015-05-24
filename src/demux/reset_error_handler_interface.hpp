@@ -27,7 +27,7 @@ namespace hutzn
 class reset_error_handler_interface
 {
 public:
-    virtual ~reset_error_handler_interface();
+    virtual ~reset_error_handler_interface(void);
 
     virtual void reset_error_handler(const http_status_code& code) = 0;
 };

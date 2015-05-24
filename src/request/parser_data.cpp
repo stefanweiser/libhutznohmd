@@ -21,7 +21,7 @@
 namespace hutzn
 {
 
-parser_data::parser_data()
+parser_data::parser_data(void)
     : mime_types_()
     , mime_subtypes_()
 {

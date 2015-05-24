@@ -48,7 +48,7 @@ class trie_node
 public:
     using trie_find_result_ = trie_find_result<value_type>;
 
-    explicit trie_node()
+    explicit trie_node(void)
         : has_value_(false)
         , value_()
         , children_()
@@ -56,7 +56,7 @@ public:
     {
     }
 
-    ~trie_node()
+    ~trie_node(void)
     {
         // Release all children first.
         for (size_t i = 0; i < children_.size(); i++) {

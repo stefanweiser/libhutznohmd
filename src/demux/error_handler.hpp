@@ -34,7 +34,7 @@ public:
     explicit error_handler(reset_error_handler_interface& request_processor,
                            const http_status_code& code);
 
-    ~error_handler() noexcept(true) override;
+    ~error_handler(void) noexcept(true) override;
 
 private:
     reset_error_handler_interface& request_processor_;

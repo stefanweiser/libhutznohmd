@@ -34,7 +34,7 @@ namespace hutzn
 class demux_disconnect_interface
 {
 public:
-    virtual ~demux_disconnect_interface();
+    virtual ~demux_disconnect_interface(void);
 
     //! @brief Disconnects the handler with the given id from the demultiplexer.
     //!

@@ -195,11 +195,11 @@ NOTE: This definitions are getting used in later versions.
 
 */
 
-request_interface::~request_interface()
+request_interface::~request_interface(void)
 {
 }
 
-response_interface::~response_interface()
+response_interface::~response_interface(void)
 {
 }
 

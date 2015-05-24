@@ -29,23 +29,23 @@ namespace hutzn
 class request_interface_mock : public request_interface
 {
 public:
-    MOCK_CONST_METHOD0(method, http_verb());
-    MOCK_CONST_METHOD0(path, const char*());
-    MOCK_CONST_METHOD0(host, const char*());
+    MOCK_CONST_METHOD0(method, http_verb(void));
+    MOCK_CONST_METHOD0(path, const char*(void));
+    MOCK_CONST_METHOD0(host, const char*(void));
     MOCK_CONST_METHOD1(query, const char*(const char* const));
-    MOCK_CONST_METHOD0(fragment, const char*());
-    MOCK_CONST_METHOD0(version, http_version());
+    MOCK_CONST_METHOD0(fragment, const char*(void));
+    MOCK_CONST_METHOD0(version, http_version(void));
     MOCK_CONST_METHOD1(header_value, const char*(const char* const));
-    MOCK_CONST_METHOD0(keeps_connection, bool());
-    MOCK_CONST_METHOD0(date, time_t());
-    MOCK_CONST_METHOD0(content, void*());
-    MOCK_CONST_METHOD0(content_length, size_t());
-    MOCK_CONST_METHOD0(content_type, mime());
+    MOCK_CONST_METHOD0(keeps_connection, bool(void));
+    MOCK_CONST_METHOD0(date, time_t(void));
+    MOCK_CONST_METHOD0(content, void*(void));
+    MOCK_CONST_METHOD0(content_length, size_t(void));
+    MOCK_CONST_METHOD0(content_type, mime(void));
     MOCK_CONST_METHOD2(accept, bool(void*&, mime&));
-    MOCK_CONST_METHOD0(expect, http_expectation());
-    MOCK_CONST_METHOD0(from, const char*());
-    MOCK_CONST_METHOD0(referer, const char*());
-    MOCK_CONST_METHOD0(user_agent, const char*());
+    MOCK_CONST_METHOD0(expect, http_expectation(void));
+    MOCK_CONST_METHOD0(from, const char*(void));
+    MOCK_CONST_METHOD0(referer, const char*(void));
+    MOCK_CONST_METHOD0(user_agent, const char*(void));
 };
 
 using request_mock_pointer = std::shared_ptr<request_interface_mock>;

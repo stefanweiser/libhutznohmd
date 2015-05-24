@@ -28,7 +28,7 @@ error_handler::error_handler(reset_error_handler_interface& request_processor,
 {
 }
 
-error_handler::~error_handler() noexcept(true)
+error_handler::~error_handler(void) noexcept(true)
 {
     request_processor_.reset_error_handler(code_);
 }
