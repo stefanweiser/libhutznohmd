@@ -153,6 +153,18 @@ private:
     static constexpr uint8_t LETTER_CASE_BIT = 0x20U;
     static constexpr uint8_t INVERSE_LETTER_CASE_BIT = ~LETTER_CASE_BIT;
 
+    void add_child_reference(trie_node*& target, trie_node* const child)
+    {
+        target = child;
+        used_children_++;
+    }
+
+    void remove_child_reference(trie_node*& child)
+    {
+        child = nullptr;
+        used_children_--;
+    }
+
     static uint8_t make_lower(const uint8_t c)
     {
         return (c | LETTER_CASE_BIT);
@@ -163,36 +175,37 @@ private:
         return (c & INVERSE_LETTER_CASE_BIT);
     }
 
+    trie_node** get_pendant(const uint8_t c, const bool is_case_insensitive)
+    {
+        trie_node** result = nullptr;
+        if (true == is_case_insensitive) {
+            if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
+                result = &(children_[make_lower(c)]);
+            } else if (true == check_range<uint8_t, 'a', 'z'>(c)) {
+                result = &(children_[make_upper(c)]);
+            } else {
+                // Character is no letter.
+            }
+        }
+        return result;
+    }
+
     bool insert_recursive(const char* token, const value_type& value,
                           const bool is_case_insensitive)
     {
         const uint8_t c = static_cast<uint8_t>(*token);
         const char* next = token + 1;
 
-        if (nullptr == children_[c]) {
-            children_[c] = new trie_node();
-            used_children_++;
-        }
         trie_node*& child = children_[c];
+        if (nullptr == child) {
+            add_child_reference(child, new trie_node());
+        }
 
         bool result = false;
         if (true == child->insert(next, value, is_case_insensitive)) {
-            if (true == is_case_insensitive) {
-                if (true == check_range<uint8_t, 'a', 'z'>(c)) {
-                    trie_node*& other = children_[make_upper(c)];
-                    if (nullptr == other) {
-                        other = child;
-                        used_children_++;
-                    }
-                } else if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
-                    trie_node*& other = children_[make_lower(c)];
-                    if (nullptr == other) {
-                        other = child;
-                        used_children_++;
-                    }
-                } else {
-                    // Character is no letter.
-                }
+            trie_node** other = get_pendant(c, is_case_insensitive);
+            if ((other != nullptr) && (nullptr == (*other))) {
+                add_child_reference(*other, child);
             }
             result = true;
         }
@@ -209,30 +222,13 @@ private:
         if ((child != nullptr) &&
             (true == child->erase(next, is_case_insensitive))) {
 
-            bool clear_other_child = false;
             if ((0 == child->used_children_) && (false == child->has_value_)) {
                 delete child;
-                child = nullptr;
-                used_children_--;
-                clear_other_child = true;
-            }
+                remove_child_reference(child);
 
-            if (true == is_case_insensitive) {
-                if (true == check_range<uint8_t, 'a', 'z'>(c)) {
-
-                    if (true == clear_other_child) {
-                        children_[make_upper(c)] = nullptr;
-                        used_children_--;
-                    }
-
-                } else if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
-
-                    if (true == clear_other_child) {
-                        children_[make_lower(c)] = nullptr;
-                        used_children_--;
-                    }
-                } else {
-                    // Character is no letter.
+                trie_node** other = get_pendant(c, is_case_insensitive);
+                if ((other != nullptr) && ((*other) != nullptr)) {
+                    remove_child_reference(*other);
                 }
             }
 
