@@ -37,51 +37,56 @@ size_t demultiplexer_ordered_mime_map::size(void) const
 bool demultiplexer_ordered_mime_map::insert(const mime& type,
                                             const request_handler_callback& fn)
 {
-    if ((type.first == mime_type::WILDCARD) ||
-        (type.second == mime_subtype::WILDCARD)) {
-        return false;
-    }
+    bool result = false;
+    if ((type.first != mime_type::WILDCARD) &&
+        (type.second != mime_subtype::WILDCARD)) {
 
-    auto it = map_.find(type);
-    if (it == map_.end()) {
-        map_[type] = fn;
-        vector_.push_back(type);
-        return true;
+        auto it = map_.find(type);
+        if (it == map_.end()) {
+            map_[type] = fn;
+            vector_.push_back(type);
+            result = true;
+        }
     }
-    return false;
+    return result;
 }
 
 bool demultiplexer_ordered_mime_map::erase(const mime& type)
 {
     auto it = map_.find(type);
+    bool result;
     if (it != map_.end()) {
         std::remove(vector_.begin(), vector_.end(), type);
-        return (map_.erase(type) > 0);
+        result = (map_.erase(type) > 0);
+    } else {
+        result = false;
     }
-    return false;
+    return result;
 }
 
 request_handler_callback demultiplexer_ordered_mime_map::find(
     const mime& type) const
 {
+    request_handler_callback result;
     const bool has_any_wildcard = (type.first == mime_type::WILDCARD) ||
                                   (type.second == mime_subtype::WILDCARD);
     if (true == has_any_wildcard) {
-        if (request_handler_callback result = find_ordered(type)) {
-            return result;
+        if (request_handler_callback find_result = find_ordered(type)) {
+            result = find_result;
         }
     } else {
         const auto accept_it = map_.find(type);
         if (accept_it != map_.end()) {
-            return accept_it->second;
+            result = accept_it->second;
         }
     }
-    return request_handler_callback();
+    return result;
 }
 
 request_handler_callback demultiplexer_ordered_mime_map::find_ordered(
     const mime& type) const
 {
+    request_handler_callback result;
     for (const mime& value : vector_) {
         const bool type_equal_or_wildcard =
             (type.first == value.first) || (type.first == mime_type::WILDCARD);
@@ -91,11 +96,13 @@ request_handler_callback demultiplexer_ordered_mime_map::find_ordered(
 
         if ((true == type_equal_or_wildcard) &&
             (true == subtype_equal_or_wildcard)) {
+
             auto it = map_.find(value);
-            return it->second;
+            result = it->second;
+            break;
         }
     }
-    return request_handler_callback();
+    return result;
 }
 
 } // namespace hutzn

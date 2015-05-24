@@ -54,13 +54,14 @@ handler_pointer request_processor::set_error_handler(
     std::lock_guard<std::mutex> lock(error_handler_mutex_);
 
     // std::map<>::insert will not insert an already inserted element.
-    std::pair<error_handler_map::iterator, bool> result =
+    std::pair<error_handler_map::iterator, bool> insertion_result =
         error_handlers_.insert(std::make_pair(code, fn));
-    if (true == result.second) {
-        return std::make_shared<error_handler>(*this, code);
-    }
 
-    return handler_pointer();
+    handler_pointer result;
+    if (true == insertion_result.second) {
+        result = std::make_shared<error_handler>(*this, code);
+    }
+    return result;
 }
 
 void request_processor::reset_error_handler(const http_status_code& code)
