@@ -21,7 +21,6 @@
 
 #include <array>
 #include <cstdint>
-#include <memory>
 
 #include <utility/common.hpp>
 
@@ -98,6 +97,32 @@ private:
         {
         }
 
+        ~trie_node()
+        {
+            // Release all children first.
+            for (size_t i = 0; i < children_.size(); i++) {
+                uint8_t c = static_cast<uint8_t>(i);
+                trie_node* child = children_[c];
+
+                // Delete only if set.
+                if (child != nullptr) {
+                    delete child;
+
+                    // Because it could be case sensitive, check whether the
+                    // corresponding character is set to the same child. If
+                    // this holds true, then reset that pointer to avoid double
+                    // deletion. It is important to use the binary to look
+                    // forward and not backward!
+                    if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
+                        trie_node*& other = children_[c | 0x20U];
+                        if (child == other) {
+                            other = nullptr;
+                        }
+                    }
+                }
+            }
+        }
+
         find_result_type make_find_result(const char* const begin,
                                           const char* const curr) const
         {
@@ -116,8 +141,9 @@ private:
 
             find_result_type result{0, value_type()};
 
-            const auto& child = children_[static_cast<uint8_t>(*curr)];
-            if (child) {
+            const trie_node* const child =
+                children_[static_cast<uint8_t>(*curr)];
+            if (child != nullptr) {
                 result = child->find(original, curr + 1, remaining - 1);
             }
 
@@ -145,11 +171,11 @@ private:
 
                 const char* next = token + 1;
 
-                if (!children_[c]) {
-                    children_[c] = std::make_shared<trie_node>();
+                if (nullptr == children_[c]) {
+                    children_[c] = new trie_node();
                     used_children_++;
                 }
-                auto& child = children_[c];
+                trie_node*& child = children_[c];
 
                 if (false == child->insert(next, value, is_case_insensitive)) {
                     return false;
@@ -157,14 +183,14 @@ private:
 
                 if (true == is_case_insensitive) {
                     if (true == check_range<uint8_t, 'a', 'z'>(c)) {
-                        auto& other = children_[c & 0xDFU];
-                        if (nullptr == other.get()) {
+                        trie_node*& other = children_[c & 0xDFU];
+                        if (nullptr == other) {
                             other = child;
                             used_children_++;
                         }
                     } else if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
-                        auto& other = children_[c | 0x20U];
-                        if (nullptr == other.get()) {
+                        trie_node*& other = children_[c | 0x20U];
+                        if (nullptr == other) {
                             other = child;
                             used_children_++;
                         }
@@ -191,34 +217,33 @@ private:
 
                 const char* next = token + 1;
 
-                auto& child = children_[c];
-                if (!child ||
+                trie_node*& child = children_[c];
+                if ((nullptr == child) ||
                     (false == child->erase(next, is_case_insensitive))) {
                     return false;
                 }
 
+                bool clear_other_child = false;
                 if ((0 == child->used_children_) &&
                     (false == child->has_value_)) {
-                    child.reset();
+                    delete child;
+                    child = nullptr;
                     used_children_--;
+                    clear_other_child = true;
                 }
 
                 if (true == is_case_insensitive) {
                     if (true == check_range<uint8_t, 'a', 'z'>(c)) {
 
-                        auto& other_child = children_[c & 0xDFU];
-                        if ((0 == other_child->used_children_) &&
-                            (false == other_child->has_value_)) {
-                            other_child.reset();
+                        if (true == clear_other_child) {
+                            children_[c & 0xDFU] = nullptr;
                             used_children_--;
                         }
 
                     } else if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
 
-                        auto& other_child = children_[c | 0x20U];
-                        if ((0 == other_child->used_children_) &&
-                            (false == other_child->has_value_)) {
-                            other_child.reset();
+                        if (true == clear_other_child) {
+                            children_[c | 0x20U] = nullptr;
                             used_children_--;
                         }
                     }
@@ -231,7 +256,7 @@ private:
     private:
         bool has_value_;
         value_type value_;
-        std::array<std::shared_ptr<trie_node>, 256> children_;
+        std::array<trie_node*, 256> children_;
         size_t used_children_;
     };
 
