@@ -847,8 +847,7 @@ public:
     virtual void* content(void) const = 0;
 
     //! Returns the length of the buffer returned by
-    //! @ref request_interface::content(void). If there is no
-    //! content it returns 0.
+    //! @ref request_interface::content(). If there is no content it returns 0.
     virtual size_t content_length(void) const = 0;
 
     //! Returns the MIME type and subtype of the content if existing. Returns

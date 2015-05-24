@@ -19,7 +19,6 @@
 #ifndef LIBHUTZNOHMD_LIBHUTZNOHMD_SOCKETS_HPP
 #define LIBHUTZNOHMD_LIBHUTZNOHMD_SOCKETS_HPP
 
-#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -81,14 +80,14 @@ connection, establishs the connection and responses to exactly one HTTP
 request (that must not contain more than 1024 bytes of payload).
 Afterwards this happens:
 
--# The connection is getting shut down. The connection resources are getting
+-# The connection is getting shut down and the connection resources are getting
 detached from the process.
--# The listener is getting shut down. The listener resources are getting
+-# The listener is getting shut down and the listener resources are getting
 detached from the process.
 -# The process returns with an exit code of 0.
 -# Then on most systems the ports, that are used by the connection stay in
-the state TIME_WAIT to catch stray packets. After a while those ports are
-getting unused.
+the state TIME_WAIT to catch stray packets before reusing those ports. After a
+while those ports are getting unused.
 
 @code{.cpp}
 int main()
@@ -143,9 +142,8 @@ public:
     //! shut down during the send it will return false.
     virtual bool send(const buffer& data) = 0;
 
-    //! @see connection_interface::send(const buffer&)
-    //! This function behaves equally, but takes a string instead of a binary
-    //! buffer.
+    //! @see connection_interface::send(const buffer&) This function behaves
+    //! equally, but takes a string instead of a binary buffer.
     virtual bool send(const std::string& data) = 0;
 };
 
@@ -179,13 +177,14 @@ public:
 //! A connection is always handled via reference counted pointers.
 using connection_pointer = std::shared_ptr<connection_interface>;
 
-//! A listener is someone, that opens a socket and waits for someone to connect
+//! A listener is someone, that opens a socket and waits for clients to connect
 //! to it. Listeners are not used for communication, but to establish the
 //! connection.
 class listener_interface
 {
 public:
-    //! Shuts down the listening. Releases all resources afterwards.
+    //! Shuts down the listening. Releases all resources of the listener socket
+    //! afterwards.
     virtual ~listener_interface(void);
 
     //! Blocks until someone wants to connect to the listener or the listener
