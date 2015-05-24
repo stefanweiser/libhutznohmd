@@ -231,6 +231,10 @@ public:
     //! Do not destroy the demultiplexer while performing any operation on it.
     virtual ~demux_query_interface();
 
+    //! Determines and returns the best-fitting request handler callback, that
+    //! is registered at this demultiplexer. Wildcard accept types are resolved
+    //! by a first-come-first-served concept. The first request handler, that
+    //! gets connected to that resource, gets returned.
     virtual request_handler_callback determine_request_handler(
         const request_interface& request) = 0;
 };
