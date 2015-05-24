@@ -16,11 +16,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_DEMUX_REQUEST_PROCESSOR_HPP
-#define LIBHUTZNOHMD_DEMUX_REQUEST_PROCESSOR_HPP
+#ifndef LIBHUTZNOHMD_DEMUX_ERROR_HANDLER_HPP
+#define LIBHUTZNOHMD_DEMUX_ERROR_HANDLER_HPP
 
 #include <memory>
-#include <mutex>
 
 #include <libhutznohmd/demux.hpp>
 
@@ -29,26 +28,20 @@
 namespace hutzn
 {
 
-class request_processor : public request_processor_interface,
-                          public reset_error_handler_interface
+class error_handler : public handler_interface
 {
 public:
-    explicit request_processor(const demux_query_pointer& query_interface,
-                               const uint64_t& connection_timeout_in_sec);
+    explicit error_handler(reset_error_handler_interface& request_processor,
+                           const http_status_code& code);
 
-    virtual bool handle_one_request(
-        block_device_interface& device) const override;
-    virtual handler_pointer set_error_handler(
-        const http_status_code& code,
-        const error_handler_callback& fn) override;
-
-    virtual bool reset_error_handler(const http_status_code& code) override;
+    ~error_handler() noexcept(true) override;
 
 private:
-    demux_query_pointer demultiplexer_;
-    uint64_t connection_timeout_in_sec_;
+    reset_error_handler_interface& request_processor_;
+
+    http_status_code code_;
 };
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_DEMUX_REQUEST_PROCESSOR_HPP
+#endif // LIBHUTZNOHMD_DEMUX_ERROR_HANDLER_HPP

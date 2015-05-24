@@ -48,4 +48,9 @@ handler_pointer request_processor::set_error_handler(
     return handler_pointer();
 }
 
+bool request_processor::reset_error_handler(const http_status_code& /*code*/)
+{
+    return true;
+}
+
 } // namespace hutzn
