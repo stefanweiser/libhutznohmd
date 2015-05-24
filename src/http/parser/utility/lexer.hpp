@@ -46,7 +46,7 @@ public:
 private:
     const anonymous_int_function get_functor_;
     const anonymous_int_function peek_functor_;
-    mutable char last_char_;
+    mutable char_t last_char_;
 };
 
 //! Parses a word stopping if the continue condition gets wrong.
@@ -57,7 +57,7 @@ void parse_word(int32_t& character, push_back_string<size>& result,
 {
     while ((character >= 0) && (true == continue_condition_functor(
                                             static_cast<uint8_t>(character)))) {
-        result.push_back(static_cast<char>(character));
+        result.push_back(static_cast<char_t>(character));
         character = l.get();
     }
 }
@@ -83,7 +83,7 @@ bool parse_quoted_string(int32_t& character, push_back_string<size>& result,
     // 2. an invalid character.
     while ((character >= 0) && (true == is_valid_quoted_string_character(
                                             static_cast<uint8_t>(character)))) {
-        result.push_back(static_cast<char>(character));
+        result.push_back(static_cast<char_t>(character));
         character = l.get();
     }
 

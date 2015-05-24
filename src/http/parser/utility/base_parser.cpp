@@ -95,7 +95,7 @@ bool base_parser::parse_content_md5(int32_t& character)
     while ((character >= 0) &&
            ((true == is_base64(static_cast<uint8_t>(character))) ||
             ('=' == character))) {
-        s += static_cast<char>(character);
+        s += static_cast<char_t>(character);
         character = lexer_.get();
     }
 

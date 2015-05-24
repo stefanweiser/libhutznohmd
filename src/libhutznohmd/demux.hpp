@@ -21,8 +21,9 @@
 
 #include <cstdint>
 
-#include <libhutznohmd/sockets.hpp>
 #include <libhutznohmd/request.hpp>
+#include <libhutznohmd/sockets.hpp>
+#include <libhutznohmd/types.hpp>
 
 namespace hutzn
 {

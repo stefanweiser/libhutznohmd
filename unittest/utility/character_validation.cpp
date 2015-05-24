@@ -59,14 +59,14 @@ TEST(character_handling, to_lower)
 
     // Check
     for (size_t i = 0; i < validity_map.size(); i++) {
-        EXPECT_EQ(static_cast<uint8_t>(to_lower(static_cast<char>(i))),
+        EXPECT_EQ(static_cast<uint8_t>(to_lower(static_cast<char_t>(i))),
                   validity_map[i]);
     }
 }
 
 TEST(character_handling, from_hex)
 {
-    std::array<char, 256> validity_map;
+    std::array<char_t, 256> validity_map;
     validity_map.fill(-1);
     validity_map['0'] = 0;
     validity_map['1'] = 1;
@@ -93,7 +93,7 @@ TEST(character_handling, from_hex)
 
     // Check
     for (size_t i = 0; i < validity_map.size(); i++) {
-        EXPECT_EQ(from_hex(static_cast<char>(i)), validity_map[i]);
+        EXPECT_EQ(from_hex(static_cast<char_t>(i)), validity_map[i]);
     }
 }
 
@@ -101,13 +101,13 @@ TEST(character_handling, uri_authority_characters)
 {
     std::array<bool, 256> validity_map;
     std::fill(validity_map.begin(), validity_map.end(), false);
-    for (char c = 'A'; c <= 'Z'; c++) {
+    for (char_t c = 'A'; c <= 'Z'; c++) {
         validity_map[static_cast<size_t>(c)] = true;
     }
-    for (char c = 'a'; c <= 'z'; c++) {
+    for (char_t c = 'a'; c <= 'z'; c++) {
         validity_map[static_cast<size_t>(c)] = true;
     }
-    for (char c = '0'; c <= '9'; c++) {
+    for (char_t c = '0'; c <= '9'; c++) {
         validity_map[static_cast<size_t>(c)] = true;
     }
     validity_map[':'] = true;
@@ -141,13 +141,13 @@ TEST(character_handling, uri_path_characters)
 {
     std::array<bool, 256> validity_map;
     std::fill(validity_map.begin(), validity_map.end(), false);
-    for (char c = 'A'; c <= 'Z'; c++) {
+    for (char_t c = 'A'; c <= 'Z'; c++) {
         validity_map[static_cast<size_t>(c)] = true;
     }
-    for (char c = 'a'; c <= 'z'; c++) {
+    for (char_t c = 'a'; c <= 'z'; c++) {
         validity_map[static_cast<size_t>(c)] = true;
     }
-    for (char c = '0'; c <= '9'; c++) {
+    for (char_t c = '0'; c <= '9'; c++) {
         validity_map[static_cast<size_t>(c)] = true;
     }
     validity_map['-'] = true;
@@ -184,13 +184,13 @@ TEST(character_handling, uri_query_characters)
 {
     std::array<bool, 256> validity_map;
     std::fill(validity_map.begin(), validity_map.end(), false);
-    for (char c = 'A'; c <= 'Z'; c++) {
+    for (char_t c = 'A'; c <= 'Z'; c++) {
         validity_map[static_cast<size_t>(c)] = true;
     }
-    for (char c = 'a'; c <= 'z'; c++) {
+    for (char_t c = 'a'; c <= 'z'; c++) {
         validity_map[static_cast<size_t>(c)] = true;
     }
-    for (char c = '0'; c <= '9'; c++) {
+    for (char_t c = '0'; c <= '9'; c++) {
         validity_map[static_cast<size_t>(c)] = true;
     }
     validity_map['-'] = true;
@@ -228,13 +228,13 @@ TEST(character_handling, uri_fragment_characters)
 {
     std::array<bool, 256> validity_map;
     std::fill(validity_map.begin(), validity_map.end(), false);
-    for (char c = 'A'; c <= 'Z'; c++) {
+    for (char_t c = 'A'; c <= 'Z'; c++) {
         validity_map[static_cast<size_t>(c)] = true;
     }
-    for (char c = 'a'; c <= 'z'; c++) {
+    for (char_t c = 'a'; c <= 'z'; c++) {
         validity_map[static_cast<size_t>(c)] = true;
     }
-    for (char c = '0'; c <= '9'; c++) {
+    for (char_t c = '0'; c <= '9'; c++) {
         validity_map[static_cast<size_t>(c)] = true;
     }
     validity_map['-'] = true;
@@ -284,11 +284,11 @@ TEST(character_handling, token_characters)
     validity_map[127] = false;
 
     // And no seperators
-    std::vector<uint8_t> seperators = {'(', ')',  '<', '>', '@', ',', ';',
-                                       ':', '\\', '"', '/', '[', ']', '?',
-                                       '=', '{',  '}', ' ', '\t'};
-    for (const uint8_t& c : seperators) {
-        validity_map[c] = false;
+    std::vector<char_t> seperators = {'(', ')',  '<', '>', '@', ',', ';',
+                                      ':', '\\', '"', '/', '[', ']', '?',
+                                      '=', '{',  '}', ' ', '\t'};
+    for (const char_t& c : seperators) {
+        validity_map[static_cast<uint8_t>(c)] = false;
     }
 
     // Check

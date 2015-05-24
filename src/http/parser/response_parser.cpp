@@ -60,7 +60,7 @@ bool lex_reason_phrase(int32_t& character, push_back_string<100>& phrase,
                                 (0 == isalnum(character)))) {
             return false;
         }
-        phrase.push_back(static_cast<char>(character));
+        phrase.push_back(static_cast<char_t>(character));
         character = l.get();
     } while (character != '\n');
     return true;
@@ -162,7 +162,7 @@ const uint16_t& response_parser::status_code() const
     return status_code_;
 }
 
-const char* response_parser::reason_phrase() const
+const char_t* response_parser::reason_phrase() const
 {
     return reason_phrase_.c_str();
 }

@@ -50,7 +50,7 @@ int32_t lexer::get() const
         }
     }
 
-    last_char_ = static_cast<char>(result);
+    last_char_ = static_cast<char_t>(result);
     return result;
 }
 

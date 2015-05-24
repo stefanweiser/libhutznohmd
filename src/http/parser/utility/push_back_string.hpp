@@ -22,6 +22,8 @@
 #include <cstring>
 #include <cstdlib>
 
+#include <libhutznohmd/types.hpp>
+
 namespace hutzn
 {
 
@@ -45,7 +47,7 @@ public:
     //! Pushs one character at the end of the string. The string won't get
     //! finished by '\0'. It allocates memory dynamically if the string runs
     //! out of memory.
-    void push_back(const char c);
+    void push_back(const char_t c);
 
     //! Pushs some character at the end of the string. The string won't get
     //! finished by '\0'. It allocates memory dynamically if the string runs
@@ -53,14 +55,14 @@ public:
     //! WARNING: This method may never return, if the argument is not finished
     //! by '\0'. Do not use it for user defined data. This may cause a buffer
     //! overflow.
-    void append_string(const char* s);
+    void append_string(const char_t* s);
 
     //! Returns the character at a given index.
-    char& operator[](const size_t& index);
+    char_t& operator[](const size_t& index);
 
     //! Returns the current string. Before returning it, the data will be
     // terminated by '\0'.
-    const char* c_str() const;
+    const char_t* c_str() const;
 
     //! Returns true if the current length is 0.
     bool empty() const;
@@ -77,8 +79,8 @@ public:
 private:
     size_t current_length_;
     size_t dynamic_size_;
-    mutable char static_buffer_[maximum_size + 1];
-    mutable char* dynamic_buffer_;
+    mutable char_t static_buffer_[maximum_size + 1];
+    mutable char_t* dynamic_buffer_;
 };
 
 template <size_t maximum_size>
@@ -97,7 +99,7 @@ push_back_string<maximum_size>::~push_back_string()
 }
 
 template <size_t maximum_size>
-void push_back_string<maximum_size>::push_back(const char c)
+void push_back_string<maximum_size>::push_back(const char_t c)
 {
     // It makes some difference to push it onto the static or the dynamically
     // allocated buffer.
@@ -108,15 +110,15 @@ void push_back_string<maximum_size>::push_back(const char c)
         if ((current_length_ + 1) >= dynamic_size_) {
             if (nullptr == dynamic_buffer_) {
                 dynamic_size_ = (2 * maximum_size) + 1;
-                dynamic_buffer_ = static_cast<char*>(malloc(dynamic_size_));
+                dynamic_buffer_ = static_cast<char_t*>(malloc(dynamic_size_));
                 memcpy(dynamic_buffer_, static_buffer_, maximum_size);
             } else {
                 dynamic_size_ += maximum_size;
 
                 // Don't forget to free the buffer block that was used before
                 // reallocation in case of a failed reallocation.
-                char* new_buffer =
-                    static_cast<char*>(realloc(dynamic_buffer_, dynamic_size_));
+                char_t* new_buffer = static_cast<char_t*>(
+                    realloc(dynamic_buffer_, dynamic_size_));
                 if (nullptr == new_buffer) {
                     free(dynamic_buffer_);
                 }
@@ -128,7 +130,7 @@ void push_back_string<maximum_size>::push_back(const char c)
 }
 
 template <size_t maximum_size>
-void push_back_string<maximum_size>::append_string(const char* s)
+void push_back_string<maximum_size>::append_string(const char_t* s)
 {
     while ((*s) != '\0') {
         push_back(*s);
@@ -137,7 +139,7 @@ void push_back_string<maximum_size>::append_string(const char* s)
 }
 
 template <size_t maximum_size>
-char& push_back_string<maximum_size>::operator[](const size_t& index)
+char_t& push_back_string<maximum_size>::operator[](const size_t& index)
 {
     if (nullptr == dynamic_buffer_) {
         return static_buffer_[index];
@@ -147,7 +149,7 @@ char& push_back_string<maximum_size>::operator[](const size_t& index)
 }
 
 template <size_t maximum_size>
-const char* push_back_string<maximum_size>::c_str() const
+const char_t* push_back_string<maximum_size>::c_str() const
 {
     if (nullptr == dynamic_buffer_) {
         // Terminate the data before returning it.

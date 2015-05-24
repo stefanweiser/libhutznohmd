@@ -25,12 +25,12 @@ namespace hutzn
 
 bool is_valid_uri_path(const std::string& path)
 {
-    const char slash = '/';
+    const char_t slash = '/';
     bool must_be_a_slash = true;
     bool could_be_a_slash = true;
 
     bool result = true;
-    for (const char& c : path) {
+    for (const char_t& c : path) {
         if (true == must_be_a_slash) {
             if (c != slash) {
                 result = false;

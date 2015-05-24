@@ -45,8 +45,8 @@ public:
 
     media_type_interface::mime_type type() const override;
     media_type_interface::mime_subtype subtype() const override;
-    const char* custom_type() const override;
-    const char* custom_subtype() const override;
+    const char_t* custom_type() const override;
+    const char_t* custom_subtype() const override;
     const std::map<std::string, std::string>& parameters() const override;
     uint8_t quality() const override;
     uint8_t specification_grade() const override;

@@ -57,7 +57,7 @@ public:
     const std::array<uint8_t, 16>& md5() const;
     bool has_md5() const;
     const uint16_t& status_code() const;
-    const char* reason_phrase() const;
+    const char_t* reason_phrase() const;
 
 private:
     bool parse_connection(int32_t& character);

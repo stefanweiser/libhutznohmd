@@ -603,22 +603,22 @@ public:
     virtual const uri_scheme& scheme(void) const = 0;
 
     //! In "http://user:pw\@example.com:8080/?a=b#anchor" this is "user:pw".
-    virtual const char* userinfo(void) const = 0;
+    virtual const char_t* userinfo(void) const = 0;
 
     //! In "http://user:pw\@example.com:8080/?a=b#anchor" this is "example.com".
-    virtual const char* host(void) const = 0;
+    virtual const char_t* host(void) const = 0;
 
     //! In "http://user:pw\@example.com:8080/?a=b#anchor" this is "8080".
     virtual const uint16_t& port(void) const = 0;
 
     //! In "http://user:pw\@example.com:8080/?a=b#anchor" this is "/".
-    virtual const char* path(void) const = 0;
+    virtual const char_t* path(void) const = 0;
 
     //! In "http://user:pw\@example.com:8080/?a=b#anchor" this is "a=b".
-    virtual const char* query(void) const = 0;
+    virtual const char_t* query(void) const = 0;
 
     //! In "http://user:pw\@example.com:8080/?a=b#anchor" this is "anchor".
-    virtual const char* fragment(void) const = 0;
+    virtual const char_t* fragment(void) const = 0;
 };
 
 //! A media type is a MIME type as is used to declare how the content of some
@@ -653,11 +653,11 @@ public:
     virtual mime_subtype subtype(void) const = 0;
 
     //! Returns the type, if the media type is not known or "" if it is known.
-    virtual const char* custom_type(void) const = 0;
+    virtual const char_t* custom_type(void) const = 0;
 
     //! Returns the subtype, if the media type is not known or "" if it is
     //! known.
-    virtual const char* custom_subtype(void) const = 0;
+    virtual const char_t* custom_subtype(void) const = 0;
 
     //! Contains all parameters, that are not parsed specifically (like e.g.
     //! "q").

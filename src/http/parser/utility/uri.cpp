@@ -44,15 +44,15 @@ bool parse_uri_word(int32_t& character, push_back_string<size>& result,
                 return false;
             }
 
-            char d = from_hex(static_cast<char>(a));
-            char e = from_hex(static_cast<char>(b));
+            char_t d = from_hex(static_cast<char_t>(a));
+            char_t e = from_hex(static_cast<char_t>(b));
             if ((d == -1) || (e == -1)) {
                 return false;
             }
 
-            result.push_back(static_cast<char>((d << 4) + e));
+            result.push_back(static_cast<char_t>((d << 4) + e));
         } else {
-            result.push_back(static_cast<char>(character));
+            result.push_back(static_cast<char_t>(character));
         }
         character = l.get();
     }
@@ -121,9 +121,9 @@ void uri::set_scheme(const uri_scheme& new_scheme)
     scheme_ = new_scheme;
 }
 
-bool uri::set_userinfo(const char* const new_userinfo)
+bool uri::set_userinfo(const char_t* const new_userinfo)
 {
-    const char* c = new_userinfo;
+    const char_t* c = new_userinfo;
     while ('\0' != (*c)) {
         if (false ==
             is_valid_uri_authority_character(static_cast<uint8_t>(*c))) {
@@ -137,9 +137,9 @@ bool uri::set_userinfo(const char* const new_userinfo)
     return true;
 }
 
-bool uri::set_host(const char* const new_host)
+bool uri::set_host(const char_t* const new_host)
 {
-    const char* c = new_host;
+    const char_t* c = new_host;
     while ('\0' != (*c)) {
         if (false ==
             is_valid_uri_authority_character(static_cast<uint8_t>(*c))) {
@@ -168,12 +168,12 @@ const uri_scheme& uri::scheme() const
     return scheme_;
 }
 
-const char* uri::userinfo() const
+const char_t* uri::userinfo() const
 {
     return userinfo_.c_str();
 }
 
-const char* uri::host() const
+const char_t* uri::host() const
 {
     return host_.c_str();
 }
@@ -183,17 +183,17 @@ const uint16_t& uri::port() const
     return port_;
 }
 
-const char* uri::path() const
+const char_t* uri::path() const
 {
     return path_.c_str();
 }
 
-const char* uri::query() const
+const char_t* uri::query() const
 {
     return query_.c_str();
 }
 
-const char* uri::fragment() const
+const char_t* uri::fragment() const
 {
     return fragment_.c_str();
 }
@@ -249,7 +249,7 @@ bool uri::parse_scheme(int32_t& character)
 bool uri::parse_userinfo_and_authority(int32_t& character)
 {
     if ('/' == character) {
-        path_.push_back(static_cast<char>(character));
+        path_.push_back(static_cast<char_t>(character));
         character = lexer_->get();
         if ('/' == character) {
             // It is no path. It is an authority.

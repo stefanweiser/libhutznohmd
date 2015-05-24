@@ -78,7 +78,7 @@ public:
         return result;
     }
 
-    value_type parse_type(const char* const string, const size_t max_length)
+    value_type parse_type(const char_t* const string, const size_t max_length)
     {
         value_type result;
         auto found_element = types_.find(string, max_length);

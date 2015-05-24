@@ -97,12 +97,12 @@ media_type_interface::mime_subtype media_type::subtype() const
     return subtype_;
 }
 
-const char* media_type::custom_type() const
+const char_t* media_type::custom_type() const
 {
     return custom_type_.c_str();
 }
 
-const char* media_type::custom_subtype() const
+const char_t* media_type::custom_subtype() const
 {
     return custom_subtype_.c_str();
 }

@@ -35,9 +35,9 @@ public:
     mime_subtype register_mime_subtype(const std::string& subtype);
     bool unregister_mime_type(const mime_type& type);
     bool unregister_mime_subtype(const mime_subtype& subtype);
-    mime_type parse_mime_type(const char* const string,
+    mime_type parse_mime_type(const char_t* const string,
                               const size_t max_length);
-    mime_subtype parse_mime_subtype(const char* const string,
+    mime_subtype parse_mime_subtype(const char_t* const string,
                                     const size_t max_length);
     bool is_mime_type_registered(const mime_type& type) const;
     bool is_mime_subtype_registered(const mime_subtype& subtype) const;

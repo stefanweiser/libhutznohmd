@@ -48,7 +48,7 @@ request_handler_callback demultiplexer::determine_request_handler(
     if ((content_type.first != mime_type::WILDCARD) &&
         (content_type.second != mime_subtype::WILDCARD)) {
 
-        const char* const path = request.path();
+        const char_t* const path = request.path();
         const http_verb method = request.method();
 
         // Determine map of demanded resource.

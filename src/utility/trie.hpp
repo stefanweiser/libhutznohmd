@@ -22,6 +22,8 @@
 #include <array>
 #include <cstdint>
 
+#include <libhutznohmd/types.hpp>
+
 #include <utility/common.hpp>
 
 namespace hutzn
@@ -82,15 +84,16 @@ public:
         }
     }
 
-    trie_find_result_ make_find_result(const char* const begin,
-                                       const char* const curr) const
+    trie_find_result_ make_find_result(const char_t* const begin,
+                                       const char_t* const curr) const
     {
         const size_t distance = static_cast<size_t>(curr - begin);
         const size_t used_chars = has_value_ ? distance : 0;
         return trie_find_result_{used_chars, value_};
     }
 
-    trie_find_result_ find(const char* const original, const char* const curr,
+    trie_find_result_ find(const char_t* const original,
+                           const char_t* const curr,
                            const size_t remaining) const
     {
         trie_find_result_ result;
@@ -111,7 +114,7 @@ public:
         return result;
     }
 
-    bool insert(const char* token, const value_type& value,
+    bool insert(const char_t* token, const value_type& value,
                 const bool is_case_insensitive)
     {
         bool result = false;
@@ -131,7 +134,7 @@ public:
         return result;
     }
 
-    bool erase(const char* token, const bool is_case_insensitive)
+    bool erase(const char_t* token, const bool is_case_insensitive)
     {
         bool result = false;
         if (static_cast<uint8_t>(*token) == 0) {
@@ -190,11 +193,11 @@ private:
         return result;
     }
 
-    bool insert_recursive(const char* token, const value_type& value,
+    bool insert_recursive(const char_t* token, const value_type& value,
                           const bool is_case_insensitive)
     {
         const uint8_t c = static_cast<uint8_t>(*token);
-        const char* next = token + 1;
+        const char_t* next = token + 1;
 
         trie_node*& child = children_[c];
         if (nullptr == child) {
@@ -212,10 +215,10 @@ private:
         return result;
     }
 
-    bool erase_recursive(const char* token, const bool is_case_insensitive)
+    bool erase_recursive(const char_t* token, const bool is_case_insensitive)
     {
         const uint8_t c = static_cast<uint8_t>(*token);
-        const char* next = token + 1;
+        const char_t* next = token + 1;
 
         bool result = false;
         trie_node*& child = children_[c];
@@ -255,9 +258,10 @@ class trie
 public:
     using trie_find_result_ = trie_find_result<value_type>;
 
-    static_assert(sizeof(uint8_t) == sizeof(char),
-                  "The trie implementation needs a char type that has 8 bits or"
-                  " it would compromise some type convertions.");
+    static_assert(
+        sizeof(uint8_t) == sizeof(char_t),
+        "The trie implementation needs a char_t type that has 8 bits or"
+        " it would compromise some type convertions.");
 
     //! Determines whether the trie and all it's operations are acting case
     //! sensitive or not.
@@ -270,7 +274,7 @@ public:
     //! Returns the longest match inside the trie. At most max_length characters
     //! are read. It returns a structure of used length to get this token and
     //! result value. If no token is found, the result's used size is zero.
-    trie_find_result_ find(const char* const search_string,
+    trie_find_result_ find(const char_t* const search_string,
                            const size_t max_length) const
     {
         return root_node_.find(search_string, search_string, max_length);
@@ -278,13 +282,13 @@ public:
 
     //! Inserts a token with it's value into the trie. Returns whether the token
     //! was not already in the trie and the token was therefore inserted.
-    bool insert(const char* token, const value_type& value)
+    bool insert(const char_t* token, const value_type& value)
     {
         return root_node_.insert(token, value, is_case_insensitive_);
     }
 
     //! Erases a token. Returns whether the token could be erased.
-    bool erase(const char* token)
+    bool erase(const char_t* token)
     {
         return root_node_.erase(token, is_case_insensitive_);
     }

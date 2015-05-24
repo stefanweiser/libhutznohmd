@@ -24,6 +24,8 @@
 #include <string>
 #include <vector>
 
+#include <libhutznohmd/types.hpp>
+
 namespace hutzn
 {
 
@@ -119,7 +121,7 @@ some important decisions:
 
 //! Universal data buffer type. Could contain unprintable content or binary
 //! data.
-using buffer = std::vector<char>;
+using buffer = std::vector<char_t>;
 
 //! A block device is an object, which could be used to send and receive data
 //! blockwise. These blocks could be of custom size.

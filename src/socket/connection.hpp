@@ -46,7 +46,7 @@ public:
     bool connect(void);
 
 private:
-    bool send(const char* buffer, const size_t& size);
+    bool send(const char_t* buffer, const size_t& size);
 
     bool is_connected_;
     int socket_;

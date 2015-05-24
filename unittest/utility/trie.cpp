@@ -26,8 +26,8 @@ using namespace testing;
 namespace hutzn
 {
 
-using trie_ = trie<int>;
-using trie_find_result_ = trie_find_result<int>;
+using trie_ = trie<int32_t>;
+using trie_find_result_ = trie_find_result<int32_t>;
 
 inline trie_find_result_ make_trie_find_result(const size_t used_size,
                                                const int value)

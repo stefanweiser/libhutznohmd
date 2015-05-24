@@ -30,12 +30,12 @@ class request_interface_mock : public request_interface
 {
 public:
     MOCK_CONST_METHOD0(method, http_verb(void));
-    MOCK_CONST_METHOD0(path, const char*(void));
-    MOCK_CONST_METHOD0(host, const char*(void));
-    MOCK_CONST_METHOD1(query, const char*(const char* const));
-    MOCK_CONST_METHOD0(fragment, const char*(void));
+    MOCK_CONST_METHOD0(path, const char_t*(void));
+    MOCK_CONST_METHOD0(host, const char_t*(void));
+    MOCK_CONST_METHOD1(query, const char_t*(const char_t* const));
+    MOCK_CONST_METHOD0(fragment, const char_t*(void));
     MOCK_CONST_METHOD0(version, http_version(void));
-    MOCK_CONST_METHOD1(header_value, const char*(const char* const));
+    MOCK_CONST_METHOD1(header_value, const char_t*(const char_t* const));
     MOCK_CONST_METHOD0(keeps_connection, bool(void));
     MOCK_CONST_METHOD0(date, time_t(void));
     MOCK_CONST_METHOD0(content, void*(void));
@@ -43,9 +43,9 @@ public:
     MOCK_CONST_METHOD0(content_type, mime(void));
     MOCK_CONST_METHOD2(accept, bool(void*&, mime&));
     MOCK_CONST_METHOD0(expect, http_expectation(void));
-    MOCK_CONST_METHOD0(from, const char*(void));
-    MOCK_CONST_METHOD0(referer, const char*(void));
-    MOCK_CONST_METHOD0(user_agent, const char*(void));
+    MOCK_CONST_METHOD0(from, const char_t*(void));
+    MOCK_CONST_METHOD0(referer, const char_t*(void));
+    MOCK_CONST_METHOD0(user_agent, const char_t*(void));
 };
 
 using request_mock_pointer = std::shared_ptr<request_interface_mock>;
@@ -53,12 +53,12 @@ using request_mock_pointer = std::shared_ptr<request_interface_mock>;
 class response_interface_mock : public response_interface
 {
 public:
-    MOCK_METHOD2(set_header, bool(const char* const, const char* const));
+    MOCK_METHOD2(set_header, bool(const char_t* const, const char_t* const));
     MOCK_METHOD2(set_content, void(const buffer&, const bool));
-    MOCK_METHOD1(set_content_location, void(const char* const));
-    MOCK_METHOD1(set_location, void(const char* const));
+    MOCK_METHOD1(set_content_location, void(const char_t* const));
+    MOCK_METHOD1(set_location, void(const char_t* const));
     MOCK_METHOD1(set_retry_after, bool(const time_t));
-    MOCK_METHOD1(set_server, void(const char* const));
+    MOCK_METHOD1(set_server, void(const char_t* const));
 };
 
 using response_mock_pointer = std::shared_ptr<response_interface_mock>;

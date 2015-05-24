@@ -16,29 +16,26 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_HTTP_PARSER_UTILITY_MD5_HPP
-#define LIBHUTZNOHMD_HTTP_PARSER_UTILITY_MD5_HPP
+#ifndef LIBHUTZNOHMD_LIBHUTZNOHMD_TYPES_HPP
+#define LIBHUTZNOHMD_LIBHUTZNOHMD_TYPES_HPP
 
-#include <array>
 #include <cstdint>
-#include <vector>
-
-#include <libhutznohmd/types.hpp>
 
 namespace hutzn
 {
 
-namespace http
-{
-
-//! @brief Calculates the MD5 sum of a given vector of bytes.
-//! @param data Vector of data to parse.
-//! @return Array of 16 bytes, that contains the digest.
-//! @warning This currently works only on little endian architectures.
-std::array<uint8_t, 16> calculate_md5(const std::vector<char_t>& data);
-
-} // namespace http
+using char_t = char;
+using uint8_t = std::uint8_t;
+using uintl6_t = std::uint16_t;
+using uint32_t = std::uint32_t;
+using uint64_t = std::uint64_t;
+using int8_t = std::int8_t;
+using int16_t = std::int16_t;
+using int32_t = std::int32_t;
+using int64_t = std::int64_t;
+using float32_t = float;
+using float64_t = double;
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_HTTP_PARSER_UTILITY_MD5_HPP
+#endif // LIBHUTZNOHMD_LIBHUTZNOHMD_TYPES_HPP

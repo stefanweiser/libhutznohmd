@@ -101,7 +101,7 @@ inline uint32_t set4(const uint32_t& a, const uint32_t& b, const uint32_t& c,
 //! @param data The data block to process.
 //! @param digest The current digest result.
 //! @warning Calling this function makes only sense inside of the md5 algorithm.
-void process(const char data[block_size], std::array<uint32_t, 4>& digest)
+void process(const char_t data[block_size], std::array<uint32_t, 4>& digest)
 {
     uint32_t a = digest[0];
     uint32_t b = digest[1];
@@ -183,7 +183,7 @@ void process(const char data[block_size], std::array<uint32_t, 4>& digest)
 
 } // namespace
 
-std::array<uint8_t, 16> calculate_md5(const std::vector<char>& data)
+std::array<uint8_t, 16> calculate_md5(const std::vector<char_t>& data)
 {
     static constexpr size_t bits_per_byte = 8;
     static constexpr size_t size_of_size = sizeof(uint64_t);
@@ -191,7 +191,7 @@ std::array<uint8_t, 16> calculate_md5(const std::vector<char>& data)
 
     std::array<uint32_t, 4> digest{
         {0x67452301U, 0xEFCDAB89U, 0x98BADCFEU, 0x10325476U}};
-    const char* pointer = data.data();
+    const char_t* pointer = data.data();
     size_t remaining = data.size();
 
     // Process.
@@ -202,7 +202,7 @@ std::array<uint8_t, 16> calculate_md5(const std::vector<char>& data)
     }
 
     // Copy the rest.
-    std::array<char, block_size> data_buffer;
+    std::array<char_t, block_size> data_buffer;
     uint8_t last_bit = 0x80U;
     std::copy(data.end() - static_cast<ssize_t>(remaining), data.end(),
               data_buffer.begin());
@@ -211,7 +211,7 @@ std::array<uint8_t, 16> calculate_md5(const std::vector<char>& data)
     // another block.
     if (remaining > (max_size_minus_size - 1)) {
         std::fill(data_buffer.begin() + remaining, data_buffer.end(), 0);
-        data_buffer[remaining] = static_cast<char>(last_bit);
+        data_buffer[remaining] = static_cast<char_t>(last_bit);
         process(data_buffer.data(), digest);
         last_bit = 0;
         remaining = 0;
@@ -220,14 +220,14 @@ std::array<uint8_t, 16> calculate_md5(const std::vector<char>& data)
     // Fill up the block till there are 8 bytes left for the size in bits.
     std::fill(data_buffer.begin() + remaining,
               data_buffer.begin() + max_size_minus_size, 0);
-    data_buffer[remaining] = static_cast<char>(last_bit);
+    data_buffer[remaining] = static_cast<char_t>(last_bit);
 
     // Fill up the number of bits.
     const uint64_t processed_bits = data.size() * bits_per_byte;
     for (size_t i = 0; i < size_of_size; ++i) {
         const size_t index = max_size_minus_size + i;
         data_buffer[index] =
-            static_cast<char>(processed_bits >> (i * bits_per_byte));
+            static_cast<char_t>(processed_bits >> (i * bits_per_byte));
     }
 
     // Process last block.

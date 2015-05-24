@@ -20,6 +20,7 @@
 #define LIBHUTZNOHMD_LIBHUTZNOHMD_REQUEST_HPP
 
 #include <libhutznohmd/sockets.hpp>
+#include <libhutznohmd/types.hpp>
 
 namespace hutzn
 {
@@ -808,19 +809,19 @@ public:
 
     //! The used URL without scheme, authorization, host, port, queries or
     //! fragment.
-    virtual const char* path(void) const = 0;
+    virtual const char_t* path(void) const = 0;
 
     //! The host name used by the request client. It could be part of the
     //! request line or the header field Host. If a host is present at both
     //! places, the header field Host overwrites that one in the request line.
     //! This is currently just an information.
-    virtual const char* host(void) const = 0;
+    virtual const char_t* host(void) const = 0;
 
     //! Returns a value of a key, that is in the query part of the URL.
-    virtual const char* query(const char* const key) const = 0;
+    virtual const char_t* query(const char_t* const key) const = 0;
 
     //! Returns the fragment of the URL.
-    virtual const char* fragment(void) const = 0;
+    virtual const char_t* fragment(void) const = 0;
 
     //! Returns the used HTTP version. This influences server behaviour
     //! (e.g. connection duration).
@@ -830,7 +831,7 @@ public:
     //! available by explicit member functions are available. If the header
     //! field is not present, it returns an empty string. Will never return
     //! a null-pointer.
-    virtual const char* header_value(const char* const name) const = 0;
+    virtual const char_t* header_value(const char_t* const name) const = 0;
 
     //! Returns true, if the connection will be kept after the request is
     //! processed.
@@ -878,15 +879,15 @@ public:
     virtual http_expectation expect(void) const = 0;
 
     //! Returns the content of the from field.
-    virtual const char* from(void) const = 0;
+    virtual const char_t* from(void) const = 0;
 
     //! Returns the content of the referer field.
-    virtual const char* referer(void) const = 0;
+    virtual const char_t* referer(void) const = 0;
 
     //! Returns the content of the user agent field. Usually this is used to
     //! work around some idiosyncrasies of some specific clients to improve the
     //! result of the web service.
-    virtual const char* user_agent(void) const = 0;
+    virtual const char_t* user_agent(void) const = 0;
 };
 
 //! The request handler uses this interface to assemble the response.
@@ -900,8 +901,8 @@ public:
     //! if the value was successfully set. A header field could get cleared by
     //! leaving the value empty. The header field will not be part of the
     //! response data in that case.
-    virtual bool set_header(const char* const name,
-                            const char* const value) = 0;
+    virtual bool set_header(const char_t* const name,
+                            const char_t* const value) = 0;
 
     //! Sets or overwrites the content and implicitly the content length of the
     //! response. The second parameter controls, whether a Content-MD5 field
@@ -909,10 +910,10 @@ public:
     virtual void set_content(const buffer& content, const bool set_md5) = 0;
 
     //! Sets or overwrites the Content-Location header field.
-    virtual void set_content_location(const char* const content_location) = 0;
+    virtual void set_content_location(const char_t* const content_location) = 0;
 
     //! Sets or overwrites the Location header field.
-    virtual void set_location(const char* const location) = 0;
+    virtual void set_location(const char_t* const location) = 0;
 
     //! Sets or overwrites a retry timeout. The client should then repeat the
     //! request after it timed out. Setting 0 (the origin of the epoch time)
@@ -928,7 +929,7 @@ public:
     //! domain, it could be assumed, that attackers know about the
     //! implementations weaknesses). Consider that setting the server software
     //! name without a version may be a good solution.
-    virtual void set_server(const char* const fingerprint) = 0;
+    virtual void set_server(const char_t* const fingerprint) = 0;
 };
 
 } // namespace hutzn

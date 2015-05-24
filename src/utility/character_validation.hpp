@@ -21,13 +21,15 @@
 
 #include <array>
 
+#include <libhutznohmd/types.hpp>
+
 namespace hutzn
 {
 
 //! Converts a letter into the corresponding lower case letter.
-inline char to_lower(const char c)
+inline char_t to_lower(const char_t c)
 {
-    char result;
+    char_t result;
     if ((c >= 'A') && (c <= 'Z')) {
         result = (c | 0x60);
     } else {
@@ -37,9 +39,9 @@ inline char to_lower(const char c)
 }
 
 //! Converts a character with hexadecimal encoding to its digit.
-inline char from_hex(const char c)
+inline char_t from_hex(const char_t c)
 {
-    static const std::array<char, 256> hex_conversion_map = {
+    static const std::array<char_t, 256> hex_conversion_map = {
         {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
          -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
          -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 1, 2, 3, 4, 5, 6, 7,
@@ -63,7 +65,7 @@ inline char from_hex(const char c)
 //! authority without the '@' symbol.
 inline bool is_valid_uri_authority_character(uint8_t c)
 {
-    static const std::array<char, 256> uri_authority_validity_map = {
+    static const std::array<char_t, 256> uri_authority_validity_map = {
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1,
@@ -81,7 +83,7 @@ inline bool is_valid_uri_authority_character(uint8_t c)
 //! Returns true, if the given character is a valid character for a URI path.
 inline bool is_valid_uri_path_character(uint8_t c)
 {
-    static const std::array<char, 256> uri_path_validity_map = {
+    static const std::array<char_t, 256> uri_path_validity_map = {
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -99,7 +101,7 @@ inline bool is_valid_uri_path_character(uint8_t c)
 //! Returns true, if the given character is a valid character for a URI query.
 inline bool is_valid_uri_query_character(uint8_t c)
 {
-    static const std::array<char, 256> uri_query_validity_map = {
+    static const std::array<char_t, 256> uri_query_validity_map = {
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -118,7 +120,7 @@ inline bool is_valid_uri_query_character(uint8_t c)
 //! fragment.
 inline bool is_valid_uri_fragment_character(uint8_t c)
 {
-    static const std::array<char, 256> uri_fragment_validity_map = {
+    static const std::array<char_t, 256> uri_fragment_validity_map = {
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -136,7 +138,7 @@ inline bool is_valid_uri_fragment_character(uint8_t c)
 //! Returns true, if the given character is a valid token character.
 inline bool is_valid_token_character(uint8_t c)
 {
-    static const std::array<char, 256> token_validity_map = {
+    static const std::array<char_t, 256> token_validity_map = {
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0,
          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1,
@@ -155,7 +157,7 @@ inline bool is_valid_token_character(uint8_t c)
 //! header value.
 inline bool is_valid_header_value_character(uint8_t c)
 {
-    static const std::array<char, 256> header_value_validity_map = {
+    static const std::array<char_t, 256> header_value_validity_map = {
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -174,7 +176,7 @@ inline bool is_valid_header_value_character(uint8_t c)
 //! string.
 inline bool is_valid_quoted_string_character(uint8_t c)
 {
-    static const std::array<char, 256> quoted_string_validity_map = {
+    static const std::array<char_t, 256> quoted_string_validity_map = {
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,

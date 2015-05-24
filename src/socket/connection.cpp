@@ -91,7 +91,7 @@ bool connection::send(const std::string& data)
     return send(data.data(), data.size());
 }
 
-bool connection::send(const char* data, const size_t& size)
+bool connection::send(const char_t* data, const size_t& size)
 {
     bool result = false;
     if ((true == is_connected_) &&
