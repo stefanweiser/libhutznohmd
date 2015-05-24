@@ -41,7 +41,7 @@ std::shared_ptr<listener> listener::create(const std::string& host,
                                            const uint16_t& port)
 {
     std::shared_ptr<listener> result;
-    const int socket_fd = socket(PF_INET, SOCK_STREAM, 0);
+    const int32_t socket_fd = socket(PF_INET, SOCK_STREAM, 0);
     if (socket_fd >= 0) {
 
         // This is an accepted exceptional use of an union (breaks MISRA
@@ -54,8 +54,8 @@ std::shared_ptr<listener> listener::create(const std::string& host,
         } addr;
 
         addr.in = fill_address(host, port);
-        const int result1 = bind(socket_fd, &addr.base, sizeof(addr.in));
-        const int result2 = ::listen(socket_fd, 4);
+        const int32_t result1 = bind(socket_fd, &addr.base, sizeof(addr.in));
+        const int32_t result2 = ::listen(socket_fd, 4);
         if ((result1 != -1) && (result2 != -1)) {
             result = std::make_shared<listener>(socket_fd);
         }
@@ -64,7 +64,7 @@ std::shared_ptr<listener> listener::create(const std::string& host,
     return result;
 }
 
-listener::listener(const int& socket)
+listener::listener(const int32_t& socket)
     : is_listening_(true)
     , socket_(socket)
 {
@@ -73,7 +73,7 @@ listener::listener(const int& socket)
 listener::~listener(void)
 {
     stop();
-    const int close_result = close_signal_safe(socket_);
+    const int32_t close_result = close_signal_safe(socket_);
     assert(close_result == 0);
     UNUSED(close_result);
 }
@@ -93,7 +93,7 @@ connection_pointer listener::accept(void) const
         } addr;
 
         socklen_t size = sizeof(addr.in);
-        const int client = accept_signal_safe(socket_, &addr.base, &size);
+        const int32_t client = accept_signal_safe(socket_, &addr.base, &size);
         if (client >= 0) {
             result = std::make_shared<connection>(client);
         }
@@ -112,7 +112,7 @@ void listener::stop(void)
     shutdown(socket_, SHUT_RDWR);
 }
 
-bool listener::set_lingering_timeout(const int& timeout)
+bool listener::set_lingering_timeout(const int32_t& timeout)
 {
     const linger l{1, timeout};
     return (setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0);

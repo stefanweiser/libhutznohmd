@@ -34,16 +34,16 @@ public:
     static std::shared_ptr<listener> create(const std::string& host,
                                             const uint16_t& port);
 
-    explicit listener(const int& socket);
+    explicit listener(const int32_t& socket);
     ~listener(void) override;
     connection_pointer accept(void) const override;
     bool listening(void) const override;
     void stop(void) override;
-    bool set_lingering_timeout(const int& timeout) override;
+    bool set_lingering_timeout(const int32_t& timeout) override;
 
 private:
     bool is_listening_;
-    int socket_;
+    int32_t socket_;
 };
 
 } // namespace hutzn

@@ -34,14 +34,14 @@ public:
     static std::shared_ptr<connection> create(const std::string& host,
                                               const uint16_t& port);
 
-    explicit connection(const int& socket);
-    explicit connection(const int& socket, const sockaddr_in& address);
+    explicit connection(const int32_t& socket);
+    explicit connection(const int32_t& socket, const sockaddr_in& address);
     ~connection(void) override;
     void close(void) override;
     bool receive(buffer& data, const size_t& max_size) override;
     bool send(const buffer& data) override;
     bool send(const std::string& data) override;
-    bool set_lingering_timeout(const int& timeout) override;
+    bool set_lingering_timeout(const int32_t& timeout) override;
 
     bool connect(void);
 
@@ -49,7 +49,7 @@ private:
     bool send(const char_t* buffer, const size_t& size);
 
     bool is_connected_;
-    int socket_;
+    int32_t socket_;
     const sockaddr_in address_;
 };
 

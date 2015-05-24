@@ -32,7 +32,7 @@ std::shared_ptr<connection> connection::create(const std::string& host,
                                                const uint16_t& port)
 {
     std::shared_ptr<connection> result;
-    const int socket_fd = socket(PF_INET, SOCK_STREAM, 0);
+    const int32_t socket_fd = socket(PF_INET, SOCK_STREAM, 0);
     if (socket_fd != -1) {
         const sockaddr_in address = fill_address(host, port);
         result = std::make_shared<connection>(socket_fd, address);
@@ -40,14 +40,14 @@ std::shared_ptr<connection> connection::create(const std::string& host,
     return result;
 }
 
-connection::connection(const int& socket)
+connection::connection(const int32_t& socket)
     : is_connected_(true)
     , socket_(socket)
     , address_()
 {
 }
 
-connection::connection(const int& socket, const sockaddr_in& address)
+connection::connection(const int32_t& socket, const sockaddr_in& address)
     : is_connected_(false)
     , socket_(socket)
     , address_(address)
@@ -57,7 +57,7 @@ connection::connection(const int& socket, const sockaddr_in& address)
 connection::~connection(void)
 {
     close();
-    const int close_result = close_signal_safe(socket_);
+    const int32_t close_result = close_signal_safe(socket_);
     assert(close_result == 0);
     UNUSED(close_result);
 }
@@ -125,7 +125,7 @@ bool connection::send(const char_t* data, const size_t& size)
     return result;
 }
 
-bool connection::set_lingering_timeout(const int& timeout)
+bool connection::set_lingering_timeout(const int32_t& timeout)
 {
     linger l{1, timeout};
     return (setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0);

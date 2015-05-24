@@ -173,7 +173,7 @@ public:
     //! TIME_WAIT will eat up stray packets of the old connection. However
     //! sometimes it is necessary to overwrite this timeout (e.g. when
     //! integration testing sockets or this socket implementation).
-    virtual bool set_lingering_timeout(const int& timeout) = 0;
+    virtual bool set_lingering_timeout(const int32_t& timeout) = 0;
 };
 
 //! A connection is always handled via reference counted pointers.
@@ -203,8 +203,8 @@ public:
     //! will succeed if it is shut.
     virtual void stop(void) = 0;
 
-    //! @see connection_interface::set_lingering_timeout(const int&)
-    virtual bool set_lingering_timeout(const int& timeout) = 0;
+    //! @see connection_interface::set_lingering_timeout(const int32_t&)
+    virtual bool set_lingering_timeout(const int32_t& timeout) = 0;
 };
 
 //! A listener is always handled via reference counted pointers.

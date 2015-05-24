@@ -28,30 +28,32 @@
 namespace hutzn
 {
 
-int close_signal_safe(const int file_descriptor) noexcept(true)
+int32_t close_signal_safe(const int32_t file_descriptor) noexcept(true)
 {
-    int result;
+    int32_t result;
     do {
         result = close(file_descriptor);
     } while ((result == -1) && (errno == EINTR));
     return result;
 }
 
-int accept_signal_safe(const int socket_descriptor, sockaddr* const address,
-                       socklen_t* const size) noexcept(true)
+int32_t accept_signal_safe(const int32_t socket_descriptor,
+                           sockaddr* const address,
+                           socklen_t* const size) noexcept(true)
 {
-    int result;
+    int32_t result;
     do {
         result = accept(socket_descriptor, address, size);
     } while ((result == -1) && (errno == EINTR));
     return result;
 }
 
-int connect_signal_safe(const int socket_fd, const sockaddr* const address,
-                        const socklen_t size) noexcept(true)
+int32_t connect_signal_safe(const int32_t socket_fd,
+                            const sockaddr* const address,
+                            const socklen_t size) noexcept(true)
 {
     // Try to connect.
-    int result = connect(socket_fd, address, size);
+    int32_t result = connect(socket_fd, address, size);
 
     // If this fails, try to recover from this error state.
     if ((result == -1) && (errno == EINTR)) {
@@ -64,7 +66,7 @@ int connect_signal_safe(const int socket_fd, const sockaddr* const address,
 
         if (result != -1) {
             // Check the error option of the socket.
-            int error;
+            int32_t error;
             socklen_t s = sizeof(error);
             result = getsockopt(socket_fd, SOL_SOCKET, SO_ERROR, &error, &s);
             if (error != 0) {
@@ -75,8 +77,9 @@ int connect_signal_safe(const int socket_fd, const sockaddr* const address,
     return result;
 }
 
-ssize_t send_signal_safe(const int file_descriptor, const void* const buffer,
-                         const size_t size, const int flags) noexcept(true)
+ssize_t send_signal_safe(const int32_t file_descriptor,
+                         const void* const buffer, const size_t size,
+                         const int32_t flags) noexcept(true)
 {
     ssize_t sent;
     do {
@@ -85,8 +88,9 @@ ssize_t send_signal_safe(const int file_descriptor, const void* const buffer,
     return sent;
 }
 
-ssize_t receive_signal_safe(const int file_descriptor, void* const buffer,
-                            const size_t size, const int flags) noexcept(true)
+ssize_t receive_signal_safe(const int32_t file_descriptor, void* const buffer,
+                            const size_t size,
+                            const int32_t flags) noexcept(true)
 {
     ssize_t received;
     do {

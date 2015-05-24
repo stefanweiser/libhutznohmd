@@ -30,7 +30,7 @@ using trie_ = trie<int32_t>;
 using trie_find_result_ = trie_find_result<int32_t>;
 
 inline trie_find_result_ make_trie_find_result(const size_t used_size,
-                                               const int value)
+                                               const int32_t value)
 {
     return trie_find_result_{used_size, value};
 }

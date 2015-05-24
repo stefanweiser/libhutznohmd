@@ -33,7 +33,7 @@ public:
     bool receive(hutzn::buffer& data, const size_t& max_size) override;
     bool send(const hutzn::buffer& data) override;
     bool send(const std::string& data) override;
-    bool set_lingering_timeout(const int& timeout) override;
+    bool set_lingering_timeout(const int32_t& timeout) override;
 
 private:
     std::ifstream stream_;
@@ -53,7 +53,7 @@ void connection::close(void)
 bool connection::receive(hutzn::buffer& data, const size_t& max_size)
 {
     size_t read_bytes = 0;
-    int c = 0;
+    int32_t c = 0;
     while ((c >= 0) && (read_bytes < max_size)) {
         c = stream_.get();
         if (c >= 0) {
@@ -75,7 +75,7 @@ bool connection::send(const std::string& /*data*/)
     return true;
 }
 
-bool connection::set_lingering_timeout(const int& /*timeout*/)
+bool connection::set_lingering_timeout(const int32_t& /*timeout*/)
 {
     return true;
 }

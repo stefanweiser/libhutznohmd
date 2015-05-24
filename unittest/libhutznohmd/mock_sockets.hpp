@@ -34,7 +34,7 @@ public:
     MOCK_METHOD2(receive, bool(buffer&, const size_t&));
     MOCK_METHOD1(send, bool(const buffer&));
     MOCK_METHOD1(send, bool(const std::string&));
-    MOCK_METHOD1(set_lingering_timeout, bool(const int&));
+    MOCK_METHOD1(set_lingering_timeout, bool(const int32_t&));
 };
 
 using connection_mock_pointer = std::shared_ptr<connection_interface_mock>;
@@ -45,7 +45,7 @@ public:
     MOCK_CONST_METHOD0(accept, connection_pointer(void));
     MOCK_CONST_METHOD0(listening, bool(void));
     MOCK_METHOD0(stop, void(void));
-    MOCK_METHOD1(set_lingering_timeout, bool(const int&));
+    MOCK_METHOD1(set_lingering_timeout, bool(const int32_t&));
 };
 
 using listener_mock_pointer = std::shared_ptr<listener_interface_mock>;
