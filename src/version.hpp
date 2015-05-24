@@ -19,6 +19,8 @@
 #ifndef LIBHUTZNOHMD_VERSION_HPP
 #define LIBHUTZNOHMD_VERSION_HPP
 
+#include <string>
+
 namespace hutzn
 {
 
