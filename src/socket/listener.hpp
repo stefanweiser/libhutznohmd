@@ -34,7 +34,7 @@ public:
     static std::shared_ptr<listener> create(const std::string& host,
                                             const uint16_t& port);
 
-    explicit listener(const int& s);
+    explicit listener(const int& socket);
     ~listener() override;
     connection_pointer accept() const override;
     bool listening() const override;

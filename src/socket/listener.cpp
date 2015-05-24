@@ -38,32 +38,33 @@ listener_pointer listen(const std::string& host, const uint16_t& port)
 std::shared_ptr<listener> listener::create(const std::string& host,
                                            const uint16_t& port)
 {
-    const int socket = ::socket(PF_INET, SOCK_STREAM, 0);
-    if (socket == -1) {
-        return std::shared_ptr<listener>();
-    }
+    std::shared_ptr<listener> result;
+    const int socket_fd = socket(PF_INET, SOCK_STREAM, 0);
+    if (socket_fd >= 0) {
 
-    std::shared_ptr<listener> result = std::make_shared<listener>(socket);
+        // This is an accepted exceptional use of an union (breaks MISRA
+        // C++:2008 Rule 9-5-1). Alternatively a reinterpret_cast could be used,
+        // but anyway there must be a way to fulfill the BSD socket interface.
+        union
+        {
+            sockaddr base;
+            sockaddr_in in;
+        } addr;
 
-    union
-    {
-        sockaddr base;
-        sockaddr_in in;
-    } s;
-
-    s.in = fill_address(host, port);
-    int result1 = bind(result->socket_, &s.base, sizeof(s.in));
-    int result2 = ::listen(result->socket_, 4);
-    if ((result1 == -1) || (result2 == -1)) {
-        return std::shared_ptr<listener>();
+        addr.in = fill_address(host, port);
+        const int result1 = bind(socket_fd, &addr.base, sizeof(addr.in));
+        const int result2 = ::listen(socket_fd, 4);
+        if ((result1 != -1) && (result2 != -1)) {
+            result = std::make_shared<listener>(socket_fd);
+        }
     }
 
     return result;
 }
 
-listener::listener(const int& s)
+listener::listener(const int& socket)
     : is_listening_(true)
-    , socket_(s)
+    , socket_(socket)
 {
 }
 
@@ -75,23 +76,25 @@ listener::~listener()
 
 connection_pointer listener::accept() const
 {
-    if (false == is_listening_) {
-        return connection_pointer();
+    connection_pointer result;
+    if (true == is_listening_) {
+
+        // This is an accepted exceptional use of an union (breaks MISRA
+        // C++:2008 Rule 9-5-1). Alternatively a reinterpret_cast could be used,
+        // but anyway there must be a way to fulfill the BSD socket interface.
+        union
+        {
+            sockaddr base;
+            sockaddr_in in;
+        } addr;
+
+        socklen_t size = sizeof(addr.in);
+        const int client = accept_signal_safe(socket_, &addr.base, &size);
+        if (client >= 0) {
+            result = std::make_shared<connection>(client);
+        }
     }
-
-    union
-    {
-        sockaddr base;
-        sockaddr_in in;
-    } s;
-
-    socklen_t size = sizeof(s.in);
-    const int client = accept_signal_safe(socket_, &s.base, &size);
-    if (client == -1) {
-        return connection_pointer();
-    }
-
-    return std::make_shared<connection>(client);
+    return result;
 }
 
 bool listener::listening() const
@@ -107,8 +110,8 @@ void listener::stop()
 
 bool listener::set_lingering_timeout(const int& timeout)
 {
-    linger l = linger{1, timeout};
-    return setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0;
+    const linger l{1, timeout};
+    return (setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0);
 }
 
 } // namespace hutzn
