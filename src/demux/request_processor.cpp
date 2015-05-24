@@ -16,6 +16,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
+
+#include <demux/error_handler.hpp>
+
 #include "request_processor.hpp"
 
 namespace hutzn
@@ -33,6 +37,8 @@ request_processor::request_processor(const demux_query_pointer& query_interface,
                                      const uint64_t& connection_timeout_in_sec)
     : demultiplexer_(query_interface)
     , connection_timeout_in_sec_(connection_timeout_in_sec)
+    , error_handler_mutex_()
+    , error_handlers_()
 {
 }
 
@@ -43,14 +49,24 @@ bool request_processor::handle_one_request(
 }
 
 handler_pointer request_processor::set_error_handler(
-    const http_status_code& /*code*/, const error_handler_callback& /*fn*/)
+    const http_status_code& code, const error_handler_callback& fn)
 {
+    std::lock_guard<std::mutex> lock(error_handler_mutex_);
+
+    // std::map<>::insert will not insert an already inserted element.
+    std::pair<error_handler_map::iterator, bool> result =
+        error_handlers_.insert(std::make_pair(code, fn));
+    if (true == result.second) {
+        return std::make_shared<error_handler>(*this, code);
+    }
+
     return handler_pointer();
 }
 
-bool request_processor::reset_error_handler(const http_status_code& /*code*/)
+void request_processor::reset_error_handler(const http_status_code& code)
 {
-    return true;
+    std::lock_guard<std::mutex> lock(error_handler_mutex_);
+    assert(error_handlers_.erase(code) > 0);
 }
 
 } // namespace hutzn

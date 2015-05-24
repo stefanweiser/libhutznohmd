@@ -19,10 +19,14 @@
 #ifndef LIBHUTZNOHMD_DEMUX_REQUEST_PROCESSOR_HPP
 #define LIBHUTZNOHMD_DEMUX_REQUEST_PROCESSOR_HPP
 
+#include <cstdint>
+#include <map>
 #include <memory>
 #include <mutex>
 
 #include <libhutznohmd/demux.hpp>
+#include <libhutznohmd/request.hpp>
+#include <libhutznohmd/sockets.hpp>
 
 #include <demux/reset_error_handler_interface.hpp>
 
@@ -42,11 +46,17 @@ public:
         const http_status_code& code,
         const error_handler_callback& fn) override;
 
-    virtual bool reset_error_handler(const http_status_code& code) override;
+    virtual void reset_error_handler(const http_status_code& code) override;
 
 private:
+    using error_handler_map =
+        std::map<http_status_code, error_handler_callback>;
+
     demux_query_pointer demultiplexer_;
     uint64_t connection_timeout_in_sec_;
+
+    std::mutex error_handler_mutex_;
+    error_handler_map error_handlers_;
 };
 
 } // namespace hutzn
