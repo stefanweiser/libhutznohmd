@@ -27,36 +27,43 @@
 namespace hutzn
 {
 
-//! Calls the API function close and handles interfering signals. This means,
-//! that the function will return when the file descriptor is closed.
+//! @brief Calls the API function close and handles interfering signals.
+//!
+//! The function will return when the file descriptor is closed.
 void close_signal_safe(const int file_descriptor) noexcept(true);
 
-//! Calls the API function accept and handles interfering signals. This means,
-//! that the function will return when there is a connection in the queue. It
-//! returns the file descriptor of the accepted connection.
+//! @brief Calls the API function accept and handles interfering signals.
+//!
+//! The function will return when there is a connection in the queue. It returns
+//! the file descriptor of the accepted connection.
 int accept_signal_safe(const int file_descriptor, sockaddr* const address,
                        socklen_t* const size);
 
-//! Calls the API function connect and handles interfering signals. This means
-//! that the function will return when a connection is established. The
-//! connection is established, when the socket gets writable.
+//! @brief Calls the API function connect and handles interfering signals.
+//!
+//! This means that the function will return when a connection is established.
+//! The connection is established, when the socket gets writable.
 int connect_signal_safe(const int socket_file_descriptor,
                         const sockaddr* const address, const socklen_t size);
 
-//! Calls the API function send and handles interfering signals. It returns
-//! the number of sent bytes. When the socket is getting closed while sending
-//! data, it will return -1.
+//! @brief Calls the API function send and handles interfering signals.
+//!
+//! It returns the number of sent bytes. When the socket is getting closed while
+//! sending data, it will return -1.
 ssize_t send_signal_safe(const int file_descriptor, const void* const buffer,
                          const size_t size, const int flags) noexcept(true);
 
-//! Calls the API function recv and handles interfering signals. It returns
-//! the number of received bytes. When the socket is getting closed while
-//! receiving data, it will return -1.
+//! @brief Calls the API function recv and handles interfering signals.
+//!
+//! It returns the number of received bytes. When the socket is getting closed
+//! while receiving data, it will return 0.
 ssize_t receive_signal_safe(const int file_descriptor, void* const buffer,
                             const size_t size, const int flags) noexcept(true);
 
-//! Converts a host string and a port into a sockaddr_in struct, that is needed
-//! when communicating with other API functions of the network stack.
+//! @brief Converts a host string and a port into a sockaddr_in struct.
+//!
+//! This is needed when communicating with other API functions of the network
+//! stack. The function does not support domain name lookup.
 sockaddr_in fill_address(const std::string& host, const uint16_t& port);
 
 } // namespace hutzn

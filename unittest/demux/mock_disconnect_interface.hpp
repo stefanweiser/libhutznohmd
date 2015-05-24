@@ -16,25 +16,24 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_LIBHUTZNOHMD_MOCK_DEMUX_HPP
-#define LIBHUTZNOHMD_LIBHUTZNOHMD_MOCK_DEMUX_HPP
+#ifndef LIBHUTZNOHMD_DEMUX_MOCK_DISCONNECT_INTERFACE_HPP
+#define LIBHUTZNOHMD_DEMUX_MOCK_DISCONNECT_INTERFACE_HPP
 
 #include <gmock/gmock.h>
 
-#include <demux/demux_disconnect_interface.hpp>
+#include <demux/disconnect_interface.hpp>
 
 namespace hutzn
 {
 
-class demux_disconnect_interface_mock : public demux_disconnect_interface
+class disconnect_interface_mock : public disconnect_interface
 {
 public:
     MOCK_METHOD1(disconnect, void(const request_handler_id&));
 };
 
-using demux_disconnect_mock_pointer =
-    std::shared_ptr<demux_disconnect_interface_mock>;
+using disconnect_mock_pointer = std::shared_ptr<disconnect_interface_mock>;
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_LIBHUTZNOHMD_MOCK_DEMUX_HPP
+#endif // LIBHUTZNOHMD_DEMUX_MOCK_DISCONNECT_INTERFACE_HPP

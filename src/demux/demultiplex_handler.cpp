@@ -21,7 +21,7 @@
 namespace hutzn
 {
 
-demultiplex_handler::demultiplex_handler(demux_disconnect_interface& demuxer,
+demultiplex_handler::demultiplex_handler(disconnect_interface& demuxer,
                                          const request_handler_id& id)
     : demuxer_(demuxer)
     , id_(id)

@@ -248,10 +248,12 @@ private:
 
 } // namespace detail
 
-//! Implements a trie to map a string to a specific value. It could be case
-//! sensitive or case insensitive and provides the basic operations insert, find
-//! and erase. The find operation will search for stored trie tokens at the
-//! search string's begin. It will always find the longest result.
+//! @brief Implements a trie to map a string to a specific value.
+//!
+//! It could be case sensitive or case insensitive and provides the basic
+//! operations insert, find and erase. The find operation will search for stored
+//! trie tokens at the search string's begin. It will always find the longest
+//! result.
 template <typename value_type>
 class trie
 {
@@ -263,38 +265,47 @@ public:
         "The trie implementation needs a char_t type that has 8 bits or"
         " it would compromise some type convertions.");
 
-    //! Determines whether the trie and all it's operations are acting case
-    //! sensitive or not.
+    //! @brief Determines whether the trie and all it's operations are acting
+    //! case sensitive or not.
     explicit trie(const bool is_case_insensitive)
         : is_case_insensitive_(is_case_insensitive)
         , root_node_()
     {
     }
 
-    //! Returns the longest match inside the trie. At most max_length characters
-    //! are read. It returns a structure of used length to get this token and
-    //! result value. If no token is found, the result's used size is zero.
+    //! @brief Returns the longest match inside the trie.
+    //!
+    //! At most max_length characters are read. It returns a structure of used
+    //! length to get this token and result value. If no token is found, the
+    //! result's used size is zero.
     trie_find_result_ find(const char_t* const search_string,
                            const size_t max_length) const
     {
         return root_node_.find(search_string, search_string, max_length);
     }
 
-    //! Inserts a token with it's value into the trie. Returns whether the token
-    //! was not already in the trie and the token was therefore inserted.
+    //! @brief Inserts a token with it's value into the trie.
+    //!
+    //! Returns whether the token was not already in the trie and the token was
+    //! therefore inserted.
     bool insert(const char_t* token, const value_type& value)
     {
         return root_node_.insert(token, value, is_case_insensitive_);
     }
 
-    //! Erases a token. Returns whether the token could be erased.
+    //! @brief Erases a token.
+    //!
+    //! Returns whether the token could be erased.
     bool erase(const char_t* token)
     {
         return root_node_.erase(token, is_case_insensitive_);
     }
 
 private:
+    //! Defines whether searching a token is done case insensitive or not.
     const bool is_case_insensitive_;
+
+    //! Root node of the trie as entry point for every operation.
     detail::trie_node<value_type> root_node_;
 };
 

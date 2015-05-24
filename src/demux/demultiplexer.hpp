@@ -27,7 +27,7 @@
 #include <request/parser_data.hpp>
 #include <demux/demultiplexer_ordered_mime_map.hpp>
 
-#include <demux/demux_disconnect_interface.hpp>
+#include <demux/disconnect_interface.hpp>
 
 namespace hutzn
 {
@@ -40,7 +40,7 @@ namespace hutzn
 //! management and the request handler determination algorithm. This class is
 //! designed to be thread safe. It does not call any callbacks into the user's
 //! domain.
-class demultiplexer : public demux_interface, public demux_disconnect_interface
+class demultiplexer : public demux_interface, public disconnect_interface
 {
 public:
     explicit demultiplexer(void);

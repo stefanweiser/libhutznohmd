@@ -19,7 +19,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <demux/mock_demux_disconnect_interface.hpp>
+#include <demux/mock_disconnect_interface.hpp>
 #include <demux/demultiplex_handler.hpp>
 
 using namespace testing;
@@ -36,8 +36,8 @@ bool operator==(const request_handler_id& lhs, const request_handler_id& rhs)
 
 TEST(demultiplex_handler, disconnect)
 {
-    demux_disconnect_mock_pointer demuxer =
-        std::make_shared<demux_disconnect_interface_mock>();
+    disconnect_mock_pointer demuxer =
+        std::make_shared<disconnect_interface_mock>();
 
     request_handler_id id{"/", http_verb::GET,
                           mime(mime_type::WILDCARD, mime_subtype::WILDCARD),

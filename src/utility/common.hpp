@@ -24,9 +24,12 @@
 namespace hutzn
 {
 
-constexpr size_t BITS_PER_BYTE = 8 * sizeof(uint8_t);
-constexpr size_t NUMBER_OF_VALUES_PER_BYTE = 1 << BITS_PER_BYTE;
+//! Contains the number of values, that can be represented by one byte.
+constexpr size_t NUMBER_OF_VALUES_PER_BYTE = 1 << (8 * sizeof(uint8_t));
 
+//! @brief Checking, whether a value is inbetween a range.
+//!
+//! Returns true if the value is in the interval [lower_bound, upper_bound].
 template <typename type, const type lower_bound, const type upper_bound>
 bool check_range(const type& value)
 {
@@ -35,8 +38,10 @@ bool check_range(const type& value)
     return ((value >= lower_bound) && (value <= upper_bound));
 }
 
-//! Checks if a given url path is valid. The path must begin with a slash and
-//! double slashs are not allowed. Returns true, if the the path is valid.
+//! @brief Checks if a given url path is valid.
+//!
+//! The path must begin with a slash and double slashs are not allowed. Returns
+//! true, if the the path is valid.
 bool is_valid_uri_path(const std::string& path);
 
 } // namespace hutzn

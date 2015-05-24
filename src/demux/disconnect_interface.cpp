@@ -16,30 +16,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_DEMUX_DEMUX_DISCONNECT_INTERFACE_HPP
-#define LIBHUTZNOHMD_DEMUX_DEMUX_DISCONNECT_INTERFACE_HPP
-
-#include <libhutznohmd/demux.hpp>
+#include "disconnect_interface.hpp"
 
 namespace hutzn
 {
 
-//! @brief Provides a standardized way to disconnect a request handler from a
-//! demultiplexer.
-//!
-//! When connecting a request handler to a demultiplexer, it has to be
-//! disconnect later. This is done by releasing the handler. The handler in turn
-//! will disconnect the request handler from its demultiplexer. This is an
-//! internal interface.
-class demux_disconnect_interface
+disconnect_interface::~disconnect_interface(void)
 {
-public:
-    virtual ~demux_disconnect_interface(void);
-
-    //! @brief Disconnects the handler with the given id from the demultiplexer.
-    virtual void disconnect(const request_handler_id& id) = 0;
-};
+}
 
 } // namespace hutzn
-
-#endif // LIBHUTZNOHMD_DEMUX_DEMUX_DISCONNECT_INTERFACE_HPP

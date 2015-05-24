@@ -26,7 +26,7 @@
 namespace hutzn
 {
 
-//! Converts a letter into the corresponding lower case letter.
+//! @brief Converts a letter into the corresponding lower case letter.
 inline char_t to_lower(const char_t c)
 {
     char_t result;
@@ -38,7 +38,7 @@ inline char_t to_lower(const char_t c)
     return result;
 }
 
-//! Converts a character with hexadecimal encoding to its digit.
+//! @brief Converts a character with hexadecimal encoding to its digit.
 inline char_t from_hex(const char_t c)
 {
     static const std::array<char_t, 256> hex_conversion_map = {
@@ -61,7 +61,7 @@ inline char_t from_hex(const char_t c)
     return hex_conversion_map[static_cast<uint8_t>(c)];
 }
 
-//! Returns true, if the given character is a valid character for a URI
+//! @brief Returns true, if the given character is a valid character for a URI
 //! authority without the '@' symbol.
 inline bool is_valid_uri_authority_character(uint8_t c)
 {
@@ -80,7 +80,8 @@ inline bool is_valid_uri_authority_character(uint8_t c)
     return (uri_authority_validity_map[c] != 0);
 }
 
-//! Returns true, if the given character is a valid character for a URI path.
+//! @brief Returns true, if the given character is a valid character for a URI
+//! path.
 inline bool is_valid_uri_path_character(uint8_t c)
 {
     static const std::array<char_t, 256> uri_path_validity_map = {
@@ -98,7 +99,8 @@ inline bool is_valid_uri_path_character(uint8_t c)
     return (uri_path_validity_map[c] != 0);
 }
 
-//! Returns true, if the given character is a valid character for a URI query.
+//! @brief Returns true, if the given character is a valid character for a URI
+//! query.
 inline bool is_valid_uri_query_character(uint8_t c)
 {
     static const std::array<char_t, 256> uri_query_validity_map = {
@@ -116,7 +118,7 @@ inline bool is_valid_uri_query_character(uint8_t c)
     return (uri_query_validity_map[c] != 0);
 }
 
-//! Returns true, if the given character is a valid character for a URI
+//! @brief Returns true, if the given character is a valid character for a URI
 //! fragment.
 inline bool is_valid_uri_fragment_character(uint8_t c)
 {
@@ -135,7 +137,7 @@ inline bool is_valid_uri_fragment_character(uint8_t c)
     return (uri_fragment_validity_map[c] != 0);
 }
 
-//! Returns true, if the given character is a valid token character.
+//! @brief Returns true, if the given character is a valid token character.
 inline bool is_valid_token_character(uint8_t c)
 {
     static const std::array<char_t, 256> token_validity_map = {
@@ -153,8 +155,8 @@ inline bool is_valid_token_character(uint8_t c)
     return (token_validity_map[c] != 0);
 }
 
-//! Returns true, if the given character is a valid character for a custom
-//! header value.
+//! @brief Returns true, if the given character is a valid character for a
+//! custom header value.
 inline bool is_valid_header_value_character(uint8_t c)
 {
     static const std::array<char_t, 256> header_value_validity_map = {
@@ -172,8 +174,8 @@ inline bool is_valid_header_value_character(uint8_t c)
     return (header_value_validity_map[c] != 0);
 }
 
-//! Returns true, if the given character is a valid character for a quoted
-//! string.
+//! @brief Returns true, if the given character is a valid character for a
+//! quoted string.
 inline bool is_valid_quoted_string_character(uint8_t c)
 {
     static const std::array<char_t, 256> quoted_string_validity_map = {
