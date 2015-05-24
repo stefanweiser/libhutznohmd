@@ -117,10 +117,10 @@ TEST_F(demultiplexer_test, determine_request_unknown_path)
     ASSERT_NE(demultiplexer_.get(), nullptr);
 
     auto request = std::make_shared<request_interface_mock>();
-    const auto ct = mime(mime_type::TEXT, mime_subtype::PLAIN);
-    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(Return(ct));
-    EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
-    EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(http_verb::GET));
+    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(
+        Return(id().content_type));
+    EXPECT_CALL(*request, path()).Times(1).WillOnce(Return(id().path.c_str()));
+    EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(id().method));
 
     EXPECT_FALSE(demultiplexer_->determine_request_handler(*request));
 }
@@ -132,9 +132,9 @@ TEST_F(demultiplexer_test, determine_request_unknown_method)
     ASSERT_NE(handler.get(), nullptr);
 
     auto request = std::make_shared<request_interface_mock>();
-    const auto ct = mime(mime_type::TEXT, mime_subtype::PLAIN);
-    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(Return(ct));
-    EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
+    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(
+        Return(id().content_type));
+    EXPECT_CALL(*request, path()).Times(1).WillOnce(Return(id().path.c_str()));
     EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(http_verb::PUT));
 
     EXPECT_FALSE(demultiplexer_->determine_request_handler(*request));
@@ -174,8 +174,8 @@ TEST_F(demultiplexer_test, determine_request_handler_unknown_content_type)
 
     auto request = std::make_shared<request_interface_mock>();
     const auto ct = mime(mime_type::VIDEO, mime_subtype::PLAIN);
-    EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
-    EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(http_verb::GET));
+    EXPECT_CALL(*request, path()).Times(1).WillOnce(Return(id().path.c_str()));
+    EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(id().method));
     EXPECT_CALL(*request, content_type()).Times(1).WillOnce(Return(ct));
 
     EXPECT_FALSE(demultiplexer_->determine_request_handler(*request));
@@ -188,10 +188,10 @@ TEST_F(demultiplexer_test, determine_request_handler_unknown_accept_type)
     ASSERT_NE(handler.get(), nullptr);
 
     auto request = std::make_shared<request_interface_mock>();
-    const auto ct = mime(mime_type::TEXT, mime_subtype::PLAIN);
-    EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
-    EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(http_verb::GET));
-    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(Return(ct));
+    EXPECT_CALL(*request, path()).Times(1).WillOnce(Return(id().path.c_str()));
+    EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(id().method));
+    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(
+        Return(id().content_type));
     EXPECT_CALL(*request, accept(_, _)).Times(1).WillOnce(
         Invoke([](void*&, mime&) { return false; }));
 
@@ -206,8 +206,8 @@ TEST_F(demultiplexer_test, determine_request_handler_success_1)
     ASSERT_NE(handler.get(), nullptr);
 
     auto request = std::make_shared<request_interface_mock>();
-    EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
-    EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(http_verb::GET));
+    EXPECT_CALL(*request, path()).Times(1).WillOnce(Return(id().path.c_str()));
+    EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(id().method));
     EXPECT_CALL(*request, content_type()).Times(1).WillOnce(
         Return(test_id.content_type));
     EXPECT_CALL(*request, accept(_, _)).Times(1).WillOnce(
@@ -228,8 +228,8 @@ TEST_F(demultiplexer_test, determine_request_handler_success_2)
     ASSERT_NE(handler.get(), nullptr);
 
     auto request = std::make_shared<request_interface_mock>();
-    EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
-    EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(http_verb::GET));
+    EXPECT_CALL(*request, path()).Times(1).WillOnce(Return(id().path.c_str()));
+    EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(id().method));
     EXPECT_CALL(*request, content_type()).Times(1).WillOnce(
         Return(test_id.content_type));
     EXPECT_CALL(*request, accept(_, _))
