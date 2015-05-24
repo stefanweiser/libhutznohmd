@@ -29,7 +29,7 @@ namespace hutzn
 class demux_disconnect_interface_mock : public demux_disconnect_interface
 {
 public:
-    MOCK_METHOD1(disconnect, bool(const request_handler_id&));
+    MOCK_METHOD1(disconnect, void(const request_handler_id&));
 };
 
 using demux_disconnect_mock_pointer =

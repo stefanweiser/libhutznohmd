@@ -46,10 +46,10 @@ public:
     explicit demultiplexer(void);
 
     request_handler_callback determine_request_handler(
-        const request_interface& request) override;
+        const request_interface& request) const override;
     handler_pointer connect(const request_handler_id& id,
                             const request_handler_callback& fn) override;
-    bool disconnect(const request_handler_id& id) override;
+    void disconnect(const request_handler_id& id) override;
     mime_type register_mime_type(const std::string& type) override;
     mime_subtype register_mime_subtype(const std::string& subtype) override;
     bool unregister_mime_type(const mime_type& type) override;
@@ -62,11 +62,7 @@ private:
         http_verb method;
         mime content_type;
 
-        bool operator<(const resource_key& rhs) const
-        {
-            return ((path < rhs.path) || (method < rhs.method) ||
-                    (content_type < rhs.content_type));
-        }
+        bool operator<(const resource_key& rhs) const;
     };
 
     using resource_map = std::map<resource_key, demultiplexer_ordered_mime_map>;
@@ -78,7 +74,7 @@ private:
     bool is_mime_valid(const mime& t) const;
 
     //! Guards the access to the resource map from mutual access.
-    std::mutex resource_callbacks_mutex_;
+    mutable std::mutex resource_callbacks_mutex_;
 
     //! Stores all request handler callbacks.
     resource_map resource_callbacks_;

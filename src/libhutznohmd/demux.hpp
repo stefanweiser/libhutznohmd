@@ -237,7 +237,7 @@ public:
     //! by a first-come-first-served concept. The first request handler, that
     //! gets connected to that resource, gets returned.
     virtual request_handler_callback determine_request_handler(
-        const request_interface& request) = 0;
+        const request_interface& request) const = 0;
 };
 
 //! Demultiplexers should always be used with reference counted pointers.

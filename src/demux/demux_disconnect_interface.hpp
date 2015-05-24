@@ -37,10 +37,7 @@ public:
     virtual ~demux_disconnect_interface(void);
 
     //! @brief Disconnects the handler with the given id from the demultiplexer.
-    //!
-    //! Returns @c true when the disconnect was successful and @c false when the
-    //! handler with the given id could not be found.
-    virtual bool disconnect(const request_handler_id& id) = 0;
+    virtual void disconnect(const request_handler_id& id) = 0;
 };
 
 } // namespace hutzn

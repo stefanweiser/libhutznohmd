@@ -42,7 +42,7 @@ TEST(demultiplex_handler, disconnect)
     request_handler_id id{"/", http_verb::GET,
                           mime(mime_type::WILDCARD, mime_subtype::WILDCARD),
                           mime(mime_type::TEXT, mime_subtype::PLAIN)};
-    EXPECT_CALL(*demuxer, disconnect(id)).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*demuxer, disconnect(id)).Times(1).WillOnce(Return());
     demultiplex_handler d(*demuxer, id);
 }
 

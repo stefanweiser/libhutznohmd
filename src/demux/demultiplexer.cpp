@@ -39,7 +39,7 @@ demultiplexer::demultiplexer(void)
 }
 
 request_handler_callback demultiplexer::determine_request_handler(
-    const request_interface& request)
+    const request_interface& request) const
 {
     request_handler_callback result;
 
@@ -109,7 +109,7 @@ handler_pointer demultiplexer::connect(const request_handler_id& id,
     return result;
 }
 
-bool demultiplexer::disconnect(const request_handler_id& id)
+void demultiplexer::disconnect(const request_handler_id& id)
 {
     std::lock_guard<std::mutex> lock(resource_callbacks_mutex_);
 
@@ -125,12 +125,14 @@ bool demultiplexer::disconnect(const request_handler_id& id)
 
         // Clean up empty maps.
         if (accept_map.size() == 0) {
-            resource_callbacks_.erase(key);
+            const size_t erased_number = resource_callbacks_.erase(key);
+            assert(erased_number == 1);
+            UNUSED(erased_number);
         }
     }
 
     assert(true == result);
-    return result;
+    UNUSED(result);
 }
 
 mime_type demultiplexer::register_mime_type(const std::string& type)
@@ -185,6 +187,12 @@ bool demultiplexer::is_mime_valid(const mime& t) const
     }
 
     return result;
+}
+
+bool demultiplexer::resource_key::operator<(const resource_key& rhs) const
+{
+    return ((path < rhs.path) || (method < rhs.method) ||
+            (content_type < rhs.content_type));
 }
 
 } // namespace hutzn
