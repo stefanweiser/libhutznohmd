@@ -27,8 +27,8 @@ parser_data::parser_data(void)
 {
     const size_t type_size = static_cast<size_t>(mime_type::COUNT) -
                              mime_data<mime_type, uint8_t>::special_value_count;
-    static const char* const type_names[] = {"*",     "application", "audio",
-                                             "image", "text",        "video"};
+    static const char_t* const type_names[] = {"*",     "application", "audio",
+                                               "image", "text",        "video"};
     static_assert((sizeof(type_names) / sizeof(*type_names)) == type_size,
                   "Sizes of mime type and the type strings does not match.");
 
@@ -40,7 +40,7 @@ parser_data::parser_data(void)
     const size_t subtype_size =
         static_cast<size_t>(mime_subtype::COUNT) -
         mime_data<mime_subtype, uint16_t>::special_value_count;
-    static const char* const subtype_names[] = {"*", "plain"};
+    static const char_t* const subtype_names[] = {"*", "plain"};
     static_assert(
         (sizeof(subtype_names) / sizeof(*subtype_names)) == subtype_size,
         "Sizes of mime subtype and the subtype strings does not match.");
@@ -71,13 +71,13 @@ bool parser_data::unregister_mime_subtype(const mime_subtype& subtype)
     return mime_subtypes_.unregister_type(subtype);
 }
 
-mime_type parser_data::parse_mime_type(const char* const string,
+mime_type parser_data::parse_mime_type(const char_t* const string,
                                        const size_t max_length)
 {
     return mime_types_.parse_type(string, max_length);
 }
 
-mime_subtype parser_data::parse_mime_subtype(const char* const string,
+mime_subtype parser_data::parse_mime_subtype(const char_t* const string,
                                              const size_t max_length)
 {
     return mime_subtypes_.parse_type(string, max_length);
