@@ -34,8 +34,8 @@ public:
     static std::shared_ptr<connection> create(const std::string& host,
                                               const uint16_t& port);
 
-    explicit connection(const int& s);
-    explicit connection(const int& s, const sockaddr_in& address);
+    explicit connection(const int& socket);
+    explicit connection(const int& socket, const sockaddr_in& address);
     ~connection() override;
     void close() override;
     bool receive(buffer& data, const size_t& max_size) override;

@@ -17,6 +17,7 @@
  */
 
 #include <algorithm>
+#include <cassert>
 #include <cstdint>
 #include <string>
 
@@ -30,27 +31,25 @@ namespace hutzn
 std::shared_ptr<connection> connection::create(const std::string& host,
                                                const uint16_t& port)
 {
-    const int socket = ::socket(PF_INET, SOCK_STREAM, 0);
-    if (socket == -1) {
-        return std::shared_ptr<connection>();
+    std::shared_ptr<connection> result;
+    const int socket_fd = socket(PF_INET, SOCK_STREAM, 0);
+    if (socket_fd != -1) {
+        const sockaddr_in address = fill_address(host, port);
+        result = std::make_shared<connection>(socket_fd, address);
     }
-
-    const sockaddr_in address = fill_address(host, port);
-    auto result = std::make_shared<connection>(socket, address);
-
     return result;
 }
 
-connection::connection(const int& s)
+connection::connection(const int& socket)
     : is_connected_(true)
-    , socket_(s)
+    , socket_(socket)
     , address_()
 {
 }
 
-connection::connection(const int& s, const sockaddr_in& address)
+connection::connection(const int& socket, const sockaddr_in& address)
     : is_connected_(false)
-    , socket_(s)
+    , socket_(socket)
     , address_(address)
 {
 }
@@ -69,17 +68,17 @@ void connection::close()
 
 bool connection::receive(buffer& data, const size_t& max_size)
 {
-    if (false == is_connected_) {
-        return false;
+    bool result = false;
+    if (true == is_connected_) {
+        const size_t old_size = data.size();
+        data.resize(old_size + max_size);
+        void* const p = data.data() + old_size;
+        const ssize_t received = receive_signal_safe(socket_, p, max_size, 0);
+        const ssize_t new_extension_size = std::max<ssize_t>(received, 0);
+        data.resize(old_size + static_cast<size_t>(new_extension_size));
+        result = (received > 0);
     }
-
-    const size_t old_size = data.size();
-    data.resize(old_size + max_size);
-    void* const p = data.data() + old_size;
-    const ssize_t received = receive_signal_safe(socket_, p, max_size, 0);
-    const ssize_t new_extension_size = std::max<ssize_t>(received, 0);
-    data.resize(old_size + static_cast<size_t>(new_extension_size));
-    return (received > 0);
+    return result;
 }
 
 bool connection::send(const buffer& data)
@@ -94,53 +93,66 @@ bool connection::send(const std::string& data)
 
 bool connection::send(const char* data, const size_t& size)
 {
-    if (false == is_connected_) {
-        return false;
-    }
+    bool result = false;
+    if ((true == is_connected_) &&
+        (size <= static_cast<size_t>(std::numeric_limits<ssize_t>::max()))) {
 
-    ssize_t total_sent_size = 0;
+        const ssize_t ssize = static_cast<ssize_t>(size);
+        ssize_t total_sent_size = 0;
+        while (total_sent_size < ssize) {
+            const size_t block_size =
+                static_cast<size_t>(ssize - total_sent_size);
+            const void* const p = data + total_sent_size;
+            const ssize_t sent_size =
+                send_signal_safe(socket_, p, block_size, 0);
+            assert(sent_size <= static_cast<ssize_t>(block_size));
 
-    do {
-        const size_t block_size = size - static_cast<size_t>(total_sent_size);
-        const void* const p = data + total_sent_size;
-        const ssize_t sent_size = send_signal_safe(socket_, p, block_size, 0);
-
-        if (sent_size <= 0) {
-            return false;
+            if (sent_size <= 0) {
+                // Exceptional use of extra exit point (breaks MISRA C++:2008
+                // Rule 6-6-5). Breaking from the while and double testing the
+                // number of totally sent bytes would be a slower and less
+                // readable alternative.
+                return false;
+            }
+            total_sent_size += sent_size;
+            assert(total_sent_size <= ssize);
         }
-        total_sent_size += sent_size;
-    } while (total_sent_size < static_cast<ssize_t>(size));
 
-    return true;
+        result = true;
+    }
+    return result;
 }
 
 bool connection::set_lingering_timeout(const int& timeout)
 {
-    linger l = linger{1, timeout};
-    return setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0;
+    linger l{1, timeout};
+    return (setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0);
 }
 
 bool connection::connect()
 {
-    if (true == is_connected_) {
-        return false;
+    bool result = false;
+    if (false == is_connected_) {
+
+        // This is an accepted exceptional use of an union (breaks MISRA
+        // C++:2008 Rule 9-5-1). Alternatively a reinterpret_cast could be used,
+        // but anyway there must be a way to fulfill the BSD socket interface.
+        union
+        {
+            sockaddr base;
+            sockaddr_in in;
+        } addr;
+
+        addr.in = address_;
+
+        if (connect_signal_safe(socket_, &addr.base, sizeof(addr.in)) == 0) {
+            is_connected_ = true;
+            result = true;
+        } else {
+            close();
+        }
     }
-
-    union
-    {
-        sockaddr base;
-        sockaddr_in in;
-    } s;
-
-    s.in = address_;
-
-    if (connect_signal_safe(socket_, &s.base, sizeof(s.in)) != 0) {
-        close();
-        return false;
-    }
-
-    is_connected_ = true;
-    return true;
+    return result;
 }
 
 } // namespace hutzn
