@@ -22,6 +22,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include <cassert>
+
 #include <socket/connection.hpp>
 #include <socket/utility.hpp>
 
@@ -71,7 +73,9 @@ listener::listener(const int& socket)
 listener::~listener(void)
 {
     stop();
-    close_signal_safe(socket_);
+    const int close_result = close_signal_safe(socket_);
+    assert(close_result == 0);
+    UNUSED(close_result);
 }
 
 connection_pointer listener::accept(void) const

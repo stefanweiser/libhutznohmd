@@ -57,7 +57,9 @@ connection::connection(const int& socket, const sockaddr_in& address)
 connection::~connection(void)
 {
     close();
-    close_signal_safe(socket_);
+    const int close_result = close_signal_safe(socket_);
+    assert(close_result == 0);
+    UNUSED(close_result);
 }
 
 void connection::close(void)

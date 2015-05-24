@@ -28,20 +28,17 @@
 namespace hutzn
 {
 
-void close_signal_safe(const int file_descriptor) noexcept(true)
+int close_signal_safe(const int file_descriptor) noexcept(true)
 {
     int result;
     do {
         result = close(file_descriptor);
     } while ((result == -1) && (errno == EINTR));
-
-    if (result == -1) {
-        throw std::system_error(errno, std::system_category());
-    }
+    return result;
 }
 
 int accept_signal_safe(const int socket_descriptor, sockaddr* const address,
-                       socklen_t* const size)
+                       socklen_t* const size) noexcept(true)
 {
     int result;
     do {
@@ -51,7 +48,7 @@ int accept_signal_safe(const int socket_descriptor, sockaddr* const address,
 }
 
 int connect_signal_safe(const int socket_fd, const sockaddr* const address,
-                        const socklen_t size)
+                        const socklen_t size) noexcept(true)
 {
     // Try to connect.
     int result = connect(socket_fd, address, size);
@@ -85,10 +82,6 @@ ssize_t send_signal_safe(const int file_descriptor, const void* const buffer,
     do {
         sent = send(file_descriptor, buffer, size, flags);
     } while ((sent == -1) && (errno == EINTR));
-
-    if (sent == -1) {
-        throw std::system_error(errno, std::system_category());
-    }
     return sent;
 }
 
@@ -106,7 +99,8 @@ ssize_t receive_signal_safe(const int file_descriptor, void* const buffer,
     return received;
 }
 
-sockaddr_in fill_address(const std::string& host, const uint16_t& port)
+sockaddr_in fill_address(const std::string& host,
+                         const uint16_t& port) noexcept(true)
 {
     sockaddr_in address;
     if (0 == inet_aton(host.c_str(), &address.sin_addr)) {
