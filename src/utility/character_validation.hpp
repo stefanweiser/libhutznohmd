@@ -20,9 +20,6 @@
 #define LIBHUTZNOHMD_UTILITY_CHARACTER_VALIDATION_HPP
 
 #include <array>
-#include <type_traits>
-
-#include <utility/common.hpp>
 
 namespace hutzn
 {

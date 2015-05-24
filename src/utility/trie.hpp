@@ -20,9 +20,8 @@
 #define LIBHUTZNOHMD_UTILITY_TRIE_HPP
 
 #include <array>
+#include <cstdint>
 #include <memory>
-#include <tuple>
-#include <vector>
 
 #include <utility/common.hpp>
 
@@ -54,8 +53,8 @@ public:
     };
 
     static_assert(sizeof(uint8_t) == sizeof(char),
-                  "The trie implementation need a char type that has 8 bits or "
-                  "it would compromise some type convertions.");
+                  "The trie implementation needs a char type that has 8 bits or"
+                  " it would compromise some type convertions.");
 
     //! Determines whether the trie and all it's operations are acting case
     //! sensitive or not.
