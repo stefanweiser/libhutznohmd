@@ -27,6 +27,228 @@
 namespace hutzn
 {
 
+//! Result structure for each find operation.
+template <typename value_type>
+struct trie_find_result
+{
+    //! Number of characters, that were used to get a valid token. Is zero
+    //! if no token was found (the value is undefined then).
+    size_t used_size;
+
+    //! Found value or undefined if no value was found.
+    value_type value;
+};
+
+namespace detail
+{
+
+template <typename value_type>
+class trie_node
+{
+public:
+    using trie_find_result_ = trie_find_result<value_type>;
+
+    explicit trie_node()
+        : has_value_(false)
+        , value_()
+        , children_()
+        , used_children_(0)
+    {
+    }
+
+    ~trie_node()
+    {
+        // Release all children first.
+        for (size_t i = 0; i < children_.size(); i++) {
+            uint8_t c = static_cast<uint8_t>(i);
+            trie_node* child = children_[c];
+
+            // Delete only if set.
+            if (child != nullptr) {
+                delete child;
+
+                // Because it could be case sensitive, check whether the
+                // corresponding character is set to the same child. If
+                // this holds true, then reset that pointer to avoid double
+                // deletion. It is important to use the binary to look
+                // forward and not backward!
+                if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
+                    trie_node*& other = children_[make_lower(c)];
+                    if (child == other) {
+                        other = nullptr;
+                    }
+                }
+            }
+        }
+    }
+
+    trie_find_result_ make_find_result(const char* const begin,
+                                       const char* const curr) const
+    {
+        const size_t distance = static_cast<size_t>(curr - begin);
+        const size_t used_chars = has_value_ ? distance : 0;
+        return trie_find_result_{used_chars, value_};
+    }
+
+    trie_find_result_ find(const char* const original, const char* const curr,
+                           const size_t remaining) const
+    {
+        trie_find_result_ result;
+        if (0 == remaining) {
+            result = make_find_result(original, curr);
+        } else {
+            const trie_node* const child =
+                children_[static_cast<uint8_t>(*curr)];
+            if (child != nullptr) {
+                result = child->find(original, curr + 1, remaining - 1);
+                if (0 == result.used_size) {
+                    result = make_find_result(original, curr);
+                }
+            } else {
+                result = make_find_result(original, curr);
+            }
+        }
+        return result;
+    }
+
+    bool insert(const char* token, const value_type& value,
+                const bool is_case_insensitive)
+    {
+        bool result = false;
+        if (static_cast<uint8_t>(*token) == 0) {
+
+            // Check if node is not already possessed.
+            if (false == has_value_) {
+                has_value_ = true;
+                value_ = value;
+                result = true;
+            }
+
+        } else {
+            result = insert_recursive(token, value, is_case_insensitive);
+        }
+
+        return result;
+    }
+
+    bool erase(const char* token, const bool is_case_insensitive)
+    {
+        bool result = false;
+        if (static_cast<uint8_t>(*token) == 0) {
+
+            // Check if node is possessed.
+            if (true == has_value_) {
+                has_value_ = false;
+                result = true;
+            }
+
+        } else {
+            result = erase_recursive(token, is_case_insensitive);
+        }
+
+        return result;
+    }
+
+private:
+    static constexpr uint8_t LETTER_CASE_BIT = 0x20U;
+    static constexpr uint8_t INVERSE_LETTER_CASE_BIT = ~LETTER_CASE_BIT;
+
+    static uint8_t make_lower(const uint8_t c)
+    {
+        return (c | LETTER_CASE_BIT);
+    }
+
+    static uint8_t make_upper(const uint8_t c)
+    {
+        return (c & INVERSE_LETTER_CASE_BIT);
+    }
+
+    bool insert_recursive(const char* token, const value_type& value,
+                          const bool is_case_insensitive)
+    {
+        const uint8_t c = static_cast<uint8_t>(*token);
+        const char* next = token + 1;
+
+        if (nullptr == children_[c]) {
+            children_[c] = new trie_node();
+            used_children_++;
+        }
+        trie_node*& child = children_[c];
+
+        bool result = false;
+        if (true == child->insert(next, value, is_case_insensitive)) {
+            if (true == is_case_insensitive) {
+                if (true == check_range<uint8_t, 'a', 'z'>(c)) {
+                    trie_node*& other = children_[make_upper(c)];
+                    if (nullptr == other) {
+                        other = child;
+                        used_children_++;
+                    }
+                } else if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
+                    trie_node*& other = children_[make_lower(c)];
+                    if (nullptr == other) {
+                        other = child;
+                        used_children_++;
+                    }
+                } else {
+                    // Character is no letter.
+                }
+            }
+            result = true;
+        }
+        return result;
+    }
+
+    bool erase_recursive(const char* token, const bool is_case_insensitive)
+    {
+        const uint8_t c = static_cast<uint8_t>(*token);
+        const char* next = token + 1;
+
+        bool result = false;
+        trie_node*& child = children_[c];
+        if ((child != nullptr) &&
+            (true == child->erase(next, is_case_insensitive))) {
+
+            bool clear_other_child = false;
+            if ((0 == child->used_children_) && (false == child->has_value_)) {
+                delete child;
+                child = nullptr;
+                used_children_--;
+                clear_other_child = true;
+            }
+
+            if (true == is_case_insensitive) {
+                if (true == check_range<uint8_t, 'a', 'z'>(c)) {
+
+                    if (true == clear_other_child) {
+                        children_[make_upper(c)] = nullptr;
+                        used_children_--;
+                    }
+
+                } else if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
+
+                    if (true == clear_other_child) {
+                        children_[make_lower(c)] = nullptr;
+                        used_children_--;
+                    }
+                } else {
+                    // Character is no letter.
+                }
+            }
+
+            result = true;
+        }
+        return result;
+    }
+
+    bool has_value_;
+    value_type value_;
+    std::array<trie_node*, NUMBER_OF_VALUES_PER_BYTE> children_;
+    size_t used_children_;
+};
+
+} // namespace detail
+
 //! Implements a trie to map a string to a specific value. It could be case
 //! sensitive or case insensitive and provides the basic operations insert, find
 //! and erase. The find operation will search for stored trie tokens at the
@@ -35,21 +257,7 @@ template <typename value_type>
 class trie
 {
 public:
-    //! Result structure for each find operation.
-    struct find_result_type
-    {
-        //! Number of characters, that were used to get a valid token. Is zero
-        //! if no token was found (the value is undefined then).
-        size_t used_size;
-
-        //! Found value or undefined if no value was found.
-        value_type value;
-
-        bool operator==(const find_result_type& rhs) const
-        {
-            return (rhs.used_size == used_size) && (rhs.value == value);
-        }
-    };
+    using trie_find_result_ = trie_find_result<value_type>;
 
     static_assert(sizeof(uint8_t) == sizeof(char),
                   "The trie implementation needs a char type that has 8 bits or"
@@ -57,7 +265,7 @@ public:
 
     //! Determines whether the trie and all it's operations are acting case
     //! sensitive or not.
-    trie(const bool is_case_insensitive)
+    explicit trie(const bool is_case_insensitive)
         : is_case_insensitive_(is_case_insensitive)
         , root_node_()
     {
@@ -66,8 +274,8 @@ public:
     //! Returns the longest match inside the trie. At most max_length characters
     //! are read. It returns a structure of used length to get this token and
     //! result value. If no token is found, the result's used size is zero.
-    find_result_type find(const char* const search_string,
-                          const size_t max_length) const
+    trie_find_result_ find(const char* const search_string,
+                           const size_t max_length) const
     {
         return root_node_.find(search_string, search_string, max_length);
     }
@@ -86,194 +294,8 @@ public:
     }
 
 private:
-    class trie_node
-    {
-    public:
-        trie_node()
-            : has_value_(false)
-            , value_()
-            , children_()
-            , used_children_(0)
-        {
-        }
-
-        ~trie_node()
-        {
-            // Release all children first.
-            for (size_t i = 0; i < children_.size(); i++) {
-                uint8_t c = static_cast<uint8_t>(i);
-                trie_node* child = children_[c];
-
-                // Delete only if set.
-                if (child != nullptr) {
-                    delete child;
-
-                    // Because it could be case sensitive, check whether the
-                    // corresponding character is set to the same child. If
-                    // this holds true, then reset that pointer to avoid double
-                    // deletion. It is important to use the binary to look
-                    // forward and not backward!
-                    if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
-                        trie_node*& other = children_[c | 0x20U];
-                        if (child == other) {
-                            other = nullptr;
-                        }
-                    }
-                }
-            }
-        }
-
-        find_result_type make_find_result(const char* const begin,
-                                          const char* const curr) const
-        {
-            const size_t distance = static_cast<size_t>(curr - begin);
-            const size_t used_chars = has_value_ ? distance : 0;
-            return find_result_type{used_chars, value_};
-        }
-
-        find_result_type find(const char* const original,
-                              const char* const curr,
-                              const size_t remaining) const
-        {
-            if (0 == remaining) {
-                return make_find_result(original, curr);
-            }
-
-            find_result_type result{0, value_type()};
-
-            const trie_node* const child =
-                children_[static_cast<uint8_t>(*curr)];
-            if (child != nullptr) {
-                result = child->find(original, curr + 1, remaining - 1);
-            }
-
-            if (0 == result.used_size) {
-                return make_find_result(original, curr);
-            }
-            return result;
-        }
-
-        bool insert(const char* token, const value_type& value,
-                    const bool is_case_insensitive)
-        {
-            bool result = false;
-            if (static_cast<uint8_t>(*token) == 0) {
-
-                // Check if node is not already possessed.
-                if (false == has_value_) {
-                    has_value_ = true;
-                    value_ = value;
-                    result = true;
-                }
-
-            } else {
-                result = insert_recursive(token, value, is_case_insensitive);
-            }
-
-            return result;
-        }
-
-        bool erase(const char* token, const bool is_case_insensitive)
-        {
-            bool result = false;
-            if (static_cast<uint8_t>(*token) == 0) {
-
-                // Check if node is possessed.
-                if (true == has_value_) {
-                    has_value_ = false;
-                    result = true;
-                }
-
-            } else {
-                result = erase_recursive(token, is_case_insensitive);
-            }
-
-            return result;
-        }
-
-    private:
-        bool insert_recursive(const char* token, const value_type& value,
-                              const bool is_case_insensitive)
-        {
-            const uint8_t c = static_cast<uint8_t>(*token);
-            const char* next = token + 1;
-
-            if (nullptr == children_[c]) {
-                children_[c] = new trie_node();
-                used_children_++;
-            }
-            trie_node*& child = children_[c];
-
-            if (false == child->insert(next, value, is_case_insensitive)) {
-                return false;
-            }
-
-            if (true == is_case_insensitive) {
-                if (true == check_range<uint8_t, 'a', 'z'>(c)) {
-                    trie_node*& other = children_[c & 0xDFU];
-                    if (nullptr == other) {
-                        other = child;
-                        used_children_++;
-                    }
-                } else if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
-                    trie_node*& other = children_[c | 0x20U];
-                    if (nullptr == other) {
-                        other = child;
-                        used_children_++;
-                    }
-                }
-            }
-
-            return true;
-        }
-
-        bool erase_recursive(const char* token, const bool is_case_insensitive)
-        {
-            const uint8_t c = static_cast<uint8_t>(*token);
-            const char* next = token + 1;
-
-            trie_node*& child = children_[c];
-            if ((nullptr == child) ||
-                (false == child->erase(next, is_case_insensitive))) {
-                return false;
-            }
-
-            bool clear_other_child = false;
-            if ((0 == child->used_children_) && (false == child->has_value_)) {
-                delete child;
-                child = nullptr;
-                used_children_--;
-                clear_other_child = true;
-            }
-
-            if (true == is_case_insensitive) {
-                if (true == check_range<uint8_t, 'a', 'z'>(c)) {
-
-                    if (true == clear_other_child) {
-                        children_[c & 0xDFU] = nullptr;
-                        used_children_--;
-                    }
-
-                } else if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
-
-                    if (true == clear_other_child) {
-                        children_[c | 0x20U] = nullptr;
-                        used_children_--;
-                    }
-                }
-            }
-
-            return true;
-        }
-
-        bool has_value_;
-        value_type value_;
-        std::array<trie_node*, 256> children_;
-        size_t used_children_;
-    };
-
     const bool is_case_insensitive_;
-    trie_node root_node_;
+    detail::trie_node<value_type> root_node_;
 };
 
 } // namespace hutzn

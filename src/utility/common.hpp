@@ -24,6 +24,9 @@
 namespace hutzn
 {
 
+constexpr size_t BITS_PER_BYTE = 8 * sizeof(uint8_t);
+constexpr size_t NUMBER_OF_VALUES_PER_BYTE = 1 << BITS_PER_BYTE;
+
 template <typename type, const type lower_bound, const type upper_bound>
 bool check_range(const type& value)
 {
