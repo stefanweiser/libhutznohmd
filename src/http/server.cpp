@@ -28,10 +28,10 @@ namespace http
 {
 
 server_pointer create_server(const std::string& host, const uint16_t& port,
-                             const transaction_function& transaction_functor)
+                             const transaction_function& access_functor)
 {
     auto socket = listen(host, port);
-    return std::make_shared<server>(socket, transaction_functor);
+    return std::make_shared<server>(socket, access_functor);
 }
 
 server::server(const listener_pointer& s,
