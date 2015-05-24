@@ -39,24 +39,6 @@ demultiplexer::demultiplexer()
 request_handler_callback demultiplexer::determine_request_handler(
     const request_interface& request)
 {
-    std::lock_guard<std::mutex> lock(resource_callbacks_mutex_);
-
-    // Determine map of demanded resource.
-    const char* const path = request.path();
-    const auto resource_it = resource_callbacks_.find(path);
-    if (resource_it == resource_callbacks_.end()) {
-        return request_handler_callback();
-    }
-    const auto& method_map = resource_it->second;
-
-    // Determine map of demanded http method.
-    const http_verb verb = request.method();
-    const auto method_it = method_map.find(verb);
-    if (method_it == method_map.end()) {
-        return request_handler_callback();
-    }
-    const auto& content_map = method_it->second;
-
     // A wildcard content type is not allowed.
     const mime content_type = request.content_type();
     if ((content_type.first == mime_type::WILDCARD) ||
@@ -64,12 +46,17 @@ request_handler_callback demultiplexer::determine_request_handler(
         return request_handler_callback();
     }
 
-    // Determine map of demanded content type.
-    const auto content_it = content_map.find(content_type);
-    if (content_it == content_map.end()) {
+    const char* const path = request.path();
+    const http_verb method = request.method();
+
+    // Determine map of demanded resource.
+    std::lock_guard<std::mutex> lock(resource_callbacks_mutex_);
+    const resource_key key{path, method, content_type};
+    const auto accept_it = resource_callbacks_.find(key);
+    if (accept_it == resource_callbacks_.end()) {
         return request_handler_callback();
     }
-    const auto& accept_map = content_it->second;
+    const demultiplexer_ordered_mime_map& accept_map = accept_it->second;
 
     // Loop over the accept types for a matching request handler.
     void* handle = nullptr;
@@ -102,7 +89,8 @@ handler_pointer demultiplexer::connect(const request_handler_id& id,
 
     // Get specific map with handlers.
     std::unique_lock<std::mutex> lock(resource_callbacks_mutex_);
-    auto& accept_map = resource_callbacks_[id.path][id.method][id.content_type];
+    const resource_key key{id.path, id.method, id.content_type};
+    auto& accept_map = resource_callbacks_[key];
 
     // Check if there is already a registered request handler.
     if (true == accept_map.insert(id.accept_type, fn)) {
@@ -119,38 +107,19 @@ bool demultiplexer::disconnect(const request_handler_id& id)
     std::lock_guard<std::mutex> lock(resource_callbacks_mutex_);
 
     // Getting target resource map.
-    auto resource_it = resource_callbacks_.find(id.path);
+    const resource_key key{id.path, id.method, id.content_type};
+    auto resource_it = resource_callbacks_.find(key);
     if (resource_it == resource_callbacks_.end()) {
         return false;
     }
-    auto& resource_map = resource_it->second;
-
-    // Getting target method map.
-    auto method_it = resource_map.find(id.method);
-    if (method_it == resource_map.end()) {
-        return false;
-    }
-    auto& method_map = method_it->second;
-
-    // Getting target accept map.
-    auto accept_it = method_map.find(id.content_type);
-    if (accept_it == method_map.end()) {
-        return false;
-    }
-    auto& accept_map = accept_it->second;
+    demultiplexer_ordered_mime_map& accept_map = resource_it->second;
 
     // Erase handler id.
     const bool result = accept_map.erase(id.accept_type);
 
     // Clean up empty maps.
     if (accept_map.size() == 0) {
-        method_map.erase(id.content_type);
-        if (method_map.size() == 0) {
-            resource_map.erase(id.method);
-            if (resource_map.size() == 0) {
-                resource_callbacks_.erase(id.path);
-            }
-        }
+        resource_callbacks_.erase(key);
     }
 
     return result;

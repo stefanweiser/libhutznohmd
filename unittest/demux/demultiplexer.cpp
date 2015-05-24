@@ -117,7 +117,10 @@ TEST_F(demultiplexer_test, determine_request_unknown_path)
     ASSERT_NE(demultiplexer_.get(), nullptr);
 
     auto request = std::make_shared<request_interface_mock>();
+    const auto ct = mime(mime_type::TEXT, mime_subtype::PLAIN);
+    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(Return(ct));
     EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
+    EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(http_verb::GET));
 
     EXPECT_FALSE(demultiplexer_->determine_request_handler(*request));
 }
@@ -129,6 +132,8 @@ TEST_F(demultiplexer_test, determine_request_unknown_method)
     ASSERT_NE(handler.get(), nullptr);
 
     auto request = std::make_shared<request_interface_mock>();
+    const auto ct = mime(mime_type::TEXT, mime_subtype::PLAIN);
+    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(Return(ct));
     EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
     EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(http_verb::PUT));
 
@@ -143,8 +148,6 @@ TEST_F(demultiplexer_test, determine_request_handler_wildcard_content_type)
 
     auto request = std::make_shared<request_interface_mock>();
     const auto ct = mime(mime_type::WILDCARD, mime_subtype::PLAIN);
-    EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
-    EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(http_verb::GET));
     EXPECT_CALL(*request, content_type()).Times(1).WillOnce(Return(ct));
 
     EXPECT_FALSE(demultiplexer_->determine_request_handler(*request));
@@ -158,8 +161,6 @@ TEST_F(demultiplexer_test, determine_request_handler_wildcard_content_subtype)
 
     auto request = std::make_shared<request_interface_mock>();
     const auto ct = mime(mime_type::TEXT, mime_subtype::WILDCARD);
-    EXPECT_CALL(*request, path()).Times(1).WillOnce(Return("/"));
-    EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(http_verb::GET));
     EXPECT_CALL(*request, content_type()).Times(1).WillOnce(Return(ct));
 
     EXPECT_FALSE(demultiplexer_->determine_request_handler(*request));

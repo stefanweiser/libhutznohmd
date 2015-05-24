@@ -56,10 +56,20 @@ public:
     bool unregister_mime_subtype(const mime_subtype& subtype) override;
 
 private:
-    using resource_mime_content_map =
-        std::map<mime, demultiplexer_ordered_mime_map>;
-    using resource_method_map = std::map<http_verb, resource_mime_content_map>;
-    using resource_map = std::map<std::string, resource_method_map>;
+    struct resource_key
+    {
+        std::string path;
+        http_verb method;
+        mime content_type;
+
+        bool operator<(const resource_key& rhs) const
+        {
+            return ((path < rhs.path) || (method < rhs.method) ||
+                    (content_type < rhs.content_type));
+        }
+    };
+
+    using resource_map = std::map<resource_key, demultiplexer_ordered_mime_map>;
 
     //! @brief Determines, whether a mime type is valid or not.
     //!
