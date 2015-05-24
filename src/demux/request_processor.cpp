@@ -33,10 +33,11 @@ request_processor_pointer make_request_processor(
                                                connection_timeout_in_sec);
 }
 
-request_processor::request_processor(const demux_query_pointer& query_interface,
-                                     const uint64_t& connection_timeout_in_sec)
+request_processor::request_processor(
+    const demux_query_pointer& query_interface,
+    const uint64_t& /*connection_timeout_in_sec*/)
     : demultiplexer_(query_interface)
-    , connection_timeout_in_sec_(connection_timeout_in_sec)
+    // , connection_timeout_in_sec_(connection_timeout_in_sec)
     , error_handler_mutex_()
     , error_handlers_()
 {

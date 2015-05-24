@@ -153,7 +153,8 @@ public:
 
 private:
     static constexpr uint8_t LETTER_CASE_BIT = 0x20U;
-    static constexpr uint8_t INVERSE_LETTER_CASE_BIT = ~LETTER_CASE_BIT;
+    static constexpr uint8_t INVERSE_LETTER_CASE_BIT =
+        static_cast<uint8_t>(~LETTER_CASE_BIT);
 
     void add_child_reference(trie_node*& target, trie_node* const child)
     {

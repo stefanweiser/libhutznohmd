@@ -43,14 +43,14 @@ inline bool operator==(const trie_find_result_& lhs,
 
 TEST(trie, initial_trie_node)
 {
-    auto t = trie_(false);
+    trie_ t{false};
     static const std::string str1 = "abc";
     EXPECT_EQ(t.find(str1.c_str(), 3), make_trie_find_result(0, 0));
 }
 
 TEST(trie, insert_and_remove_node)
 {
-    auto t = trie_(false);
+    trie_ t{false};
     static const std::string str1 = "abc";
     EXPECT_TRUE(t.insert(str1.c_str(), 1));
     EXPECT_FALSE(t.erase("ab"));
@@ -61,7 +61,7 @@ TEST(trie, insert_and_remove_node)
 
 TEST(trie, find_divergent_strings)
 {
-    auto t = trie_(false);
+    trie_ t{false};
     static const std::string str1 = "abc";
     static const std::string str2 = "def";
     EXPECT_TRUE(t.insert(str1.c_str(), 1));
@@ -80,7 +80,7 @@ TEST(trie, find_divergent_strings)
 
 TEST(trie, reinsert)
 {
-    auto t = trie_(false);
+    trie_ t{false};
     static const std::string str1 = "abc";
     EXPECT_TRUE(t.insert(str1.c_str(), 1));
     EXPECT_FALSE(t.insert(str1.c_str(), 1));
@@ -90,7 +90,7 @@ TEST(trie, reinsert)
 
 TEST(trie, find_part_strings)
 {
-    auto t = trie_(false);
+    trie_ t{false};
     static const std::string str1 = "abc";
     static const std::string str2 = "abcdef";
     EXPECT_TRUE(t.insert(str1.c_str(), 1));
@@ -105,7 +105,7 @@ TEST(trie, find_part_strings)
 
 TEST(trie, case_sensitive_reinsert)
 {
-    auto t = trie_(true);
+    trie_ t{true};
     static const std::string str1 = "abc";
     static const std::string str2 = "ABC";
     EXPECT_TRUE(t.insert(str1.c_str(), 1));
@@ -116,7 +116,7 @@ TEST(trie, case_sensitive_reinsert)
 
 TEST(trie, case_sensitive_find)
 {
-    auto t = trie_(true);
+    trie_ t{true};
     static const std::string str1 = "abc";
     EXPECT_TRUE(t.insert(str1.c_str(), 1));
     EXPECT_EQ(t.find("abc", 3), make_trie_find_result(str1.length(), 1));
@@ -132,7 +132,7 @@ TEST(trie, case_sensitive_find)
 
 TEST(trie, case_sensitive_special_characters)
 {
-    auto t = trie_(true);
+    trie_ t{true};
     static const std::string str1 = "a b c";
     EXPECT_TRUE(t.insert(str1.c_str(), 1));
     EXPECT_EQ(t.find("a b c", 5), make_trie_find_result(str1.length(), 1));
