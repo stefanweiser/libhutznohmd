@@ -32,6 +32,7 @@ demux_pointer make_demultiplexer(void)
 
 demultiplexer::demultiplexer(void)
     : resource_callbacks_mutex_()
+    , resource_callbacks_usage_changed_()
     , resource_callbacks_()
     , request_parser_data_mutex_()
     , request_parser_data_()
@@ -111,28 +112,30 @@ handler_pointer demultiplexer::connect(const request_handler_id& id,
 
 void demultiplexer::disconnect(const request_handler_id& id)
 {
-    std::lock_guard<std::mutex> lock(resource_callbacks_mutex_);
+    std::unique_lock<std::mutex> lock(resource_callbacks_mutex_);
 
-    // Getting target resource map.
-    bool result = false;
-    const resource_key key{id.path, id.method, id.content_type};
-    auto resource_it = resource_callbacks_.find(key);
-    if (resource_it != resource_callbacks_.end()) {
-        demultiplexer_ordered_mime_map& accept_map = resource_it->second;
+    bool repeat = false;
+    do {
+        // Getting target resource map.
+        const resource_key key{id.path, id.method, id.content_type};
+        auto resource_it = resource_callbacks_.find(key);
+        if (resource_it != resource_callbacks_.end()) {
+            demultiplexer_ordered_mime_map& accept_map = resource_it->second;
 
-        // Erase handler id.
-        result = accept_map.erase(id.accept_type);
+            // Erase handler id.
+            if (false == accept_map.erase(id.accept_type)) {
+                repeat = true;
+                resource_callbacks_usage_changed_.wait(lock);
+            }
 
-        // Clean up empty maps.
-        if (accept_map.size() == 0) {
-            const size_t erased_number = resource_callbacks_.erase(key);
-            assert(erased_number == 1);
-            UNUSED(erased_number);
+            // Clean up empty maps.
+            if (accept_map.size() == 0) {
+                const size_t erased_number = resource_callbacks_.erase(key);
+                assert(erased_number == 1);
+                UNUSED(erased_number);
+            }
         }
-    }
-
-    assert(true == result);
-    UNUSED(result);
+    } while (true == repeat);
 }
 
 void demultiplexer::disable(const request_handler_id& id)

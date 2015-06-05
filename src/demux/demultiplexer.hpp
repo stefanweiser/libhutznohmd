@@ -21,6 +21,7 @@
 
 #include <memory>
 #include <mutex>
+#include <condition_variable>
 
 #include <libhutznohmd/demux.hpp>
 
@@ -78,6 +79,9 @@ private:
 
     //! Guards the access to the resource map from mutual access.
     mutable std::mutex resource_callbacks_mutex_;
+
+    //! Gets notified, when the usage flag of a resource got changed.
+    mutable std::condition_variable resource_callbacks_usage_changed_;
 
     //! Stores all request handler callbacks.
     resource_map resource_callbacks_;
