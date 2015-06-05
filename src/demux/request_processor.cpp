@@ -56,7 +56,7 @@ handler_pointer request_processor::set_error_handler(
 
     // std::map<>::insert will not insert an already inserted element.
     std::pair<error_handler_map::iterator, bool> insertion_result =
-        error_handlers_.insert(std::make_pair(code, fn));
+        error_handlers_.insert(std::make_pair(code, std::make_tuple(fn, true)));
 
     handler_pointer result;
     if (true == insertion_result.second) {
@@ -71,6 +71,35 @@ void request_processor::reset_error_handler(const http_status_code& code)
     const bool erase_result = (error_handlers_.erase(code) > 0);
     assert(true == erase_result);
     UNUSED(erase_result);
+}
+
+void request_processor::disable(const http_status_code& code)
+{
+    std::lock_guard<std::mutex> lock(error_handler_mutex_);
+    auto found = error_handlers_.find(code);
+    if (found != error_handlers_.end()) {
+        std::get<1>(found->second) = false;
+    }
+}
+
+void request_processor::enable(const http_status_code& code)
+{
+    std::lock_guard<std::mutex> lock(error_handler_mutex_);
+    auto found = error_handlers_.find(code);
+    if (found != error_handlers_.end()) {
+        std::get<1>(found->second) = true;
+    }
+}
+
+bool request_processor::is_enabled(const http_status_code& code) const
+{
+    std::lock_guard<std::mutex> lock(error_handler_mutex_);
+    bool result = false;
+    auto found = error_handlers_.find(code);
+    if (found != error_handlers_.end()) {
+        result = std::get<1>(found->second);
+    }
+    return result;
 }
 
 } // namespace hutzn

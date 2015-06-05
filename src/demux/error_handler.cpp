@@ -33,4 +33,19 @@ error_handler::~error_handler(void) noexcept(true)
     request_processor_.reset_error_handler(code_);
 }
 
+void error_handler::disable(void)
+{
+    request_processor_.disable(code_);
+}
+
+void error_handler::enable(void)
+{
+    request_processor_.enable(code_);
+}
+
+bool error_handler::is_enabled(void) const
+{
+    return request_processor_.is_enabled(code_);
+}
+
 } // namespace hutzn

@@ -30,6 +30,9 @@ class disconnect_interface_mock : public disconnect_interface
 {
 public:
     MOCK_METHOD1(disconnect, void(const request_handler_id&));
+    MOCK_METHOD1(disable, void(const request_handler_id&));
+    MOCK_METHOD1(enable, void(const request_handler_id&));
+    MOCK_CONST_METHOD1(is_enabled, bool(const request_handler_id&));
 };
 
 using disconnect_mock_pointer = std::shared_ptr<disconnect_interface_mock>;

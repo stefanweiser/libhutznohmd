@@ -211,6 +211,19 @@ class handler_interface
 public:
     //! Unregisters the handler.
     virtual ~handler_interface(void) noexcept(true);
+
+    //! Temporarily disables the handler. It will not be called afterwards. The
+    //! handler callback should stay available for it could get enabled again.
+    virtual void disable(void) = 0;
+
+    //! Temporarily enables the handler. It could get called afterwards. If the
+    //! handler function is not available anymore, enabling the handler will
+    //! lead into undefined behaviour.
+    virtual void enable(void) = 0;
+
+    //! Returns true, when the handler is currently enabled and false if
+    //! disabled. This information may be highly volatile.
+    virtual bool is_enabled(void) const = 0;
 };
 
 //! Handlers are always reference counted.

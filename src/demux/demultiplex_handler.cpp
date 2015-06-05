@@ -33,4 +33,19 @@ demultiplex_handler::~demultiplex_handler(void) noexcept(true)
     demuxer_.disconnect(id_);
 }
 
+void demultiplex_handler::disable(void)
+{
+    demuxer_.disable(id_);
+}
+
+void demultiplex_handler::enable(void)
+{
+    demuxer_.enable(id_);
+}
+
+bool demultiplex_handler::is_enabled(void) const
+{
+    return demuxer_.is_enabled(id_);
+}
+
 } // namespace hutzn

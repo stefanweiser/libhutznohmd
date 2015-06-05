@@ -135,6 +135,21 @@ void demultiplexer::disconnect(const request_handler_id& id)
     UNUSED(result);
 }
 
+void demultiplexer::disable(const request_handler_id&)
+{
+    ;
+}
+
+void demultiplexer::enable(const request_handler_id&)
+{
+    ;
+}
+
+bool demultiplexer::is_enabled(const request_handler_id&) const
+{
+    return true;
+}
+
 mime_type demultiplexer::register_mime_type(const std::string& type)
 {
     std::lock_guard<std::mutex> lock(request_parser_data_mutex_);

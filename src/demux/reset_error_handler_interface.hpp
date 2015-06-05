@@ -30,6 +30,9 @@ public:
     virtual ~reset_error_handler_interface(void);
 
     virtual void reset_error_handler(const http_status_code& code) = 0;
+    virtual void disable(const http_status_code& code) = 0;
+    virtual void enable(const http_status_code& code) = 0;
+    virtual bool is_enabled(const http_status_code& code) const = 0;
 };
 
 } // namespace hutzn

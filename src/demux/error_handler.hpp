@@ -35,6 +35,9 @@ public:
                            const http_status_code& code);
 
     ~error_handler(void) noexcept(true) override;
+    void disable(void) override;
+    void enable(void) override;
+    bool is_enabled(void) const override;
 
 private:
     reset_error_handler_interface& request_processor_;

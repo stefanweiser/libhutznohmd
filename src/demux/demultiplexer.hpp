@@ -50,6 +50,9 @@ public:
     handler_pointer connect(const request_handler_id& id,
                             const request_handler_callback& fn) override;
     void disconnect(const request_handler_id& id) override;
+    void disable(const request_handler_id& id) override;
+    void enable(const request_handler_id& id) override;
+    bool is_enabled(const request_handler_id& id) const override;
     mime_type register_mime_type(const std::string& type) override;
     mime_subtype register_mime_subtype(const std::string& subtype) override;
     bool unregister_mime_type(const mime_type& type) override;

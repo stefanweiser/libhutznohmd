@@ -38,6 +38,18 @@ public:
 
     //! @brief Disconnects the handler with the given id from the demultiplexer.
     virtual void disconnect(const request_handler_id& id) = 0;
+
+    //! @brief Disables all calls to this request handler.
+    //!
+    //! After disabling the handler, it cannot be used. An error handler is then
+    //! called instead.
+    virtual void disable(const request_handler_id& id) = 0;
+
+    //! Enables all calls to this request handler.
+    virtual void enable(const request_handler_id& id) = 0;
+
+    //! Returns true when the request handler is enabled and false, if not.
+    virtual bool is_enabled(const request_handler_id& id) const = 0;
 };
 
 } // namespace hutzn

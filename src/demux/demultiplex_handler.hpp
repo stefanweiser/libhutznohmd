@@ -47,6 +47,18 @@ public:
     //! instance of a demultiplex handler.
     ~demultiplex_handler(void) noexcept(true) override;
 
+    //! @brief Disables all calls to this request handler.
+    //!
+    //! After disabling the handler, it cannot be used. An error handler is then
+    //! called instead.
+    void disable(void) override;
+
+    //! Enables all calls to this request handler.
+    void enable(void) override;
+
+    //! Returns true when the request handler is enabled and false, if not.
+    bool is_enabled(void) const override;
+
 private:
     //! References the demultiplexer where the request handler was registered
     //! at.
