@@ -49,8 +49,8 @@ class demultiplexer : public demux_interface,
 public:
     explicit demultiplexer(void);
 
-    request_handler_callback determine_request_handler(
-        const request_interface& request) const override;
+    request_handler_holder_pointer determine_request_handler(
+        const request_interface& request) override;
     handler_pointer connect(const request_handler_id& id,
                             const request_handler_callback& fn) override;
     void disconnect(const request_handler_id& id) override;

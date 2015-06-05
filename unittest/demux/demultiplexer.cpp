@@ -270,7 +270,7 @@ TEST_F(demultiplexer_test, determine_request_handler_disabled_handler)
         }))
         .WillOnce(Invoke([](void*&, mime&) { return false; }));
 
-    EXPECT_TRUE(!demultiplexer_->determine_request_handler(*request));
+    EXPECT_FALSE(demultiplexer_->determine_request_handler(*request));
     EXPECT_FALSE(handler->is_enabled());
 
     auto request2 = std::make_shared<request_interface_mock>();

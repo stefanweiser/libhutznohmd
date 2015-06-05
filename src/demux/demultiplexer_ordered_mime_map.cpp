@@ -66,8 +66,7 @@ bool demultiplexer_ordered_mime_map::erase(const mime& type)
     return result;
 }
 
-request_handler_callback demultiplexer_ordered_mime_map::find(
-    const mime& type) const
+request_handler_callback demultiplexer_ordered_mime_map::find(mime& type) const
 {
     request_handler_callback result;
     const bool has_any_wildcard = (type.first == mime_type::WILDCARD) ||
@@ -81,6 +80,7 @@ request_handler_callback demultiplexer_ordered_mime_map::find(
         if ((accept_it != map_.end()) &&
             (true == accept_it->second.is_available)) {
             result = accept_it->second.handler;
+            // The type contains already the mime type of the result.
         }
     }
     return result;
@@ -117,7 +117,7 @@ bool demultiplexer_ordered_mime_map::is_available(const mime& type) const
 }
 
 request_handler_callback demultiplexer_ordered_mime_map::find_ordered(
-    const mime& type) const
+    mime& type) const
 {
     request_handler_callback result;
     for (const mime& value : vector_) {
@@ -134,6 +134,7 @@ request_handler_callback demultiplexer_ordered_mime_map::find_ordered(
             assert(it != map_.end());
             if (true == it->second.is_available) {
                 result = it->second.handler;
+                type = it->first;
                 break;
             }
         }

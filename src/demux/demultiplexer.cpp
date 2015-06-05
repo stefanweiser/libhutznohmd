@@ -19,6 +19,7 @@
 #include <cassert>
 
 #include <demux/demultiplex_handler.hpp>
+#include <demux/request_handler_holder.hpp>
 
 #include "demultiplexer.hpp"
 
@@ -39,10 +40,10 @@ demultiplexer::demultiplexer(void)
 {
 }
 
-request_handler_callback demultiplexer::determine_request_handler(
-    const request_interface& request) const
+request_handler_holder_pointer demultiplexer::determine_request_handler(
+    const request_interface& request)
 {
-    request_handler_callback result;
+    request_handler_holder_pointer result;
 
     // A wildcard content type is not allowed.
     const mime content_type = request.content_type();
@@ -67,7 +68,9 @@ request_handler_callback demultiplexer::determine_request_handler(
             while (true == request.accept(handle, type)) {
                 request_handler_callback find_result = accept_map.find(type);
                 if (!!find_result) {
-                    result = find_result;
+                    request_handler_id id{path, method, content_type, type};
+                    result = std::make_shared<request_handler_holder>(
+                        *this, id, find_result);
                     break;
                 }
             }

@@ -29,8 +29,8 @@ namespace hutzn
 class demux_interface_mock : public demux_interface
 {
 public:
-    MOCK_CONST_METHOD1(determine_request_handler,
-                       request_handler_callback(const request_interface&));
+    MOCK_METHOD1(determine_request_handler,
+                 request_handler_holder_pointer(const request_interface&));
     MOCK_METHOD2(connect, handler_pointer(const request_handler_id&,
                                           const request_handler_callback&));
     MOCK_METHOD1(register_mime_type, mime_type(const std::string&));

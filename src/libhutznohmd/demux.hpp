@@ -247,6 +247,10 @@ public:
                                   response_interface& response) = 0;
 };
 
+//! Holders of request handlers are always reference counted.
+using request_handler_holder_pointer =
+    std::shared_ptr<request_handler_holder_interface>;
+
 //! Is used when the demultiplexer calls a request handler back in order to get
 //! a response on a request.
 using request_handler_callback = std::function<
@@ -265,8 +269,8 @@ public:
     //! is registered at this demultiplexer. Wildcard accept types are resolved
     //! by a first-come-first-served concept. The first request handler, that
     //! gets connected to that resource, gets returned.
-    virtual request_handler_callback determine_request_handler(
-        const request_interface& request) const = 0;
+    virtual request_handler_holder_pointer determine_request_handler(
+        const request_interface& request) = 0;
 };
 
 //! Demultiplexers should always be used with reference counted pointers.

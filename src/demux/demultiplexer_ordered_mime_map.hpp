@@ -67,7 +67,9 @@ public:
     //! find(text/ *) returns handler of text/xml;
     //! find(* /xml) returns handler of application/xml;
     //! @endcode
-    request_handler_callback find(const mime& type) const;
+    //! The input mime type may be altered, if some wildcard resolving was done.
+    //! It contains the concrete mime type of the request handler afterwards.
+    request_handler_callback find(mime& type) const;
 
     //! Sets whether the handler is currently in use or not. Setting it true
     //! will prevent the erase operation to succeed.
@@ -93,8 +95,10 @@ private:
 
     //! Tries to find and returns a matching request handler for a given mime
     //! type respecting the insertion order. Wildcards are treated correctly as
-    //! any element while searching.
-    request_handler_callback find_ordered(const mime& type) const;
+    //! any element while searching. The type may be altered when a request
+    //! handler was found. It contains the concrete mime type of the returned
+    //! value after the call in that case.
+    request_handler_callback find_ordered(mime& type) const;
 
     //! Stores the request handler callbacks by its mime type keys.
     std::map<mime, request_handler_infos> map_;

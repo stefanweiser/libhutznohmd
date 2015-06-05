@@ -158,7 +158,8 @@ TEST_F(demultiplexer_ordered_mime_map_test, erase_used)
 TEST_F(demultiplexer_ordered_mime_map_test, find_in_empty_vector)
 {
     demultiplexer_ordered_mime_map map;
-    EXPECT_FALSE(map.find(none_));
+    mime none = none_;
+    EXPECT_FALSE(map.find(none));
 }
 
 TEST_F(demultiplexer_ordered_mime_map_test, find_none_in_vector)
@@ -168,9 +169,11 @@ TEST_F(demultiplexer_ordered_mime_map_test, find_none_in_vector)
     response_interface_mock response;
     map.insert(none_, make_request_handler(http_status_code::OK));
 
-    request_handler_callback none_fn = map.find(none_);
+    mime none = none_;
+    request_handler_callback none_fn = map.find(none);
 
     ASSERT_TRUE(!!none_fn);
+    EXPECT_EQ(none, none_);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
 }
 
@@ -182,9 +185,11 @@ TEST_F(demultiplexer_ordered_mime_map_test, find_none_in_vector_second_time)
     map.insert(text_plain_, make_request_handler(http_status_code::FOUND));
     map.insert(none_, make_request_handler(http_status_code::OK));
 
-    request_handler_callback none_fn = map.find(none_);
+    mime none = none_;
+    request_handler_callback none_fn = map.find(none);
 
     ASSERT_TRUE(!!none_fn);
+    EXPECT_EQ(none, none_);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
 }
 
@@ -195,10 +200,11 @@ TEST_F(demultiplexer_ordered_mime_map_test, find_wildcard_type_in_vector)
     response_interface_mock response;
     map.insert(none_, make_request_handler(http_status_code::OK));
 
-    const mime wildcard = mime(mime_type::WILDCARD, mime_subtype::NONE);
+    mime wildcard = mime(mime_type::WILDCARD, mime_subtype::NONE);
     request_handler_callback none_fn = map.find(wildcard);
 
     ASSERT_TRUE(!!none_fn);
+    EXPECT_EQ(none_, wildcard);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
 }
 
@@ -209,10 +215,11 @@ TEST_F(demultiplexer_ordered_mime_map_test, find_wildcard_subtype_in_vector)
     response_interface_mock response;
     map.insert(none_, make_request_handler(http_status_code::OK));
 
-    const mime wildcard = mime(mime_type::NONE, mime_subtype::WILDCARD);
+    mime wildcard = mime(mime_type::NONE, mime_subtype::WILDCARD);
     request_handler_callback none_fn = map.find(wildcard);
 
     ASSERT_TRUE(!!none_fn);
+    EXPECT_EQ(none_, wildcard);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
 }
 
@@ -223,10 +230,11 @@ TEST_F(demultiplexer_ordered_mime_map_test, find_wildcard_in_vector)
     response_interface_mock response;
     map.insert(none_, make_request_handler(http_status_code::OK));
 
-    const mime wildcard = mime(mime_type::WILDCARD, mime_subtype::WILDCARD);
+    mime wildcard = mime(mime_type::WILDCARD, mime_subtype::WILDCARD);
     request_handler_callback none_fn = map.find(wildcard);
 
     ASSERT_TRUE(!!none_fn);
+    EXPECT_EQ(none_, wildcard);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
 }
 
@@ -237,12 +245,15 @@ TEST_F(demultiplexer_ordered_mime_map_test, find_unavailable)
     map.set_availability(none_, false);
 
     EXPECT_FALSE(map.is_available(none_));
-    request_handler_callback none_fn = map.find(none_);
+    mime none = none_;
+    request_handler_callback none_fn = map.find(none);
     EXPECT_TRUE(!none_fn);
+    EXPECT_EQ(none_, none);
     map.set_availability(none_, true);
     EXPECT_TRUE(map.is_available(none_));
-    none_fn = map.find(none_);
+    none_fn = map.find(none);
     EXPECT_TRUE(!!none_fn);
+    EXPECT_EQ(none_, none);
 }
 
 } // namespace hutzn
