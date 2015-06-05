@@ -473,9 +473,9 @@ The library will never throw an exception by itself. Raising an exception hat to
 be qualified as a fatal error for the library code. Therefore the application
 should abort and the bug has to get fixed. This enables the user to choose
 whether to use exception handling or not. Sadly there is currently no way to
-enforce this gurantee without loosing the ability to test with google-mock
-(there is currently no way to define a member function with the noexcept
-specifier and mock it).
+enforce this gurantee without loosing the ability to test with
+[googlemock](https://code.google.com/p/googlemock/) (there is currently no way
+to define a member function with the noexcept specifier and mock it).
 
 There is also one exception from this rule. The member function
 @ref request_processor_interface::handle_one_request may indirectly throw an
