@@ -319,7 +319,7 @@ For documentation:
 - @b doxygen >= 1.8.8
 - @b dot >= 2.26
 - @b java >= 1.6
-- A network connection to download PlantUML.
+- A network connection to download PlantUML in a recent version.
 
 For coverage:
 - @b gcov >= 4.8
@@ -373,7 +373,7 @@ support its users to fulfill the ideas of REST while developing a web service.
 
 A user of this library has to provide some control code and a resource manager
 to connect its request handlers to the library. This will make the REST
-application available to the client, which wants to request resource
+application available to the clients, who want to request resource
 representations. The control code has to listen for and accept the connections,
 which then are provided to the library again, that tries to call the correct
 request handler.
@@ -469,16 +469,19 @@ The implementation gurantees some properties, that get discussed here.
 
 @section sec_exception_safety Exception safety
 
-The library will never throw an exception by itself. Raising an exception is
-defined as a fatal error for the library code. Therefore the application has to
-abort and the bug has to be fixed. This enables the user to choose whether to
-use exception handling or not. Sadly there is currently no way to enforce this
-gurantee without loosing the ability to test with google-mock. There is also one
-exception from this rule. The member function
-@ref request_processor_interface::handle_one_request may indirectly throw
-an exception, because it is necessary to call a request handler or an error
-handler which is part of the server. The library will not enforce those handler
-functions to fulfill this no-throw policy.
+The library will never throw an exception by itself. Raising an exception hat to
+be qualified as a fatal error for the library code. Therefore the application
+should abort and the bug has to get fixed. This enables the user to choose
+whether to use exception handling or not. Sadly there is currently no way to
+enforce this gurantee without loosing the ability to test with google-mock
+(there is currently no way to define a member function with the noexcept
+specifier and mock it).
+
+There is also one exception from this rule. The member function
+@ref request_processor_interface::handle_one_request may indirectly throw an
+exception, because it calls a request handler or an error handler which is not
+part of the library's code. The library will not enforce those handler functions
+to fulfill this no-throw policy.
 
 @section sec_thread_safety Thread safety
 
@@ -487,7 +490,7 @@ designed to gurantee thread safety everywhere. All functionality could be
 accessed simultaneously by multiple threads. This gurantee may introduce
 deadlock situations.
 
-The most important one is a deadlock, that happens, when the system is not
+As an example there is a deadlock, that happens, when the system is not
 correctly destroyed:
 
 @startuml{most_important_deadlock.svg}
