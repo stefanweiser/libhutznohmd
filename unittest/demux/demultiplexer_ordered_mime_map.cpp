@@ -141,6 +141,20 @@ TEST_F(demultiplexer_ordered_mime_map_test,
     EXPECT_EQ(map.size(), 0);
 }
 
+TEST_F(demultiplexer_ordered_mime_map_test, erase_used)
+{
+    demultiplexer_ordered_mime_map map;
+    map.insert(none_, request_handler_callback());
+    map.set_usage(none_, true);
+    EXPECT_TRUE(map.is_used(none_));
+    EXPECT_FALSE(map.erase(none_));
+    EXPECT_EQ(map.size(), 1);
+    map.set_usage(none_, false);
+    EXPECT_FALSE(map.is_used(none_));
+    EXPECT_TRUE(map.erase(none_));
+    EXPECT_EQ(map.size(), 0);
+}
+
 TEST_F(demultiplexer_ordered_mime_map_test, find_in_empty_vector)
 {
     demultiplexer_ordered_mime_map map;
@@ -214,6 +228,21 @@ TEST_F(demultiplexer_ordered_mime_map_test, find_wildcard_in_vector)
 
     ASSERT_TRUE(!!none_fn);
     EXPECT_EQ(none_fn(request, response), http_status_code::OK);
+}
+
+TEST_F(demultiplexer_ordered_mime_map_test, find_unavailable)
+{
+    demultiplexer_ordered_mime_map map;
+    map.insert(none_, make_request_handler(http_status_code::OK));
+    map.set_availability(none_, false);
+
+    EXPECT_FALSE(map.is_available(none_));
+    request_handler_callback none_fn = map.find(none_);
+    EXPECT_TRUE(!none_fn);
+    map.set_availability(none_, true);
+    EXPECT_TRUE(map.is_available(none_));
+    none_fn = map.find(none_);
+    EXPECT_TRUE(!!none_fn);
 }
 
 } // namespace hutzn

@@ -69,14 +69,35 @@ public:
     //! @endcode
     request_handler_callback find(const mime& type) const;
 
+    //! Sets whether the handler is currently in use or not. Setting it true
+    //! will prevent the erase operation to succeed.
+    void set_usage(const mime& type, const bool used);
+
+    //! Returns true, when the handler is currently in use.
+    bool is_used(const mime& type) const;
+
+    //! Sets whether the handler is available to get found. Setting it false
+    //! will prevent the find operation to return that handler.
+    void set_availability(const mime& type, const bool available);
+
+    //! Returns true, when the handler is currently available.
+    bool is_available(const mime& type) const;
+
 private:
+    struct request_handler_infos
+    {
+        request_handler_callback handler;
+        bool is_used;
+        bool is_available;
+    };
+
     //! Tries to find and returns a matching request handler for a given mime
     //! type respecting the insertion order. Wildcards are treated correctly as
     //! any element while searching.
     request_handler_callback find_ordered(const mime& type) const;
 
     //! Stores the request handler callbacks by its mime type keys.
-    std::map<mime, request_handler_callback> map_;
+    std::map<mime, request_handler_infos> map_;
 
     //! Stores the insertion order.
     std::vector<mime> vector_;

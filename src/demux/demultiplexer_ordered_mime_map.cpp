@@ -17,6 +17,7 @@
  */
 
 #include <algorithm>
+#include <cassert>
 
 #include "demultiplexer_ordered_mime_map.hpp"
 
@@ -41,9 +42,9 @@ bool demultiplexer_ordered_mime_map::insert(const mime& type,
     if ((type.first != mime_type::WILDCARD) &&
         (type.second != mime_subtype::WILDCARD)) {
 
-        auto it = map_.find(type);
-        if (it == map_.end()) {
-            map_[type] = fn;
+        auto insertion_result = map_.insert(
+            std::make_pair(type, request_handler_infos{fn, false, true}));
+        if (true == insertion_result.second) {
             vector_.push_back(type);
             result = true;
         }
@@ -55,9 +56,10 @@ bool demultiplexer_ordered_mime_map::erase(const mime& type)
 {
     auto it = map_.find(type);
     bool result;
-    if (it != map_.end()) {
+    if ((it != map_.end()) && (false == it->second.is_used)) {
         std::remove(vector_.begin(), vector_.end(), type);
-        result = (map_.erase(type) > 0);
+        map_.erase(it);
+        result = true;
     } else {
         result = false;
     }
@@ -76,11 +78,42 @@ request_handler_callback demultiplexer_ordered_mime_map::find(
         }
     } else {
         const auto accept_it = map_.find(type);
-        if (accept_it != map_.end()) {
-            result = accept_it->second;
+        if ((accept_it != map_.end()) &&
+            (true == accept_it->second.is_available)) {
+            result = accept_it->second.handler;
         }
     }
     return result;
+}
+
+void demultiplexer_ordered_mime_map::set_usage(const mime& type,
+                                               const bool used)
+{
+    auto it = map_.find(type);
+    assert(it != map_.end());
+    it->second.is_used = used;
+}
+
+bool demultiplexer_ordered_mime_map::is_used(const mime& type) const
+{
+    auto it = map_.find(type);
+    assert(it != map_.end());
+    return it->second.is_used;
+}
+
+void demultiplexer_ordered_mime_map::set_availability(const mime& type,
+                                                      const bool available)
+{
+    auto it = map_.find(type);
+    assert(it != map_.end());
+    it->second.is_available = available;
+}
+
+bool demultiplexer_ordered_mime_map::is_available(const mime& type) const
+{
+    auto it = map_.find(type);
+    assert(it != map_.end());
+    return it->second.is_available;
 }
 
 request_handler_callback demultiplexer_ordered_mime_map::find_ordered(
@@ -98,8 +131,11 @@ request_handler_callback demultiplexer_ordered_mime_map::find_ordered(
             (true == subtype_equal_or_wildcard)) {
 
             auto it = map_.find(value);
-            result = it->second;
-            break;
+            assert(it != map_.end());
+            if (true == it->second.is_available) {
+                result = it->second.handler;
+                break;
+            }
         }
     }
     return result;
