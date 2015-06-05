@@ -248,4 +248,46 @@ TEST_F(demultiplexer_test, determine_request_handler_success_2)
     EXPECT_TRUE(!!demultiplexer_->determine_request_handler(*request));
 }
 
+TEST_F(demultiplexer_test, determine_request_handler_disabled_handler)
+{
+    ASSERT_NE(demultiplexer_.get(), nullptr);
+    request_handler_id test_id = id();
+    handler_pointer handler = demultiplexer_->connect(test_id, &handler_fn);
+    ASSERT_NE(handler.get(), nullptr);
+    handler->disable();
+
+    auto request = std::make_shared<request_interface_mock>();
+    EXPECT_CALL(*request, path()).Times(1).WillOnce(Return(id().path.c_str()));
+    EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(id().method));
+    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(
+        Return(test_id.content_type));
+    EXPECT_CALL(*request, accept(_, _))
+        .Times(2)
+        .WillOnce(Invoke([](void*&, mime& m) {
+            m.first = mime_type::IMAGE;
+            m.second = mime_subtype::PLAIN;
+            return true;
+        }))
+        .WillOnce(Invoke([](void*&, mime&) { return false; }));
+
+    EXPECT_TRUE(!demultiplexer_->determine_request_handler(*request));
+    EXPECT_FALSE(handler->is_enabled());
+
+    auto request2 = std::make_shared<request_interface_mock>();
+    EXPECT_CALL(*request2, path()).Times(1).WillOnce(Return(id().path.c_str()));
+    EXPECT_CALL(*request2, method()).Times(1).WillOnce(Return(id().method));
+    EXPECT_CALL(*request2, content_type()).Times(1).WillOnce(
+        Return(test_id.content_type));
+    EXPECT_CALL(*request2, accept(_, _)).Times(1).WillOnce(
+        Invoke([](void*&, mime& m) {
+            m.first = mime_type::IMAGE;
+            m.second = mime_subtype::PLAIN;
+            return true;
+        }));
+
+    handler->enable();
+    EXPECT_TRUE(!!demultiplexer_->determine_request_handler(*request2));
+    EXPECT_TRUE(handler->is_enabled());
+}
+
 } // namespace hutzn
