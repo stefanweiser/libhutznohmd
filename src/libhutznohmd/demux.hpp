@@ -64,8 +64,12 @@ namespace hutzn {
     +set_error_handler(reason: http_status_code, fn): handler
   }
 
+  interface request_handler_holder_interface {
+    +call(request, response): http_status_code
+  }
+
   interface demux_query_interface {
-    +determine_request_handler(type: mime): fn
+    +determine_request_handler(type: mime): request_handler_holder
   }
 
   interface demux_interface {
@@ -80,12 +84,13 @@ namespace hutzn {
   class request_processor
   class demultiplexer
 
-  hutzn.block_device_interface -- request_processor_interface: < uses
-  hutzn.request_interface -- request_processor_interface: < uses
-  hutzn.response_interface -- request_processor_interface: < uses
+  block_device_interface -- request_processor_interface: < uses
+  request_interface -- request_processor_interface: < uses
+  response_interface -- request_processor_interface: < uses
   handler_interface -- request_processor_interface: < returns
   request_handler_id -- demux_interface: < uses
   handler_interface -- demux_interface: < returns
+  request_handler_holder_interface -- demux_interface: < returns
 
   handler_interface <|-- handler: implements
   request_processor_interface <|-- request_processor: implements
