@@ -205,7 +205,9 @@ struct request_handler_id
 };
 
 //! Scopes the request or error handler's lifetime. The handler gets
-//! unregistered, when the handler object instance is getting destroyed.
+//! unregistered, when the handler object instance is getting destroyed (see
+//! also @ref sec_lifetime_callbacks). The handler is per default enabled after
+//! its construction.
 class handler_interface
 {
 public:

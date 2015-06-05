@@ -507,7 +507,7 @@ rh --> cc: "stop server"
 
 The control code calls the request processor to handle a request. The request
 handler is getting called by the request processor and wants to stop the server
-synchronously, which will wait till the request handler finishs.
+synchronously, which should wait till the request handler finishs.
 
 
 
@@ -529,9 +529,55 @@ construct such objects simply call the global functions @ref make_demultiplexer,
 reference-counted objects, that will be automatically destroyed, when their
 scope is left.
 
+The following code is an example construction order of those components:
+@code{.cpp}
+int main()
+{
+    demux_pointer demultiplexer = make_demultiplexer();
+    request_processor_pointer request_processor =
+        make_request_processor(*demultiplexer);
+    listener_pointer listener = listen("0.0.0.0", 8080);
+
+    // do whatever needed...
+
+    // before exiting the function the objects are getting destroyed in the
+    // reverse order:
+    // destroying listener will stop listening for new requests.
+    // destroying request processor disables processing of requests.
+    // destroying the demultiplexer will delete the "request handler database".
+    return 0;
+}
+@endcode
+
 @section sec_lifetime_callbacks Callbacks
 
-@todo [DOC] work on callback lifetime concept
+The user code will interact with the library components mainly by connecting
+request handlers and answering requests. When registering a request handler,
+an automatically reference counted handler object is returned, which acts as the
+registration's scope. When the scope of the handler is left and the object is
+getting destroyed, the request handler is getting unregistered.
+
+The unregistration procedure is handled senquentially with the calls to the
+handler. This is necessary to make real RAII objects out of the handlers, but
+introduces another deadlock situation:
+
+@startuml{self_unregistration_deadlock.svg}
+left to right direction
+
+(request\nhandler) as rh
+(request\nprocessor) as rp
+(demultiplexer) as de
+
+rp -> rh: "waits to\nfinish"
+rh --> de: "waits for\nunregistration"
+de --> rp: "waits for\nusage lock"
+@enduml
+
+Therefore for a request handler it is not allowed to unregister itself. To
+control the ability of getting called afterwards, there are the methods @ref
+handler_interface::enable and @ref handler_interface::disable.
+
+The same problem affects error handlers.
 
 @section sec_lifetime_connection Connection lifetime
 
