@@ -239,6 +239,9 @@ void demultiplexer::set_unused(const request_handler_id& id)
 
         // Set the availability to true.
         accept_map.set_usage(id.accept_type, false);
+
+        // Wake up potentially pending disconnect calls.
+        resource_callbacks_usage_changed_.notify_one();
     }
 }
 
