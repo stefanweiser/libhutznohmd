@@ -33,6 +33,11 @@ handler_interface::~handler_interface(void) noexcept(true)
 {
 }
 
+request_handler_holder_interface::~request_handler_holder_interface(
+    void) noexcept(true)
+{
+}
+
 request_processor_interface::~request_processor_interface(void)
 {
 }

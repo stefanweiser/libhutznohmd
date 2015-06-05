@@ -231,6 +231,22 @@ public:
 //! Handlers are always reference counted.
 using handler_pointer = std::shared_ptr<handler_interface>;
 
+//! Wraps a call to the request handler. This is usually handled by the request
+//! processor.
+class request_handler_holder_interface
+{
+public:
+    //! Resets the request handlers usage state to unused.
+    virtual ~request_handler_holder_interface(void) noexcept(true);
+
+    //! @brief Calls the stored request handler.
+    //!
+    //! This includes setting the request handlers usage state to used before
+    //! calling the handler and resetting it afterwards.
+    virtual http_status_code call(const request_interface& request,
+                                  response_interface& response) = 0;
+};
+
 //! Is used when the demultiplexer calls a request handler back in order to get
 //! a response on a request.
 using request_handler_callback = std::function<
