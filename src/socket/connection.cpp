@@ -118,6 +118,7 @@ bool connection::send(const char_t* data, const size_t& size)
             total_sent_size += sent_size;
             assert(total_sent_size <= ssize);
         }
+        assert(total_sent_size == ssize);
 
         result = true;
     }
