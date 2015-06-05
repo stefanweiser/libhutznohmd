@@ -515,7 +515,19 @@ synchronously, which will wait till the request handler finishs.
 
 @section sec_lifetime_main_objects The main objects of the library
 
-@todo [DOC] define lifetime of the main objects
+Demultiplexer, request processor and the listener are the main objects used to
+build a RESTful web service. These objects are usually constructed once per
+program instance, which has to be the first to construct before interacting with
+the library and the last to destroy after all interaction objects are cleaned
+up. Therefore those objects shall always outlive all other objects.
+
+Note, that a request processor is getting constructed always after the
+demultiplexer, because the demultiplexer's query functionality is necessary for
+the request processor's construction (the destruction order indifferent). To
+construct such objects simply call the global functions @ref make_demultiplexer,
+@ref make_request_processor and @ref listen. They all will return
+reference-counted objects, that will be automatically destroyed, when their
+scope is left.
 
 @section sec_lifetime_callbacks Callbacks
 
