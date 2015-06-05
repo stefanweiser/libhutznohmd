@@ -237,11 +237,16 @@ Library.
 
 @page page_about_hutznohmd What on earth is a Hutznohmd?
 
-A Hutznohmd (or Hutzenabend in standard german) is a tradition of the people of
-the Ore Mountains (german Erzgebirge, czech Krušné hory). The Ore Mountains were
-populated during the medieval times, because silver and other ores were
-discovered there. During the 16th century the Ore Mountains were the heart of
-the mining industry in central europe.
+The short story: It was a tradition of the people, who lived in the Ore
+Mountains in the past centuries. It was a "communication platform", with its own
+set of dos and don'ts, where informations about simply all ordinary topics were
+exchanged. Just what REST is for HTTP.
+
+The long story is, that a Hutznohmd (or Hutzenabend in standard german) was a
+very old tradition of the people of the Ore Mountains (german Erzgebirge, czech
+Krušné hory). The Ore Mountains were populated during the medieval times,
+because silver and other ores were discovered there. During the 16th century the
+Ore Mountains were the heart of the mining industry in central europe.
 
 In the 17th century economical crisis and especially the Thirty-Years-War
 disrupted the mining boom in the Ore Mountains. The population had to find other
@@ -253,7 +258,8 @@ together in one room. This was the birth of the Hutznstube.
 Slowly the Hutzenstube got filled with tradition. The men often joined their
 wives after work. They started carving, smoked pipe, talked and sang together.
 The Hutzenabend was born. Later artists wrote songs about this tradition.
-Nowadays the Hutzenabend gets more and more an event including dinner and music.
+Nowadays the Hutzenabend is getting marketed more and more as an event including
+dinner and music.
 
 @section sec_etymology Etymology
 
