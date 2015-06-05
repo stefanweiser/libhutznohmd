@@ -209,6 +209,36 @@ bool demultiplexer::unregister_mime_subtype(const mime_subtype& subtype)
     return request_parser_data_.unregister_mime_subtype(subtype);
 }
 
+void demultiplexer::set_used(const request_handler_id& id)
+{
+    std::lock_guard<std::mutex> lock(resource_callbacks_mutex_);
+
+    // Getting target resource map.
+    const resource_key key{id.path, id.method, id.content_type};
+    auto resource_it = resource_callbacks_.find(key);
+    if (resource_it != resource_callbacks_.end()) {
+        demultiplexer_ordered_mime_map& accept_map = resource_it->second;
+
+        // Set the availability to true.
+        accept_map.set_usage(id.accept_type, true);
+    }
+}
+
+void demultiplexer::set_unused(const request_handler_id& id)
+{
+    std::lock_guard<std::mutex> lock(resource_callbacks_mutex_);
+
+    // Getting target resource map.
+    const resource_key key{id.path, id.method, id.content_type};
+    auto resource_it = resource_callbacks_.find(key);
+    if (resource_it != resource_callbacks_.end()) {
+        demultiplexer_ordered_mime_map& accept_map = resource_it->second;
+
+        // Set the availability to true.
+        accept_map.set_usage(id.accept_type, false);
+    }
+}
+
 bool demultiplexer::is_mime_valid(const mime& t) const
 {
     const mime_type type = t.first;

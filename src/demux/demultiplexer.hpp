@@ -29,6 +29,7 @@
 #include <demux/demultiplexer_ordered_mime_map.hpp>
 
 #include <demux/disconnect_interface.hpp>
+#include <demux/usage_interface.hpp>
 
 namespace hutzn
 {
@@ -41,7 +42,9 @@ namespace hutzn
 //! management and the request handler determination algorithm. This class is
 //! designed to be thread safe. It does not call any callbacks into the user's
 //! domain.
-class demultiplexer : public demux_interface, public disconnect_interface
+class demultiplexer : public demux_interface,
+                      public disconnect_interface,
+                      public usage_interface
 {
 public:
     explicit demultiplexer(void);
@@ -58,6 +61,8 @@ public:
     mime_subtype register_mime_subtype(const std::string& subtype) override;
     bool unregister_mime_type(const mime_type& type) override;
     bool unregister_mime_subtype(const mime_subtype& subtype) override;
+    void set_used(const request_handler_id& id) override;
+    void set_unused(const request_handler_id& id) override;
 
 private:
     struct resource_key
