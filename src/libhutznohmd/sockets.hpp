@@ -35,13 +35,13 @@ namespace hutzn
 Each restful application has to communicate with its users. To fulfill this
 necessity this library defines @ref connection_interface "connections"
 and @ref listener_interface "listeners", which are the two types of
-sockets, that are used by network communication protocols.
+sockets, that are typically used by network communication protocols.
 
 A listener is defined as an endpoint, to which connection endpoints can connect
-to. Once a connection has been established, it connects two programs. This
+to. Once a connection has been established, it connects two processes. This
 connection is represented by a connection object.
 
-@startuml{data_source_sink_classes.svg}
+@startuml{data_source_sink_classes.svg} "Socket's class diagram"
 namespace hutzn {
   class buffer <<typedef>>
 
@@ -86,8 +86,9 @@ detached from the process.
 detached from the process.
 -# The process returns with an exit code of 0.
 -# Then on most systems the ports, that are used by the connection stay in
-the state TIME_WAIT to catch stray packets before reusing those ports. After a
-while those ports are getting unused.
+the state @c TIME_WAIT to catch stray packets before reusing those ports. After
+a while those ports are getting unused (note that it could also wait in @c
+CLOSE_WAIT when the opposite connection is closed first).
 
 @code{.cpp}
 int main()
@@ -105,10 +106,10 @@ int main()
 @endcode
 
 As shown above the user has to serve the listen, accept and (indirectly)
-close operations of the listeners and connections. The user must also manage
-the connections and listeners (when and where to store and dispose). This makes
-the user write more code on its own, but it also leaves the user free to make
-some important decisions:
+close operations of the listeners and connections. It must also manage the
+connections and listeners (when and where to store and dispose). This makes the
+user write more code on its own, but it also leaves the user free to make some
+important decisions:
 
 -# Singlethreaded vs. multithreaded
 -# When to accept a connection
@@ -165,12 +166,13 @@ public:
 
     //! Overwrites the lingering timeout of the connection in seconds. As a part
     //! of most network stacks the operating system is keeping connections in
-    //! the state TIME_WAIT for some time after closing the socket (even if the
-    //! process, that was associated with that socket, terminates). Usually
-    //! keeping this timeout at the default value is a good idea, because
-    //! TIME_WAIT will eat up stray packets of the old connection. However
-    //! sometimes it is necessary to overwrite this timeout (e.g. when
-    //! integration testing sockets or this socket implementation).
+    //! the state @c TIME_WAIT or @c CLOSE_WAIT for some time after closing
+    //! the socket (even if the process, that was associated with that socket,
+    //! terminates). Usually keeping this timeout at the default value is a good
+    //! idea, because @c TIME_WAIT or @c CLOSE_WAIT will eat up stray packets of
+    //! the old connection. However sometimes it is necessary to overwrite this
+    //! timeout (e.g. when integration testing sockets or this socket
+    //! implementation).
     virtual bool set_lingering_timeout(const int32_t& timeout) = 0;
 };
 

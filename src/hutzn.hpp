@@ -480,11 +480,11 @@ The implementation gurantees some properties, that get discussed here.
 
 @section sec_exception_safety Exception safety
 
-The library will never throw an exception by itself. Raising an exception has to
-be qualified as a fatal error for the library code. Therefore the application
-should abort and the bug has to get fixed. This enables the user to choose
-whether to use exception handling or not. Sadly there is currently no way to
-enforce this gurantee without loosing the ability to test with
+The library will generally never throw an exception by itself. Raising an
+exception has to be qualified as a fatal error for the library code. Therefore
+the application should abort and the bug has to get fixed. This enables the user
+to choose whether to use exception handling or not. Sadly there is currently no
+way to enforce this gurantee without loosing the ability to test with
 [googlemock](https://code.google.com/p/googlemock/) (there is currently no way
 to define a member function with the noexcept specifier and mock it).
 
@@ -588,7 +588,10 @@ Therefore it is not allowed for a request handler to unregister itself. To
 control the ability of getting called, there are the methods @ref
 handler_interface::enable and @ref handler_interface::disable.
 
-Note, that the same deadlock problem affects error handlers.
+Note, that the same deadlock problem affects error handlers. Also note, that in
+case of the user is exposing its own @c this pointer the handler object must get
+destroyed before the object behind the @c this pointer or it will result in
+undefined behaviour!
 
 @section sec_lifetime_connection Connection lifetime
 

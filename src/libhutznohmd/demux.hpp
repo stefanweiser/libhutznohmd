@@ -43,7 +43,7 @@ processor to the demultiplexer, which looks for a request handler. This handler
 is getting called by the request processor in order to get a response. If no
 functor could be found, the request processor will respond an error document.
 
-@startuml{demultiplexer_classes.svg}
+@startuml{demultiplexer_classes.svg} "Demultiplexer's class diagram"
 namespace hutzn {
   interface block_device_interface
 
@@ -57,7 +57,11 @@ namespace hutzn {
     +return_type: mime
   }
 
-  interface handler_interface
+  interface handler_interface {
+    +disable()
+    +enable()
+    +is_enabled(): bool;
+  }
 
   interface request_processor_interface {
     +handle_one_request(device: block_device): bool
@@ -158,14 +162,16 @@ void register_handlers(C* const c,
 @endcode
 
 Allowing @c std::bind conceals an important detail from the user. The user
-could expose the "this" pointer of an object. This complicates lifetime. See
+could expose the @c this pointer of an object. This complicates lifetime. See
 @ref sec_lifetime_callbacks "lifetime of callbacks" for further information.
 
 Every registered handler needs a MIME type. While the library's list is never
 complete, it could be extended by the user. The user can register own MIME types
 and subtypes. There are no lifetime scopes of this registrations, because
 usually the registration and unregistration is done only once during the
-demultiplexer's lifetime.
+demultiplexer's lifetime, the MIME types are getting useless when the
+demultiplexer is getting destroyed and they are also not exposed directly to the
+requesting client.
 
 @code{.cpp}
 int main()
@@ -183,7 +189,8 @@ int main()
 
 Of course not all combinations of MIME types and subtypes are valid and make
 sense. Nevertheless the registration of types and subtypes is indepent, because
-it makes the implementation much easier.
+it makes the implementation much easier and only used combinations are available
+to the requesting client.
 
 */
 
@@ -221,12 +228,12 @@ public:
 
     //! Temporarily disables the handler. It will not be called afterwards. The
     //! handler callback should stay available for it could get enabled again.
-    //! This method is idempotent.
+    //! This operation is idempotent.
     virtual void disable(void) = 0;
 
     //! Temporarily enables the handler. It could get called afterwards. If the
     //! handler function is not available anymore, enabling the handler will
-    //! lead into undefined behaviour. This method is idempotent.
+    //! lead into undefined behaviour. This operation is idempotent.
     virtual void enable(void) = 0;
 
     //! Returns true, when the handler is currently enabled and false if
@@ -247,8 +254,9 @@ public:
 
     //! @brief Calls the stored request handler.
     //!
-    //! This includes setting the request handlers usage state to used before
-    //! calling the handler and resetting it afterwards.
+    //! This will increase the request handlers usage counter before calling the
+    //! handler and decreasing it afterwards. This method may throw exceptions
+    //! which are thrown from the request handler.
     virtual http_status_code call(const request_interface& request,
                                   response_interface& response) = 0;
 };
@@ -257,24 +265,27 @@ public:
 using request_handler_holder_pointer =
     std::shared_ptr<request_handler_holder_interface>;
 
-//! Is used when the demultiplexer calls a request handler back in order to get
-//! a response on a request.
+//! Is used when the demultiplexer calls a request handler in order to get a
+//! response on a request.
 using request_handler_callback = std::function<
     http_status_code(const request_interface&, response_interface&)>;
 
-//! Demultiplexes the requests. It is necessary, that no call to this component
-//! blocks its users longer as needed. Any query that currently could not get
-//! answered has to result in an error instead of waiting.
+//! @brief Demultiplexes the requests.
+//!
+//! It is necessary, that no call to this component blocks its users longer as
+//! needed. Any query that currently could not get answered has to result in an
+//! error instead of waiting.
 class demux_query_interface
 {
 public:
     //! Do not destroy the demultiplexer while performing any operation on it.
     virtual ~demux_query_interface(void);
 
-    //! Determines and returns the best-fitting request handler callback, that
-    //! is registered at this demultiplexer. Wildcard accept types are resolved
-    //! by a first-come-first-served concept. The first request handler, that
-    //! gets connected to that resource, gets returned.
+    //! @brief Determines and returns the best-fitting request handler callback,
+    //! that is registered at this demultiplexer.
+    //!
+    //! Wildcard accept types are resolved by a first-come-first-served concept.
+    //! The first matching request handler is returned.
     virtual request_handler_holder_pointer determine_request_handler(
         const request_interface& request) = 0;
 };
@@ -282,44 +293,53 @@ public:
 //! Demultiplexers should always be used with reference counted pointers.
 using demux_query_pointer = std::shared_ptr<demux_query_interface>;
 
-//! Demultiplexes the requests. It is necessary, that no call to this component
-//! blocks its users longer as needed. Any query that currently could not get
-//! answered has to result in an error instead of waiting.
+//! @brief Stores request handlers and custom mime types.
+//!
+//! It is necessary, that no call to this component blocks its users longer as
+//! needed. Any query that currently could not get answered has to result in an
+//! error instead of waiting.
 class demux_interface : public demux_query_interface
 {
 public:
     //! Do not destroy the demultiplexer while performing any operation on it.
     virtual ~demux_interface(void);
 
-    //! Connects a request handler to a resource. Returns a handler object,
-    //! which acts as lifetime scope of the request handler. If there is already
-    //! a handler with the same request handler id registered, the operation
-    //! will fail. It also fails, if the given path is not valid or one of the
-    //! used mime types is not registered. When the operation fails it returns
-    //! an empty handler.
+    //! @brief Connects a request handler to a resource.
+    //!
+    //! Returns a handler object, which acts as lifetime scope of the request
+    //! handler. If there is already a handler with the same request handler id
+    //! registered, the operation will fail. It also fails, if the given path is
+    //! not valid or one of the used mime types is not registered. When the
+    //! operation fails it returns an empty shared pointer.
     virtual handler_pointer connect(const request_handler_id& id,
                                     const request_handler_callback& fn) = 0;
 
-    //! Registers a custom MIME type and returns a new mime_type value if that
-    //! type was not already registered. The custom MIME type can be used
-    //! afterwards. If the MIME type already exists, it returns
-    //! mime_type::INVALID.
+    //! @brief Registers a custom MIME type and returns a new mime_type value if
+    //! that type was not already registered.
+    //!
+    //! The custom MIME type can be used afterwards. If the MIME type already
+    //! exists, it returns mime_type::INVALID.
     virtual mime_type register_mime_type(const std::string& type) = 0;
 
-    //! Registers a custom MIME subtype and returns a new mime_subtype value if
-    //! that type was not already registered. The custom MIME subtype can be
-    //! used afterwards. If the MIME subtype already exists, it returns
-    //! mime_subtype::INVALID.
+    //! @brief Registers a custom MIME subtype and returns a new mime_subtype
+    //! value if that type was not already registered.
+    //!
+    //! The custom MIME subtype can be used afterwards. If the MIME subtype
+    //! already exists, it returns mime_subtype::INVALID.
     virtual mime_subtype register_mime_subtype(const std::string& subtype) = 0;
 
-    //! Unregisters a MIME type and returns true, if it was found and
-    //! successfully unregistered. To successfully unregister a MIME type, it is
-    //! necessary, that no registered request handler uses it.
+    //! @brief Unregisters a MIME type.
+    //!
+    //! Returns true, if it was found and successfully unregistered. To
+    //! successfully unregister a MIME type, it is necessary, that no registered
+    //! request handler uses it.
     virtual bool unregister_mime_type(const mime_type& type) = 0;
 
-    //! Unregisters a MIME subtype and returns true, if it was found and
-    //! successfully unregistered. To successfully unregister a MIME subtype, it
-    //! is necessary, that no registered request handler uses it.
+    //! @brief Unregisters a MIME subtype.
+    //!
+    //! Returns true, if it was found and successfully unregistered. To
+    //! successfully unregister a MIME subtype, it is necessary, that no
+    //! registered request handler uses it.
     virtual bool unregister_mime_subtype(const mime_subtype& subtype) = 0;
 };
 
@@ -333,8 +353,10 @@ demux_pointer make_demultiplexer(void);
 using error_handler_callback =
     std::function<void(const request_interface&, response_interface&)>;
 
-//! Waits for, parses and handles the requests. Calls to the request and error
-//! handlers. Queries the correct request handler from a given demultiplexer.
+//! @brief Waits for, parses and handles the requests.
+//!
+//! Calls to the request and error handlers. Queries the correct request handler
+//! from a given demultiplexer.
 class request_processor_interface
 {
 public:
@@ -342,15 +364,18 @@ public:
     //! it.
     virtual ~request_processor_interface(void);
 
-    //! Takes a block device to answer one request. Will block until the request
-    //! is answered by a request or an error handler. Returns true, if one
-    //! request was successfully answered (either as error or not) and false
-    //! when the block device got closed during read or send on the connection.
+    //! @brief Takes a block device to answer one request.
+    //!
+    //! Will block until the request is answered by a request or an error
+    //! handler. Returns true, if one request was successfully answered (either
+    //! as error or not) and false when the block device got closed during read
+    //! or send on the connection.
     virtual bool handle_one_request(block_device_interface& device) const = 0;
 
-    //! Connects an error handler to a specific status code. Returns a handler
-    //! object, which acts as the error handler's lifetime scope. If there is
-    //! already one registered, it returns null.
+    //! @brief Connects an error handler to a specific status code.
+    //!
+    //! Returns a handler object, which acts as the error handler's lifetime
+    //! scope. If there is already one registered, it returns null.
     virtual handler_pointer set_error_handler(
         const http_status_code& code, const error_handler_callback& fn) = 0;
 };
@@ -359,7 +384,8 @@ public:
 using request_processor_pointer = std::shared_ptr<request_processor_interface>;
 
 //! Creates a new request processor. Needs a query pointer and a connection
-//! timeout in seconds.
+//! timeout in seconds. The timeout determines how long to wait till the
+//! connection gets closed in order to inactivity.
 request_processor_pointer make_request_processor(
     const demux_query_pointer& query_interface,
     const uint64_t& connection_timeout_in_sec = 30);

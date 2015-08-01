@@ -609,7 +609,7 @@ enum class http_version : uint8_t {
     HTTP_1_1 = 2,
 
     //! This version is currently unsupported, but already reserved.
-    HTTP_2_0 = 3
+    HTTP_2 = 3
 };
 
 //! Every HTTP request has a specific verb. There are two properties to a subset
