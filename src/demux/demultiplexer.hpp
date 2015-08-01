@@ -25,7 +25,7 @@
 
 #include <libhutznohmd/demux.hpp>
 
-#include <request/parser_data.hpp>
+#include <request/mime_data.hpp>
 #include <demux/demultiplexer_ordered_mime_map.hpp>
 
 #include <demux/disconnect_interface.hpp>
@@ -92,10 +92,13 @@ private:
     resource_map resource_callbacks_;
 
     //! Guards the request parser data from mutual access.
-    std::mutex request_parser_data_mutex_;
+    std::mutex mime_type_mutex_;
 
     //! Stores registered mime types.
-    parser_data request_parser_data_;
+    mime_data<mime_type, uint8_t> mime_types_;
+
+    //! Stores registered mime subtypes.
+    mime_data<mime_subtype, uint16_t> mime_subtypes_;
 };
 
 } // namespace hutzn
