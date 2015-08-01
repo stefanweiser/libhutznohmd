@@ -909,7 +909,7 @@ public:
     //! fingerprint outweights its costs (e.g. if the server software is public
     //! domain, it could be assumed, that attackers know about the
     //! implementations weaknesses). Consider that setting the server software
-    //! name without a version may be a good solution.
+    //! name without a version may be a proper solution.
     virtual void set_server(const char_t* const fingerprint) = 0;
 };
 
