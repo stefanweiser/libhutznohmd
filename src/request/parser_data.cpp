@@ -16,6 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
+
 #include "parser_data.hpp"
 
 namespace hutzn
@@ -34,7 +36,10 @@ parser_data::parser_data(void)
 
     // The invalid value is getting ignored.
     for (uint8_t i = 0; i < type_size; i++) {
-        mime_types_.register_type(type_names[i]);
+        const mime_type t = mime_types_.register_type(type_names[i]);
+        assert(static_cast<size_t>(t) ==
+               (i + mime_data<mime_type, uint8_t>::special_value_count));
+        UNUSED(t);
     }
 
     const size_t subtype_size =
