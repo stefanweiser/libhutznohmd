@@ -56,9 +56,9 @@ TEST(server, parsing_request)
     EXPECT_CALL(*socket, send(An<const std::string&>()))
         .Times(1)
         .WillRepeatedly(Return(true));
-    EXPECT_EQ(called, false);
+    EXPECT_EQ(false, called);
     server.parse_request(socket);
-    EXPECT_EQ(called, true);
+    EXPECT_EQ(true, called);
 }
 
 } // namespace http

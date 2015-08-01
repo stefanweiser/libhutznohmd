@@ -53,14 +53,14 @@ protected:
 TEST_F(demultiplexer_ordered_mime_map_test, size_of_empty)
 {
     demultiplexer_ordered_mime_map map;
-    EXPECT_EQ(map.size(), 0);
+    EXPECT_EQ(0, map.size());
 }
 
 TEST_F(demultiplexer_ordered_mime_map_test, size_of_one_inserted)
 {
     demultiplexer_ordered_mime_map map;
     map.insert(none_, request_handler_callback());
-    EXPECT_EQ(map.size(), 1);
+    EXPECT_EQ(1, map.size());
 }
 
 TEST_F(demultiplexer_ordered_mime_map_test, size_of_twice_inserted_the_same)
@@ -68,7 +68,7 @@ TEST_F(demultiplexer_ordered_mime_map_test, size_of_twice_inserted_the_same)
     demultiplexer_ordered_mime_map map;
     map.insert(none_, request_handler_callback());
     map.insert(none_, request_handler_callback());
-    EXPECT_EQ(map.size(), 1);
+    EXPECT_EQ(1, map.size());
 }
 
 TEST_F(demultiplexer_ordered_mime_map_test, size_of_inserted_two_different)
@@ -76,7 +76,7 @@ TEST_F(demultiplexer_ordered_mime_map_test, size_of_inserted_two_different)
     demultiplexer_ordered_mime_map map;
     map.insert(none_, request_handler_callback());
     map.insert(another_, request_handler_callback());
-    EXPECT_EQ(map.size(), 2);
+    EXPECT_EQ(2, map.size());
 }
 
 TEST_F(demultiplexer_ordered_mime_map_test, twice_inserted_the_same)
@@ -118,7 +118,7 @@ TEST_F(demultiplexer_ordered_mime_map_test, erase_existent_when_one_is_inserted)
     demultiplexer_ordered_mime_map map;
     map.insert(none_, request_handler_callback());
     EXPECT_TRUE(map.erase(none_));
-    EXPECT_EQ(map.size(), 0);
+    EXPECT_EQ(0, map.size());
 }
 
 TEST_F(demultiplexer_ordered_mime_map_test,
@@ -128,7 +128,7 @@ TEST_F(demultiplexer_ordered_mime_map_test,
     map.insert(none_, request_handler_callback());
     map.insert(another_, request_handler_callback());
     EXPECT_TRUE(map.erase(none_));
-    EXPECT_EQ(map.size(), 1);
+    EXPECT_EQ(1, map.size());
 }
 
 TEST_F(demultiplexer_ordered_mime_map_test,
@@ -139,7 +139,7 @@ TEST_F(demultiplexer_ordered_mime_map_test,
     map.insert(another_, request_handler_callback());
     EXPECT_TRUE(map.erase(none_));
     EXPECT_TRUE(map.erase(another_));
-    EXPECT_EQ(map.size(), 0);
+    EXPECT_EQ(0, map.size());
 }
 
 TEST_F(demultiplexer_ordered_mime_map_test, erase_used)
@@ -153,7 +153,7 @@ TEST_F(demultiplexer_ordered_mime_map_test, erase_used)
     map.decrease_usage_counter(none_);
     EXPECT_FALSE(map.is_used(none_));
     EXPECT_TRUE(map.erase(none_));
-    EXPECT_EQ(map.size(), 0);
+    EXPECT_EQ(0, map.size());
 }
 
 TEST_F(demultiplexer_ordered_mime_map_test, find_in_empty_vector)
@@ -174,8 +174,8 @@ TEST_F(demultiplexer_ordered_mime_map_test, find_none_in_vector)
     request_handler_callback none_fn = map.find(none);
 
     ASSERT_TRUE(!!none_fn);
-    EXPECT_EQ(none, none_);
-    EXPECT_EQ(none_fn(request, response), http_status_code::OK);
+    EXPECT_EQ(none_, none);
+    EXPECT_EQ(http_status_code::OK, none_fn(request, response));
 }
 
 TEST_F(demultiplexer_ordered_mime_map_test, find_none_in_vector_second_time)
@@ -190,8 +190,8 @@ TEST_F(demultiplexer_ordered_mime_map_test, find_none_in_vector_second_time)
     request_handler_callback none_fn = map.find(none);
 
     ASSERT_TRUE(!!none_fn);
-    EXPECT_EQ(none, none_);
-    EXPECT_EQ(none_fn(request, response), http_status_code::OK);
+    EXPECT_EQ(none_, none);
+    EXPECT_EQ(http_status_code::OK, none_fn(request, response));
 }
 
 TEST_F(demultiplexer_ordered_mime_map_test, find_wildcard_type_in_vector)
@@ -206,7 +206,7 @@ TEST_F(demultiplexer_ordered_mime_map_test, find_wildcard_type_in_vector)
 
     ASSERT_TRUE(!!none_fn);
     EXPECT_EQ(none_, wildcard);
-    EXPECT_EQ(none_fn(request, response), http_status_code::OK);
+    EXPECT_EQ(http_status_code::OK, none_fn(request, response));
 }
 
 TEST_F(demultiplexer_ordered_mime_map_test, find_wildcard_subtype_in_vector)
@@ -221,7 +221,7 @@ TEST_F(demultiplexer_ordered_mime_map_test, find_wildcard_subtype_in_vector)
 
     ASSERT_TRUE(!!none_fn);
     EXPECT_EQ(none_, wildcard);
-    EXPECT_EQ(none_fn(request, response), http_status_code::OK);
+    EXPECT_EQ(http_status_code::OK, none_fn(request, response));
 }
 
 TEST_F(demultiplexer_ordered_mime_map_test, find_wildcard_in_vector)
@@ -236,7 +236,7 @@ TEST_F(demultiplexer_ordered_mime_map_test, find_wildcard_in_vector)
 
     ASSERT_TRUE(!!none_fn);
     EXPECT_EQ(none_, wildcard);
-    EXPECT_EQ(none_fn(request, response), http_status_code::OK);
+    EXPECT_EQ(http_status_code::OK, none_fn(request, response));
 }
 
 TEST_F(demultiplexer_ordered_mime_map_test, find_unavailable)

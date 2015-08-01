@@ -28,21 +28,21 @@ namespace hutzn
 TEST(socket_utility, fill_address_ok)
 {
     sockaddr_in address = fill_address("127.0.0.1", 0x8000);
-    EXPECT_EQ(address.sin_family, AF_INET);
-    EXPECT_EQ(address.sin_port, ntohs(0x8000));
-    EXPECT_EQ(address.sin_addr.s_addr, ntohl(0x7F000001));
+    EXPECT_EQ(AF_INET, address.sin_family);
+    EXPECT_EQ(ntohs(0x8000), address.sin_port);
+    EXPECT_EQ(ntohl(0x7F000001), address.sin_addr.s_addr);
 }
 
 TEST(socket_utility, fill_address_error)
 {
     sockaddr_in address = fill_address("127:0:0:1", 0x8000);
-    EXPECT_EQ(address.sin_family, AF_UNSPEC);
+    EXPECT_EQ(AF_UNSPEC, address.sin_family);
 }
 
 TEST(socket_utility, fill_address_no_dns)
 {
     sockaddr_in address = fill_address("example.com", 0x8000);
-    EXPECT_EQ(address.sin_family, AF_UNSPEC);
+    EXPECT_EQ(AF_UNSPEC, address.sin_family);
 }
 
 } // namespace hutzn

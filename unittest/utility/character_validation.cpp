@@ -59,8 +59,8 @@ TEST(character_handling, to_lower)
 
     // Check
     for (size_t i = 0; i < validity_map.size(); i++) {
-        EXPECT_EQ(static_cast<uint8_t>(to_lower(static_cast<char_t>(i))),
-                  validity_map[i]);
+        EXPECT_EQ(validity_map[i],
+                  static_cast<uint8_t>(to_lower(static_cast<char_t>(i))));
     }
 }
 
@@ -93,7 +93,7 @@ TEST(character_handling, from_hex)
 
     // Check
     for (size_t i = 0; i < validity_map.size(); i++) {
-        EXPECT_EQ(from_hex(static_cast<char_t>(i)), validity_map[i]);
+        EXPECT_EQ(validity_map[i], from_hex(static_cast<char_t>(i)));
     }
 }
 
@@ -132,8 +132,8 @@ TEST(character_handling, uri_authority_characters)
 
     // Check
     for (size_t i = 0; i < validity_map.size(); i++) {
-        EXPECT_EQ(is_valid_uri_authority_character(static_cast<uint8_t>(i)),
-                  validity_map[i]);
+        EXPECT_EQ(validity_map[i],
+                  is_valid_uri_authority_character(static_cast<uint8_t>(i)));
     }
 }
 
@@ -175,8 +175,8 @@ TEST(character_handling, uri_path_characters)
 
     // Check
     for (size_t i = 0; i < validity_map.size(); i++) {
-        EXPECT_EQ(is_valid_uri_path_character(static_cast<uint8_t>(i)),
-                  validity_map[i]);
+        EXPECT_EQ(validity_map[i],
+                  is_valid_uri_path_character(static_cast<uint8_t>(i)));
     }
 }
 
@@ -219,8 +219,8 @@ TEST(character_handling, uri_query_characters)
 
     // Check
     for (size_t i = 0; i < validity_map.size(); i++) {
-        EXPECT_EQ(is_valid_uri_query_character(static_cast<uint8_t>(i)),
-                  validity_map[i]);
+        EXPECT_EQ(validity_map[i],
+                  is_valid_uri_query_character(static_cast<uint8_t>(i)));
     }
 }
 
@@ -264,8 +264,8 @@ TEST(character_handling, uri_fragment_characters)
 
     // Check
     for (size_t i = 0; i < validity_map.size(); i++) {
-        EXPECT_EQ(is_valid_uri_fragment_character(static_cast<uint8_t>(i)),
-                  validity_map[i]);
+        EXPECT_EQ(validity_map[i],
+                  is_valid_uri_fragment_character(static_cast<uint8_t>(i)));
     }
 }
 
@@ -293,8 +293,8 @@ TEST(character_handling, token_characters)
 
     // Check
     for (size_t i = 0; i < validity_map.size(); i++) {
-        EXPECT_EQ(is_valid_token_character(static_cast<uint8_t>(i)),
-                  validity_map[i]);
+        EXPECT_EQ(validity_map[i],
+                  is_valid_token_character(static_cast<uint8_t>(i)));
     }
 }
 
@@ -315,8 +315,8 @@ TEST(character_handling, header_value_characters)
 
     // Check
     for (size_t i = 0; i < validity_map.size(); i++) {
-        EXPECT_EQ(is_valid_header_value_character(static_cast<uint8_t>(i)),
-                  validity_map[i]);
+        EXPECT_EQ(validity_map[i],
+                  is_valid_header_value_character(static_cast<uint8_t>(i)));
     }
 }
 
@@ -334,8 +334,8 @@ TEST(character_handling, quoted_string_characters)
 
     // Check
     for (size_t i = 0; i < validity_map.size(); i++) {
-        EXPECT_EQ(is_valid_quoted_string_character(static_cast<uint8_t>(i)),
-                  validity_map[i]);
+        EXPECT_EQ(validity_map[i],
+                  is_valid_quoted_string_character(static_cast<uint8_t>(i)));
     }
 }
 

@@ -49,7 +49,7 @@ TEST(lexer, empty)
     std::stringstream s("");
     lexer l(anonymous_int_function(&get_char, &s),
             anonymous_int_function(&peek_char, &s));
-    EXPECT_EQ(l.get(), -1);
+    EXPECT_EQ(-1, l.get());
 }
 
 TEST(lexer, string)
@@ -57,8 +57,8 @@ TEST(lexer, string)
     std::stringstream s("ab");
     lexer l(anonymous_int_function(&get_char, &s),
             anonymous_int_function(&peek_char, &s));
-    EXPECT_EQ(l.get(), 'a');
-    EXPECT_EQ(l.get(), 'b');
+    EXPECT_EQ('a', l.get());
+    EXPECT_EQ('b', l.get());
 }
 
 TEST(lexer, newline)
@@ -66,8 +66,8 @@ TEST(lexer, newline)
     std::stringstream s("a\nb");
     lexer l(anonymous_int_function(&get_char, &s),
             anonymous_int_function(&peek_char, &s));
-    EXPECT_EQ(l.get(), 'a');
-    EXPECT_EQ(l.get(), '\n');
+    EXPECT_EQ('a', l.get());
+    EXPECT_EQ('\n', l.get());
 }
 
 TEST(lexer, carriage_return_newline)
@@ -75,8 +75,8 @@ TEST(lexer, carriage_return_newline)
     std::stringstream s("a\r\nb");
     lexer l(anonymous_int_function(&get_char, &s),
             anonymous_int_function(&peek_char, &s));
-    EXPECT_EQ(l.get(), 'a');
-    EXPECT_EQ(l.get(), '\n');
+    EXPECT_EQ('a', l.get());
+    EXPECT_EQ('\n', l.get());
 }
 
 TEST(lexer, carriage_return)
@@ -84,8 +84,8 @@ TEST(lexer, carriage_return)
     std::stringstream s("a\rb");
     lexer l(anonymous_int_function(&get_char, &s),
             anonymous_int_function(&peek_char, &s));
-    EXPECT_EQ(l.get(), 'a');
-    EXPECT_EQ(l.get(), '\n');
+    EXPECT_EQ('a', l.get());
+    EXPECT_EQ('\n', l.get());
 }
 
 TEST(lexer, space)
@@ -93,8 +93,8 @@ TEST(lexer, space)
     std::stringstream s("a b");
     lexer l(anonymous_int_function(&get_char, &s),
             anonymous_int_function(&peek_char, &s));
-    EXPECT_EQ(l.get(), 'a');
-    EXPECT_EQ(l.get(), ' ');
+    EXPECT_EQ('a', l.get());
+    EXPECT_EQ(' ', l.get());
 }
 
 TEST(lexer, tabulator)
@@ -102,8 +102,8 @@ TEST(lexer, tabulator)
     std::stringstream s("a\tb");
     lexer l(anonymous_int_function(&get_char, &s),
             anonymous_int_function(&peek_char, &s));
-    EXPECT_EQ(l.get(), 'a');
-    EXPECT_EQ(l.get(), '\t');
+    EXPECT_EQ('a', l.get());
+    EXPECT_EQ('\t', l.get());
 }
 
 TEST(lexer, newline_whitespace)
@@ -111,8 +111,8 @@ TEST(lexer, newline_whitespace)
     std::stringstream s("a\n\tb");
     lexer l(anonymous_int_function(&get_char, &s),
             anonymous_int_function(&peek_char, &s));
-    EXPECT_EQ(l.get(), 'a');
-    EXPECT_EQ(l.get(), ' ');
+    EXPECT_EQ('a', l.get());
+    EXPECT_EQ(' ', l.get());
 }
 
 TEST(lexer, next_non_whitespace)
@@ -120,7 +120,7 @@ TEST(lexer, next_non_whitespace)
     std::stringstream s(" \ta");
     lexer l(anonymous_int_function(&get_char, &s),
             anonymous_int_function(&peek_char, &s));
-    EXPECT_EQ(l.get_non_whitespace(), 'a');
+    EXPECT_EQ('a', l.get_non_whitespace());
 }
 
 TEST(lexer, newline_is_no_whitespace)
@@ -128,7 +128,7 @@ TEST(lexer, newline_is_no_whitespace)
     std::stringstream s("\na");
     lexer l(anonymous_int_function(&get_char, &s),
             anonymous_int_function(&peek_char, &s));
-    EXPECT_EQ(l.get_non_whitespace(), '\n');
+    EXPECT_EQ('\n', l.get_non_whitespace());
 }
 
 TEST(lexer, carriage_return_is_no_whitespace)
@@ -136,7 +136,7 @@ TEST(lexer, carriage_return_is_no_whitespace)
     std::stringstream s("\ra");
     lexer l(anonymous_int_function(&get_char, &s),
             anonymous_int_function(&peek_char, &s));
-    EXPECT_EQ(l.get_non_whitespace(), '\n');
+    EXPECT_EQ('\n', l.get_non_whitespace());
 }
 
 TEST(lexer, unsigned_integer)
@@ -145,7 +145,7 @@ TEST(lexer, unsigned_integer)
     lexer l(anonymous_int_function(&get_char, &s),
             anonymous_int_function(&peek_char, &s));
     int32_t character = l.get();
-    EXPECT_EQ(l.get_unsigned_integer(character), 123);
+    EXPECT_EQ(123, l.get_unsigned_integer(character));
 }
 
 TEST(lexer, wrong_unsigned_integer)
@@ -154,7 +154,7 @@ TEST(lexer, wrong_unsigned_integer)
     lexer l(anonymous_int_function(&get_char, &s),
             anonymous_int_function(&peek_char, &s));
     int32_t character = l.get();
-    EXPECT_EQ(l.get_unsigned_integer(character), -1);
+    EXPECT_EQ(-1, l.get_unsigned_integer(character));
 }
 
 TEST(lexer, word)
@@ -165,8 +165,8 @@ TEST(lexer, word)
     int32_t character = l.get();
     push_back_string<4> data;
     parse_word(character, data, [](const uint8_t& c) { return c != ' '; }, l);
-    EXPECT_EQ(std::string(data.c_str()), std::string("xyz"));
-    EXPECT_EQ(character, ' ');
+    EXPECT_EQ(std::string("xyz"), std::string(data.c_str()));
+    EXPECT_EQ(' ', character);
 }
 
 TEST(lexer, quoted_string)
@@ -177,8 +177,8 @@ TEST(lexer, quoted_string)
     int32_t character = l.get();
     push_back_string<4> data;
     EXPECT_TRUE(parse_quoted_string(character, data, l));
-    EXPECT_EQ(std::string(data.c_str()), std::string("xyz"));
-    EXPECT_EQ(character, '-');
+    EXPECT_EQ(std::string("xyz"), std::string(data.c_str()));
+    EXPECT_EQ('-', character);
 }
 
 TEST(lexer, quoted_string_error1)
@@ -189,8 +189,8 @@ TEST(lexer, quoted_string_error1)
     int32_t character = l.get();
     push_back_string<4> data;
     EXPECT_FALSE(parse_quoted_string(character, data, l));
-    EXPECT_EQ(std::string(data.c_str()), std::string(""));
-    EXPECT_EQ(character, 'x');
+    EXPECT_EQ(std::string(""), std::string(data.c_str()));
+    EXPECT_EQ('x', character);
 }
 
 TEST(lexer, quoted_string_error2)
@@ -201,8 +201,8 @@ TEST(lexer, quoted_string_error2)
     int32_t character = l.get();
     push_back_string<4> data;
     EXPECT_FALSE(parse_quoted_string(character, data, l));
-    EXPECT_EQ(std::string(data.c_str()), std::string("xyz"));
-    EXPECT_EQ(character, -1);
+    EXPECT_EQ(std::string("xyz"), std::string(data.c_str()));
+    EXPECT_EQ(-1, character);
 }
 
 TEST(lexer, comment)
@@ -212,7 +212,7 @@ TEST(lexer, comment)
             anonymous_int_function(&peek_char, &s));
     int32_t character = l.get();
     EXPECT_TRUE(parse_comment(character, l));
-    EXPECT_EQ(character, '-');
+    EXPECT_EQ('-', character);
 }
 
 TEST(lexer, nested_comments)
@@ -222,7 +222,7 @@ TEST(lexer, nested_comments)
             anonymous_int_function(&peek_char, &s));
     int32_t character = l.get();
     EXPECT_TRUE(parse_comment(character, l));
-    EXPECT_EQ(character, '-');
+    EXPECT_EQ('-', character);
 }
 
 } // namespace http

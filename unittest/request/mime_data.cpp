@@ -30,25 +30,25 @@ namespace hutzn
 TEST(mime_data, initialization)
 {
     mime_data<mime_type, uint8_t> t;
-    EXPECT_EQ(t.parse_type("abc", 3), mime_type::INVALID);
-    EXPECT_EQ(t.parse_type("ABC", 3), mime_type::INVALID);
+    EXPECT_EQ(mime_type::INVALID, t.parse_type("abc", 3));
+    EXPECT_EQ(mime_type::INVALID, t.parse_type("ABC", 3));
 }
 
 TEST(mime_data, registering_unregistering)
 {
     mime_data<mime_type, uint8_t> t;
-    mime_type type = t.register_type("abc");
-    EXPECT_NE(type, mime_type::INVALID);
+    const mime_type type = t.register_type("abc");
+    EXPECT_NE(mime_type::INVALID, type);
     EXPECT_TRUE(t.unregister_type(type));
 }
 
 TEST(mime_data, double_registering)
 {
     mime_data<mime_type, uint8_t> t;
-    mime_type type1 = t.register_type("abc");
-    mime_type type2 = t.register_type("abc");
-    EXPECT_NE(type1, mime_type::INVALID);
-    EXPECT_EQ(type2, mime_type::INVALID);
+    const mime_type type1 = t.register_type("abc");
+    const mime_type type2 = t.register_type("abc");
+    EXPECT_NE(mime_type::INVALID, type1);
+    EXPECT_EQ(mime_type::INVALID, type2);
     EXPECT_TRUE(t.unregister_type(type1));
     EXPECT_FALSE(t.unregister_type(type2));
 }
@@ -56,10 +56,10 @@ TEST(mime_data, double_registering)
 TEST(mime_data, double_registering_case_sensitive)
 {
     mime_data<mime_type, uint8_t> t;
-    mime_type type1 = t.register_type("abc");
-    mime_type type2 = t.register_type("ABC");
-    EXPECT_NE(type1, mime_type::INVALID);
-    EXPECT_EQ(type2, mime_type::INVALID);
+    const mime_type type1 = t.register_type("abc");
+    const mime_type type2 = t.register_type("ABC");
+    EXPECT_NE(mime_type::INVALID, type1);
+    EXPECT_EQ(mime_type::INVALID, type2);
     EXPECT_TRUE(t.unregister_type(type1));
     EXPECT_FALSE(t.unregister_type(type2));
 }
@@ -67,33 +67,33 @@ TEST(mime_data, double_registering_case_sensitive)
 TEST(mime_data, parse_type_successful)
 {
     mime_data<mime_type, uint8_t> t;
-    mime_type type = t.register_type("abc");
-    EXPECT_NE(type, mime_type::INVALID);
-    EXPECT_EQ(t.parse_type("abc", 3), type);
-    EXPECT_EQ(t.parse_type("abcdef", 6), type);
+    const mime_type type = t.register_type("abc");
+    EXPECT_NE(mime_type::INVALID, type);
+    EXPECT_EQ(type, t.parse_type("abc", 3));
+    EXPECT_EQ(type, t.parse_type("abcdef", 6));
     EXPECT_TRUE(t.unregister_type(type));
 }
 
 TEST(mime_data, parse_type_successful_case_sensitive)
 {
     mime_data<mime_type, uint8_t> t;
-    mime_type type = t.register_type("abc");
-    EXPECT_NE(type, mime_type::INVALID);
-    EXPECT_EQ(t.parse_type("Abc", 3), type);
-    EXPECT_EQ(t.parse_type("aBc", 3), type);
-    EXPECT_EQ(t.parse_type("abC", 3), type);
-    EXPECT_EQ(t.parse_type("ABc", 3), type);
-    EXPECT_EQ(t.parse_type("aBC", 3), type);
-    EXPECT_EQ(t.parse_type("AbC", 3), type);
-    EXPECT_EQ(t.parse_type("ABC", 3), type);
+    const mime_type type = t.register_type("abc");
+    EXPECT_NE(mime_type::INVALID, type);
+    EXPECT_EQ(type, t.parse_type("Abc", 3));
+    EXPECT_EQ(type, t.parse_type("aBc", 3));
+    EXPECT_EQ(type, t.parse_type("abC", 3));
+    EXPECT_EQ(type, t.parse_type("ABc", 3));
+    EXPECT_EQ(type, t.parse_type("aBC", 3));
+    EXPECT_EQ(type, t.parse_type("AbC", 3));
+    EXPECT_EQ(type, t.parse_type("ABC", 3));
     EXPECT_TRUE(t.unregister_type(type));
 }
 
 TEST(mime_data, is_registered)
 {
     mime_data<mime_type, uint8_t> t;
-    mime_type type = t.register_type("abc");
-    EXPECT_NE(type, mime_type::INVALID);
+    const mime_type type = t.register_type("abc");
+    EXPECT_NE(mime_type::INVALID, type);
     EXPECT_TRUE(t.is_registered(type));
     EXPECT_TRUE(t.unregister_type(type));
     EXPECT_FALSE(t.is_registered(type));
@@ -102,9 +102,9 @@ TEST(mime_data, is_registered)
 TEST(mime_data, parse_type_failure)
 {
     mime_data<mime_type, uint8_t> t;
-    mime_type type = t.register_type("abc");
-    EXPECT_NE(type, mime_type::INVALID);
-    EXPECT_EQ(t.parse_type("xyzabcdef", 9), mime_type::INVALID);
+    const mime_type type = t.register_type("abc");
+    EXPECT_NE(mime_type::INVALID, type);
+    EXPECT_EQ(mime_type::INVALID, t.parse_type("xyzabcdef", 9));
     EXPECT_TRUE(t.unregister_type(type));
 }
 

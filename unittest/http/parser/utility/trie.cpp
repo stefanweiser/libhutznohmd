@@ -90,8 +90,8 @@ TEST(static_trie, basic_function)
     std::vector<trie<size_t>::value_info> values = {
         {trie<size_t>::value_info{"abc", 1}, trie<size_t>::value_info{"def", 2},
          trie<size_t>::value_info{"aef", 3}}};
-    EXPECT_EQ(f.parse(values, fail_safe_result), 1);
-    EXPECT_EQ(fail_safe_result.c_str(), std::string(""));
+    EXPECT_EQ(1, f.parse(values, fail_safe_result));
+    EXPECT_EQ(std::string(""), fail_safe_result.c_str());
 }
 
 TEST(static_trie, basic_function2)
@@ -101,8 +101,8 @@ TEST(static_trie, basic_function2)
     std::vector<trie<size_t>::value_info> values = {
         {trie<size_t>::value_info{"abc", 1}, trie<size_t>::value_info{"def", 2},
          trie<size_t>::value_info{"aef", 3}}};
-    EXPECT_EQ(f.parse(values, fail_safe_result), 3);
-    EXPECT_EQ(fail_safe_result.c_str(), std::string(""));
+    EXPECT_EQ(3, f.parse(values, fail_safe_result));
+    EXPECT_EQ(std::string(""), fail_safe_result.c_str());
 }
 
 TEST(static_trie, failed)
@@ -112,8 +112,8 @@ TEST(static_trie, failed)
     std::vector<trie<size_t>::value_info> values = {
         {trie<size_t>::value_info{"aBc", 1}, trie<size_t>::value_info{"def", 2},
          trie<size_t>::value_info{"aef", 3}}};
-    EXPECT_EQ(f.parse(values, fail_safe_result), 3);
-    EXPECT_EQ(fail_safe_result.c_str(), std::string(""));
+    EXPECT_EQ(3, f.parse(values, fail_safe_result));
+    EXPECT_EQ(std::string(""), fail_safe_result.c_str());
 }
 
 } // namespace http

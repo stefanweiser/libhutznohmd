@@ -74,11 +74,11 @@ TEST(response_parser, construction_destruction)
 {
     fixture f("");
     EXPECT_FALSE(f.parser_.valid());
-    EXPECT_EQ(f.str_.second, 0);
-    EXPECT_EQ(f.parser_.version(), version::HTTP_UNKNOWN);
-    EXPECT_EQ(f.parser_.status_code(), 0);
-    EXPECT_EQ(f.parser_.reason_phrase(), std::string());
-    EXPECT_EQ(f.parser_.headers().empty(), true);
+    EXPECT_EQ(0, f.str_.second);
+    EXPECT_EQ(version::HTTP_UNKNOWN, f.parser_.version());
+    EXPECT_EQ(0, f.parser_.status_code());
+    EXPECT_EQ(std::string(), f.parser_.reason_phrase());
+    EXPECT_EQ(true, f.parser_.headers().empty());
 }
 
 TEST(response_parser, gone_response)
@@ -86,11 +86,11 @@ TEST(response_parser, gone_response)
     fixture f("HTTP/1.1 410 Gone\r\n\r\n");
     f.parser_.parse();
     EXPECT_TRUE(f.parser_.valid());
-    EXPECT_EQ(f.str_.second, f.str_.first.size());
-    EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
-    EXPECT_EQ(f.parser_.status_code(), 410);
-    EXPECT_EQ(f.parser_.reason_phrase(), std::string("Gone"));
-    EXPECT_EQ(f.parser_.headers().empty(), true);
+    EXPECT_EQ(f.str_.first.size(), f.str_.second);
+    EXPECT_EQ(version::HTTP_1_1, f.parser_.version());
+    EXPECT_EQ(410, f.parser_.status_code());
+    EXPECT_EQ(std::string("Gone"), f.parser_.reason_phrase());
+    EXPECT_EQ(true, f.parser_.headers().empty());
 }
 
 TEST(response_parser, not_found_response)
@@ -98,11 +98,11 @@ TEST(response_parser, not_found_response)
     fixture f("HTTP/1.1 404 Not Found\r\n\r\n");
     f.parser_.parse();
     EXPECT_TRUE(f.parser_.valid());
-    EXPECT_EQ(f.str_.second, f.str_.first.size());
-    EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
-    EXPECT_EQ(f.parser_.status_code(), 404);
-    EXPECT_EQ(f.parser_.reason_phrase(), std::string("Not Found"));
-    EXPECT_EQ(f.parser_.headers().empty(), true);
+    EXPECT_EQ(f.str_.first.size(), f.str_.second);
+    EXPECT_EQ(version::HTTP_1_1, f.parser_.version());
+    EXPECT_EQ(404, f.parser_.status_code());
+    EXPECT_EQ(std::string("Not Found"), f.parser_.reason_phrase());
+    EXPECT_EQ(true, f.parser_.headers().empty());
 }
 
 TEST(response_parser, custom_response)
@@ -110,11 +110,11 @@ TEST(response_parser, custom_response)
     fixture f("HTTP/1.1 555 X0Y1Z2\r\n\r\n");
     f.parser_.parse();
     EXPECT_TRUE(f.parser_.valid());
-    EXPECT_EQ(f.str_.second, f.str_.first.size());
-    EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
-    EXPECT_EQ(f.parser_.status_code(), 555);
-    EXPECT_EQ(f.parser_.reason_phrase(), std::string("X0Y1Z2"));
-    EXPECT_EQ(f.parser_.headers().empty(), true);
+    EXPECT_EQ(f.str_.first.size(), f.str_.second);
+    EXPECT_EQ(version::HTTP_1_1, f.parser_.version());
+    EXPECT_EQ(555, f.parser_.status_code());
+    EXPECT_EQ(std::string("X0Y1Z2"), f.parser_.reason_phrase());
+    EXPECT_EQ(true, f.parser_.headers().empty());
 }
 
 TEST(response_parser, another_custom_response)
@@ -122,11 +122,11 @@ TEST(response_parser, another_custom_response)
     fixture f("HTTP/1.1 555 9X0Y1Z2\r\n\r\n");
     f.parser_.parse();
     EXPECT_TRUE(f.parser_.valid());
-    EXPECT_EQ(f.str_.second, f.str_.first.size());
-    EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
-    EXPECT_EQ(f.parser_.status_code(), 555);
-    EXPECT_EQ(f.parser_.reason_phrase(), std::string("9X0Y1Z2"));
-    EXPECT_EQ(f.parser_.headers().empty(), true);
+    EXPECT_EQ(f.str_.first.size(), f.str_.second);
+    EXPECT_EQ(version::HTTP_1_1, f.parser_.version());
+    EXPECT_EQ(555, f.parser_.status_code());
+    EXPECT_EQ(std::string("9X0Y1Z2"), f.parser_.reason_phrase());
+    EXPECT_EQ(true, f.parser_.headers().empty());
 }
 
 TEST(response_parser, unknown_http_version_in_response)
@@ -134,11 +134,11 @@ TEST(response_parser, unknown_http_version_in_response)
     fixture f("HTTP/0.0 200 OK\r\n\r\n");
     f.parser_.parse();
     EXPECT_FALSE(f.parser_.valid());
-    EXPECT_EQ(f.str_.second, 6);
-    EXPECT_EQ(f.parser_.version(), version::HTTP_UNKNOWN);
-    EXPECT_EQ(f.parser_.status_code(), 0);
-    EXPECT_EQ(f.parser_.reason_phrase(), std::string());
-    EXPECT_EQ(f.parser_.headers().empty(), true);
+    EXPECT_EQ(6, f.str_.second);
+    EXPECT_EQ(version::HTTP_UNKNOWN, f.parser_.version());
+    EXPECT_EQ(0, f.parser_.status_code());
+    EXPECT_EQ(std::string(), f.parser_.reason_phrase());
+    EXPECT_EQ(true, f.parser_.headers().empty());
 }
 
 TEST(response_parser, unknown_status_code_in_response)
@@ -146,11 +146,11 @@ TEST(response_parser, unknown_status_code_in_response)
     fixture f("HTTP/1.1 x11 OK\r\n\r\n");
     f.parser_.parse();
     EXPECT_FALSE(f.parser_.valid());
-    EXPECT_EQ(f.str_.second, 10);
-    EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
-    EXPECT_EQ(f.parser_.status_code(), 0);
-    EXPECT_EQ(f.parser_.reason_phrase(), std::string());
-    EXPECT_EQ(f.parser_.headers().empty(), true);
+    EXPECT_EQ(10, f.str_.second);
+    EXPECT_EQ(version::HTTP_1_1, f.parser_.version());
+    EXPECT_EQ(0, f.parser_.status_code());
+    EXPECT_EQ(std::string(), f.parser_.reason_phrase());
+    EXPECT_EQ(true, f.parser_.headers().empty());
 }
 
 TEST(response_parser, unknown_reason_phrase_in_response)
@@ -158,11 +158,11 @@ TEST(response_parser, unknown_reason_phrase_in_response)
     fixture f("HTTP/1.1 200 ~OK\r\n\r\n");
     f.parser_.parse();
     EXPECT_FALSE(f.parser_.valid());
-    EXPECT_EQ(f.str_.second, 14);
-    EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
-    EXPECT_EQ(f.parser_.status_code(), 200);
-    EXPECT_EQ(f.parser_.reason_phrase(), std::string());
-    EXPECT_EQ(f.parser_.headers().empty(), true);
+    EXPECT_EQ(14, f.str_.second);
+    EXPECT_EQ(version::HTTP_1_1, f.parser_.version());
+    EXPECT_EQ(200, f.parser_.status_code());
+    EXPECT_EQ(std::string(), f.parser_.reason_phrase());
+    EXPECT_EQ(true, f.parser_.headers().empty());
 }
 
 TEST(response_parser, unknown_date_in_request)
@@ -170,12 +170,12 @@ TEST(response_parser, unknown_date_in_request)
     fixture f("HTTP/1.1 200 OK\r\nABC:\r\nDate:\n a\r\n\r\n");
     f.parser_.parse();
     EXPECT_FALSE(f.parser_.valid());
-    EXPECT_EQ(f.str_.second, f.str_.first.size());
-    EXPECT_EQ(f.parser_.version(), version::HTTP_1_1);
-    EXPECT_EQ(f.parser_.status_code(), 200);
-    EXPECT_EQ(f.parser_.reason_phrase(), std::string("OK"));
-    EXPECT_EQ(f.parser_.headers().size(), 1);
-    EXPECT_EQ(f.parser_.content_length(), 0);
+    EXPECT_EQ(f.str_.first.size(), f.str_.second);
+    EXPECT_EQ(version::HTTP_1_1, f.parser_.version());
+    EXPECT_EQ(200, f.parser_.status_code());
+    EXPECT_EQ(std::string("OK"), f.parser_.reason_phrase());
+    EXPECT_EQ(1, f.parser_.headers().size());
+    EXPECT_EQ(0, f.parser_.content_length());
 }
 
 TEST(response_parser, http_error)
@@ -183,11 +183,11 @@ TEST(response_parser, http_error)
     fixture f("abcdefghijklmnopqrstuvwxyz");
     f.parser_.parse();
     EXPECT_FALSE(f.parser_.valid());
-    EXPECT_EQ(f.str_.second, 1);
-    EXPECT_EQ(f.parser_.version(), version::HTTP_UNKNOWN);
-    EXPECT_EQ(f.parser_.status_code(), 0);
-    EXPECT_EQ(f.parser_.reason_phrase(), std::string());
-    EXPECT_EQ(f.parser_.headers().empty(), true);
+    EXPECT_EQ(1, f.str_.second);
+    EXPECT_EQ(version::HTTP_UNKNOWN, f.parser_.version());
+    EXPECT_EQ(0, f.parser_.status_code());
+    EXPECT_EQ(std::string(), f.parser_.reason_phrase());
+    EXPECT_EQ(true, f.parser_.headers().empty());
 }
 
 } // namespace http

@@ -53,19 +53,19 @@ TEST(request, empty_body)
                                  0xE9, 0x80, 0x09, 0x98, 0xEC, 0xF8, 0x42,
                                  0x7E}};
 
-    EXPECT_EQ(request.headers().size(), 0);
-    EXPECT_EQ(calculate_md5(request.data()), sum);
-    EXPECT_EQ(request.data(), buffer());
-    EXPECT_EQ(request.data_content_type().type(),
-              media_type_interface::mime_type::CUSTOM);
-    EXPECT_EQ(request.data_content_type().subtype(),
-              media_type_interface::mime_subtype::CUSTOM);
-    EXPECT_EQ(request.data_content_type().custom_type(), std::string());
-    EXPECT_EQ(request.data_content_type().custom_subtype(), std::string());
-    EXPECT_EQ(request.method(), method::GET);
-    EXPECT_EQ(request.request_uri().path(), std::string("/"));
-    EXPECT_EQ(request.version(), version::HTTP_1_1);
-    EXPECT_EQ(request.keeps_connection(), true);
+    EXPECT_EQ(0, request.headers().size());
+    EXPECT_EQ(sum, calculate_md5(request.data()));
+    EXPECT_EQ(buffer(), request.data());
+    EXPECT_EQ(media_type_interface::mime_type::CUSTOM,
+              request.data_content_type().type());
+    EXPECT_EQ(media_type_interface::mime_subtype::CUSTOM,
+              request.data_content_type().subtype());
+    EXPECT_EQ(std::string(), request.data_content_type().custom_type());
+    EXPECT_EQ(std::string(), request.data_content_type().custom_subtype());
+    EXPECT_EQ(method::GET, request.method());
+    EXPECT_EQ(std::string("/"), request.request_uri().path());
+    EXPECT_EQ(version::HTTP_1_1, request.version());
+    EXPECT_EQ(true, request.keeps_connection());
 }
 
 TEST(request, wrong_md5)
@@ -89,13 +89,13 @@ TEST(request, wrong_md5)
                                  0xE9, 0x80, 0x09, 0x98, 0xEC, 0xF8, 0x42,
                                  0x7E}};
 
-    EXPECT_EQ(request.headers().size(), 0);
-    EXPECT_EQ(calculate_md5(request.data()), sum);
-    EXPECT_EQ(request.data(), buffer());
-    EXPECT_EQ(request.method(), method::GET);
-    EXPECT_EQ(request.request_uri().path(), std::string("/"));
-    EXPECT_EQ(request.version(), version::HTTP_1_1);
-    EXPECT_EQ(request.keeps_connection(), true);
+    EXPECT_EQ(0, request.headers().size());
+    EXPECT_EQ(sum, calculate_md5(request.data()));
+    EXPECT_EQ(buffer(), request.data());
+    EXPECT_EQ(method::GET, request.method());
+    EXPECT_EQ(std::string("/"), request.request_uri().path());
+    EXPECT_EQ(version::HTTP_1_1, request.version());
+    EXPECT_EQ(true, request.keeps_connection());
 }
 
 TEST(request, wrong_md5_but_no_check)
@@ -119,13 +119,13 @@ TEST(request, wrong_md5_but_no_check)
                                  0xE9, 0x80, 0x09, 0x98, 0xEC, 0xF8, 0x42,
                                  0x7E}};
 
-    EXPECT_EQ(request.headers().size(), 0);
-    EXPECT_EQ(calculate_md5(request.data()), sum);
-    EXPECT_EQ(request.data(), buffer());
-    EXPECT_EQ(request.method(), method::GET);
-    EXPECT_EQ(request.request_uri().path(), std::string("/"));
-    EXPECT_EQ(request.version(), version::HTTP_1_1);
-    EXPECT_EQ(request.keeps_connection(), true);
+    EXPECT_EQ(0, request.headers().size());
+    EXPECT_EQ(sum, calculate_md5(request.data()));
+    EXPECT_EQ(buffer(), request.data());
+    EXPECT_EQ(method::GET, request.method());
+    EXPECT_EQ(std::string("/"), request.request_uri().path());
+    EXPECT_EQ(version::HTTP_1_1, request.version());
+    EXPECT_EQ(true, request.keeps_connection());
 }
 
 TEST(request, parse)
@@ -150,13 +150,13 @@ TEST(request, parse)
         }));
     EXPECT_TRUE(request.parse());
 
-    EXPECT_EQ(request.headers().size(), 0);
-    EXPECT_EQ(request.data(), buffer({'0'}));
-    EXPECT_EQ(request.date(), 951868800);
-    EXPECT_EQ(request.method(), method::GET);
-    EXPECT_EQ(request.request_uri().path(), std::string("/"));
-    EXPECT_EQ(request.version(), version::HTTP_1_1);
-    EXPECT_EQ(request.keeps_connection(), false);
+    EXPECT_EQ(0, request.headers().size());
+    EXPECT_EQ(buffer({'0'}), request.data());
+    EXPECT_EQ(951868800, request.date());
+    EXPECT_EQ(method::GET, request.method());
+    EXPECT_EQ(std::string("/"), request.request_uri().path());
+    EXPECT_EQ(version::HTTP_1_1, request.version());
+    EXPECT_EQ(false, request.keeps_connection());
 }
 
 TEST(request, parse_false_return)
@@ -179,11 +179,11 @@ TEST(request, parse_false_return)
                                    -> bool { return false; }));
     EXPECT_TRUE(request.parse());
 
-    EXPECT_EQ(request.headers().size(), 0);
-    EXPECT_EQ(request.data().empty(), true);
-    EXPECT_EQ(request.method(), method::GET);
-    EXPECT_EQ(request.request_uri().path(), std::string("/"));
-    EXPECT_EQ(request.version(), version::HTTP_1_1);
+    EXPECT_EQ(0, request.headers().size());
+    EXPECT_EQ(true, request.data().empty());
+    EXPECT_EQ(method::GET, request.method());
+    EXPECT_EQ(std::string("/"), request.request_uri().path());
+    EXPECT_EQ(version::HTTP_1_1, request.version());
 }
 
 TEST(request, parse_large_request)
@@ -212,16 +212,16 @@ TEST(request, parse_large_request)
             }));
     EXPECT_TRUE(request.parse());
 
-    EXPECT_EQ(request.headers().size(), 0);
-    EXPECT_EQ(request.headers().find("abc"), request.headers().end());
-    EXPECT_EQ(request.data().size(), 2000);
-    EXPECT_EQ(request.data(), buffer(2000, '0'));
+    EXPECT_EQ(0, request.headers().size());
+    EXPECT_EQ(request.headers().end(), request.headers().find("abc"));
+    EXPECT_EQ(2000, request.data().size());
+    EXPECT_EQ(buffer(2000, '0'), request.data());
     time_t compare_time = time(NULL);
-    EXPECT_LE(request.date(), compare_time);
-    EXPECT_GE(request.date(), compare_time - 2);
-    EXPECT_EQ(request.method(), method::GET);
-    EXPECT_EQ(request.request_uri().path(), std::string("/"));
-    EXPECT_EQ(request.version(), version::HTTP_1_1);
+    EXPECT_GE(compare_time, request.date());
+    EXPECT_LE(compare_time - 2, request.date());
+    EXPECT_EQ(method::GET, request.method());
+    EXPECT_EQ(std::string("/"), request.request_uri().path());
+    EXPECT_EQ(version::HTTP_1_1, request.version());
 }
 
 TEST(request, no_needed_vailable)
