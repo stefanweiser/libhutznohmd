@@ -86,16 +86,18 @@ request_handler_callback demultiplexer_ordered_mime_map::find(mime& type) const
     return result;
 }
 
-void demultiplexer_ordered_mime_map::set_usage(const mime& type,
-                                               const bool used)
+void demultiplexer_ordered_mime_map::increase_usage_counter(const mime& type)
 {
     auto it = map_.find(type);
     assert(it != map_.end());
-    if (true == used) {
-        it->second.usage_counter++;
-    } else {
-        it->second.usage_counter--;
-    }
+    it->second.usage_counter++;
+}
+
+void demultiplexer_ordered_mime_map::decrease_usage_counter(const mime& type)
+{
+    auto it = map_.find(type);
+    assert(it != map_.end());
+    it->second.usage_counter--;
 }
 
 bool demultiplexer_ordered_mime_map::is_used(const mime& type) const

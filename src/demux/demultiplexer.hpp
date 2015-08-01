@@ -61,8 +61,8 @@ public:
     mime_subtype register_mime_subtype(const std::string& subtype) override;
     bool unregister_mime_type(const mime_type& type) override;
     bool unregister_mime_subtype(const mime_subtype& subtype) override;
-    void set_used(const request_handler_id& id) override;
-    void set_unused(const request_handler_id& id) override;
+    void increase_usage_counter(const request_handler_id& id) override;
+    void decrease_usage_counter(const request_handler_id& id) override;
 
 private:
     struct resource_key

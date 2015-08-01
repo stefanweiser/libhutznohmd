@@ -212,7 +212,7 @@ bool demultiplexer::unregister_mime_subtype(const mime_subtype& subtype)
     return request_parser_data_.unregister_mime_subtype(subtype);
 }
 
-void demultiplexer::set_used(const request_handler_id& id)
+void demultiplexer::increase_usage_counter(const request_handler_id& id)
 {
     std::lock_guard<std::mutex> lock(resource_callbacks_mutex_);
 
@@ -223,11 +223,11 @@ void demultiplexer::set_used(const request_handler_id& id)
         demultiplexer_ordered_mime_map& accept_map = resource_it->second;
 
         // Set the availability to true.
-        accept_map.set_usage(id.accept_type, true);
+        accept_map.increase_usage_counter(id.accept_type);
     }
 }
 
-void demultiplexer::set_unused(const request_handler_id& id)
+void demultiplexer::decrease_usage_counter(const request_handler_id& id)
 {
     std::lock_guard<std::mutex> lock(resource_callbacks_mutex_);
 
@@ -238,7 +238,7 @@ void demultiplexer::set_unused(const request_handler_id& id)
         demultiplexer_ordered_mime_map& accept_map = resource_it->second;
 
         // Set the availability to true.
-        accept_map.set_usage(id.accept_type, false);
+        accept_map.decrease_usage_counter(id.accept_type);
 
         // Wake up potentially pending disconnect calls.
         resource_callbacks_usage_changed_.notify_one();

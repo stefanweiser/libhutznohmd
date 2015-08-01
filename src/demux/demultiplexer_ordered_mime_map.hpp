@@ -71,9 +71,13 @@ public:
     //! It contains the concrete mime type of the request handler afterwards.
     request_handler_callback find(mime& type) const;
 
-    //! Sets whether the handler is currently in use or not. Setting it true
-    //! will prevent the erase operation to succeed.
-    void set_usage(const mime& type, const bool used);
+    //! Increases the handlers usage counter. If the counter is greater than
+    //! zero, it will prevent the erase operation to succeed.
+    void increase_usage_counter(const mime& type);
+
+    //! Decreases the handlers usage counter. If the counter is greater than
+    //! zero, it will prevent the erase operation to succeed.
+    void decrease_usage_counter(const mime& type);
 
     //! Returns true, when the handler is currently in use.
     bool is_used(const mime& type) const;

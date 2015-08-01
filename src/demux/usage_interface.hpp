@@ -36,10 +36,10 @@ public:
     virtual ~usage_interface(void);
 
     //! Sets the handler with the given id as used.
-    virtual void set_used(const request_handler_id& id) = 0;
+    virtual void increase_usage_counter(const request_handler_id& id) = 0;
 
     //! Sets the handler with the given id as unused.
-    virtual void set_unused(const request_handler_id& id) = 0;
+    virtual void decrease_usage_counter(const request_handler_id& id) = 0;
 };
 
 } // namespace hutzn

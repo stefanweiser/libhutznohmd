@@ -43,12 +43,12 @@ request_handler_holder::usage_scope::usage_scope(usage_interface& demuxer,
     : demuxer_(demuxer)
     , id_(id)
 {
-    demuxer_.set_used(id_);
+    demuxer_.increase_usage_counter(id_);
 }
 
 request_handler_holder::usage_scope::~usage_scope(void) noexcept(true)
 {
-    demuxer_.set_unused(id_);
+    demuxer_.decrease_usage_counter(id_);
 }
 
 } // namespace hutzn

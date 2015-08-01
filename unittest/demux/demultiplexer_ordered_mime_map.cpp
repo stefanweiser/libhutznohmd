@@ -145,11 +145,11 @@ TEST_F(demultiplexer_ordered_mime_map_test, erase_used)
 {
     demultiplexer_ordered_mime_map map;
     map.insert(none_, request_handler_callback());
-    map.set_usage(none_, true);
+    map.increase_usage_counter(none_);
     EXPECT_TRUE(map.is_used(none_));
     EXPECT_FALSE(map.erase(none_));
     EXPECT_EQ(map.size(), 1);
-    map.set_usage(none_, false);
+    map.decrease_usage_counter(none_);
     EXPECT_FALSE(map.is_used(none_));
     EXPECT_TRUE(map.erase(none_));
     EXPECT_EQ(map.size(), 0);
