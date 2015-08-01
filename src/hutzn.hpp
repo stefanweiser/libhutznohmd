@@ -592,7 +592,15 @@ Note, that the same deadlock problem affects error handlers.
 
 @section sec_lifetime_connection Connection lifetime
 
-@todo [DOC] connection lifetime concept
+When starting a web service by creating a listener, the user of the library has
+to call accept. This will wait till a connection is requested and will return
+the newly created connection, which is an automatically reference counted
+object. The connection will stay open till @ref connection_interface::close is
+called or the connection object is released by leaving its scope. This will also
+close the connection. As defined for TCP/IP connections, the connection's ports
+will then stay open for a "lingering time" to catch stray packets. These states
+are called @c TIME_WAIT and @c CLOSE_WAIT.
+
 
 
 @page page_roadmap Roadmap
