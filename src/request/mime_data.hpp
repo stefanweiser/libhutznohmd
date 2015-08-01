@@ -43,6 +43,10 @@ public:
         , registered_types_()
         , types_(true)
     {
+        // Registering the wildcard value.
+        const value_type type = register_type("*");
+        assert(type == value_type::WILDCARD);
+        UNUSED(type);
     }
 
     value_type register_type(const std::string& type)

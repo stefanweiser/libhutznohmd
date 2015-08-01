@@ -27,33 +27,6 @@ parser_data::parser_data(void)
     : mime_types_()
     , mime_subtypes_()
 {
-    const size_t type_size = static_cast<size_t>(mime_type::COUNT) -
-                             mime_data<mime_type, uint8_t>::special_value_count;
-    static const char_t* const type_names[] = {"*",     "application", "audio",
-                                               "image", "text",        "video"};
-    static_assert((sizeof(type_names) / sizeof(*type_names)) == type_size,
-                  "Sizes of mime type and the type strings does not match.");
-
-    // The invalid value is getting ignored.
-    for (uint8_t i = 0; i < type_size; i++) {
-        const mime_type t = mime_types_.register_type(type_names[i]);
-        assert(static_cast<size_t>(t) ==
-               (i + mime_data<mime_type, uint8_t>::special_value_count));
-        UNUSED(t);
-    }
-
-    const size_t subtype_size =
-        static_cast<size_t>(mime_subtype::COUNT) -
-        mime_data<mime_subtype, uint16_t>::special_value_count;
-    static const char_t* const subtype_names[] = {"*", "plain"};
-    static_assert(
-        (sizeof(subtype_names) / sizeof(*subtype_names)) == subtype_size,
-        "Sizes of mime subtype and the subtype strings does not match.");
-
-    // The invalid value is getting ignored.
-    for (uint8_t i = 0; i < subtype_size; i++) {
-        mime_subtypes_.register_type(subtype_names[i]);
-    }
 }
 
 mime_type parser_data::register_mime_type(const std::string& type)

@@ -549,21 +549,6 @@ enum class mime_type : uint8_t {
     //! is not of interest.
     WILDCARD,
 
-    //! "application"
-    APPLICATION,
-
-    //! "audio"
-    AUDIO,
-
-    //! "image"
-    IMAGE,
-
-    //! "text"
-    TEXT,
-
-    //! "video"
-    VIDEO,
-
     //! Used internally to count the number of initial elements.
     COUNT
 };
@@ -581,9 +566,6 @@ enum class mime_subtype : uint16_t {
     //! The character *. Used to catch all subtypes or declaring that the
     //! subtype is not of interest.
     WILDCARD,
-
-    //! "plain" means, that the content is not in any specific format.
-    PLAIN,
 
     //! Used internally to count the number of initial elements.
     COUNT

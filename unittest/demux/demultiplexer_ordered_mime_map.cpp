@@ -46,7 +46,8 @@ protected:
     }
 
     const mime none_{mime_type::NONE, mime_subtype::NONE};
-    const mime text_plain_{mime_type::TEXT, mime_subtype::PLAIN};
+    const mime another_{static_cast<mime_type>(100),
+                        static_cast<mime_subtype>(100)};
 };
 
 TEST_F(demultiplexer_ordered_mime_map_test, size_of_empty)
@@ -74,7 +75,7 @@ TEST_F(demultiplexer_ordered_mime_map_test, size_of_inserted_two_different)
 {
     demultiplexer_ordered_mime_map map;
     map.insert(none_, request_handler_callback());
-    map.insert(text_plain_, request_handler_callback());
+    map.insert(another_, request_handler_callback());
     EXPECT_EQ(map.size(), 2);
 }
 
@@ -89,17 +90,17 @@ TEST_F(demultiplexer_ordered_mime_map_test, inserted_two_different)
 {
     demultiplexer_ordered_mime_map map;
     EXPECT_TRUE(map.insert(none_, request_handler_callback()));
-    EXPECT_TRUE(map.insert(text_plain_, request_handler_callback()));
+    EXPECT_TRUE(map.insert(another_, request_handler_callback()));
 }
 
 TEST_F(demultiplexer_ordered_mime_map_test, inserting_wildcard_is_failing)
 {
     demultiplexer_ordered_mime_map map;
 
-    mime type = mime(mime_type::WILDCARD, mime_subtype::PLAIN);
+    mime type = mime(mime_type::WILDCARD, static_cast<mime_subtype>(100));
     EXPECT_FALSE(map.insert(type, request_handler_callback()));
 
-    type = mime(mime_type::TEXT, mime_subtype::WILDCARD);
+    type = mime(static_cast<mime_type>(100), mime_subtype::WILDCARD);
     EXPECT_FALSE(map.insert(type, request_handler_callback()));
 
     type = mime(mime_type::WILDCARD, mime_subtype::WILDCARD);
@@ -125,7 +126,7 @@ TEST_F(demultiplexer_ordered_mime_map_test,
 {
     demultiplexer_ordered_mime_map map;
     map.insert(none_, request_handler_callback());
-    map.insert(text_plain_, request_handler_callback());
+    map.insert(another_, request_handler_callback());
     EXPECT_TRUE(map.erase(none_));
     EXPECT_EQ(map.size(), 1);
 }
@@ -135,9 +136,9 @@ TEST_F(demultiplexer_ordered_mime_map_test,
 {
     demultiplexer_ordered_mime_map map;
     map.insert(none_, request_handler_callback());
-    map.insert(text_plain_, request_handler_callback());
+    map.insert(another_, request_handler_callback());
     EXPECT_TRUE(map.erase(none_));
-    EXPECT_TRUE(map.erase(text_plain_));
+    EXPECT_TRUE(map.erase(another_));
     EXPECT_EQ(map.size(), 0);
 }
 
@@ -182,7 +183,7 @@ TEST_F(demultiplexer_ordered_mime_map_test, find_none_in_vector_second_time)
     demultiplexer_ordered_mime_map map;
     request_interface_mock request;
     response_interface_mock response;
-    map.insert(text_plain_, make_request_handler(http_status_code::FOUND));
+    map.insert(another_, make_request_handler(http_status_code::FOUND));
     map.insert(none_, make_request_handler(http_status_code::OK));
 
     mime none = none_;
