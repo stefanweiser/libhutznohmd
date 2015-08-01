@@ -43,7 +43,7 @@ bool demultiplexer_ordered_mime_map::insert(const mime& type,
         (type.second != mime_subtype::WILDCARD)) {
 
         auto insertion_result = map_.insert(
-            std::make_pair(type, request_handler_infos{fn, false, true}));
+            std::make_pair(type, request_handler_infos{fn, 0, true}));
         if (true == insertion_result.second) {
             vector_.push_back(type);
             result = true;
@@ -56,7 +56,7 @@ bool demultiplexer_ordered_mime_map::erase(const mime& type)
 {
     auto it = map_.find(type);
     bool result;
-    if ((it != map_.end()) && (false == it->second.is_used)) {
+    if ((it != map_.end()) && (0 == it->second.usage_counter)) {
         std::remove(vector_.begin(), vector_.end(), type);
         map_.erase(it);
         result = true;
@@ -91,14 +91,18 @@ void demultiplexer_ordered_mime_map::set_usage(const mime& type,
 {
     auto it = map_.find(type);
     assert(it != map_.end());
-    it->second.is_used = used;
+    if (true == used) {
+        it->second.usage_counter++;
+    } else {
+        it->second.usage_counter--;
+    }
 }
 
 bool demultiplexer_ordered_mime_map::is_used(const mime& type) const
 {
     auto it = map_.find(type);
     assert(it != map_.end());
-    return it->second.is_used;
+    return (0 != it->second.usage_counter);
 }
 
 void demultiplexer_ordered_mime_map::set_availability(const mime& type,

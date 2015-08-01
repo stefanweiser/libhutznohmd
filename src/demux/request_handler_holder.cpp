@@ -30,18 +30,25 @@ request_handler_holder::request_handler_holder(
 {
 }
 
-request_handler_holder::~request_handler_holder(void) noexcept(true)
-{
-    demuxer_.set_unused(id_);
-}
-
 http_status_code request_handler_holder::call(const request_interface& request,
                                               response_interface& response)
 {
-    demuxer_.set_used(id_);
+    usage_scope scope(demuxer_, id_);
     const http_status_code result = callback_(request, response);
-    demuxer_.set_unused(id_);
     return result;
+}
+
+request_handler_holder::usage_scope::usage_scope(usage_interface& demuxer,
+                                                 const request_handler_id& id)
+    : demuxer_(demuxer)
+    , id_(id)
+{
+    demuxer_.set_used(id_);
+}
+
+request_handler_holder::usage_scope::~usage_scope(void) noexcept(true)
+{
+    demuxer_.set_unused(id_);
 }
 
 } // namespace hutzn

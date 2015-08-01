@@ -35,12 +35,22 @@ public:
                                     const request_handler_id& id,
                                     const request_handler_callback& callback);
 
-    ~request_handler_holder(void) noexcept(true) override;
-
     http_status_code call(const request_interface& request,
                           response_interface& response) override;
 
 private:
+    class usage_scope
+    {
+    public:
+        explicit usage_scope(usage_interface& demuxer,
+                             const request_handler_id& id);
+        ~usage_scope(void) noexcept(true);
+
+    private:
+        usage_interface& demuxer_;
+        request_handler_id id_;
+    };
+
     usage_interface& demuxer_;
     request_handler_id id_;
     request_handler_callback callback_;

@@ -89,7 +89,7 @@ private:
     struct request_handler_infos
     {
         request_handler_callback handler;
-        bool is_used;
+        size_t usage_counter;
         bool is_available;
     };
 
