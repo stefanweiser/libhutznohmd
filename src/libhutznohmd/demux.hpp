@@ -221,11 +221,12 @@ public:
 
     //! Temporarily disables the handler. It will not be called afterwards. The
     //! handler callback should stay available for it could get enabled again.
+    //! This method is idempotent.
     virtual void disable(void) = 0;
 
     //! Temporarily enables the handler. It could get called afterwards. If the
     //! handler function is not available anymore, enabling the handler will
-    //! lead into undefined behaviour.
+    //! lead into undefined behaviour. This method is idempotent.
     virtual void enable(void) = 0;
 
     //! Returns true, when the handler is currently enabled and false if

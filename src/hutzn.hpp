@@ -43,7 +43,17 @@ implementing it according to the principles of the
 (http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm "Roy Thomas
 Fieldings dissertation") architectural style by providing easy to use, reliable,
 robust and well tested (and scalable) functionality. It implements this feature
-set on a HTTP/1.1 server (based on RFC2616).
+set on a HTTP/1.1 server. HTTP is defined in RFC 7230-7235 and RFC 7540:
+
+- [RFC 7230 - Message Syntax and Routing](http://tools.ietf.org/html/rfc7230)
+- [RFC 7231 - Semantics and Content](http://tools.ietf.org/html/rfc7231)
+- [RFC 7232 - Conditional Requests](http://tools.ietf.org/html/rfc7232)
+- [RFC 7233 - Range Requests](http://tools.ietf.org/html/rfc7233)
+- [RFC 7234 - Caching](http://tools.ietf.org/html/rfc7234)
+- [RFC 7235 - Authentication](http://tools.ietf.org/html/rfc7235)
+- [RFC 7540 - HTTP/2](http://tools.ietf.org/html/rfc7540)
+
+Currently RFC 7230 and RFC 7231 are supported by this library.
 
 @section sec_general_information General Information
 
@@ -52,7 +62,8 @@ your own RESTful web service.
 
 See @subpage page_development to get started developing this library.
 
-See @subpage page_about_hutznohmd to learn more about the name of the library.
+See @subpage page_about_hutznohmd to learn more about the name of the library
+and what it has to do with REST.
 
 @section sec_contact Contact
 Stefan Weiser <stefan (dot) weiser (at) bluewin (dot) ch>
@@ -240,7 +251,8 @@ Library.
 The short story: It was a tradition of the people, who lived in the Ore
 Mountains in the past centuries. It was a "communication platform", with its own
 set of dos and don'ts, where informations about simply all ordinary topics were
-exchanged. Just what REST is for HTTP.
+exchanged. Just what REST is for HTTP, which is the reason to call this helper
+library after the Hutznohmd.
 
 The long story is, that a Hutznohmd (or Hutzenabend in standard german) was a
 very old tradition of the people of the Ore Mountains (german Erzgebirge, czech
@@ -297,8 +309,8 @@ that is arranged in another way.
 - @b YAGNI: Keep this in mind. Don't write code, that you will need in two years
 and if some code is not needed anymore, it shall be removed.
 
-In any cases it will be difficult where to draw the line. Don't be religious
-with these principles, but keep them in mind and improve the code.
+In any case it will be difficult where to draw the line. Don't be religious with
+these principles, but keep them in mind and improve the code.
 
 @section sec_tools Tools
 
@@ -358,7 +370,7 @@ version and making a package:
 $ ./make --release --minimal build package
 @endcode
 
-The packages will be left in the @c build subdirectory. They are ought to be
+The packages will be left in the @c build subdirectory. They ought to be
 released. Create a tag on the git repository afterwards.
 
 
@@ -367,18 +379,17 @@ released. Create a tag on the git repository afterwards.
 
 Today HTTP is one of the world's most broadly used protocols to connect a server
 to its clients. While it is really easy to use and human readable, there is a
-need for some rules about the "how to interact". An increasingly common "style"
-is representational state transfer (REST). The target of this library is to
-support its users to fulfill the ideas of REST while developing a web service.
+need for some rules about the "how to interact". A common "style" is
+representational state transfer (REST). The target of this library is to support
+its users to fulfill the ideas of REST during development.
 
-A user of this library has to provide some control code and a resource manager
-to connect its request handlers to the library. This will make the REST
-application available to the clients, who want to request resource
-representations. The control code has to listen for and accept the connections,
-which then are provided to the library again, that tries to call the correct
-request handler.
+Using this library requires some control code and a resource manager to connect
+its request handlers to the library. This will make the REST application
+available to the clients, who want to request resource representations. The
+control code has to listen for and accept the connections, which then are
+provided to the library again, that tries to call the correct request handler.
 
-@startuml{use_case.svg}
+@startuml{use_case.svg} "Use case diagram"
 left to right direction
 skinparam packageStyle rect
 
@@ -405,15 +416,15 @@ Structually the library user needs three things at an abstracted level:
 -# An abstraction of the @subpage page_data_source_and_sink
 "data source and sink" (e.g. sockets).
 -# A @subpage page_demultiplexer "demultiplexing component", that helps to
-generate the correct response on any request.
+generate the right response on any request.
 -# An access to the @subpage page_requests "request data".
 
-This library solves those needs in separated components. There are interfaces
+This library solves these needs in separated components. There are interfaces
 for socket communication and demultiplexing requests (splitted into two
 component groups), but no code to connect those components. The user has to
 connect this by own code:
 
-@startuml{components.svg}
+@startuml{components.svg} "Component diagram"
 left to right direction
 skinparam packageStyle rect
 
@@ -423,14 +434,14 @@ interface " " as di
 
 package "libhutznohmd" {
     [listener] as listener
-    [request processor] as request_processor
+    [request\nprocessor] as request_processor
     [demultiplexer] as demultiplexer
 }
 
 package "server" {
     [control code] as control_code
-    [resource function] as resource_function
-    [resource manager] as resource_manager
+    [resource\nfunction] as resource_function
+    [resource\nmanager] as resource_manager
 }
 
 li - listener
@@ -454,12 +465,12 @@ Pro:
 - easy and functional library implementation
 
 Contra:
-- more possibilities for errors
-- this is not a whole framework
+- more error potential
+- this library is not a whole framework like usually used for web services
 
 Though it is recommended only to connect library components with each other,
 this is not enforced. The user is able to write own components to replace those
-of the library.
+of the library as long as they fulfill the interface's expectations.
 
 
 
@@ -469,7 +480,7 @@ The implementation gurantees some properties, that get discussed here.
 
 @section sec_exception_safety Exception safety
 
-The library will never throw an exception by itself. Raising an exception hat to
+The library will never throw an exception by itself. Raising an exception has to
 be qualified as a fatal error for the library code. Therefore the application
 should abort and the bug has to get fixed. This enables the user to choose
 whether to use exception handling or not. Sadly there is currently no way to
@@ -490,10 +501,10 @@ designed to gurantee thread safety everywhere. All functionality could be
 accessed simultaneously by multiple threads. This gurantee may introduce
 deadlock situations.
 
-As an example there is a deadlock, that happens, when the system is not
-correctly destroyed:
+As an example there is a deadlock, that happens, if the system is getting
+destroyed from within a request handler:
 
-@startuml{most_important_deadlock.svg}
+@startuml{most_important_deadlock.svg} "Shutdown deadlock"
 left to right direction
 
 (request\nhandler) as rh
@@ -506,8 +517,8 @@ rh --> cc: "stop server"
 @enduml
 
 The control code calls the request processor to handle a request. The request
-handler is getting called by the request processor and wants to stop the server
-synchronously, which should wait till the request handler finishs.
+handler is getting called by the request processor, which wants to stop the
+server. Stopping the server will wait till all request handlers have finished.
 
 
 
@@ -523,10 +534,10 @@ up. Therefore those objects shall always outlive all other objects.
 
 Note, that a request processor is getting constructed always after the
 demultiplexer, because the demultiplexer's query functionality is necessary for
-the request processor's construction (the destruction order indifferent). To
+the request processor's construction (the destruction order is indifferent). To
 construct such objects simply call the global functions @ref make_demultiplexer,
 @ref make_request_processor and @ref listen. They all will return
-reference-counted objects, that will be automatically destroyed, when their
+reference-counted objects, that will get automatically destroyed, when their
 scope is left.
 
 The following code is an example construction order of those components:
@@ -555,13 +566,13 @@ The user code will interact with the library components mainly by connecting
 request handlers and answering requests. When registering a request handler,
 an automatically reference counted handler object is returned, which acts as the
 registration's scope. When the scope of the handler is left and the object is
-getting destroyed, the request handler is getting unregistered.
+getting destroyed, the request handler gets unregistered.
 
 The unregistration procedure is handled senquentially with the calls to the
 handler. This is necessary to make real RAII objects out of the handlers, but
 introduces another deadlock situation:
 
-@startuml{self_unregistration_deadlock.svg}
+@startuml{self_unregistration_deadlock.svg} "Self unregistration deadlock"
 left to right direction
 
 (request\nhandler) as rh
@@ -573,11 +584,11 @@ rh --> de: "waits for\nunregistration"
 de --> rp: "waits for\nusage lock"
 @enduml
 
-Therefore for a request handler it is not allowed to unregister itself. To
-control the ability of getting called afterwards, there are the methods @ref
+Therefore it is not allowed for a request handler to unregister itself. To
+control the ability of getting called, there are the methods @ref
 handler_interface::enable and @ref handler_interface::disable.
 
-The same problem affects error handlers.
+Note, that the same deadlock problem affects error handlers.
 
 @section sec_lifetime_connection Connection lifetime
 
