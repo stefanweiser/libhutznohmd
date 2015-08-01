@@ -227,8 +227,8 @@ public:
     virtual ~handler_interface(void) noexcept(true);
 
     //! Temporarily disables the handler. It will not be called afterwards. The
-    //! handler callback should stay available for it could get enabled again.
-    //! This operation is idempotent.
+    //! handler callback should stay available to get enabled again. This
+    //! operation is idempotent.
     virtual void disable(void) = 0;
 
     //! Temporarily enables the handler. It could get called afterwards. If the

@@ -254,11 +254,10 @@ set of dos and don'ts, where informations about simply all ordinary topics were
 exchanged. Just what REST is for HTTP, which is the reason to call this helper
 library after the Hutznohmd.
 
-The long story is, that a Hutznohmd (or Hutzenabend in standard german) was a
-very old tradition of the people of the Ore Mountains (german Erzgebirge, czech
-Krušné hory). The Ore Mountains were populated during the medieval times,
-because silver and other ores were discovered there. During the 16th century the
-Ore Mountains were the heart of the mining industry in central europe.
+The long story is, that the Ore Mountains (german Erzgebirge, czech Krušné hory)
+were populated during the medieval times, because silver and other ores were
+discovered there. During the 16th century the Ore Mountains were the heart of
+the mining industry in central europe.
 
 In the 17th century economical crisis and especially the Thirty-Years-War
 disrupted the mining boom in the Ore Mountains. The population had to find other
@@ -269,18 +268,18 @@ together in one room. This was the birth of the Hutznstube.
 
 Slowly the Hutzenstube got filled with tradition. The men often joined their
 wives after work. They started carving, smoked pipe, talked and sang together.
-The Hutzenabend was born. Later artists wrote songs about this tradition.
-Nowadays the Hutzenabend is getting marketed more and more as an event including
-dinner and music.
+The Hutzenohmd (or Hutzenabend in standard german) was born. Later artists wrote
+songs about this tradition. Nowadays the Hutzenabend is getting marketed more
+and more as an event including dinner and music.
 
 @section sec_etymology Etymology
 
-The word Abend (Ohmd or Obnd in the dialect of the western Ore Mountains) is the
-german word for the evening.
+The word Abend (Ohmd or Obnd in the dialect of the western Ore Mountains) is
+simply the german word for the evening.
 
 The word hutzen (a german weak verb) is a bit complicated, because it is not
 used as verb anymore and nowadays all existing sources seem to conflict each
-other. In the dialect of the Ore Mountains (as in Vogtland and Fraconia) it was
+other. In the dialect of the Ore Mountains (as in Vogtland and Franconia) it was
 used to say: "to meet people by strolling to them".
 
 
