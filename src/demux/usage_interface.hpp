@@ -35,7 +35,9 @@ class usage_interface
 public:
     virtual ~usage_interface(void);
 
-    //! Sets the handler with the given id as used.
+    //! Sets the handler with the given id as used. Note, that this method is
+    //! not thread-safe, because it has to be solely called during determining
+    //! the request handler!
     virtual void increase_usage_counter(const request_handler_id& id) = 0;
 
     //! Sets the handler with the given id as unused.
