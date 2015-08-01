@@ -23,7 +23,33 @@ namespace hutzn
 
 request::request(const connection_pointer& connection)
     : connection_(connection)
+    , raw_()
+    , state_(request_parser_state::init)
 {
+}
+
+bool request::fetch_header()
+{
+    bool result = ((request_parser_state::fetching_body == state_) ||
+                   (request_parser_state::success == state_));
+
+    // Fetch the header only if the state is init.
+    if (state_ == request_parser_state::init) {
+        // The head points always to the next character to consume and the tail
+        // points to the last written character. This is necessary, because some
+        // tokens getting transformed (e.g. \n\t gets a simple space).
+        size_t head = 0;
+        size_t tail = head;
+        bool finished_fetching = false;
+        while (false == finished_fetching) {
+            if (false == fetch_more_data(head)) {
+                finished_fetching = true;
+            }
+            head++;
+            tail++;
+        }
+    }
+    return result;
 }
 
 http_verb request::method(void) const
@@ -109,6 +135,19 @@ const char_t* request::referer(void) const
 const char_t* request::user_agent(void) const
 {
     return nullptr;
+}
+
+bool request::fetch_more_data(const size_t index)
+{
+    bool result;
+    if ((raw_.size() <= head) &&
+        (false == connection_->receive(raw_, 4096))) {
+        // Need more bytes and no more bytes are available on the connection.
+        result = false;
+    } else {
+        result = true;
+    }
+    return result;
 }
 
 } // namespace hutzn

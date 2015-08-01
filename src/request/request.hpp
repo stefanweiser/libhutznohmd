@@ -28,6 +28,9 @@ class request : public request_interface
 {
 public:
     explicit request(const connection_pointer& connection);
+
+    bool fetch_header();
+
     http_verb method(void) const override;
     const char_t* path(void) const override;
     const char_t* host(void) const override;
@@ -47,7 +50,20 @@ public:
     const char_t* user_agent(void) const override;
 
 private:
+    //! Fetches more data from the connection if necessary. Returns false when
+    //! no more data is available.
+    bool fetch_more_data(const size_t index);
+
+    enum class request_parser_state {
+        init = 0,
+        fetching_body = 1,
+        success = 2,
+        error = 3
+    };
+
     connection_pointer connection_;
+    buffer raw_;
+    request_parser_state state_;
 };
 
 } // namespace hutzn
