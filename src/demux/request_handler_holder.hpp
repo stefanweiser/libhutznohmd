@@ -51,8 +51,7 @@ private:
         request_handler_id id_;
     };
 
-    usage_interface& demuxer_;
-    request_handler_id id_;
+    usage_scope scope_;
     request_handler_callback callback_;
 };
 

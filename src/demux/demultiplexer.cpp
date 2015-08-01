@@ -215,7 +215,8 @@ bool demultiplexer::unregister_mime_subtype(const mime_subtype& subtype)
 
 void demultiplexer::increase_usage_counter(const request_handler_id& id)
 {
-    std::lock_guard<std::mutex> lock(resource_callbacks_mutex_);
+    // No lock here, because we are called inside of determine_request_handler
+    // and carry the lock already.
 
     // Getting target resource map.
     const resource_key key{id.path, id.method, id.content_type};

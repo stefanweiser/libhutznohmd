@@ -24,8 +24,7 @@ namespace hutzn
 request_handler_holder::request_handler_holder(
     usage_interface& demuxer, const request_handler_id& id,
     const request_handler_callback& callback)
-    : demuxer_(demuxer)
-    , id_(id)
+    : scope_(demuxer, id)
     , callback_(callback)
 {
 }
@@ -33,7 +32,6 @@ request_handler_holder::request_handler_holder(
 http_status_code request_handler_holder::call(const request_interface& request,
                                               response_interface& response)
 {
-    usage_scope scope(demuxer_, id_);
     const http_status_code result = callback_(request, response);
     return result;
 }
