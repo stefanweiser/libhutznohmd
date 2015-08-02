@@ -50,9 +50,10 @@ public:
     const char_t* user_agent(void) const override;
 
 private:
-    //! Fetches more data from the connection if necessary. Returns false when
-    //! no more data is available.
-    bool fetch_more_data(const size_t index);
+    bool probably_fetch_more_data();
+    int32_t peek_character();
+    int32_t get_character();
+    int32_t get();
 
     enum class request_parser_state {
         init = 0,
@@ -62,8 +63,11 @@ private:
     };
 
     connection_pointer connection_;
-    buffer raw_;
     request_parser_state state_;
+    buffer raw_;
+    size_t head_;
+    size_t tail_;
+    char_t last_char_;
 };
 
 } // namespace hutzn

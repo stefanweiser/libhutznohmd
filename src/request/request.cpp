@@ -23,8 +23,11 @@ namespace hutzn
 
 request::request(const connection_pointer& connection)
     : connection_(connection)
-    , raw_()
     , state_(request_parser_state::init)
+    , raw_()
+    , head_(0)
+    , tail_(0)
+    , last_char_(0)
 {
 }
 
@@ -35,16 +38,9 @@ bool request::fetch_header()
 
     // Fetch the header only if the state is init.
     if (state_ == request_parser_state::init) {
-        // The head points always to the next character to consume and the tail
-        // points to the last written character. This is necessary, because some
-        // tokens getting transformed (e.g. \n\t gets a simple space).
-        size_t head = 0;
-        size_t tail = head;
         bool finished_fetching = false;
         while (false == finished_fetching) {
-            finished_fetching = !fetch_more_data(head);
-            head++;
-            tail++;
+            finished_fetching = (get() == -1);
         }
     }
     return result;
@@ -135,16 +131,54 @@ const char_t* request::user_agent(void) const
     return nullptr;
 }
 
-bool request::fetch_more_data(const size_t index)
+bool request::probably_fetch_more_data()
 {
-    bool result;
-    if ((raw_.size() <= head) &&
-        (false == connection_->receive(raw_, 4096))) {
-        // Need more bytes and no more bytes are available on the connection.
-        result = false;
-    } else {
-        result = true;
+    if ((head_ >= raw_.size()) && (false == connection_->receive(raw_, 4096))) {
+        return false;
     }
+    return true;
+}
+
+int32_t request::get_character()
+{
+    if (false == probably_fetch_more_data()) {
+        return -1;
+    }
+    return static_cast<uint8_t>(raw_[head_++]);
+}
+
+int32_t request::peek_character()
+{
+    if (false == probably_fetch_more_data()) {
+        return -1;
+    }
+    return static_cast<uint8_t>(raw_[head_]);
+}
+
+int32_t request::get()
+{
+    int32_t result = get_character();
+    if (result == '\r') {
+        if (peek_character() == '\n') {
+            get_character();
+        }
+        result = '\n';
+    }
+
+    if ((result == '\n') && (last_char_ != '\n')) {
+        const int32_t n = peek_character();
+        if ((n == ' ') || (n == '\t')) {
+            get_character();
+            result = ' ';
+        }
+    }
+
+    last_char_ = static_cast<char_t>(result);
+
+    if (result != -1) {
+        raw_[tail_++] = last_char_;
+    }
+
     return result;
 }
 
