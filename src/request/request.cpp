@@ -42,9 +42,7 @@ bool request::fetch_header()
         size_t tail = head;
         bool finished_fetching = false;
         while (false == finished_fetching) {
-            if (false == fetch_more_data(head)) {
-                finished_fetching = true;
-            }
+            finished_fetching = !fetch_more_data(head);
             head++;
             tail++;
         }
