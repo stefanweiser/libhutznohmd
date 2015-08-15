@@ -59,7 +59,7 @@ request::request(const connection_pointer& connection)
     }
 }
 
-bool request::fetch_header(void)
+bool request::parse(void)
 {
     bool result = false;
 

@@ -34,7 +34,7 @@ class request : public request_interface
 public:
     explicit request(const connection_pointer& connection);
 
-    bool fetch_header(void);
+    bool parse(void);
 
     bool parse_method(int32_t& ch);
     bool parse_uri(int32_t& ch);
