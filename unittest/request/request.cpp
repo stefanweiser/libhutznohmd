@@ -41,6 +41,16 @@ public:
         connection_.reset();
     }
 
+    void setup_receive(const std::string& chunk)
+    {
+        EXPECT_CALL(*connection_, receive(_, _)).Times(1).WillOnce(
+            Invoke([&chunk](buffer& b, const size_t& m) {
+                EXPECT_LE(chunk.size(), m);
+                b.insert(b.begin(), chunk.begin(), chunk.end());
+                return true;
+            }));
+    }
+
 protected:
     connection_mock_pointer connection_;
 };
@@ -55,6 +65,68 @@ TEST_F(request_test, construction)
     EXPECT_EQ(nullptr, r.fragment());
     EXPECT_EQ(http_version::HTTP_UNKNOWN, r.version());
     EXPECT_EQ(nullptr, r.header_value(nullptr));
+    EXPECT_EQ(false, r.keeps_connection());
+    EXPECT_EQ(0, r.date());
+    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(0, r.content_length());
+    EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
+              r.content_type());
+
+    void* handle = nullptr;
+    mime m{mime_type::INVALID, mime_subtype::INVALID};
+    EXPECT_EQ(false, r.accept(handle, m));
+
+    EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
+    EXPECT_EQ(nullptr, r.from());
+    EXPECT_EQ(nullptr, r.referer());
+    EXPECT_EQ(nullptr, r.user_agent());
+}
+
+TEST_F(request_test, default_request)
+{
+    request r{connection_};
+    const std::string request_data = "GET / HTTP/1.1\r\n\r\n";
+    setup_receive(request_data);
+    ASSERT_TRUE(r.parse());
+
+    EXPECT_EQ(http_verb::GET, r.method());
+    EXPECT_STREQ("/", r.path());
+    EXPECT_EQ(nullptr, r.host());
+    EXPECT_EQ(nullptr, r.query(nullptr));
+    EXPECT_EQ(nullptr, r.fragment());
+    EXPECT_EQ(http_version::HTTP_1_1, r.version());
+    EXPECT_EQ(nullptr, r.header_value(nullptr));
+    EXPECT_EQ(false, r.keeps_connection());
+    EXPECT_EQ(0, r.date());
+    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(0, r.content_length());
+    EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
+              r.content_type());
+
+    void* handle = nullptr;
+    mime m{mime_type::INVALID, mime_subtype::INVALID};
+    EXPECT_EQ(false, r.accept(handle, m));
+
+    EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
+    EXPECT_EQ(nullptr, r.from());
+    EXPECT_EQ(nullptr, r.referer());
+    EXPECT_EQ(nullptr, r.user_agent());
+}
+
+TEST_F(request_test, custom_header)
+{
+    request r{connection_};
+    const std::string request_data = "GET / HTTP/1.1\r\na:b\r\n\r\n";
+    setup_receive(request_data);
+    ASSERT_TRUE(r.parse());
+
+    EXPECT_EQ(http_verb::GET, r.method());
+    EXPECT_STREQ("/", r.path());
+    EXPECT_EQ(nullptr, r.host());
+    EXPECT_EQ(nullptr, r.query(nullptr));
+    EXPECT_EQ(nullptr, r.fragment());
+    EXPECT_EQ(http_version::HTTP_1_1, r.version());
+    EXPECT_STREQ("b", r.header_value("a"));
     EXPECT_EQ(false, r.keeps_connection());
     EXPECT_EQ(0, r.date());
     EXPECT_EQ(nullptr, r.content());
