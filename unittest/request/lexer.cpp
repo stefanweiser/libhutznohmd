@@ -55,8 +55,10 @@ protected:
 
         lexer l(c);
         for (size_t i = 0; i < result.size(); i++) {
+            EXPECT_EQ(i, l.index());
             EXPECT_EQ(static_cast<uint8_t>(result[i]), l.get());
         }
+        EXPECT_EQ(result.size(), l.index());
         EXPECT_EQ(-1, l.get());
 
         for (size_t i = 0; i < result.size(); i++) {

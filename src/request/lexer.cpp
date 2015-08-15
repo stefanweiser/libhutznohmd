@@ -45,11 +45,16 @@ int32_t lexer::get(void)
     return result;
 }
 
-const char_t* lexer::data(const size_t index) const
+size_t lexer::index(void) const
+{
+    return index_;
+}
+
+const char_t* lexer::data(const size_t idx) const
 {
     const char_t* result;
-    if (index < tail_) {
-        result = &(raw_[index]);
+    if (idx < tail_) {
+        result = &(raw_[idx]);
     } else {
         result = nullptr;
     }

@@ -30,7 +30,8 @@ public:
     explicit lexer(const connection_pointer& connection);
 
     int32_t get(void);
-    const char_t* data(const size_t index) const;
+    size_t index(void) const;
+    const char_t* data(const size_t idx) const;
 
 private:
     bool fetch_more_data();
