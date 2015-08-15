@@ -83,12 +83,17 @@ private:
     const char_t* path_;
     http_version version_;
 
-    struct string_less
+    //! Do not use this in any other case than for storing header fields! It is
+    //! designed for only one purpose: To let the string's content decide the
+    //! order of the elements in the map. This map has to enforce, that all
+    //! characters are null-terminated!
+    struct enforced_null_terminated_less
     {
         bool operator()(const char_t* const lhs, const char_t* const rhs) const;
     };
 
-    std::map<const char_t* const, const char_t*, string_less> header_fields_;
+    std::map<const char_t* const, const char_t*, enforced_null_terminated_less>
+        header_fields_;
 };
 
 } // namespace hutzn

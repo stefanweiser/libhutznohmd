@@ -338,8 +338,8 @@ bool request::is_key_value_seperator(const int32_t ch)
     return (static_cast<int32_t>(':') == ch);
 }
 
-bool request::string_less::operator()(const char_t* const lhs,
-                                      const char_t* const rhs) const
+bool request::enforced_null_terminated_less::operator()(
+    const char_t* const lhs, const char_t* const rhs) const
 {
     bool result;
     if (lhs == nullptr) {
@@ -348,6 +348,10 @@ bool request::string_less::operator()(const char_t* const lhs,
         if (rhs == nullptr) {
             result = false;
         } else {
+            // Exceptional use of unbound function strcmp (breaks MISRA C++:2008
+            // Rule 18-0-5), because neither lhs nor rhs is really unbound. Both
+            // are pointing to null-terminated parts of the lexer's raw data.
+            // The null-termination is ensured by the parsing algorithm.
             result = (strcmp(lhs, rhs) < 0);
         }
     }

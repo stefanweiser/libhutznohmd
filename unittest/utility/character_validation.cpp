@@ -16,8 +16,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <cstring>
-
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
