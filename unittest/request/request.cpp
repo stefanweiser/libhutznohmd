@@ -51,6 +51,19 @@ public:
             }));
     }
 
+    void setup_receive_with_second_call_returning_false(
+        const std::string& chunk)
+    {
+        EXPECT_CALL(*connection_, receive(_, _))
+            .Times(2)
+            .WillOnce(Invoke([&chunk](buffer& b, const size_t& m) {
+                EXPECT_LE(chunk.size(), m);
+                b.insert(b.begin(), chunk.begin(), chunk.end());
+                return true;
+            }))
+            .WillOnce(Return(false));
+    }
+
 protected:
     connection_mock_pointer connection_;
 };
@@ -127,6 +140,130 @@ TEST_F(request_test, custom_header)
     EXPECT_EQ(nullptr, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_1, r.version());
     EXPECT_STREQ("b", r.header_value("a"));
+    EXPECT_EQ(false, r.keeps_connection());
+    EXPECT_EQ(0, r.date());
+    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(0, r.content_length());
+    EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
+              r.content_type());
+
+    void* handle = nullptr;
+    mime m{mime_type::INVALID, mime_subtype::INVALID};
+    EXPECT_EQ(false, r.accept(handle, m));
+
+    EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
+    EXPECT_EQ(nullptr, r.from());
+    EXPECT_EQ(nullptr, r.referer());
+    EXPECT_EQ(nullptr, r.user_agent());
+}
+
+TEST_F(request_test, parsing_method_failed_because_no_data)
+{
+    request r{connection_};
+    const std::string request_data = " ";
+    setup_receive_with_second_call_returning_false(request_data);
+    EXPECT_FALSE(r.parse());
+
+    EXPECT_EQ(http_verb::GET, r.method());
+    EXPECT_EQ(nullptr, r.path());
+    EXPECT_EQ(nullptr, r.host());
+    EXPECT_EQ(nullptr, r.query(nullptr));
+    EXPECT_EQ(nullptr, r.fragment());
+    EXPECT_EQ(http_version::HTTP_UNKNOWN, r.version());
+    EXPECT_EQ(nullptr, r.header_value(nullptr));
+    EXPECT_EQ(false, r.keeps_connection());
+    EXPECT_EQ(0, r.date());
+    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(0, r.content_length());
+    EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
+              r.content_type());
+
+    void* handle = nullptr;
+    mime m{mime_type::INVALID, mime_subtype::INVALID};
+    EXPECT_EQ(false, r.accept(handle, m));
+
+    EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
+    EXPECT_EQ(nullptr, r.from());
+    EXPECT_EQ(nullptr, r.referer());
+    EXPECT_EQ(nullptr, r.user_agent());
+}
+
+TEST_F(request_test, parsing_method_failed_because_no_whitespace_found)
+{
+    request r{connection_};
+    const std::string request_data = "PUT";
+    setup_receive_with_second_call_returning_false(request_data);
+    EXPECT_FALSE(r.parse());
+
+    EXPECT_EQ(http_verb::GET, r.method());
+    EXPECT_EQ(nullptr, r.path());
+    EXPECT_EQ(nullptr, r.host());
+    EXPECT_EQ(nullptr, r.query(nullptr));
+    EXPECT_EQ(nullptr, r.fragment());
+    EXPECT_EQ(http_version::HTTP_UNKNOWN, r.version());
+    EXPECT_EQ(nullptr, r.header_value(nullptr));
+    EXPECT_EQ(false, r.keeps_connection());
+    EXPECT_EQ(0, r.date());
+    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(0, r.content_length());
+    EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
+              r.content_type());
+
+    void* handle = nullptr;
+    mime m{mime_type::INVALID, mime_subtype::INVALID};
+    EXPECT_EQ(false, r.accept(handle, m));
+
+    EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
+    EXPECT_EQ(nullptr, r.from());
+    EXPECT_EQ(nullptr, r.referer());
+    EXPECT_EQ(nullptr, r.user_agent());
+}
+
+TEST_F(request_test, parsing_method_failed_because_not_a_method)
+{
+    request r{connection_};
+    const std::string request_data = "ARGHH ";
+    setup_receive(request_data);
+    EXPECT_FALSE(r.parse());
+
+    EXPECT_EQ(http_verb::GET, r.method());
+    EXPECT_EQ(nullptr, r.path());
+    EXPECT_EQ(nullptr, r.host());
+    EXPECT_EQ(nullptr, r.query(nullptr));
+    EXPECT_EQ(nullptr, r.fragment());
+    EXPECT_EQ(http_version::HTTP_UNKNOWN, r.version());
+    EXPECT_EQ(nullptr, r.header_value(nullptr));
+    EXPECT_EQ(false, r.keeps_connection());
+    EXPECT_EQ(0, r.date());
+    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(0, r.content_length());
+    EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
+              r.content_type());
+
+    void* handle = nullptr;
+    mime m{mime_type::INVALID, mime_subtype::INVALID};
+    EXPECT_EQ(false, r.accept(handle, m));
+
+    EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
+    EXPECT_EQ(nullptr, r.from());
+    EXPECT_EQ(nullptr, r.referer());
+    EXPECT_EQ(nullptr, r.user_agent());
+}
+
+TEST_F(request_test, parsing_method_failed_because_method_token_too_long)
+{
+    request r{connection_};
+    const std::string request_data = "PUTT ";
+    setup_receive(request_data);
+    EXPECT_FALSE(r.parse());
+
+    EXPECT_EQ(http_verb::GET, r.method());
+    EXPECT_EQ(nullptr, r.path());
+    EXPECT_EQ(nullptr, r.host());
+    EXPECT_EQ(nullptr, r.query(nullptr));
+    EXPECT_EQ(nullptr, r.fragment());
+    EXPECT_EQ(http_version::HTTP_UNKNOWN, r.version());
+    EXPECT_EQ(nullptr, r.header_value(nullptr));
     EXPECT_EQ(false, r.keeps_connection());
     EXPECT_EQ(0, r.date());
     EXPECT_EQ(nullptr, r.content());
