@@ -29,7 +29,7 @@ class lexer
 public:
     explicit lexer(const connection_pointer& connection);
 
-    int32_t get();
+    int32_t get(void);
     const char_t* data(const size_t index) const;
 
 private:

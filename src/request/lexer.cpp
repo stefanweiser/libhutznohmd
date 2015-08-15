@@ -33,7 +33,7 @@ lexer::lexer(const connection_pointer& connection)
 {
 }
 
-int32_t lexer::get()
+int32_t lexer::get(void)
 {
     // The rewritten data is always limited by the tail not by its size.
     int32_t result;
