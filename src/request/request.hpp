@@ -21,6 +21,8 @@
 
 #include <libhutznohmd/request.hpp>
 
+#include <request/lexer.hpp>
+
 namespace hutzn
 {
 
@@ -50,22 +52,7 @@ public:
     const char_t* user_agent(void) const override;
 
 private:
-    bool fetch_more_data();
-    int32_t get();
-
-    enum class lexer_state {
-        copy = 0,
-        possible_cr_lf = 1,
-        possible_lws = 2,
-        reached_body = 3
-    };
-
-    connection_pointer connection_;
-    lexer_state state_;
-    buffer raw_;
-    size_t index_;
-    size_t head_;
-    size_t tail_;
+    lexer lexer_;
 };
 
 } // namespace hutzn
