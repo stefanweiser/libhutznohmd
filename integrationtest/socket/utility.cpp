@@ -28,9 +28,11 @@ namespace hutzn
 TEST(socket_utility, fill_address_ok)
 {
     sockaddr_in address = fill_address("127.0.0.1", 0x8000);
+    const uint16_t port_result = ntohs(0x8000);
+    const uint32_t address_result = ntohl(0x7F000001);
     EXPECT_EQ(AF_INET, address.sin_family);
-    EXPECT_EQ(ntohs(0x8000), address.sin_port);
-    EXPECT_EQ(ntohl(0x7F000001), address.sin_addr.s_addr);
+    EXPECT_EQ(port_result, address.sin_port);
+    EXPECT_EQ(address_result, address.sin_addr.s_addr);
 }
 
 TEST(socket_utility, fill_address_error)
