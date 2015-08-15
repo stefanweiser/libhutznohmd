@@ -50,24 +50,22 @@ public:
     const char_t* user_agent(void) const override;
 
 private:
-    bool probably_fetch_more_data();
-    int32_t peek_character();
-    int32_t get_character();
+    bool fetch_more_data();
     int32_t get();
 
-    enum class request_parser_state {
-        init = 0,
-        fetching_body = 1,
-        success = 2,
-        error = 3
+    enum class lexer_state {
+        copy = 0,
+        possible_cr_lf = 1,
+        possible_lws = 2,
+        reached_body = 3
     };
 
     connection_pointer connection_;
-    request_parser_state state_;
+    lexer_state state_;
     buffer raw_;
+    size_t index_;
     size_t head_;
     size_t tail_;
-    char_t last_char_;
 };
 
 } // namespace hutzn
