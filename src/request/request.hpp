@@ -19,9 +19,12 @@
 #ifndef LIBHUTZNOHMD_REQUEST_REQUEST_HPP
 #define LIBHUTZNOHMD_REQUEST_REQUEST_HPP
 
+#include <map>
+
 #include <libhutznohmd/request.hpp>
 
 #include <request/lexer.hpp>
+#include <utility/trie.hpp>
 
 namespace hutzn
 {
@@ -31,7 +34,16 @@ class request : public request_interface
 public:
     explicit request(const connection_pointer& connection);
 
-    bool fetch_header();
+    bool fetch_header(void);
+
+    bool parse_method(int32_t& ch);
+    bool parse_uri(int32_t& ch);
+    bool parse_version(int32_t& ch);
+
+    //! Parses a header utilizing the lexer member. Returns true, if a header
+    //! could successfully get parsed. Returning false means, that the lexer has
+    //! reached the end of the file. The in/out parameter c is -1 in this case.
+    bool parse_header(int32_t& ch);
 
     http_verb method(void) const override;
     const char_t* path(void) const override;
@@ -52,7 +64,22 @@ public:
     const char_t* user_agent(void) const override;
 
 private:
+    static bool is_whitespace(const int32_t ch);
+    static bool is_newline(const int32_t ch);
+    static bool is_key_value_seperator(const int32_t ch);
+
     lexer lexer_;
+
+    size_t maximum_method_length_;
+    trie<http_verb> methods_;
+
+    size_t maximum_version_length_;
+    trie<http_version> versions_;
+
+    http_verb method_;
+    http_version version_;
+
+    std::map<const char_t* const, const char_t*> header_fields_;
 };
 
 } // namespace hutzn
