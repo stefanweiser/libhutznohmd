@@ -61,6 +61,17 @@ const char_t* lexer::data(const size_t idx) const
     return result;
 }
 
+char_t* lexer::data(const size_t idx)
+{
+    char_t* result;
+    if (idx < tail_) {
+        result = &(raw_[idx]);
+    } else {
+        result = nullptr;
+    }
+    return result;
+}
+
 bool lexer::fetch_more_data()
 {
     assert(head_ == raw_.size());

@@ -62,14 +62,19 @@ protected:
         EXPECT_EQ(-1, l.get());
 
         for (size_t i = 0; i < result.size(); i++) {
-            const char_t* ch = l.data(i);
+            char_t* ch = l.data(i);
+            const char_t* ch2 = const_cast<const lexer&>(l).data(i);
             ASSERT_NE(nullptr, ch);
             EXPECT_EQ(result[i], *ch);
+            EXPECT_EQ(ch, ch2);
         }
         EXPECT_EQ(nullptr, l.data(result.size()));
+        EXPECT_EQ(nullptr, const_cast<const lexer&>(l).data(result.size()));
 
-        const char_t* data = l.data(0);
+        char_t* data = l.data(0);
+        const char_t* data2 = const_cast<const lexer&>(l).data(0);
         ASSERT_NE(nullptr, data);
+        ASSERT_EQ(data, data2);
         for (size_t i = 0; i < result.size(); i++) {
             EXPECT_EQ(static_cast<uint8_t>(result[i]), data[i]);
         }
