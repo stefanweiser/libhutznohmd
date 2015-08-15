@@ -38,6 +38,9 @@ int32_t lexer::get(void)
     // The rewritten data is always limited by the tail not by its size.
     int32_t result;
     if ((index_ < tail_) || (true == fetch_more_data())) {
+        // Converting the character into an unsigned character will preserve the
+        // bit representation and enables the implementation to reuse all
+        // negative numbers as error values.
         result = static_cast<uint8_t>(raw_[index_++]);
     } else {
         result = -1;

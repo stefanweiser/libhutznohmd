@@ -29,8 +29,14 @@ class lexer
 public:
     explicit lexer(const connection_pointer& connection);
 
+    //! Returns the next character in the stream or -1 when reaching the end of
+    //! the file. Valid characters are represented in the range 0..255.
     int32_t get(void);
+
+    //! Returns the current index.
     size_t index(void) const;
+
+    //! Returns a constant pointer on the data stream beginning at offset idx.
     const char_t* data(const size_t idx) const;
 
     //! Returns a pointer on the data stream beginning at offset idx.
