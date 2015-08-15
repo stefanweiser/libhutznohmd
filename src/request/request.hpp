@@ -80,9 +80,15 @@ private:
     trie<http_version> versions_;
 
     http_verb method_;
+    const char_t* path_;
     http_version version_;
 
-    std::map<const char_t* const, const char_t*> header_fields_;
+    struct string_less
+    {
+        bool operator()(const char_t* const lhs, const char_t* const rhs) const;
+    };
+
+    std::map<const char_t* const, const char_t*, string_less> header_fields_;
 };
 
 } // namespace hutzn

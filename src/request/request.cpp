@@ -32,6 +32,7 @@ request::request(const connection_pointer& connection)
     , maximum_version_length_(0)
     , versions_(true)
     , method_(http_verb::GET)
+    , path_(nullptr)
     , version_(http_version::HTTP_UNKNOWN)
     , header_fields_()
 {
@@ -66,14 +67,15 @@ bool request::parse(void)
     int32_t ch = lexer_.get();
     if ((true == parse_method(ch)) && (true == parse_uri(ch)) &&
         (true == parse_version(ch))) {
+        ch = lexer_.get();
         while (ch != -1) {
+            if (true == is_newline(ch)) {
+                result = true;
+                break;
+            }
+
             if (true == parse_header(ch)) {
                 ch = lexer_.get();
-
-                if (true == is_newline(ch)) {
-                    result = true;
-                    break;
-                }
             }
         }
     }
@@ -130,8 +132,13 @@ bool request::parse_uri(int32_t& ch)
         ch = lexer_.get();
     }
 
+    const char_t* value = lexer_.data(lexer_.index() - 1);
     while (ch != -1) {
         if (true == is_whitespace(ch)) {
+            // Overwrite the newline with null. The value is getting null
+            // terminated by this.
+            lexer_.data(lexer_.index() - 1)[0] = '\0';
+            path_ = value;
             result = true;
             break;
         }
@@ -183,10 +190,9 @@ bool request::parse_header(int32_t& ch)
 {
     bool result = false;
 
-    size_t begin = lexer_.index() - 1;
-    const char_t* key = lexer_.data(begin - 1);
+    const char_t* key = lexer_.data(lexer_.index() - 1);
     while (ch != -1) {
-        if (false == is_key_value_seperator(ch)) {
+        if (true == is_key_value_seperator(ch)) {
             // Overwrite the seperator with null. The key is getting null
             // terminated by this.
             lexer_.data(lexer_.index() - 1)[0] = '\0';
@@ -197,7 +203,7 @@ bool request::parse_header(int32_t& ch)
     }
 
     ch = lexer_.get();
-    const char_t* value = lexer_.data(begin - 1);
+    const char_t* value = lexer_.data(lexer_.index() - 1);
 
     // The value of -1 signalizes end of file.
     while (ch != -1) {
@@ -224,7 +230,7 @@ http_verb request::method(void) const
 
 const char_t* request::path(void) const
 {
-    return nullptr;
+    return path_;
 }
 
 const char_t* request::host(void) const
@@ -330,6 +336,22 @@ bool request::is_key_value_seperator(const int32_t ch)
     // Otherwise the comparison may offer some ambiguities (e.g. 1024 get to 0).
     // Doing this explicitly is more clear.
     return (static_cast<int32_t>(':') == ch);
+}
+
+bool request::string_less::operator()(const char_t* const lhs,
+                                      const char_t* const rhs) const
+{
+    bool result;
+    if (lhs == nullptr) {
+        result = (rhs != nullptr);
+    } else {
+        if (rhs == nullptr) {
+            result = false;
+        } else {
+            result = (strcmp(lhs, rhs) < 0);
+        }
+    }
+    return result;
 }
 
 } // namespace hutzn
