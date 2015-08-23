@@ -57,10 +57,13 @@ public:
     char_t* header_data(const size_t idx);
 
 private:
-    void fetch_more_data_copy(const char_t ch, char_t& last);
-    void fetch_more_data_possible_cr_lf(const char_t ch, char_t& last);
-    void fetch_more_data_possible_lws(const char_t ch, char_t& last);
-    void fetch_more_data_reached_body(void);
+    void fetch_more_data_copy(size_t& tail, size_t& head, const char_t ch,
+                              char_t& last);
+    void fetch_more_data_possible_cr_lf(size_t& head, const char_t ch,
+                                        char_t& last);
+    void fetch_more_data_possible_lws(size_t& tail, size_t& head,
+                                      const char_t ch, char_t& last);
+    void fetch_more_data_reached_body(size_t& tail, size_t& head);
 
     enum class lexer_state {
         copy = 0,
@@ -75,8 +78,6 @@ private:
     buffer header_;
     buffer content_;
     size_t index_;
-    size_t head_;
-    size_t tail_;
 };
 
 //! Parses a token and returns the number of characters read from the lexer. If

@@ -29,22 +29,19 @@ lexer::lexer(const connection_pointer& connection)
     , header_()
     , content_()
     , index_(0)
-    , head_(0)
-    , tail_(0)
 {
 }
 
 bool lexer::fetch_header(void)
 {
-    // Don't call it twice.
-    assert(0 == header_.size());
-    assert(0 == head_);
+    size_t tail = 0;
+    size_t head = 0;
 
     // The last character is assumed to be 0 if no data was already processed.
     char_t last = '\0';
 
-    // Loop will break, when either something parseable was received or the
-    // connection got closed.
+    // Loop will break, when one of the end states are reached. This will also
+    // guard calling the method twice or more.
     while ((state_ != lexer_state::reached_body) &&
            (state_ != lexer_state::error)) {
 
@@ -56,23 +53,23 @@ bool lexer::fetch_header(void)
             // block_device_interface::receive returns true, when at least one
             // byte was read.
             do {
-                const char_t ch = header_[head_];
+                const char_t ch = header_[head];
 
                 switch (state_) {
                 case lexer_state::copy:
-                    fetch_more_data_copy(ch, last);
+                    fetch_more_data_copy(tail, head, ch, last);
                     break;
 
                 case lexer_state::possible_cr_lf:
-                    fetch_more_data_possible_cr_lf(ch, last);
+                    fetch_more_data_possible_cr_lf(head, ch, last);
                     break;
 
                 case lexer_state::possible_lws:
-                    fetch_more_data_possible_lws(ch, last);
+                    fetch_more_data_possible_lws(tail, head, ch, last);
                     break;
 
                 case lexer_state::reached_body:
-                    fetch_more_data_reached_body();
+                    fetch_more_data_reached_body(tail, head);
                     break;
 
                 case lexer_state::error:
@@ -80,7 +77,7 @@ bool lexer::fetch_header(void)
                     assert(false);
                     break;
                 }
-            } while (head_ < header_.size());
+            } while (head < header_.size());
         } else {
             state_ = lexer_state::error;
         }
@@ -89,10 +86,12 @@ bool lexer::fetch_header(void)
     // Cutting off the header may be already done during
     // fetch_more_data_reached_body, but when the header is received as a whole
     // chunk this method will not get called.
-    assert(tail_ <= header_.size());
-    header_.resize(tail_);
-    head_ = tail_;
+    assert(tail <= header_.size());
+    header_.resize(tail);
 
+    // After the loop, the state has to be one of the end states. The method
+    // returns true, when the loop reached the body and therefore the header is
+    // complete.
     assert((state_ == lexer_state::reached_body) ||
            (state_ == lexer_state::error));
     return (state_ == lexer_state::reached_body);
@@ -100,7 +99,6 @@ bool lexer::fetch_header(void)
 
 int32_t lexer::get(void)
 {
-    // The rewritten data is always limited by the tail not by its size.
     int32_t result;
     if (index_ < header_.size()) {
         // Converting the character into an unsigned character will preserve the
@@ -125,7 +123,7 @@ size_t lexer::index(void) const
 
 void lexer::set_index(const size_t idx)
 {
-    if (idx <= tail_) {
+    if (idx <= header_.size()) {
         index_ = idx;
     }
 }
@@ -133,7 +131,7 @@ void lexer::set_index(const size_t idx)
 const char_t* lexer::header_data(const size_t idx) const
 {
     const char_t* result;
-    if (idx < tail_) {
+    if (idx < header_.size()) {
         result = &(header_[idx]);
     } else {
         result = nullptr;
@@ -144,7 +142,7 @@ const char_t* lexer::header_data(const size_t idx) const
 char_t* lexer::header_data(const size_t idx)
 {
     char_t* result;
-    if (idx < tail_) {
+    if (idx < header_.size()) {
         result = &(header_[idx]);
     } else {
         result = nullptr;
@@ -152,13 +150,14 @@ char_t* lexer::header_data(const size_t idx)
     return result;
 }
 
-void lexer::fetch_more_data_copy(const char_t ch, char_t& last)
+void lexer::fetch_more_data_copy(size_t& tail, size_t& head, const char_t ch,
+                                 char_t& last)
 {
     // In any case one character of the input stream gets consumed.
-    head_++;
+    head++;
 
     if (ch == '\r') {
-        header_[tail_++] = '\n';
+        header_[tail++] = '\n';
         // Delay updating the last character, because the last
         // character is necessary in the next state to determine
         // transition into lexer_state::possible_cr_lf.
@@ -176,17 +175,18 @@ void lexer::fetch_more_data_copy(const char_t ch, char_t& last)
 
         // Update the last character here, because it is necessary
         // to determine the next state. Copy also the character.
-        header_[tail_++] = ch;
+        header_[tail++] = ch;
         last = ch;
     }
 }
 
-void lexer::fetch_more_data_possible_cr_lf(const char_t ch, char_t& last)
+void lexer::fetch_more_data_possible_cr_lf(size_t& head, const char_t ch,
+                                           char_t& last)
 {
     // Eat up one newline if available, because earlier there was a
     // carriage return and cr-lf will get to one newline.
     if (ch == '\n') {
-        head_++;
+        head++;
     }
 
     // The current character is already a newline. The last
@@ -205,20 +205,21 @@ void lexer::fetch_more_data_possible_cr_lf(const char_t ch, char_t& last)
     }
 }
 
-void lexer::fetch_more_data_possible_lws(const char_t ch, char_t& last)
+void lexer::fetch_more_data_possible_lws(size_t& tail, size_t& head,
+                                         const char_t ch, char_t& last)
 {
     // The parser does reach this state, when the character before
     // was a newline. There exists a LWS token, when the current
     // character is either space or tab.
     if ((ch == ' ') || (ch == '\t')) {
         // Consume this character.
-        head_++;
+        head++;
 
         // A LWS token overrules the read character with a space.
         // The last character (newline) was already written and gets
         // therefore overwritten.
-        assert(tail_ > 0);
-        header_[tail_ - 1] = ' ';
+        assert(tail > 0);
+        header_[tail - 1] = ' ';
         last = ' ';
     }
 
@@ -226,14 +227,13 @@ void lexer::fetch_more_data_possible_lws(const char_t ch, char_t& last)
     state_ = lexer_state::copy;
 }
 
-void lexer::fetch_more_data_reached_body(void)
+void lexer::fetch_more_data_reached_body(size_t& tail, size_t& head)
 {
     // Found the content. Moving the remaining header data into the content
     // data.
-    content_.insert(content_.end(), header_.begin() + head_, header_.end());
-    assert(tail_ <= header_.size());
-    header_.resize(tail_);
-    head_ = tail_;
+    content_.insert(content_.end(), header_.begin() + head, header_.end());
+    assert(tail <= header_.size());
+    header_.resize(tail);
 
     // Nothing more to be done, when body is reached. The loop will break
     // afterwards, because the end of the header is reached.
