@@ -40,6 +40,12 @@ public:
     //! Returns whether the header was read successfully.
     bool fetch_header(void);
 
+    //! Reads the complete content from the connection. The length must be
+    //! given and the header must get fetched first! Returns whether the content
+    //! could fetched completely. Returns also false, when the header was not
+    //! fetched yet.
+    bool fetch_content(const size_t content_length);
+
     //! Returns the next character in the header or -1 when reaching the end of
     //! the read data. Valid characters are represented in the range 0..255.
     int32_t get(void);

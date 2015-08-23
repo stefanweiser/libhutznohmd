@@ -97,6 +97,34 @@ bool lexer::fetch_header(void)
     return (state_ == lexer_state::reached_content);
 }
 
+bool lexer::fetch_content(const size_t content_length)
+{
+    bool result = false;
+    if (state_ == lexer_state::reached_content) {
+        // Never fetch more data than necessary.
+        assert(content_.size() <= content_length);
+
+        // Fetching more data when necessary.
+        bool fetch_more = (content_.size() < content_length);
+        while (true == fetch_more) {
+
+            // This must be done in a loop, because receive returns true, if
+            // something is read. There is no gurantee, that all the necessary
+            // bytes are read.
+            const size_t bytes_to_read = content_length - content_.size();
+            if (true == connection_->receive(header_, bytes_to_read)) {
+                fetch_more = (content_.size() < content_length);
+            } else {
+                fetch_more = false;
+            }
+        }
+
+        // Returns true, when enough data is available.
+        result = (content_length == content_.size());
+    }
+    return result;
+}
+
 int32_t lexer::get(void)
 {
     int32_t result;
