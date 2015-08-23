@@ -130,6 +130,7 @@ private:
     lexer_state state_;
     buffer header_;
     buffer content_;
+    bool fetch_content_succeeded_;
     size_t index_;
 };
 

@@ -28,6 +28,7 @@ lexer::lexer(const connection_pointer& connection)
     , state_(lexer_state::copy)
     , header_()
     , content_()
+    , fetch_content_succeeded_(false)
     , index_(0)
 {
 }
@@ -129,7 +130,11 @@ bool lexer::fetch_content(const size_t content_length)
 
         // Returns true, when enough data is available.
         result = (content_length == content_.size());
+
+        // Remember, that fetch_content once returned true.
+        fetch_content_succeeded_ = result;
     }
+
     return result;
 }
 
