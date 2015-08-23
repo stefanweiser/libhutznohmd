@@ -105,7 +105,7 @@ bool request::parse_method(int32_t& ch)
 
             // Parsing the version will succeed, when the token is not too
             // long and the found method length is exactly the token length.
-            if (method_length <= maximum_version_length_) {
+            if (method_length <= maximum_method_length) {
                 auto r =
                     methods_.find(lexer_.data(method_begin), method_length);
                 if (r.used_size == method_length) {

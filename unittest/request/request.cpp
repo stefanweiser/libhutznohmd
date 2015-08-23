@@ -190,6 +190,15 @@ TEST_F(request_test, parsing_method_failed_because_method_token_too_long)
     check_request_data(r);
 }
 
+TEST_F(request_test, parsing_method_failed_because_method_token_much_too_long)
+{
+    request r{connection_};
+    const std::string request_data = "DELETEE ";
+    setup_receive(request_data);
+    EXPECT_FALSE(r.parse());
+    check_request_data(r);
+}
+
 TEST_F(request_test, parsing_uri_failed_because_no_data)
 {
     request r{connection_};
@@ -236,6 +245,15 @@ TEST_F(request_test, parsing_version_failed_because_not_a_version)
 }
 
 TEST_F(request_test, parsing_version_failed_because_version_too_long)
+{
+    request r{connection_};
+    const std::string request_data = "PUT / HTTP/22\n";
+    setup_receive(request_data);
+    EXPECT_FALSE(r.parse());
+    check_request_data(r, http_verb::PUT, "/");
+}
+
+TEST_F(request_test, parsing_version_failed_because_version_much_too_long)
 {
     request r{connection_};
     const std::string request_data = "PUT / HTTP/1.11\n";
