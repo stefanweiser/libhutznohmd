@@ -75,19 +75,19 @@ public:
 
 private:
     //! Called by the fetch_header state machine when in state copy.
-    void fetch_more_data_copy(size_t& tail, size_t& head, const char_t ch,
-                              char_t& last);
+    void fetch_header_copy(size_t& tail, size_t& head, const char_t ch,
+                           char_t& last);
 
     //! Called by the fetch_header state machine when in state possible_cr_lf.
-    void fetch_more_data_possible_cr_lf(size_t& head, const char_t ch,
-                                        char_t& last);
+    void fetch_header_possible_cr_lf(size_t& head, const char_t ch,
+                                     char_t& last);
 
     //! Called by the fetch_header state machine when in state possible_lws.
-    void fetch_more_data_possible_lws(size_t& tail, size_t& head,
-                                      const char_t ch, char_t& last);
+    void fetch_header_possible_lws(size_t& tail, size_t& head, const char_t ch,
+                                   char_t& last);
 
-    //! Called by the fetch_header state machine when in state reached_body.
-    void fetch_more_data_reached_body(size_t& tail, size_t& head);
+    //! Called by the fetch_header state machine when in state reached_content.
+    void fetch_header_reached_content(size_t& tail, size_t& head);
 
     enum class lexer_state {
         copy = 0,

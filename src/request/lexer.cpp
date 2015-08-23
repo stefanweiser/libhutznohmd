@@ -57,19 +57,19 @@ bool lexer::fetch_header(void)
 
                 switch (state_) {
                 case lexer_state::copy:
-                    fetch_more_data_copy(tail, head, ch, last);
+                    fetch_header_copy(tail, head, ch, last);
                     break;
 
                 case lexer_state::possible_cr_lf:
-                    fetch_more_data_possible_cr_lf(head, ch, last);
+                    fetch_header_possible_cr_lf(head, ch, last);
                     break;
 
                 case lexer_state::possible_lws:
-                    fetch_more_data_possible_lws(tail, head, ch, last);
+                    fetch_header_possible_lws(tail, head, ch, last);
                     break;
 
                 case lexer_state::reached_content:
-                    fetch_more_data_reached_body(tail, head);
+                    fetch_header_reached_content(tail, head);
                     break;
 
                 case lexer_state::error:
@@ -183,8 +183,8 @@ const char_t* lexer::content(void) const
     return &(content_[0]);
 }
 
-void lexer::fetch_more_data_copy(size_t& tail, size_t& head, const char_t ch,
-                                 char_t& last)
+void lexer::fetch_header_copy(size_t& tail, size_t& head, const char_t ch,
+                              char_t& last)
 {
     // In any case one character of the input stream gets consumed.
     head++;
@@ -213,8 +213,8 @@ void lexer::fetch_more_data_copy(size_t& tail, size_t& head, const char_t ch,
     }
 }
 
-void lexer::fetch_more_data_possible_cr_lf(size_t& head, const char_t ch,
-                                           char_t& last)
+void lexer::fetch_header_possible_cr_lf(size_t& head, const char_t ch,
+                                        char_t& last)
 {
     // Eat up one newline if available, because earlier there was a
     // carriage return and cr-lf will get to one newline.
@@ -238,8 +238,8 @@ void lexer::fetch_more_data_possible_cr_lf(size_t& head, const char_t ch,
     }
 }
 
-void lexer::fetch_more_data_possible_lws(size_t& tail, size_t& head,
-                                         const char_t ch, char_t& last)
+void lexer::fetch_header_possible_lws(size_t& tail, size_t& head,
+                                      const char_t ch, char_t& last)
 {
     // The parser does reach this state, when the character before
     // was a newline. There exists a LWS token, when the current
@@ -260,7 +260,7 @@ void lexer::fetch_more_data_possible_lws(size_t& tail, size_t& head,
     state_ = lexer_state::copy;
 }
 
-void lexer::fetch_more_data_reached_body(size_t& tail, size_t& head)
+void lexer::fetch_header_reached_content(size_t& tail, size_t& head)
 {
     // Found the content. Moving the remaining header data into the content
     // data.
