@@ -40,16 +40,17 @@ bool lexer::fetch_header(void)
     // The last character is assumed to be 0 if no data was already processed.
     char_t last = '\0';
 
+    constexpr static size_t chunk_size = 4000;
+
     // Loop will break, when one of the end states are reached. This will also
     // guard calling the method twice or more.
     while ((state_ != lexer_state::reached_content) &&
            (state_ != lexer_state::error)) {
 
         // Need more data.
-        constexpr size_t chunk_size = 4000;
         if (true == connection_->receive(header_, chunk_size)) {
 
-            // At least one character could get evaluated, because
+            // At least one character is available to get evaluated, because
             // block_device_interface::receive returns true, when at least one
             // byte was read.
             do {
@@ -72,6 +73,10 @@ bool lexer::fetch_header(void)
                     fetch_header_reached_content(tail, head);
                     break;
 
+                // Also treat errors as reason to crash, because the only way to
+                // get in error state is when receive returns false. The program
+                // will not get here in this case, because this is a reason to
+                // break from the outermost while loop first.
                 case lexer_state::error:
                 default:
                     assert(false);
@@ -113,8 +118,11 @@ bool lexer::fetch_content(const size_t content_length)
             // bytes are read.
             const size_t bytes_to_read = content_length - content_.size();
             if (true == connection_->receive(header_, bytes_to_read)) {
+                // Recalculate fetch_more. Continue receiving, when the content
+                // is not yet complete.
                 fetch_more = (content_.size() < content_length);
             } else {
+                // Stop fetching, when receive fails.
                 fetch_more = false;
             }
         }
@@ -129,9 +137,9 @@ int32_t lexer::get(void)
 {
     int32_t result;
     if (index_ < header_.size()) {
-        // Converting the character into an unsigned character will preserve the
-        // bit representation and enables the implementation to reuse all
-        // negative numbers as error values.
+        // Converting the character into an unsigned character first will
+        // preserve the bit representation and enables the implementation to
+        // reuse all negative numbers as error values.
         result = static_cast<uint8_t>(header_[index_++]);
     } else {
         result = -1;

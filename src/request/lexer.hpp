@@ -44,9 +44,9 @@ public:
     bool fetch_header(void);
 
     //! Reads the complete content from the connection. The length must be given
-    //! to the function and the header must be fetched first! Returns whether
-    //! the content could be fetched completely. Returns also false, when the
-    //! header was not fetched yet.
+    //! to the function and the header must be fetched successfully first!
+    //! Returns whether the content could be fetched completely. Returns also
+    //! false, when the header was not fetched yet or when the fetching failed.
     bool fetch_content(const size_t content_length);
 
     //! Returns the next character in the header or -1 when reaching the end of
@@ -104,9 +104,12 @@ private:
     size_t index_;
 };
 
-//! Parses a token and returns the number of characters read from the lexer. If
-//! no valid stop character is found, the index gets resetted to its original
-//! value and 0 is returned from the function.
+//! Parses a token and returns the number of characters read from the lexer. A
+//! token is a logical unit consisting of several consecutive characters (at
+//! least one). There is a stop function to determine the token's borders.
+//! Returns the length of the token. If no valid stop character is found, the
+//! lexer's index gets resetted to its starting value and 0 is returned from the
+//! function.
 template <typename stop_function>
 size_t parse_specific(lexer& lex, int32_t& ch, const stop_function& stop)
 {
