@@ -26,6 +26,10 @@
 namespace hutzn
 {
 
+//! The library's lexer provides functionality to prepare the HTTP header for
+//! the parser. It normalizes the header therefore (replaces \r\n with \n, \r
+//! with \n and any character combination described as LWS by the HTTP standard
+//! with a space).
 class lexer
 {
 public:
