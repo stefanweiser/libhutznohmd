@@ -33,7 +33,11 @@ public:
     //! the file. Valid characters are represented in the range 0..255.
     int32_t get(void);
 
-    //! Returns the current index.
+    //! Returns the previous index. This is a number between or equal to
+    //! std::numeric_limits<size_t>;;max() and tail minus 2.
+    size_t prev_index(void) const;
+
+    //! Returns the current index. This is a number in the interval [0 .. tail).
     size_t index(void) const;
 
     //! Returns a constant pointer on the data stream beginning at offset idx.

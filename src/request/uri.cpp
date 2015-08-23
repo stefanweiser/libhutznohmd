@@ -237,14 +237,11 @@ bool uri::parse_scheme(int32_t& ch)
     t.insert("https", value_type(uri_scheme::HTTPS, 443));
     t.insert("mailto", value_type(uri_scheme::MAILTO, 0));
 
-    const size_t begin_index = lexer_->index() - 1;
+    const size_t begin_index = lexer_->prev_index();
     size_t length = 0;
     while (ch != -1) {
         if (static_cast<uint8_t>(':') == ch) {
-            // Overwrite the newline with null. The value is getting null
-            // terminated by this.
-            lexer_->data(lexer_->index() - 1)[0] = '\0';
-            length = lexer_->index() - 1 - begin_index;
+            length = lexer_->prev_index() - begin_index;
             break;
         }
 

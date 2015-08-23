@@ -48,6 +48,11 @@ int32_t lexer::get(void)
     return result;
 }
 
+size_t lexer::prev_index(void) const
+{
+    return index_ - 1;
+}
+
 size_t lexer::index(void) const
 {
     return index_;
