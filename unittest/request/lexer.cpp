@@ -280,4 +280,53 @@ TEST_F(lexer_test, parse_specific_fails)
     EXPECT_EQ('b', lex.get());
 }
 
+TEST_F(lexer_test, content)
+{
+    std::string chunk1 = "\r\n\r\n";
+    std::string chunk2 = "a";
+    std::string chunk3 = "b";
+    connection_mock_pointer connection =
+        std::make_shared<connection_interface_mock>();
+    EXPECT_CALL(*connection, receive(_, _))
+        .Times(4)
+        .WillOnce(Invoke([chunk1](buffer& b, const size_t& m) {
+            EXPECT_LE(chunk1.size(), m);
+            b.insert(b.end(), chunk1.begin(), chunk1.end());
+            return true;
+        }))
+        .WillOnce(Invoke([chunk2](buffer& b, const size_t& m) {
+            EXPECT_LE(chunk2.size(), m);
+            b.insert(b.end(), chunk2.begin(), chunk2.end());
+            return true;
+        }))
+        .WillOnce(Invoke([chunk3](buffer& b, const size_t& m) {
+            EXPECT_LE(chunk3.size(), m);
+            b.insert(b.end(), chunk3.begin(), chunk3.end());
+            return true;
+        }))
+        .WillOnce(Return(false));
+
+    lexer lex(connection);
+
+    // Initially the content is empty..
+    EXPECT_EQ(0, lex.content_length());
+    EXPECT_EQ(nullptr, lex.content());
+
+    // Fetching the header will not effect the content.
+    EXPECT_TRUE(lex.fetch_header());
+    EXPECT_EQ(0, lex.content_length());
+    EXPECT_EQ(nullptr, lex.content());
+
+    // Content is available after calling fetch_content.
+    EXPECT_TRUE(lex.fetch_content(2));
+    EXPECT_EQ(2, lex.content_length());
+    EXPECT_EQ('a', lex.content()[0]);
+    EXPECT_EQ('b', lex.content()[1]);
+
+    // Fetching too much will invalidate the content.
+    EXPECT_FALSE(lex.fetch_content(3));
+    EXPECT_EQ(0, lex.content_length());
+    EXPECT_EQ(nullptr, lex.content());
+}
+
 } // namespace hutzn
