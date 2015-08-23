@@ -29,29 +29,33 @@ namespace hutzn
 //! The library's lexer provides functionality to prepare the HTTP header for
 //! the parser. It normalizes the header therefore (replaces \r\n with \n, \r
 //! with \n and any character combination described as LWS by the HTTP standard
-//! with a space).
+//! with a space). This is all done within fetch_header. It stores the header
+//! and content data and gives access to them. Rewriting of the header data is
+//! possible.
 class lexer
 {
 public:
     explicit lexer(const connection_pointer& connection);
 
-    //! Reads the complete header and possible already read parts of the content
-    //! is moved to the content buffer. Call this method before using the lexer.
-    //! Returns whether the header was read successfully.
+    //! Reads the complete header and moves already read parts of the content
+    //! to the content buffer. Call this method before using the lexer. Returns
+    //! whether the header data was read and normalized successfully. This is no
+    //! statement whether the header data is valid.
     bool fetch_header(void);
 
-    //! Reads the complete content from the connection. The length must be
-    //! given and the header must get fetched first! Returns whether the content
-    //! could fetched completely. Returns also false, when the header was not
-    //! fetched yet.
+    //! Reads the complete content from the connection. The length must be given
+    //! to the function and the header must be fetched first! Returns whether
+    //! the content could be fetched completely. Returns also false, when the
+    //! header was not fetched yet.
     bool fetch_content(const size_t content_length);
 
     //! Returns the next character in the header or -1 when reaching the end of
     //! the read data. Valid characters are represented in the range 0..255.
     int32_t get(void);
 
-    //! Returns the previous index. This is a number between or equal to
-    //! std::numeric_limits<size_t>;;max() and tail minus 2.
+    //! Returns the previous index. This is either
+    //! std::numeric_limits<size_t>::max() in case there is no previous index or
+    //! a number in the interval [0 .. tail-1).
     size_t prev_index(void) const;
 
     //! Returns the current index. This is a number in the interval [0 .. tail).
@@ -70,12 +74,19 @@ public:
     const char_t* content(void) const;
 
 private:
+    //! Called by the fetch_header state machine when in state copy.
     void fetch_more_data_copy(size_t& tail, size_t& head, const char_t ch,
                               char_t& last);
+
+    //! Called by the fetch_header state machine when in state possible_cr_lf.
     void fetch_more_data_possible_cr_lf(size_t& head, const char_t ch,
                                         char_t& last);
+
+    //! Called by the fetch_header state machine when in state possible_lws.
     void fetch_more_data_possible_lws(size_t& tail, size_t& head,
                                       const char_t ch, char_t& last);
+
+    //! Called by the fetch_header state machine when in state reached_body.
     void fetch_more_data_reached_body(size_t& tail, size_t& head);
 
     enum class lexer_state {
