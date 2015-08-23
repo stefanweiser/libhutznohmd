@@ -27,8 +27,8 @@ namespace hutzn
 {
 
 //! The library's lexer provides functionality to prepare the HTTP header for
-//! the parser. It normalizes the header therefore (replaces \r\n with \n, \r
-//! with \n and any character combination described as LWS by the HTTP standard
+//! the parser. It normalizes the header therefore (replaces CR-LF with LF, CR
+//! with LF and any character combination described as LWS by the HTTP standard
 //! with a space). This is all done within fetch_header. It stores the header
 //! and content data and gives access to them. Rewriting of the header data is
 //! possible.
@@ -64,13 +64,16 @@ public:
     //! Sets the current index. This is a number in the interval [0 .. tail].
     void set_index(const size_t idx);
 
-    //! Returns a constant pointer on the header beginning at offset idx.
+    //! Returns a constant pointer on the header beginning at offset idx. It
+    //! returns a nullptr, when the offset is out of scope.
     const char_t* header_data(const size_t idx) const;
 
-    //! Returns a pointer on the header beginning at offset idx.
+    //! Returns a pointer on the header beginning at offset idx. It returns a
+    //! nullptr, when the offset is out of scope.
     char_t* header_data(const size_t idx);
 
-    //! Returns a constant pointer on the content.
+    //! Returns a constant pointer on the content and a nullptr, when
+    //! fetch_content was not yet successfully called.
     const char_t* content(void) const;
 
 private:
@@ -89,11 +92,37 @@ private:
     //! Called by the fetch_header state machine when in state reached_content.
     void fetch_header_reached_content(size_t& tail, size_t& head);
 
+    /*! Defines a state machine for a HTTP lexer.
+    @startuml{lexer_state_machine.svg} "Lexer's state machine"
+    [*] --> copy
+    copy --> possible_cr_lf : current is CR
+    copy --> reached_content : last and current are LF
+    copy --> possible_lws : current is LF and last not
+    copy --> copy : else
+    copy --> error : receive returns error
+    possible_cr_lf --> reached_content : last is LF
+    possible_cr_lf --> possible_lws : last is not LF
+    possible_cr_lf --> error : receive returns error
+    possible_lws --> copy
+    possible_lws --> error : receive returns error
+    error --> [*]
+    reached_content --> [*]
+    @enduml
+    */
     enum class lexer_state {
+        //! Copies one character from head to tail.
         copy = 0,
+
+        //! Tries to find a CR-LF sequence. This gets converted to LF.
         possible_cr_lf = 1,
+
+        //! Tries to find a LWS sequence. This gets converted to a space.
         possible_lws = 2,
+
+        //! Final state when two LFs are at the tail.
         reached_content = 3,
+
+        //! Receive could return an error. Then this state is set.
         error = 4
     };
 
