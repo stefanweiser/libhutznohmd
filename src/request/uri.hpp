@@ -19,7 +19,7 @@
 #ifndef LIBHUTZNOHMD_REQUEST_URI_HPP
 #define LIBHUTZNOHMD_REQUEST_URI_HPP
 
-#include <http/parser/utility/lexer.hpp>
+#include <request/lexer.hpp>
 #include <http/parser/utility/push_back_string.hpp>
 
 #include <hutzn.hpp>
@@ -37,16 +37,15 @@ public:
     explicit uri(const uri& rhs) = delete;
     uri& operator=(const uri& rhs) = delete;
 
-    bool parse(const http::lexer& l, int32_t& character,
-               const bool skip_scheme);
+    bool parse(lexer& l, int32_t& character, const bool skip_scheme);
 
-    void set_scheme(const http::uri_scheme& new_scheme);
+    void set_scheme(const uri_scheme& new_scheme);
     bool set_userinfo(const char_t* const new_userinfo);
     bool set_host(const char_t* const new_host);
     void set_port(const uint16_t& new_port);
 
     bool valid(void) const;
-    const http::uri_scheme& scheme(void) const;
+    const uri_scheme& scheme(void) const;
     const char_t* userinfo(void) const;
     const char_t* host(void) const;
     const uint16_t& port(void) const;
@@ -56,7 +55,7 @@ public:
 
 private:
     bool parse_scheme_and_authority(int32_t& character, const bool skip_scheme);
-    bool parse_scheme(int32_t& character);
+    bool parse_scheme(int32_t& ch);
     bool parse_userinfo_and_authority(int32_t& character);
     bool parse_authority(int32_t& character);
     bool parse_authority_1st_pass(int32_t& character);
@@ -64,9 +63,9 @@ private:
 
     bool parse_word(void);
 
-    const http::lexer* lexer_;
+    lexer* lexer_;
     bool valid_;
-    http::uri_scheme scheme_;
+    uri_scheme scheme_;
     http::push_back_string<16> userinfo_;
     http::push_back_string<32> host_;
     uint16_t port_;

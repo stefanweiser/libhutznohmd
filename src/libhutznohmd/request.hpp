@@ -779,6 +779,21 @@ enum class http_expectation : uint8_t {
     CONTINUE = 1
 };
 
+//! These URI schemes are supported by the parser and needed for HTTP.
+enum class uri_scheme : uint8_t {
+    //! Scheme is not known or invalid.
+    UNKNOWN = 0,
+
+    //! URI describes a URL as used in HTTP for plain data transport.
+    HTTP = 1,
+
+    //! URI describes a URL as used in HTTP within an encrypted channel.
+    HTTPS = 2,
+
+    //! URI describes an e-mail address.
+    MAILTO = 3
+};
+
 //! Is used by the request processor to find the right request handler and
 class request_interface
 {

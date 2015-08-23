@@ -16,7 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <http/parser/utility/trie.hpp>
+#include <utility/character_validation.hpp>
+#include <utility/trie.hpp>
 
 #include "uri.hpp"
 
@@ -30,7 +31,7 @@ namespace
 template <size_t size, typename continue_function>
 bool parse_uri_word(int32_t& character, http::push_back_string<size>& result,
                     const continue_function& continue_condition_functor,
-                    const http::lexer& l)
+                    lexer& l)
 {
     while ((character >= 0) && (true == continue_condition_functor(
                                             static_cast<uint8_t>(character)))) {
@@ -62,7 +63,7 @@ bool parse_uri_word(int32_t& character, http::push_back_string<size>& result,
 uri::uri(void)
     : lexer_(nullptr)
     , valid_(false)
-    , scheme_(http::uri_scheme::UNKNOWN)
+    , scheme_(uri_scheme::UNKNOWN)
     , userinfo_()
     , host_()
     , port_(0)
@@ -72,8 +73,7 @@ uri::uri(void)
 {
 }
 
-bool uri::parse(const http::lexer& l, int32_t& character,
-                const bool skip_scheme)
+bool uri::parse(lexer& l, int32_t& character, const bool skip_scheme)
 {
     if (true == valid_) {
         return true;
@@ -114,7 +114,7 @@ bool uri::parse(const http::lexer& l, int32_t& character,
     return true;
 }
 
-void uri::set_scheme(const http::uri_scheme& new_scheme)
+void uri::set_scheme(const uri_scheme& new_scheme)
 {
     scheme_ = new_scheme;
 }
@@ -161,7 +161,7 @@ bool uri::valid(void) const
     return valid_;
 }
 
-const http::uri_scheme& uri::scheme(void) const
+const uri_scheme& uri::scheme(void) const
 {
     return scheme_;
 }
@@ -229,19 +229,34 @@ bool uri::parse_scheme_and_authority(int32_t& character, const bool skip_scheme)
     return true;
 }
 
-bool uri::parse_scheme(int32_t& character)
+bool uri::parse_scheme(int32_t& ch)
 {
-    using value_type = std::tuple<http::uri_scheme, uint16_t>;
-    using value_info = http::trie<value_type>::value_info;
-    static const std::vector<value_info> types = {
-        {value_info{"http", value_type{http::uri_scheme::HTTP, 80}},
-         value_info{"mailto", value_type{http::uri_scheme::MAILTO, 0}}}};
+    using value_type = std::tuple<uri_scheme, uint16_t>;
+    trie<value_type> t{true};
+    t.insert("http", value_type(uri_scheme::HTTP, 80));
+    t.insert("https", value_type(uri_scheme::HTTPS, 443));
+    t.insert("mailto", value_type(uri_scheme::MAILTO, 0));
 
-    static const http::trie<value_type> t(
-        types, value_type{http::uri_scheme::UNKNOWN, 0});
-    http::push_back_string<8> tmp;
-    std::tie(scheme_, port_) = t.parse(character, tmp, *lexer_);
-    return (http::uri_scheme::UNKNOWN != scheme_);
+    const size_t begin_index = lexer_->index() - 1;
+    size_t length = 0;
+    while (ch != -1) {
+        if (static_cast<uint8_t>(':') == ch) {
+            // Overwrite the newline with null. The value is getting null
+            // terminated by this.
+            lexer_->data(lexer_->index() - 1)[0] = '\0';
+            length = lexer_->index() - 1 - begin_index;
+            break;
+        }
+
+        ch = lexer_->get();
+    }
+
+    auto r = t.find(lexer_->data(begin_index), length);
+    if (r.used_size() == length) {
+        std::tie(scheme_, port_) = r.value();
+    }
+
+    return (uri_scheme::UNKNOWN != scheme_);
 }
 
 bool uri::parse_userinfo_and_authority(int32_t& character)
