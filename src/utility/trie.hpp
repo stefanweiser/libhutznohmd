@@ -20,6 +20,7 @@
 #define LIBHUTZNOHMD_UTILITY_TRIE_HPP
 
 #include <array>
+#include <cassert>
 
 #include <libhutznohmd/types.hpp>
 
@@ -293,8 +294,42 @@ public:
     //! case sensitive or not.
     explicit trie(const bool is_case_insensitive)
         : is_case_insensitive_(is_case_insensitive)
-        , root_node_()
+        , count_(new size_t())
+        , root_node_(new detail::trie_node<value_type>())
     {
+        assert(count_ != nullptr);
+        (*count_) = 1;
+    }
+
+    trie(const trie& rhs)
+        : is_case_insensitive_(rhs.is_case_insensitive_)
+        , count_(rhs.count_)
+        , root_node_(rhs.root_node_)
+    {
+        assert(count_ != nullptr);
+        (*count_)++;
+    }
+
+    trie& operator=(const trie& rhs)
+    {
+        is_case_insensitive_ = rhs.is_case_insensitive_;
+        count_ = rhs.count_;
+        root_node_ = rhs.root_node_;
+        assert(count_ != nullptr);
+        (*count_)++;
+
+        return *this;
+    }
+
+    ~trie()
+    {
+        (*count_)--;
+
+        // Delete the content, when reference counter is zero.
+        if (*count_ == 0) {
+            delete root_node_;
+            delete count_;
+        }
     }
 
     //! @brief Returns the longest match inside the trie.
@@ -305,7 +340,7 @@ public:
     trie_find_result_ find(const char_t* const search_string,
                            const size_t max_length) const
     {
-        return root_node_.find(search_string, search_string, max_length);
+        return root_node_->find(search_string, search_string, max_length);
     }
 
     //! @brief Inserts a token with it's value into the trie.
@@ -314,7 +349,7 @@ public:
     //! therefore inserted.
     bool insert(const char_t* token, const value_type& value)
     {
-        return root_node_.insert(token, value, is_case_insensitive_);
+        return root_node_->insert(token, value, is_case_insensitive_);
     }
 
     //! @brief Erases a token.
@@ -322,15 +357,18 @@ public:
     //! Returns whether the token could be erased.
     bool erase(const char_t* token)
     {
-        return root_node_.erase(token, is_case_insensitive_);
+        return root_node_->erase(token, is_case_insensitive_);
     }
 
 private:
     //! Defines whether searching a token is done case insensitive or not.
     const bool is_case_insensitive_;
 
+    //! Counts the number of references to the trie's root node.
+    size_t* const count_;
+
     //! Root node of the trie as entry point for every operation.
-    detail::trie_node<value_type> root_node_;
+    detail::trie_node<value_type>* root_node_;
 };
 
 } // namespace hutzn
