@@ -237,16 +237,11 @@ bool uri::parse_scheme(int32_t& ch)
     t.insert("https", value_type(uri_scheme::HTTPS, 443));
     t.insert("mailto", value_type(uri_scheme::MAILTO, 0));
 
-    const size_t begin_index = lexer_->prev_index();
-    size_t length = 0;
-    while (ch != -1) {
-        if (static_cast<uint8_t>(':') == ch) {
-            length = lexer_->prev_index() - begin_index;
-            break;
-        }
+    auto equals_scheme_seperator =
+        [](const char_t c) -> bool { return (':' == c); };
 
-        ch = lexer_->get();
-    }
+    const size_t begin_index = lexer_->prev_index();
+    const size_t length = parse_specific(*lexer_, ch, equals_scheme_seperator);
 
     auto r = t.find(lexer_->data(begin_index), length);
     if (r.used_size() == length) {

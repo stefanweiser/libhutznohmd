@@ -19,6 +19,8 @@
 #ifndef LIBHUTZNOHMD_REQUEST_LEXER_HPP
 #define LIBHUTZNOHMD_REQUEST_LEXER_HPP
 
+#include <cassert>
+
 #include <libhutznohmd/request.hpp>
 
 namespace hutzn
@@ -71,6 +73,34 @@ private:
     size_t head_;
     size_t tail_;
 };
+
+//! Parses a token and returns the number of characters read from the lexer. If
+//! no valid stop character is found, the index gets resetted to its original
+//! value and 0 is returned from the function.
+template <typename stop_function>
+size_t parse_specific(lexer& lex, int32_t& ch, const stop_function& stop)
+{
+    const size_t begin_index = lex.index();
+    assert(begin_index > 0);
+    size_t parsed_characters = 0;
+    int32_t c = ch;
+    while (c != -1) {
+        if (true == stop(static_cast<uint8_t>(c))) {
+            parsed_characters = lex.index() - begin_index;
+            ch = c;
+            c = -1;
+        } else {
+            c = lex.get();
+        }
+    }
+
+    if (0 == parsed_characters) {
+        lex.set_index(begin_index - 1);
+        ch = lex.get();
+    }
+
+    return parsed_characters;
+}
 
 } // namespace hutzn
 
