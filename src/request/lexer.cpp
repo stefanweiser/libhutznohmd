@@ -159,6 +159,7 @@ size_t lexer::index(void) const
 
 void lexer::set_index(const size_t idx)
 {
+    // Set new index only when in range.
     if (idx <= header_.size()) {
         index_ = idx;
     }
