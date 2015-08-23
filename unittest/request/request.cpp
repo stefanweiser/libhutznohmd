@@ -45,7 +45,7 @@ public:
     {
         EXPECT_CALL(*connection_, receive(_, _))
             .Times(AtLeast(1))
-            .WillOnce(Invoke([&chunk](buffer& b, const size_t& m) {
+            .WillOnce(Invoke([chunk](buffer& b, const size_t& m) {
                 EXPECT_LE(chunk.size(), m);
                 b.insert(b.begin(), chunk.begin(), chunk.end());
                 return true;
@@ -95,8 +95,7 @@ TEST_F(request_test, construction)
 TEST_F(request_test, default_request)
 {
     request r{connection_};
-    const std::string request_data = "GET / HTTP/1.1\r\n\r\n";
-    setup_receive(request_data);
+    setup_receive("GET / HTTP/1.1\r\n\r\n");
     ASSERT_TRUE(r.parse());
 
     EXPECT_EQ(http_verb::GET, r.method());
@@ -126,8 +125,7 @@ TEST_F(request_test, default_request)
 TEST_F(request_test, custom_header)
 {
     request r{connection_};
-    const std::string request_data = "GET / HTTP/1.1\r\na:b\r\n\r\n";
-    setup_receive(request_data);
+    setup_receive("GET / HTTP/1.1\r\na:b\r\n\r\n");
     ASSERT_TRUE(r.parse());
 
     EXPECT_EQ(http_verb::GET, r.method());
@@ -157,8 +155,7 @@ TEST_F(request_test, custom_header)
 TEST_F(request_test, parsing_method_failed_because_no_data)
 {
     request r{connection_};
-    const std::string request_data = " ";
-    setup_receive(request_data);
+    setup_receive(" ");
     EXPECT_FALSE(r.parse());
     check_request_data(r);
 }
@@ -166,8 +163,7 @@ TEST_F(request_test, parsing_method_failed_because_no_data)
 TEST_F(request_test, parsing_method_failed_because_no_whitespace_found)
 {
     request r{connection_};
-    const std::string request_data = "PUT";
-    setup_receive(request_data);
+    setup_receive("PUT");
     EXPECT_FALSE(r.parse());
     check_request_data(r);
 }
@@ -175,8 +171,7 @@ TEST_F(request_test, parsing_method_failed_because_no_whitespace_found)
 TEST_F(request_test, parsing_method_failed_because_not_a_method)
 {
     request r{connection_};
-    const std::string request_data = "ARGHH ";
-    setup_receive(request_data);
+    setup_receive("ARGHH ");
     EXPECT_FALSE(r.parse());
     check_request_data(r);
 }
@@ -184,8 +179,7 @@ TEST_F(request_test, parsing_method_failed_because_not_a_method)
 TEST_F(request_test, parsing_method_failed_because_method_token_too_long)
 {
     request r{connection_};
-    const std::string request_data = "PUTT ";
-    setup_receive(request_data);
+    setup_receive("PUTT ");
     EXPECT_FALSE(r.parse());
     check_request_data(r);
 }
@@ -193,8 +187,7 @@ TEST_F(request_test, parsing_method_failed_because_method_token_too_long)
 TEST_F(request_test, parsing_method_failed_because_method_token_much_too_long)
 {
     request r{connection_};
-    const std::string request_data = "DELETEE ";
-    setup_receive(request_data);
+    setup_receive("DELETEE ");
     EXPECT_FALSE(r.parse());
     check_request_data(r);
 }
@@ -202,8 +195,7 @@ TEST_F(request_test, parsing_method_failed_because_method_token_much_too_long)
 TEST_F(request_test, parsing_uri_failed_because_no_data)
 {
     request r{connection_};
-    const std::string request_data = "PUT ";
-    setup_receive(request_data);
+    setup_receive("PUT ");
     EXPECT_FALSE(r.parse());
     check_request_data(r, http_verb::PUT);
 }
@@ -211,8 +203,7 @@ TEST_F(request_test, parsing_uri_failed_because_no_data)
 TEST_F(request_test, parsing_uri_failed_because_no_whitespace_found)
 {
     request r{connection_};
-    const std::string request_data = "PUT /";
-    setup_receive(request_data);
+    setup_receive("PUT /");
     EXPECT_FALSE(r.parse());
     check_request_data(r, http_verb::PUT);
 }
@@ -220,8 +211,7 @@ TEST_F(request_test, parsing_uri_failed_because_no_whitespace_found)
 TEST_F(request_test, parsing_version_failed_because_no_data)
 {
     request r{connection_};
-    const std::string request_data = "PUT / ";
-    setup_receive(request_data);
+    setup_receive("PUT / ");
     EXPECT_FALSE(r.parse());
     check_request_data(r, http_verb::PUT, "/");
 }
@@ -229,8 +219,7 @@ TEST_F(request_test, parsing_version_failed_because_no_data)
 TEST_F(request_test, parsing_version_failed_because_no_newline_found)
 {
     request r{connection_};
-    const std::string request_data = "PUT / HTTP/1.1";
-    setup_receive(request_data);
+    setup_receive("PUT / HTTP/1.1");
     EXPECT_FALSE(r.parse());
     check_request_data(r, http_verb::PUT, "/");
 }
@@ -238,8 +227,7 @@ TEST_F(request_test, parsing_version_failed_because_no_newline_found)
 TEST_F(request_test, parsing_version_failed_because_not_a_version)
 {
     request r{connection_};
-    const std::string request_data = "PUT / HTTP/x.x\n";
-    setup_receive(request_data);
+    setup_receive("PUT / HTTP/x.x\n");
     EXPECT_FALSE(r.parse());
     check_request_data(r, http_verb::PUT, "/");
 }
@@ -247,8 +235,7 @@ TEST_F(request_test, parsing_version_failed_because_not_a_version)
 TEST_F(request_test, parsing_version_failed_because_version_too_long)
 {
     request r{connection_};
-    const std::string request_data = "PUT / HTTP/22\n";
-    setup_receive(request_data);
+    setup_receive("PUT / HTTP/22\n");
     EXPECT_FALSE(r.parse());
     check_request_data(r, http_verb::PUT, "/");
 }
@@ -256,8 +243,7 @@ TEST_F(request_test, parsing_version_failed_because_version_too_long)
 TEST_F(request_test, parsing_version_failed_because_version_much_too_long)
 {
     request r{connection_};
-    const std::string request_data = "PUT / HTTP/1.11\n";
-    setup_receive(request_data);
+    setup_receive("PUT / HTTP/1.11\n");
     EXPECT_FALSE(r.parse());
     check_request_data(r, http_verb::PUT, "/");
 }
@@ -265,8 +251,7 @@ TEST_F(request_test, parsing_version_failed_because_version_much_too_long)
 TEST_F(request_test, parsing_header_failed_because_no_data)
 {
     request r{connection_};
-    const std::string request_data = "PUT / HTTP/1.1\na";
-    setup_receive(request_data);
+    setup_receive("PUT / HTTP/1.1\na");
     EXPECT_FALSE(r.parse());
     check_request_data(r, http_verb::PUT, "/", http_version::HTTP_1_1);
 }
@@ -274,8 +259,7 @@ TEST_F(request_test, parsing_header_failed_because_no_data)
 TEST_F(request_test, parsing_header_failed_because_no_newline_found)
 {
     request r{connection_};
-    const std::string request_data = "PUT / HTTP/2\na:b";
-    setup_receive(request_data);
+    setup_receive("PUT / HTTP/2\na:b");
     EXPECT_FALSE(r.parse());
     check_request_data(r, http_verb::PUT, "/", http_version::HTTP_2);
 }
