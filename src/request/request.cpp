@@ -20,17 +20,57 @@
 #include <cstring>
 #include <limits>
 
+#include <utility/trie.hpp>
+
 #include "request.hpp"
 
 namespace hutzn
 {
 
+namespace
+{
+
+static trie<http_verb> get_method_trie(size_t& max_size)
+{
+    trie<http_verb> result{true};
+
+    // Filling methods and automatically calculate the maximum length.
+    max_size = 0;
+    const std::vector<std::pair<const char* const, http_verb>> verbs = {
+        std::make_pair("GET", http_verb::GET),
+        std::make_pair("PUT", http_verb::PUT),
+        std::make_pair("DELETE", http_verb::DELETE),
+        std::make_pair("POST", http_verb::POST)};
+    for (const std::pair<const char* const, http_verb>& pair : verbs) {
+        result.insert(pair.first, pair.second);
+        max_size = std::max(max_size, ::strlen(pair.first));
+    }
+
+    return result;
+}
+
+static trie<http_version> get_version_trie(size_t& max_size)
+{
+    trie<http_version> result{true};
+
+    // Filling versions and automatically calculate the maximum length.
+    max_size = 0;
+    const std::vector<std::pair<const char* const, http_version>> methods = {
+        std::make_pair("HTTP/1.0", http_version::HTTP_1_0),
+        std::make_pair("HTTP/1.1", http_version::HTTP_1_1),
+        std::make_pair("HTTP/2", http_version::HTTP_2)};
+    for (const std::pair<const char* const, http_version>& pair : methods) {
+        result.insert(pair.first, pair.second);
+        max_size = std::max(max_size, ::strlen(pair.first));
+    }
+
+    return result;
+}
+
+} // namespace
+
 request::request(const connection_pointer& connection)
     : lexer_(connection)
-    , maximum_method_length_(0)
-    , methods_(true)
-    , maximum_version_length_(0)
-    , versions_(true)
     , method_(http_verb::GET)
     , path_(nullptr)
     , fragment_(nullptr)
@@ -38,28 +78,6 @@ request::request(const connection_pointer& connection)
     , header_fields_()
     , query_entries_()
 {
-    // Filling methods and automatically calculate the maximum length.
-    const std::vector<std::pair<const char* const, http_verb>> verbs = {
-        std::make_pair("GET", http_verb::GET),
-        std::make_pair("PUT", http_verb::PUT),
-        std::make_pair("DELETE", http_verb::DELETE),
-        std::make_pair("POST", http_verb::POST)};
-    for (const std::pair<const char* const, http_verb>& pair : verbs) {
-        methods_.insert(pair.first, pair.second);
-        maximum_method_length_ =
-            std::max(maximum_method_length_, ::strlen(pair.first));
-    }
-
-    // Filling versions and automatically calculate the maximum length.
-    const std::vector<std::pair<const char* const, http_version>> methods = {
-        std::make_pair("HTTP/1.0", http_version::HTTP_1_0),
-        std::make_pair("HTTP/1.1", http_version::HTTP_1_1),
-        std::make_pair("HTTP/2", http_version::HTTP_2)};
-    for (const std::pair<const char* const, http_version>& pair : methods) {
-        versions_.insert(pair.first, pair.second);
-        maximum_version_length_ =
-            std::max(maximum_version_length_, ::strlen(pair.first));
-    }
 }
 
 bool request::parse(void)
@@ -87,6 +105,10 @@ bool request::parse(void)
 
 bool request::parse_method(int32_t& ch)
 {
+    static size_t maximum_method_length = 0;
+    static const trie<http_verb> methods =
+        get_method_trie(maximum_method_length);
+
     bool result = false;
 
     size_t method_begin = 0;
@@ -106,8 +128,7 @@ bool request::parse_method(int32_t& ch)
             // Parsing the version will succeed, when the token is not too
             // long and the found method length is exactly the token length.
             if (method_length <= maximum_method_length) {
-                auto r =
-                    methods_.find(lexer_.data(method_begin), method_length);
+                auto r = methods.find(lexer_.data(method_begin), method_length);
                 if (r.used_size == method_length) {
                     method_ = r.value;
                     result = true;
@@ -153,6 +174,10 @@ bool request::parse_uri(int32_t& ch)
 
 bool request::parse_version(int32_t& ch)
 {
+    static size_t maximum_version_length = 0;
+    static const trie<http_version> versions =
+        get_version_trie(maximum_version_length);
+
     bool result = false;
 
     size_t version_begin = 0;
@@ -171,9 +196,9 @@ bool request::parse_version(int32_t& ch)
 
             // Parsing the version will succeed, when the token is not too
             // long and the found method length is exactly the token length.
-            if (version_length <= maximum_version_length_) {
+            if (version_length <= maximum_version_length) {
                 auto r =
-                    versions_.find(lexer_.data(version_begin), version_length);
+                    versions.find(lexer_.data(version_begin), version_length);
                 if (r.used_size == version_length) {
                     version_ = r.value;
                     result = true;

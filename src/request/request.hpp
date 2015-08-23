@@ -24,7 +24,6 @@
 #include <libhutznohmd/request.hpp>
 
 #include <request/lexer.hpp>
-#include <utility/trie.hpp>
 
 namespace hutzn
 {
@@ -72,12 +71,6 @@ private:
     static bool is_key_value_seperator(const int32_t ch);
 
     lexer lexer_;
-
-    size_t maximum_method_length_;
-    trie<http_verb> methods_;
-
-    size_t maximum_version_length_;
-    trie<http_version> versions_;
 
     http_verb method_;
     const char_t* path_;
