@@ -146,4 +146,36 @@ TEST_F(lexer_test, newline_token_6)
     check(chunk, result);
 }
 
+TEST_F(lexer_test, set_index)
+{
+    std::string chunk = "abcdefgh";
+    connection_mock_pointer connection =
+        std::make_shared<connection_interface_mock>();
+    EXPECT_CALL(*connection, receive(_, _))
+        .Times(2)
+        .WillOnce(Invoke([chunk](buffer& b, const size_t& m) {
+            EXPECT_LE(chunk.size(), m);
+            b.insert(b.begin(), chunk.begin(), chunk.end());
+            return true;
+        }))
+        .WillOnce(Return(false));
+
+    lexer lex(connection);
+    ASSERT_EQ(0, lex.index());
+    EXPECT_EQ('a', lex.get());
+    EXPECT_EQ(1, lex.index());
+    lex.set_index(4);
+    EXPECT_EQ('e', lex.get());
+    EXPECT_EQ(5, lex.index());
+    lex.set_index(9);
+    EXPECT_EQ('f', lex.get());
+    EXPECT_EQ(6, lex.index());
+    lex.set_index(8);
+    EXPECT_EQ(-1, lex.get());
+    EXPECT_EQ(8, lex.index());
+    lex.set_index(0);
+    EXPECT_EQ('a', lex.get());
+    EXPECT_EQ(1, lex.index());
+}
+
 } // namespace hutzn

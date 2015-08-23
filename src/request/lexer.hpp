@@ -40,6 +40,9 @@ public:
     //! Returns the current index. This is a number in the interval [0 .. tail).
     size_t index(void) const;
 
+    //! Sets the current index. This is a number in the interval [0 .. tail].
+    void set_index(const size_t idx);
+
     //! Returns a constant pointer on the data stream beginning at offset idx.
     const char_t* data(const size_t idx) const;
 

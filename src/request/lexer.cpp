@@ -58,6 +58,13 @@ size_t lexer::index(void) const
     return index_;
 }
 
+void lexer::set_index(const size_t idx)
+{
+    if (idx <= tail_) {
+        index_ = idx;
+    }
+}
+
 const char_t* lexer::data(const size_t idx) const
 {
     const char_t* result;
