@@ -199,8 +199,8 @@ const char_t* uri::fragment(void) const
 bool uri::parse_scheme_and_authority(int32_t& character, const bool skip_scheme)
 {
     // Check whether there is a scheme and authority or neither of them. This is
-    // not conform with
-    // RFC 3986, but HTTP specifies request URIs without scheme and authority.
+    // not conform with RFC 3986, but HTTP specifies request URIs without scheme
+    // and authority.
     if ('/' != character) {
         if (false == skip_scheme) {
             if (false == parse_scheme(character)) {
@@ -279,14 +279,14 @@ bool uri::parse_userinfo_and_authority(int32_t& character)
 bool uri::parse_authority(int32_t& character)
 {
     // There is an ambiguity in the authority part of a URI specified by
-    // RFC3986. You are not able to correctly parse the the authority into
-    // tokens without looking ahead n symbols, where n is the length of the
-    // whole authority part, because the symbol of ':' could occur before and
-    // after the '@' symbol, which is also optional. So what do you do, if you
-    // have found a ':' symbol without an '@' symbol before? The ':' could be
-    // part of the user info or it separates host and port. Therefore it is
-    // easier to perform a 2-pass parsing to determine, whether a '@' symbol
-    // occurs or not.
+    // RFC3986. You are not able to correctly parse the authority into tokens
+    // without looking ahead n symbols, where n is the length of the whole
+    // authority part, because the symbol of ':' could occur before and after
+    // the '@' symbol, which is also optional. So what do you do, if you have
+    // found a ':' symbol without an '@' symbol before? The ':' could be part of
+    // the user info or it separates host and port. Therefore it is easier to
+    // perform a 2-pass parsing to determine, whether a '@' symbol occurs or
+    // not.
 
     if (false == parse_authority_1st_pass(character)) {
         return false;
