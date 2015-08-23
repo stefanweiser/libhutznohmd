@@ -120,8 +120,8 @@ bool lexer::fetch_content(const size_t length)
             // This must be done in a loop, because receive returns true, if
             // something is read. There is no gurantee, that all the necessary
             // bytes are read.
-            if (true == connection_->receive(header_, bytes_to_read)) {
             const size_t bytes_to_read = length - content_.size();
+            if (true == connection_->receive(content_, bytes_to_read)) {
                 // Recalculate fetch_more. Continue receiving, when the content
                 // is not yet complete.
                 fetch_more = (content_.size() < length);
