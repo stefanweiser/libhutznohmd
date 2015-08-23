@@ -298,7 +298,9 @@ void lexer::fetch_header_reached_content(size_t& tail, size_t& head)
 {
     // Found the content. Moving the remaining header data into the content
     // data.
-    content_.insert(content_.end(), header_.begin() + head, header_.end());
+    content_.insert(content_.end(),
+                    header_.begin() + static_cast<ssize_t>(head),
+                    header_.end());
     assert(tail <= header_.size());
     header_.resize(tail);
 
