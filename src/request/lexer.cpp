@@ -197,7 +197,14 @@ char_t* lexer::header_data(const size_t idx)
 
 const char_t* lexer::content(void) const
 {
-    return &(content_[0]);
+    const char_t* result;
+    if (true == fetch_content_succeeded_) {
+        result = &(content_[0]);
+    } else {
+        result = nullptr;
+    }
+    return result;
+}
 
 size_t lexer::content_length(void) const
 {
