@@ -86,8 +86,8 @@ public:
     {
         value_type result;
         auto found_element = types_.find(string, max_length);
-        if (found_element.used_size > 0) {
-            result = found_element.value;
+        if (found_element.used_size() > 0) {
+            result = found_element.value();
         } else {
             result = value_type::INVALID;
         }

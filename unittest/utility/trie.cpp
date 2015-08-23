@@ -37,7 +37,7 @@ trie_find_result_ make_trie_find_result(const size_t used_size,
 
 bool operator==(const trie_find_result_& lhs, const trie_find_result_& rhs)
 {
-    return (lhs.used_size == rhs.used_size) && (lhs.value == rhs.value);
+    return (lhs.used_size() == rhs.used_size()) && (lhs.value() == rhs.value());
 }
 
 TEST(trie, initial_trie_node)

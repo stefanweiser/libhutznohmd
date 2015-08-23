@@ -30,14 +30,38 @@ namespace hutzn
 
 //! Result structure for each find operation.
 template <typename value_type>
-struct trie_find_result
+class trie_find_result
 {
+public:
+    trie_find_result(void)
+        : used_size_(0)
+        , value_()
+    {
+    }
+
+    trie_find_result(const size_t s, const value_type& v)
+        : used_size_(s)
+        , value_(v)
+    {
+    }
+
+    size_t used_size(void) const
+    {
+        return used_size_;
+    }
+
+    const value_type& value(void) const
+    {
+        return value_;
+    }
+
+private:
     //! Number of characters, that were used to get a valid token. Is zero
     //! if no token was found (the value is undefined then).
-    size_t used_size;
+    size_t used_size_;
 
     //! Found value or undefined if no value was found.
-    value_type value;
+    value_type value_;
 };
 
 namespace detail
@@ -103,7 +127,7 @@ public:
                 children_[static_cast<uint8_t>(*curr)];
             if (child != nullptr) {
                 result = child->find(original, curr + 1, remaining - 1);
-                if (0 == result.used_size) {
+                if (0 == result.used_size()) {
                     result = make_find_result(original, curr);
                 }
             } else {

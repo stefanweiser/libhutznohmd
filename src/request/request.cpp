@@ -129,8 +129,8 @@ bool request::parse_method(int32_t& ch)
             // long and the found method length is exactly the token length.
             if (method_length <= maximum_method_length) {
                 auto r = methods.find(lexer_.data(method_begin), method_length);
-                if (r.used_size == method_length) {
-                    method_ = r.value;
+                if (r.used_size() == method_length) {
+                    method_ = r.value();
                     result = true;
                 }
             }
@@ -199,8 +199,8 @@ bool request::parse_version(int32_t& ch)
             if (version_length <= maximum_version_length) {
                 auto r =
                     versions.find(lexer_.data(version_begin), version_length);
-                if (r.used_size == version_length) {
-                    version_ = r.value;
+                if (r.used_size() == version_length) {
+                    version_ = r.value();
                     result = true;
                 }
             }
