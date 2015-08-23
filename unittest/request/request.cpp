@@ -53,15 +53,17 @@ public:
             .WillRepeatedly(Return(false));
     }
 
-    void check_request_data(const request& r,
-                            const http_verb& method = http_verb::GET)
+    void check_request_data(
+        const request& r, const http_verb& method = http_verb::GET,
+        const char* const path = nullptr,
+        const http_version& version = http_version::HTTP_UNKNOWN)
     {
         EXPECT_EQ(method, r.method());
-        EXPECT_EQ(nullptr, r.path());
+        EXPECT_STREQ(path, r.path());
         EXPECT_EQ(nullptr, r.host());
         EXPECT_EQ(nullptr, r.query(nullptr));
         EXPECT_EQ(nullptr, r.fragment());
-        EXPECT_EQ(http_version::HTTP_UNKNOWN, r.version());
+        EXPECT_EQ(version, r.version());
         EXPECT_EQ(nullptr, r.header_value(nullptr));
         EXPECT_EQ(false, r.keeps_connection());
         EXPECT_EQ(0, r.date());
@@ -204,6 +206,60 @@ TEST_F(request_test, parsing_uri_failed_because_no_whitespace_found)
     setup_receive(request_data);
     EXPECT_FALSE(r.parse());
     check_request_data(r, http_verb::PUT);
+}
+
+TEST_F(request_test, parsing_version_failed_because_no_data)
+{
+    request r{connection_};
+    const std::string request_data = "PUT / ";
+    setup_receive(request_data);
+    EXPECT_FALSE(r.parse());
+    check_request_data(r, http_verb::PUT, "/");
+}
+
+TEST_F(request_test, parsing_version_failed_because_no_newline_found)
+{
+    request r{connection_};
+    const std::string request_data = "PUT / HTTP/1.1";
+    setup_receive(request_data);
+    EXPECT_FALSE(r.parse());
+    check_request_data(r, http_verb::PUT, "/");
+}
+
+TEST_F(request_test, parsing_version_failed_because_not_a_version)
+{
+    request r{connection_};
+    const std::string request_data = "PUT / HTTP/x.x\n";
+    setup_receive(request_data);
+    EXPECT_FALSE(r.parse());
+    check_request_data(r, http_verb::PUT, "/");
+}
+
+TEST_F(request_test, parsing_version_failed_because_version_too_long)
+{
+    request r{connection_};
+    const std::string request_data = "PUT / HTTP/1.11\n";
+    setup_receive(request_data);
+    EXPECT_FALSE(r.parse());
+    check_request_data(r, http_verb::PUT, "/");
+}
+
+TEST_F(request_test, parsing_header_failed_because_no_data)
+{
+    request r{connection_};
+    const std::string request_data = "PUT / HTTP/1.1\na";
+    setup_receive(request_data);
+    EXPECT_FALSE(r.parse());
+    check_request_data(r, http_verb::PUT, "/", http_version::HTTP_1_1);
+}
+
+TEST_F(request_test, parsing_header_failed_because_no_newline_found)
+{
+    request r{connection_};
+    const std::string request_data = "PUT / HTTP/2\na:b";
+    setup_receive(request_data);
+    EXPECT_FALSE(r.parse());
+    check_request_data(r, http_verb::PUT, "/", http_version::HTTP_2);
 }
 
 } // namespace hutzn
