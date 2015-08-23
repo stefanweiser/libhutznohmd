@@ -150,6 +150,11 @@ char_t* lexer::header_data(const size_t idx)
     return result;
 }
 
+const char_t* lexer::content(void) const
+{
+    return &(content_[0]);
+}
+
 void lexer::fetch_more_data_copy(size_t& tail, size_t& head, const char_t ch,
                                  char_t& last)
 {

@@ -60,6 +60,9 @@ public:
     //! Returns a pointer on the header beginning at offset idx.
     char_t* header_data(const size_t idx);
 
+    //! Returns a constant pointer on the content.
+    const char_t* content(void) const;
+
 private:
     void fetch_more_data_copy(size_t& tail, size_t& head, const char_t ch,
                               char_t& last);
