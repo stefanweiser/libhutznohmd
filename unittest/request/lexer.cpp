@@ -42,37 +42,37 @@ public:
 protected:
     void check(const std::string& chunk, const std::string& result)
     {
-        connection_mock_pointer c =
+        connection_mock_pointer connection =
             std::make_shared<connection_interface_mock>();
-        EXPECT_CALL(*c, receive(_, _))
+        EXPECT_CALL(*connection, receive(_, _))
             .Times(2)
-            .WillOnce(Invoke([&chunk](buffer& b, const size_t& m) {
+            .WillOnce(Invoke([chunk](buffer& b, const size_t& m) {
                 EXPECT_LE(chunk.size(), m);
                 b.insert(b.begin(), chunk.begin(), chunk.end());
                 return true;
             }))
             .WillOnce(Return(false));
 
-        lexer l(c);
+        lexer lex(connection);
         for (size_t i = 0; i < result.size(); i++) {
-            EXPECT_EQ(i, l.index());
-            EXPECT_EQ(static_cast<uint8_t>(result[i]), l.get());
+            EXPECT_EQ(i, lex.index());
+            EXPECT_EQ(static_cast<uint8_t>(result[i]), lex.get());
         }
-        EXPECT_EQ(result.size(), l.index());
-        EXPECT_EQ(-1, l.get());
+        EXPECT_EQ(result.size(), lex.index());
+        EXPECT_EQ(-1, lex.get());
 
         for (size_t i = 0; i < result.size(); i++) {
-            char_t* ch = l.data(i);
-            const char_t* ch2 = const_cast<const lexer&>(l).data(i);
+            char_t* ch = lex.data(i);
+            const char_t* ch2 = const_cast<const lexer&>(lex).data(i);
             ASSERT_NE(nullptr, ch);
             EXPECT_EQ(result[i], *ch);
             EXPECT_EQ(ch, ch2);
         }
-        EXPECT_EQ(nullptr, l.data(result.size()));
-        EXPECT_EQ(nullptr, const_cast<const lexer&>(l).data(result.size()));
+        EXPECT_EQ(nullptr, lex.data(result.size()));
+        EXPECT_EQ(nullptr, const_cast<const lexer&>(lex).data(result.size()));
 
-        char_t* data = l.data(0);
-        const char_t* data2 = const_cast<const lexer&>(l).data(0);
+        char_t* data = lex.data(0);
+        const char_t* data2 = const_cast<const lexer&>(lex).data(0);
         ASSERT_NE(nullptr, data);
         ASSERT_EQ(data, data2);
         for (size_t i = 0; i < result.size(); i++) {
