@@ -34,6 +34,48 @@ lexer::lexer(const connection_pointer& connection)
 {
 }
 
+bool lexer::fetch_header(void)
+{
+    // Fetching the whole header is done, when two consecutive newline
+    // characters are found. Fetching and reencoding more and more data is
+    // necessary to reach this.
+    bool search_is_finished = (header_.size() == 0);
+    size_t i = 0;
+    size_t number_of_consecutive_newlines = 0;
+
+    // Loops until either two consecutive newlines are found or the end of the
+    // data is reached.
+    while (false == search_is_finished) {
+        if ((i < tail_) || (true == fetch_more_data())) {
+            // Increase the counter in case of a newline and otherwise reset it
+            // to 0.
+            if ('\n' == header_[i]) {
+                number_of_consecutive_newlines++;
+            } else {
+                number_of_consecutive_newlines = 0;
+            }
+
+            // Updating the finished flag..
+            search_is_finished = (number_of_consecutive_newlines >= 2);
+
+            // Increasing index not in the else-branch, because in the
+            // else-branch the end is already found.
+            i++;
+        } else {
+            // Fetching was necessary but failed. Don't know where to get more
+            // data.
+            search_is_finished = true;
+        }
+    }
+
+    // Either the header's or the stream's end was found. While fetch_more_data
+    // is resizing the header to its real size after finding the the header's
+    // end the stream's end is found in both cases.
+    assert(i == header_.size());
+
+    return (number_of_consecutive_newlines >= 2);
+}
+
 int32_t lexer::get(void)
 {
     // The rewritten data is always limited by the tail not by its size.

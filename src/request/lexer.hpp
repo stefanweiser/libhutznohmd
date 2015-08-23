@@ -31,6 +31,10 @@ class lexer
 public:
     explicit lexer(const connection_pointer& connection);
 
+    //! Reads the complete header and possible already read parts of the content
+    //! is moved to the content buffer.
+    bool fetch_header(void);
+
     //! Returns the next character in the stream or -1 when reaching the end of
     //! the file. Valid characters are represented in the range 0..255.
     int32_t get(void);
