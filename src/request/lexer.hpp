@@ -45,6 +45,11 @@ public:
 private:
     bool fetch_more_data();
 
+    void fetch_more_data_copy(const char_t ch, char_t& last);
+    void fetch_more_data_possible_cr_lf(const char_t ch, char_t& last);
+    void fetch_more_data_possible_lws(const char_t ch, char_t& last);
+    void fetch_more_data_reached_body(void);
+
     enum class lexer_state {
         copy = 0,
         possible_cr_lf = 1,

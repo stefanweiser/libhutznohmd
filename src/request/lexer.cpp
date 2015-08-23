@@ -98,80 +98,19 @@ bool lexer::fetch_more_data()
 
             switch (state_) {
             case lexer_state::copy:
-                // In any case one character of the input stream gets consumed.
-                head_++;
-
-                if (ch == '\r') {
-                    raw_[tail_++] = '\n';
-                    // Delay updating the last character, because the last
-                    // character is necessary in the next state to determine
-                    // transition into lexer_state::possible_cr_lf.
-                    state_ = lexer_state::possible_cr_lf;
-                } else {
-                    // If the current is a newline and the last was no newline,
-                    // then check for a possible lws token.
-                    if (ch == '\n') {
-                        if (last == '\n') {
-                            state_ = lexer_state::reached_body;
-                        } else {
-                            state_ = lexer_state::possible_lws;
-                        }
-                    }
-
-                    // Update the last character here, because it is necessary
-                    // to determine the next state. Copy also the character.
-                    raw_[tail_++] = ch;
-                    last = ch;
-                }
+                fetch_more_data_copy(ch, last);
                 break;
 
             case lexer_state::possible_cr_lf:
-                // Eat up one newline if available, because earlier there was a
-                // carriage return and cr-lf will get to one newline.
-                if (ch == '\n') {
-                    head_++;
-                }
-
-                // The current character is already a newline. The last
-                // character was not updated when the carriage return got
-                // parsed.
-                if (last == '\n') {
-                    // We are reaching the body when two newlines are getting
-                    // parsed. The last character does not get updated, because
-                    // it is already newline.
-                    state_ = lexer_state::reached_body;
-                } else {
-                    state_ = lexer_state::possible_lws;
-                    last = '\n';
-                }
-
-                // Updating the last character, which was delayed.
+                fetch_more_data_possible_cr_lf(ch, last);
                 break;
 
             case lexer_state::possible_lws:
-                // The parser does reach this state, when the character before
-                // was a newline. There exists a LWS token, when the current
-                // character is either space or tab.
-                if ((ch == ' ') || (ch == '\t')) {
-                    // Consume this character.
-                    head_++;
-
-                    // A LWS token overrules the read character with a space.
-                    // The last character (newline) was already written and gets
-                    // therefore overwritten.
-                    assert(tail_ > 0);
-                    raw_[tail_ - 1] = ' ';
-                    last = ' ';
-                }
-
-                // Return to copying the stream.
-                state_ = lexer_state::copy;
+                fetch_more_data_possible_lws(ch, last);
                 break;
 
             case lexer_state::reached_body:
-                // Nothing to be done (except speed up the rewriting), when body
-                // is reached.
-                head_ = raw_.size();
+                fetch_more_data_reached_body();
                 break;
 
             default:
@@ -183,6 +122,87 @@ bool lexer::fetch_more_data()
     }
 
     return (start_tail < tail_);
+}
+
+void lexer::fetch_more_data_copy(const char_t ch, char_t& last)
+{
+    // In any case one character of the input stream gets consumed.
+    head_++;
+
+    if (ch == '\r') {
+        raw_[tail_++] = '\n';
+        // Delay updating the last character, because the last
+        // character is necessary in the next state to determine
+        // transition into lexer_state::possible_cr_lf.
+        state_ = lexer_state::possible_cr_lf;
+    } else {
+        // If the current is a newline and the last was no newline,
+        // then check for a possible lws token.
+        if (ch == '\n') {
+            if (last == '\n') {
+                state_ = lexer_state::reached_body;
+            } else {
+                state_ = lexer_state::possible_lws;
+            }
+        }
+
+        // Update the last character here, because it is necessary
+        // to determine the next state. Copy also the character.
+        raw_[tail_++] = ch;
+        last = ch;
+    }
+}
+
+void lexer::fetch_more_data_possible_cr_lf(const char_t ch, char_t& last)
+{
+    // Eat up one newline if available, because earlier there was a
+    // carriage return and cr-lf will get to one newline.
+    if (ch == '\n') {
+        head_++;
+    }
+
+    // The current character is already a newline. The last
+    // character was not updated when the carriage return got
+    // parsed.
+    if (last == '\n') {
+        // We are reaching the body when two newlines are getting
+        // parsed. The last character does not get updated, because
+        // it is already newline.
+        state_ = lexer_state::reached_body;
+    } else {
+        state_ = lexer_state::possible_lws;
+
+        // Updating the last character, which was delayed.
+        last = '\n';
+    }
+}
+
+void lexer::fetch_more_data_possible_lws(const char_t ch, char_t& last)
+{
+    // The parser does reach this state, when the character before
+    // was a newline. There exists a LWS token, when the current
+    // character is either space or tab.
+    if ((ch == ' ') || (ch == '\t')) {
+        // Consume this character.
+        head_++;
+
+        // A LWS token overrules the read character with a space.
+        // The last character (newline) was already written and gets
+        // therefore overwritten.
+        assert(tail_ > 0);
+        raw_[tail_ - 1] = ' ';
+        last = ' ';
+    }
+
+    // Return to copying the stream.
+    state_ = lexer_state::copy;
+}
+
+void lexer::fetch_more_data_reached_body(void)
+{
+    // Nothing to be done (except speed up the rewriting), when body
+    // is reached.
+    head_ = raw_.size();
 }
 
 } // namespace hutzn
