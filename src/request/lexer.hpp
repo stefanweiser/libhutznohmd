@@ -76,7 +76,7 @@ private:
         copy = 0,
         possible_cr_lf = 1,
         possible_lws = 2,
-        reached_body = 3,
+        reached_content = 3,
         error = 4
     };
 

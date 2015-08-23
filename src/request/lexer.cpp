@@ -42,7 +42,7 @@ bool lexer::fetch_header(void)
 
     // Loop will break, when one of the end states are reached. This will also
     // guard calling the method twice or more.
-    while ((state_ != lexer_state::reached_body) &&
+    while ((state_ != lexer_state::reached_content) &&
            (state_ != lexer_state::error)) {
 
         // Need more data.
@@ -68,7 +68,7 @@ bool lexer::fetch_header(void)
                     fetch_more_data_possible_lws(tail, head, ch, last);
                     break;
 
-                case lexer_state::reached_body:
+                case lexer_state::reached_content:
                     fetch_more_data_reached_body(tail, head);
                     break;
 
@@ -92,9 +92,9 @@ bool lexer::fetch_header(void)
     // After the loop, the state has to be one of the end states. The method
     // returns true, when the loop reached the body and therefore the header is
     // complete.
-    assert((state_ == lexer_state::reached_body) ||
+    assert((state_ == lexer_state::reached_content) ||
            (state_ == lexer_state::error));
-    return (state_ == lexer_state::reached_body);
+    return (state_ == lexer_state::reached_content);
 }
 
 int32_t lexer::get(void)
@@ -172,7 +172,7 @@ void lexer::fetch_more_data_copy(size_t& tail, size_t& head, const char_t ch,
         // then check for a possible lws token.
         if (ch == '\n') {
             if (last == '\n') {
-                state_ = lexer_state::reached_body;
+                state_ = lexer_state::reached_content;
             } else {
                 state_ = lexer_state::possible_lws;
             }
@@ -201,7 +201,7 @@ void lexer::fetch_more_data_possible_cr_lf(size_t& head, const char_t ch,
         // We are reaching the body when two newlines are getting
         // parsed. The last character does not get updated, because
         // it is already newline.
-        state_ = lexer_state::reached_body;
+        state_ = lexer_state::reached_content;
     } else {
         state_ = lexer_state::possible_lws;
 
