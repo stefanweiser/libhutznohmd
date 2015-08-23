@@ -40,20 +40,22 @@ public:
     }
 
 protected:
-    void check(const std::string& chunk, const std::string& result)
+    void check(const std::string& chunk, const std::string& result,
+               const bool fetch_result)
     {
         connection_mock_pointer connection =
             std::make_shared<connection_interface_mock>();
         EXPECT_CALL(*connection, receive(_, _))
-            .Times(2)
+            .Times(AtLeast(1))
             .WillOnce(Invoke([chunk](buffer& b, const size_t& m) {
                 EXPECT_LE(chunk.size(), m);
                 b.insert(b.begin(), chunk.begin(), chunk.end());
                 return true;
             }))
-            .WillOnce(Return(false));
+            .WillRepeatedly(Return(false));
 
         lexer lex(connection);
+        EXPECT_EQ(fetch_result, lex.fetch_header());
         for (size_t i = 0; i < result.size(); i++) {
             EXPECT_EQ(i, lex.index());
             EXPECT_EQ(static_cast<uint8_t>(result[i]), lex.get());
@@ -90,61 +92,62 @@ TEST_F(lexer_test, construction)
     lexer l(c);
     EXPECT_EQ(nullptr, l.header_data(0));
     EXPECT_EQ(-1, l.get());
+    EXPECT_FALSE(l.fetch_header());
 }
 
 TEST_F(lexer_test, call_receive_successfully_once)
 {
     std::string chunk = "GET / HTTP/1.1\n\n";
-    check(chunk, chunk);
+    check(chunk, chunk, true);
 }
 
 TEST_F(lexer_test, several_lws_tokens)
 {
     std::string chunk = "a\n b\r\n c\r d\n\te\r\n\tf\r\tg";
     std::string result = "a b c d e f g";
-    check(chunk, result);
+    check(chunk, result, false);
 }
 
 TEST_F(lexer_test, newline_token_1)
 {
-    std::string chunk = "a\nb\r\nc\rd\n\n";
-    std::string result = "a\nb\nc\nd\n\n";
-    check(chunk, result);
+    std::string chunk = "a\nb\r\nc\rd";
+    std::string result = "a\nb\nc\nd";
+    check(chunk, result, false);
 }
 
 TEST_F(lexer_test, newline_token_2)
 {
     std::string chunk = "a\r\n\r\nb";
     std::string result = "a\n\n";
-    check(chunk, result);
+    check(chunk, result, true);
 }
 
 TEST_F(lexer_test, newline_token_3)
 {
     std::string chunk = "a\r\rb";
     std::string result = "a\n\n";
-    check(chunk, result);
+    check(chunk, result, true);
 }
 
 TEST_F(lexer_test, newline_token_4)
 {
     std::string chunk = "a\n\rb";
     std::string result = "a\n\n";
-    check(chunk, result);
+    check(chunk, result, true);
 }
 
 TEST_F(lexer_test, newline_token_5)
 {
     std::string chunk = "a\n\r\nb";
     std::string result = "a\n\n";
-    check(chunk, result);
+    check(chunk, result, true);
 }
 
 TEST_F(lexer_test, newline_token_6)
 {
     std::string chunk = "a\r\n\rb";
     std::string result = "a\n\n";
-    check(chunk, result);
+    check(chunk, result, true);
 }
 
 TEST_F(lexer_test, set_index)
@@ -152,14 +155,17 @@ TEST_F(lexer_test, set_index)
     std::string chunk = "abcdefgh";
     connection_mock_pointer connection =
         std::make_shared<connection_interface_mock>();
-    EXPECT_CALL(*connection, receive(_, _)).Times(1).WillOnce(
-        Invoke([chunk](buffer& b, const size_t& m) {
+    EXPECT_CALL(*connection, receive(_, _))
+        .Times(2)
+        .WillOnce(Invoke([chunk](buffer& b, const size_t& m) {
             EXPECT_LE(chunk.size(), m);
             b.insert(b.begin(), chunk.begin(), chunk.end());
             return true;
-        }));
+        }))
+        .WillOnce(Return(false));
 
     lexer lex(connection);
+    EXPECT_FALSE(lex.fetch_header());
     ASSERT_EQ(0, lex.index());
     EXPECT_EQ('a', lex.get());
     EXPECT_EQ(1, lex.index());
@@ -176,14 +182,17 @@ TEST_F(lexer_test, set_index_beyond_border)
     std::string chunk = "abcdefgh";
     connection_mock_pointer connection =
         std::make_shared<connection_interface_mock>();
-    EXPECT_CALL(*connection, receive(_, _)).Times(1).WillOnce(
-        Invoke([chunk](buffer& b, const size_t& m) {
+    EXPECT_CALL(*connection, receive(_, _))
+        .Times(2)
+        .WillOnce(Invoke([chunk](buffer& b, const size_t& m) {
             EXPECT_LE(chunk.size(), m);
             b.insert(b.begin(), chunk.begin(), chunk.end());
             return true;
-        }));
+        }))
+        .WillOnce(Return(false));
 
     lexer lex(connection);
+    EXPECT_FALSE(lex.fetch_header());
     ASSERT_EQ(0, lex.index());
     EXPECT_EQ('a', lex.get());
     EXPECT_EQ(1, lex.index());
@@ -208,6 +217,7 @@ TEST_F(lexer_test, set_index_to_eof)
         .WillOnce(Return(false));
 
     lexer lex(connection);
+    EXPECT_FALSE(lex.fetch_header());
     ASSERT_EQ(0, lex.index());
     EXPECT_EQ('a', lex.get());
     EXPECT_EQ(1, lex.index());
@@ -224,16 +234,19 @@ TEST_F(lexer_test, get_length_from_parse_specific)
     std::string chunk = "abcdefgh";
     connection_mock_pointer connection =
         std::make_shared<connection_interface_mock>();
-    EXPECT_CALL(*connection, receive(_, _)).Times(1).WillOnce(
-        Invoke([chunk](buffer& b, const size_t& m) {
+    EXPECT_CALL(*connection, receive(_, _))
+        .Times(2)
+        .WillOnce(Invoke([chunk](buffer& b, const size_t& m) {
             EXPECT_LE(chunk.size(), m);
             b.insert(b.begin(), chunk.begin(), chunk.end());
             return true;
-        }));
+        }))
+        .WillOnce(Return(false));
 
     auto is_d = [](const char_t c) -> bool { return ('d' == c); };
 
     lexer lex(connection);
+    EXPECT_FALSE(lex.fetch_header());
     ASSERT_EQ(0, lex.index());
     int32_t ch = lex.get();
     EXPECT_EQ(3, parse_specific(lex, ch, is_d));
@@ -258,6 +271,7 @@ TEST_F(lexer_test, parse_specific_fails)
     auto is_i = [](const char_t c) -> bool { return ('i' == c); };
 
     lexer lex(connection);
+    EXPECT_FALSE(lex.fetch_header());
     ASSERT_EQ(0, lex.index());
     int32_t ch = lex.get();
     EXPECT_EQ(0, parse_specific(lex, ch, is_i));

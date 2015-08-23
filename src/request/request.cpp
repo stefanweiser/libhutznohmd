@@ -84,9 +84,10 @@ bool request::parse(void)
 {
     bool result = false;
 
+    const bool fetch_result = lexer_.fetch_header();
     int32_t ch = lexer_.get();
-    if ((true == parse_method(ch)) && (true == parse_uri(ch)) &&
-        (true == parse_version(ch))) {
+    if ((true == fetch_result) && (true == parse_method(ch)) &&
+        (true == parse_uri(ch)) && (true == parse_version(ch))) {
         ch = lexer_.get();
         while (ch != -1) {
             if (true == is_newline(ch)) {

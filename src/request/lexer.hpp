@@ -32,11 +32,12 @@ public:
     explicit lexer(const connection_pointer& connection);
 
     //! Reads the complete header and possible already read parts of the content
-    //! is moved to the content buffer.
+    //! is moved to the content buffer. Call this method before using the lexer.
+    //! Returns whether the header was read successfully.
     bool fetch_header(void);
 
-    //! Returns the next character in the stream or -1 when reaching the end of
-    //! the file. Valid characters are represented in the range 0..255.
+    //! Returns the next character in the header or -1 when reaching the end of
+    //! the read data. Valid characters are represented in the range 0..255.
     int32_t get(void);
 
     //! Returns the previous index. This is a number between or equal to
@@ -49,15 +50,13 @@ public:
     //! Sets the current index. This is a number in the interval [0 .. tail].
     void set_index(const size_t idx);
 
-    //! Returns a constant pointer on the data stream beginning at offset idx.
+    //! Returns a constant pointer on the header beginning at offset idx.
     const char_t* header_data(const size_t idx) const;
 
-    //! Returns a pointer on the data stream beginning at offset idx.
+    //! Returns a pointer on the header beginning at offset idx.
     char_t* header_data(const size_t idx);
 
 private:
-    bool fetch_more_data();
-
     void fetch_more_data_copy(const char_t ch, char_t& last);
     void fetch_more_data_possible_cr_lf(const char_t ch, char_t& last);
     void fetch_more_data_possible_lws(const char_t ch, char_t& last);
@@ -67,7 +66,8 @@ private:
         copy = 0,
         possible_cr_lf = 1,
         possible_lws = 2,
-        reached_body = 3
+        reached_body = 3,
+        error = 4
     };
 
     connection_pointer connection_;

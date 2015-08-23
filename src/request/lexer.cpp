@@ -36,51 +36,73 @@ lexer::lexer(const connection_pointer& connection)
 
 bool lexer::fetch_header(void)
 {
-    // Fetching the whole header is done, when two consecutive newline
-    // characters are found. Fetching and reencoding more and more data is
-    // necessary to reach this.
-    bool search_is_finished = (header_.size() == 0);
-    size_t i = 0;
-    size_t number_of_consecutive_newlines = 0;
+    // Don't call it twice.
+    assert(0 == header_.size());
+    assert(0 == head_);
 
-    // Loops until either two consecutive newlines are found or the end of the
-    // data is reached.
-    while (false == search_is_finished) {
-        if ((i < tail_) || (true == fetch_more_data())) {
-            // Increase the counter in case of a newline and otherwise reset it
-            // to 0.
-            if ('\n' == header_[i]) {
-                number_of_consecutive_newlines++;
-            } else {
-                number_of_consecutive_newlines = 0;
-            }
+    // The last character is assumed to be 0 if no data was already processed.
+    char_t last = '\0';
 
-            // Updating the finished flag..
-            search_is_finished = (number_of_consecutive_newlines >= 2);
+    // Loop will break, when either something parseable was received or the
+    // connection got closed.
+    while ((state_ != lexer_state::reached_body) &&
+           (state_ != lexer_state::error)) {
 
-            // Increasing index not in the else-branch, because in the
-            // else-branch the end is already found.
-            i++;
+        // Need more data.
+        constexpr size_t chunk_size = 4000;
+        if (true == connection_->receive(header_, chunk_size)) {
+
+            // At least one character could get evaluated, because
+            // block_device_interface::receive returns true, when at least one
+            // byte was read.
+            do {
+                const char_t ch = header_[head_];
+
+                switch (state_) {
+                case lexer_state::copy:
+                    fetch_more_data_copy(ch, last);
+                    break;
+
+                case lexer_state::possible_cr_lf:
+                    fetch_more_data_possible_cr_lf(ch, last);
+                    break;
+
+                case lexer_state::possible_lws:
+                    fetch_more_data_possible_lws(ch, last);
+                    break;
+
+                case lexer_state::reached_body:
+                    fetch_more_data_reached_body();
+                    break;
+
+                case lexer_state::error:
+                default:
+                    assert(false);
+                    break;
+                }
+            } while (head_ < header_.size());
         } else {
-            // Fetching was necessary but failed. Don't know where to get more
-            // data.
-            search_is_finished = true;
+            state_ = lexer_state::error;
         }
     }
 
-    // Either the header's or the stream's end was found. While fetch_more_data
-    // is resizing the header to its real size after finding the the header's
-    // end the stream's end is found in both cases.
-    assert(i == header_.size());
+    // Cutting off the header may be already done during
+    // fetch_more_data_reached_body, but when the header is received as a whole
+    // chunk this method will not get called.
+    assert(tail_ <= header_.size());
+    header_.resize(tail_);
+    head_ = tail_;
 
-    return (number_of_consecutive_newlines >= 2);
+    assert((state_ == lexer_state::reached_body) ||
+           (state_ == lexer_state::error));
+    return (state_ == lexer_state::reached_body);
 }
 
 int32_t lexer::get(void)
 {
     // The rewritten data is always limited by the tail not by its size.
     int32_t result;
-    if ((index_ < tail_) || (true == fetch_more_data())) {
+    if (index_ < header_.size()) {
         // Converting the character into an unsigned character will preserve the
         // bit representation and enables the implementation to reuse all
         // negative numbers as error values.
@@ -128,57 +150,6 @@ char_t* lexer::header_data(const size_t idx)
         result = nullptr;
     }
     return result;
-}
-
-bool lexer::fetch_more_data()
-{
-    constexpr size_t chunk_size = 4000;
-
-    assert(head_ == header_.size());
-
-    const size_t start_tail = tail_;
-
-    // The last character is assumed to be 0 if no data was already
-    // processed.
-    char_t last = (0 == tail_) ? '\0' : header_[tail_ - 1];
-
-    // Loop will break, when either something parseable was received or the
-    // connection got closed.
-    while ((tail_ == start_tail) &&
-           (true == connection_->receive(header_, chunk_size))) {
-
-        // At least one character could get evaluated, because
-        // block_device_interface::receive returns true, when at least one byte
-        // was read.
-        do {
-            const char_t ch = header_[head_];
-
-            switch (state_) {
-            case lexer_state::copy:
-                fetch_more_data_copy(ch, last);
-                break;
-
-            case lexer_state::possible_cr_lf:
-                fetch_more_data_possible_cr_lf(ch, last);
-                break;
-
-            case lexer_state::possible_lws:
-                fetch_more_data_possible_lws(ch, last);
-                break;
-
-            case lexer_state::reached_body:
-                fetch_more_data_reached_body();
-                break;
-
-            default:
-                // Never reach an undefined lexer state.
-                assert(false);
-                break;
-            }
-        } while (head_ < header_.size());
-    }
-
-    return (start_tail < tail_);
 }
 
 void lexer::fetch_more_data_copy(const char_t ch, char_t& last)
@@ -260,7 +231,9 @@ void lexer::fetch_more_data_reached_body(void)
     // Found the content. Moving the remaining header data into the content
     // data.
     content_.insert(content_.end(), header_.begin() + head_, header_.end());
-    header_.resize(head_, '\0');
+    assert(tail_ <= header_.size());
+    header_.resize(tail_);
+    head_ = tail_;
 
     // Nothing more to be done, when body is reached. The loop will break
     // afterwards, because the end of the header is reached.

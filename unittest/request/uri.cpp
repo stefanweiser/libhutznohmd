@@ -54,6 +54,7 @@ public:
             }))
             .WillRepeatedly(Return(false));
         lexer_ = std::unique_ptr<lexer>(new lexer(connection_));
+        ASSERT_FALSE(lexer_->fetch_header());
     }
 
     std::unique_ptr<uri> parse(const bool expect_sucess = true)
