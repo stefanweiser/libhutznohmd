@@ -81,12 +81,13 @@ private:
 
     http_verb method_;
     const char_t* path_;
+    const char_t* fragment_;
     http_version version_;
 
-    //! Do not use this in any other case than for storing header fields! It is
-    //! designed for only one purpose: To let the string's content decide the
-    //! order of the elements in the map. This map has to enforce, that all
-    //! characters are null-terminated!
+    //! Do not use this in any other case than for storing header fields and
+    //! query entries! It is designed for only one purpose: To let the string's
+    //! content decide the order of the elements in the map. This map has to
+    //! enforce, that all characters are null-terminated!
     struct enforced_null_terminated_less
     {
         bool operator()(const char_t* const lhs, const char_t* const rhs) const;
@@ -94,6 +95,8 @@ private:
 
     std::map<const char_t* const, const char_t*, enforced_null_terminated_less>
         header_fields_;
+    std::map<const char_t* const, const char_t*, enforced_null_terminated_less>
+        query_entries_;
 };
 
 } // namespace hutzn

@@ -33,8 +33,10 @@ request::request(const connection_pointer& connection)
     , versions_(true)
     , method_(http_verb::GET)
     , path_(nullptr)
+    , fragment_(nullptr)
     , version_(http_version::HTTP_UNKNOWN)
     , header_fields_()
+    , query_entries_()
 {
     // Filling methods and automatically calculate the maximum length.
     const std::vector<std::pair<const char* const, http_verb>> verbs = {
@@ -238,14 +240,19 @@ const char_t* request::host(void) const
     return nullptr;
 }
 
-const char_t* request::query(const char_t* const /*key*/) const
+const char_t* request::query(const char_t* const key) const
 {
-    return nullptr;
+    const char_t* result = nullptr;
+    auto it = query_entries_.find(key);
+    if (it != query_entries_.end()) {
+        result = it->second;
+    }
+    return result;
 }
 
 const char_t* request::fragment(void) const
 {
-    return nullptr;
+    return fragment_;
 }
 
 http_version request::version(void) const
