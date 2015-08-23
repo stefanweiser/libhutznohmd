@@ -121,34 +121,42 @@ void uri::set_scheme(const uri_scheme& new_scheme)
 
 bool uri::set_userinfo(const char_t* const new_userinfo)
 {
+    bool new_userinfo_is_valid = true;
     const char_t* c = new_userinfo;
     while ('\0' != (*c)) {
         if (false ==
             is_valid_uri_authority_character(static_cast<uint8_t>(*c))) {
-            return false;
+            new_userinfo_is_valid = false;
         }
         c++;
     }
 
-    userinfo_.clear();
-    userinfo_.append_string(new_userinfo);
-    return true;
+    if (true == new_userinfo_is_valid) {
+        userinfo_.clear();
+        userinfo_.append_string(new_userinfo);
+    }
+
+    return new_userinfo_is_valid;
 }
 
 bool uri::set_host(const char_t* const new_host)
 {
+    bool new_host_is_valid = true;
     const char_t* c = new_host;
     while ('\0' != (*c)) {
         if (false ==
             is_valid_uri_authority_character(static_cast<uint8_t>(*c))) {
-            return false;
+            new_host_is_valid = false;
         }
         c++;
     }
 
-    host_.clear();
-    host_.append_string(new_host);
-    return true;
+    if (true == new_host_is_valid) {
+        host_.clear();
+        host_.append_string(new_host);
+    }
+
+    return new_host_is_valid;
 }
 
 void uri::set_port(const uint16_t& new_port)
@@ -207,10 +215,6 @@ bool uri::parse_scheme_and_authority(int32_t& character, const bool skip_scheme)
                 return false;
             }
 
-            if (':' != character) {
-                return false;
-            }
-
             character = lexer_->get();
             if (character < 0) {
                 return false;
@@ -253,6 +257,7 @@ bool uri::parse_scheme(int32_t& ch)
 
 bool uri::parse_userinfo_and_authority(int32_t& character)
 {
+    bool result = true;
     if ('/' == character) {
         path_.push_back(static_cast<char_t>(character));
         character = lexer_->get();
@@ -261,11 +266,11 @@ bool uri::parse_userinfo_and_authority(int32_t& character)
             path_.clear();
             character = lexer_->get();
             if (false == parse_authority(character)) {
-                return false;
+                result = false;
             }
         }
     }
-    return true;
+    return result;
 }
 
 bool uri::parse_authority(int32_t& character)
@@ -280,11 +285,11 @@ bool uri::parse_authority(int32_t& character)
     // perform a 2-pass parsing to determine, whether a '@' symbol occurs or
     // not.
 
-    if (false == parse_authority_1st_pass(character)) {
-        return false;
+    bool result = parse_authority_1st_pass(character);
+    if (true == result) {
+        result = parse_authority_2nd_pass();
     }
-
-    return parse_authority_2nd_pass();
+    return result;
 }
 
 bool uri::parse_authority_1st_pass(int32_t& character)
