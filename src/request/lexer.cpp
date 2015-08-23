@@ -26,7 +26,8 @@ namespace hutzn
 lexer::lexer(const connection_pointer& connection)
     : connection_(connection)
     , state_(lexer_state::copy)
-    , raw_()
+    , header_()
+    , content_()
     , index_(0)
     , head_(0)
     , tail_(0)
@@ -41,7 +42,7 @@ int32_t lexer::get(void)
         // Converting the character into an unsigned character will preserve the
         // bit representation and enables the implementation to reuse all
         // negative numbers as error values.
-        result = static_cast<uint8_t>(raw_[index_++]);
+        result = static_cast<uint8_t>(header_[index_++]);
     } else {
         result = -1;
     }
@@ -65,22 +66,22 @@ void lexer::set_index(const size_t idx)
     }
 }
 
-const char_t* lexer::data(const size_t idx) const
+const char_t* lexer::header_data(const size_t idx) const
 {
     const char_t* result;
     if (idx < tail_) {
-        result = &(raw_[idx]);
+        result = &(header_[idx]);
     } else {
         result = nullptr;
     }
     return result;
 }
 
-char_t* lexer::data(const size_t idx)
+char_t* lexer::header_data(const size_t idx)
 {
     char_t* result;
     if (idx < tail_) {
-        result = &(raw_[idx]);
+        result = &(header_[idx]);
     } else {
         result = nullptr;
     }
@@ -89,24 +90,26 @@ char_t* lexer::data(const size_t idx)
 
 bool lexer::fetch_more_data()
 {
-    assert(head_ == raw_.size());
+    constexpr size_t chunk_size = 4000;
+
+    assert(head_ == header_.size());
 
     const size_t start_tail = tail_;
 
     // The last character is assumed to be 0 if no data was already
     // processed.
-    char_t last = (0 == tail_) ? '\0' : raw_[tail_ - 1];
+    char_t last = (0 == tail_) ? '\0' : header_[tail_ - 1];
 
     // Loop will break, when either something parseable was received or the
     // connection got closed.
     while ((tail_ == start_tail) &&
-           (true == connection_->receive(raw_, 4096))) {
+           (true == connection_->receive(header_, chunk_size))) {
 
         // At least one character could get evaluated, because
         // block_device_interface::receive returns true, when at least one byte
         // was read.
         do {
-            const char_t ch = raw_[head_];
+            const char_t ch = header_[head_];
 
             switch (state_) {
             case lexer_state::copy:
@@ -130,7 +133,7 @@ bool lexer::fetch_more_data()
                 assert(false);
                 break;
             }
-        } while (head_ < raw_.size());
+        } while (head_ < header_.size());
     }
 
     return (start_tail < tail_);
@@ -142,7 +145,7 @@ void lexer::fetch_more_data_copy(const char_t ch, char_t& last)
     head_++;
 
     if (ch == '\r') {
-        raw_[tail_++] = '\n';
+        header_[tail_++] = '\n';
         // Delay updating the last character, because the last
         // character is necessary in the next state to determine
         // transition into lexer_state::possible_cr_lf.
@@ -160,7 +163,7 @@ void lexer::fetch_more_data_copy(const char_t ch, char_t& last)
 
         // Update the last character here, because it is necessary
         // to determine the next state. Copy also the character.
-        raw_[tail_++] = ch;
+        header_[tail_++] = ch;
         last = ch;
     }
 }
@@ -202,7 +205,7 @@ void lexer::fetch_more_data_possible_lws(const char_t ch, char_t& last)
         // The last character (newline) was already written and gets
         // therefore overwritten.
         assert(tail_ > 0);
-        raw_[tail_ - 1] = ' ';
+        header_[tail_ - 1] = ' ';
         last = ' ';
     }
 
@@ -212,9 +215,13 @@ void lexer::fetch_more_data_possible_lws(const char_t ch, char_t& last)
 
 void lexer::fetch_more_data_reached_body(void)
 {
-    // Nothing to be done (except speed up the rewriting), when body
-    // is reached.
-    head_ = raw_.size();
+    // Found the content. Moving the remaining header data into the content
+    // data.
+    content_.insert(content_.end(), header_.begin() + head_, header_.end());
+    header_.resize(head_, '\0');
+
+    // Nothing more to be done, when body is reached. The loop will break
+    // afterwards, because the end of the header is reached.
 }
 
 } // namespace hutzn

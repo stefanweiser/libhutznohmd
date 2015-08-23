@@ -128,7 +128,8 @@ bool request::parse_method(int32_t& ch)
             // Parsing the version will succeed, when the token is not too
             // long and the found method length is exactly the token length.
             if (method_length <= maximum_method_length) {
-                auto r = methods.find(lexer_.data(method_begin), method_length);
+                auto r = methods.find(lexer_.header_data(method_begin),
+                                      method_length);
                 if (r.used_size() == method_length) {
                     method_ = r.value();
                     result = true;
@@ -155,12 +156,12 @@ bool request::parse_uri(int32_t& ch)
         ch = lexer_.get();
     }
 
-    const char_t* value = lexer_.data(lexer_.prev_index());
+    const char_t* value = lexer_.header_data(lexer_.prev_index());
     while (ch != -1) {
         if (true == is_whitespace(ch)) {
             // Overwrite the newline with null. The value is getting null
             // terminated by this.
-            lexer_.data(lexer_.prev_index())[0] = '\0';
+            lexer_.header_data(lexer_.prev_index())[0] = '\0';
             path_ = value;
             result = true;
             break;
@@ -197,8 +198,8 @@ bool request::parse_version(int32_t& ch)
             // Parsing the version will succeed, when the token is not too
             // long and the found method length is exactly the token length.
             if (version_length <= maximum_version_length) {
-                auto r =
-                    versions.find(lexer_.data(version_begin), version_length);
+                auto r = versions.find(lexer_.header_data(version_begin),
+                                       version_length);
                 if (r.used_size() == version_length) {
                     version_ = r.value();
                     result = true;
@@ -217,12 +218,12 @@ bool request::parse_header(int32_t& ch)
 {
     bool result = false;
 
-    const char_t* key = lexer_.data(lexer_.prev_index());
+    const char_t* key = lexer_.header_data(lexer_.prev_index());
     while (ch != -1) {
         if (true == is_key_value_seperator(ch)) {
             // Overwrite the seperator with null. The key is getting null
             // terminated by this.
-            lexer_.data(lexer_.prev_index())[0] = '\0';
+            lexer_.header_data(lexer_.prev_index())[0] = '\0';
             break;
         }
 
@@ -230,7 +231,7 @@ bool request::parse_header(int32_t& ch)
     }
 
     ch = lexer_.get();
-    const char_t* value = lexer_.data(lexer_.prev_index());
+    const char_t* value = lexer_.header_data(lexer_.prev_index());
 
     // The value of -1 signalizes end of file.
     while (ch != -1) {
@@ -238,7 +239,7 @@ bool request::parse_header(int32_t& ch)
         if (true == is_newline(ch)) {
             // Overwrite the newline with null. The value is getting null
             // terminated by this.
-            lexer_.data(lexer_.prev_index())[0] = '\0';
+            lexer_.header_data(lexer_.prev_index())[0] = '\0';
             header_fields_[key] = value;
             result = true;
             break;

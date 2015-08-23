@@ -247,7 +247,7 @@ bool uri::parse_scheme(int32_t& ch)
     const size_t begin_index = lexer_->prev_index();
     const size_t length = parse_specific(*lexer_, ch, equals_scheme_seperator);
 
-    auto r = t.find(lexer_->data(begin_index), length);
+    auto r = t.find(lexer_->header_data(begin_index), length);
     if (r.used_size() == length) {
         std::tie(scheme_, port_) = r.value();
     }

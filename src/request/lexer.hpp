@@ -46,10 +46,10 @@ public:
     void set_index(const size_t idx);
 
     //! Returns a constant pointer on the data stream beginning at offset idx.
-    const char_t* data(const size_t idx) const;
+    const char_t* header_data(const size_t idx) const;
 
     //! Returns a pointer on the data stream beginning at offset idx.
-    char_t* data(const size_t idx);
+    char_t* header_data(const size_t idx);
 
 private:
     bool fetch_more_data();
@@ -68,7 +68,8 @@ private:
 
     connection_pointer connection_;
     lexer_state state_;
-    buffer raw_;
+    buffer header_;
+    buffer content_;
     size_t index_;
     size_t head_;
     size_t tail_;

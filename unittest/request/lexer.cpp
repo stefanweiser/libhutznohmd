@@ -62,17 +62,18 @@ protected:
         EXPECT_EQ(-1, lex.get());
 
         for (size_t i = 0; i < result.size(); i++) {
-            char_t* ch = lex.data(i);
-            const char_t* ch2 = const_cast<const lexer&>(lex).data(i);
+            char_t* ch = lex.header_data(i);
+            const char_t* ch2 = const_cast<const lexer&>(lex).header_data(i);
             ASSERT_NE(nullptr, ch);
             EXPECT_EQ(result[i], *ch);
             EXPECT_EQ(ch, ch2);
         }
-        EXPECT_EQ(nullptr, lex.data(result.size()));
-        EXPECT_EQ(nullptr, const_cast<const lexer&>(lex).data(result.size()));
+        EXPECT_EQ(nullptr, lex.header_data(result.size()));
+        EXPECT_EQ(nullptr,
+                  const_cast<const lexer&>(lex).header_data(result.size()));
 
-        char_t* data = lex.data(0);
-        const char_t* data2 = const_cast<const lexer&>(lex).data(0);
+        char_t* data = lex.header_data(0);
+        const char_t* data2 = const_cast<const lexer&>(lex).header_data(0);
         ASSERT_NE(nullptr, data);
         ASSERT_EQ(data, data2);
         for (size_t i = 0; i < result.size(); i++) {
@@ -87,7 +88,7 @@ TEST_F(lexer_test, construction)
     EXPECT_CALL(*c, receive(_, _)).Times(1).WillOnce(Return(false));
 
     lexer l(c);
-    EXPECT_EQ(nullptr, l.data(0));
+    EXPECT_EQ(nullptr, l.header_data(0));
     EXPECT_EQ(-1, l.get());
 }
 
