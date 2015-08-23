@@ -794,7 +794,12 @@ enum class uri_scheme : uint8_t {
     MAILTO = 3
 };
 
-//! Is used by the request processor to find the right request handler and
+//! Is used by the request processor to find the right request handler and to
+//! serve as abstraction of the request to its users (request handlers). Note,
+//! that the lifetime of the strings retrieved by interface's methods are bound
+//! to the lifetime of the request object itself. This means, that after
+//! releasing the request object, all such strings are getting invalid! Ideally
+//! these pointers are not getting stored inside of other objects.
 class request_interface
 {
 public:
