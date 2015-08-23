@@ -47,7 +47,7 @@ public:
     //! to the function and the header must be fetched successfully first!
     //! Returns whether the content could be fetched completely. Returns also
     //! false, when the header was not fetched yet or when the fetching failed.
-    bool fetch_content(const size_t content_length);
+    bool fetch_content(const size_t length);
 
     //! Returns the next character in the header or -1 when reaching the end of
     //! the read data. Valid characters are represented in the range 0..255.
