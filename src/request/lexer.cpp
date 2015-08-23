@@ -90,10 +90,13 @@ bool lexer::fetch_header(void)
     }
 
     // Cutting off the header may be already done during
-    // fetch_more_data_reached_body, but when the header is received as a whole
-    // chunk this method will not get called.
-    assert(tail <= header_.size());
-    header_.resize(tail);
+    // fetch_header_reached_body, but when the header is received as a whole
+    // chunk this method will not get called. Therefore the resize has to be
+    // repeated here, because nonetheless
+    if (tail > 0) {
+        assert(tail <= header_.size());
+        header_.resize(tail);
+    }
 
     // After the loop, the state has to be one of the end states. The method
     // returns true, when the loop reached the body and therefore the header is
