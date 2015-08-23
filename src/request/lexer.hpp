@@ -152,7 +152,7 @@ size_t parse_specific(lexer& lex, int32_t& ch, const stop_function& stop)
     size_t parsed_characters = 0;
     int32_t c = ch;
     while (c != -1) {
-        if (true == stop(static_cast<uint8_t>(c))) {
+        if (true == stop(static_cast<char_t>(static_cast<uint8_t>(c)))) {
             parsed_characters = lex.index() - begin_index;
             ch = c;
             c = -1;
