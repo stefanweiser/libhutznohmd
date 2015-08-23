@@ -59,7 +59,7 @@ bool parse_uri_word(int32_t& character, http::push_back_string<size>& result,
 
 } // namespace
 
-uri::uri()
+uri::uri(void)
     : lexer_(nullptr)
     , valid_(false)
     , scheme_(http::uri_scheme::UNKNOWN)
@@ -156,42 +156,42 @@ void uri::set_port(const uint16_t& new_port)
     port_ = new_port;
 }
 
-bool uri::valid() const
+bool uri::valid(void) const
 {
     return valid_;
 }
 
-const http::uri_scheme& uri::scheme() const
+const http::uri_scheme& uri::scheme(void) const
 {
     return scheme_;
 }
 
-const char_t* uri::userinfo() const
+const char_t* uri::userinfo(void) const
 {
     return userinfo_.c_str();
 }
 
-const char_t* uri::host() const
+const char_t* uri::host(void) const
 {
     return host_.c_str();
 }
 
-const uint16_t& uri::port() const
+const uint16_t& uri::port(void) const
 {
     return port_;
 }
 
-const char_t* uri::path() const
+const char_t* uri::path(void) const
 {
     return path_.c_str();
 }
 
-const char_t* uri::query() const
+const char_t* uri::query(void) const
 {
     return query_.c_str();
 }
 
-const char_t* uri::fragment() const
+const char_t* uri::fragment(void) const
 {
     return fragment_.c_str();
 }
@@ -301,7 +301,7 @@ bool uri::parse_authority_1st_pass(int32_t& character)
     return true;
 }
 
-bool uri::parse_authority_2nd_pass()
+bool uri::parse_authority_2nd_pass(void)
 {
     // Now there are all parts of the authority at the right place, except the
     // port number, if it exists. We will search the host backwards for a

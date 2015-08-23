@@ -32,7 +32,7 @@ namespace hutzn
 class uri
 {
 public:
-    explicit uri();
+    explicit uri(void);
 
     explicit uri(const uri& rhs) = delete;
     uri& operator=(const uri& rhs) = delete;
@@ -45,14 +45,14 @@ public:
     bool set_host(const char_t* const new_host);
     void set_port(const uint16_t& new_port);
 
-    bool valid() const;
-    const http::uri_scheme& scheme() const;
-    const char_t* userinfo() const;
-    const char_t* host() const;
-    const uint16_t& port() const;
-    const char_t* path() const;
-    const char_t* query() const;
-    const char_t* fragment() const;
+    bool valid(void) const;
+    const http::uri_scheme& scheme(void) const;
+    const char_t* userinfo(void) const;
+    const char_t* host(void) const;
+    const uint16_t& port(void) const;
+    const char_t* path(void) const;
+    const char_t* query(void) const;
+    const char_t* fragment(void) const;
 
 private:
     bool parse_scheme_and_authority(int32_t& character, const bool skip_scheme);
@@ -60,9 +60,9 @@ private:
     bool parse_userinfo_and_authority(int32_t& character);
     bool parse_authority(int32_t& character);
     bool parse_authority_1st_pass(int32_t& character);
-    bool parse_authority_2nd_pass();
+    bool parse_authority_2nd_pass(void);
 
-    bool parse_word();
+    bool parse_word(void);
 
     const http::lexer* lexer_;
     bool valid_;
