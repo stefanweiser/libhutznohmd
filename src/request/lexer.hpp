@@ -76,6 +76,10 @@ public:
     //! fetch_content was not yet successfully called.
     const char_t* content(void) const;
 
+    //! Returns the length of the fetched content or 0, when fetch_content was
+    //! not yet successfully called.
+    size_t content_length(void) const;
+
 private:
     //! Called by the fetch_header state machine when in state copy.
     void fetch_header_copy(size_t& tail, size_t& head, const char_t ch,
