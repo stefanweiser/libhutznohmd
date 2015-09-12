@@ -39,12 +39,6 @@ public:
 
     bool parse(lexer& lex, int32_t& character, const bool skip_scheme);
 
-    void set_scheme(const uri_scheme& new_scheme);
-    bool set_userinfo(const char_t* const new_userinfo);
-    bool set_host(const char_t* const new_host);
-    void set_port(const uint16_t& new_port);
-
-    bool valid(void) const;
     const uri_scheme& scheme(void) const;
     const char_t* userinfo(void) const;
     const char_t* host(void) const;

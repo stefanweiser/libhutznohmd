@@ -70,7 +70,7 @@ protected:
     std::unique_ptr<lexer> lexer_;
 };
 
-TEST_F(uri_test, empty_then_set_scheme)
+TEST_F(uri_test, empty)
 {
     setup_lexer("/");
     const std::unique_ptr<uri> u = parse();
@@ -81,61 +81,6 @@ TEST_F(uri_test, empty_then_set_scheme)
     EXPECT_EQ(std::string("/"), u->path());
     EXPECT_EQ(std::string(""), u->query());
     EXPECT_EQ(std::string(""), u->fragment());
-
-    u->set_scheme(uri_scheme::MAILTO);
-
-    EXPECT_EQ(uri_scheme::MAILTO, u->scheme());
-}
-
-TEST_F(uri_test, empty_then_set_host)
-{
-    setup_lexer("/");
-    const std::unique_ptr<uri> u = parse();
-    EXPECT_EQ(uri_scheme::UNKNOWN, u->scheme());
-    EXPECT_EQ(std::string(""), u->userinfo());
-    EXPECT_EQ(std::string(""), u->host());
-    EXPECT_EQ(0, u->port());
-    EXPECT_EQ(std::string("/"), u->path());
-    EXPECT_EQ(std::string(""), u->query());
-    EXPECT_EQ(std::string(""), u->fragment());
-
-    u->set_host("localhost");
-
-    EXPECT_EQ(std::string("localhost"), u->host());
-}
-
-TEST_F(uri_test, empty_then_set_userinfo)
-{
-    setup_lexer("/");
-    const std::unique_ptr<uri> u = parse();
-    EXPECT_EQ(uri_scheme::UNKNOWN, u->scheme());
-    EXPECT_EQ(std::string(""), u->userinfo());
-    EXPECT_EQ(std::string(""), u->host());
-    EXPECT_EQ(0, u->port());
-    EXPECT_EQ(std::string("/"), u->path());
-    EXPECT_EQ(std::string(""), u->query());
-    EXPECT_EQ(std::string(""), u->fragment());
-
-    u->set_userinfo("user:pw");
-
-    EXPECT_EQ(std::string("user:pw"), u->userinfo());
-}
-
-TEST_F(uri_test, empty_then_set_port)
-{
-    setup_lexer("/");
-    const std::unique_ptr<uri> u = parse();
-    EXPECT_EQ(uri_scheme::UNKNOWN, u->scheme());
-    EXPECT_EQ(std::string(""), u->userinfo());
-    EXPECT_EQ(std::string(""), u->host());
-    EXPECT_EQ(0, u->port());
-    EXPECT_EQ(std::string("/"), u->path());
-    EXPECT_EQ(std::string(""), u->query());
-    EXPECT_EQ(std::string(""), u->fragment());
-
-    u->set_port(88);
-
-    EXPECT_EQ(88, u->port());
 }
 
 TEST_F(uri_test, http_localhost)

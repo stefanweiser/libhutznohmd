@@ -85,16 +85,16 @@ bool uri::parse(lexer& lex, int32_t& ch, const bool skip_scheme)
     if ((false == is_query_seperator(ch)) &&
         (false == is_fragment_seperator(ch))) {
         // Must be a path or the end of the URI.
-        if (false == parse_uri_word(ch, path_,
-                                    &is_valid_uri_path_character, lex)) {
+        if (false ==
+            parse_uri_word(ch, path_, &is_valid_uri_path_character, lex)) {
             return false;
         }
     }
 
     if (false == is_query_seperator(ch)) {
         ch = lex.get();
-        if (false == parse_uri_word(ch, query_,
-                                    &is_valid_uri_query_character, lex)) {
+        if (false ==
+            parse_uri_word(ch, query_, &is_valid_uri_query_character, lex)) {
             return false;
         }
     }
@@ -109,61 +109,6 @@ bool uri::parse(lexer& lex, int32_t& ch, const bool skip_scheme)
 
     valid_ = true;
     return true;
-}
-
-void uri::set_scheme(const uri_scheme& new_scheme)
-{
-    scheme_ = new_scheme;
-}
-
-bool uri::set_userinfo(const char_t* const new_userinfo)
-{
-    bool new_userinfo_is_valid = true;
-    const char_t* c = new_userinfo;
-    while ('\0' != (*c)) {
-        if (false ==
-            is_valid_uri_authority_character(static_cast<uint8_t>(*c))) {
-            new_userinfo_is_valid = false;
-        }
-        c++;
-    }
-
-    if (true == new_userinfo_is_valid) {
-        userinfo_.clear();
-        userinfo_.append_string(new_userinfo);
-    }
-
-    return new_userinfo_is_valid;
-}
-
-bool uri::set_host(const char_t* const new_host)
-{
-    bool new_host_is_valid = true;
-    const char_t* c = new_host;
-    while ('\0' != (*c)) {
-        if (false ==
-            is_valid_uri_authority_character(static_cast<uint8_t>(*c))) {
-            new_host_is_valid = false;
-        }
-        c++;
-    }
-
-    if (true == new_host_is_valid) {
-        host_.clear();
-        host_.append_string(new_host);
-    }
-
-    return new_host_is_valid;
-}
-
-void uri::set_port(const uint16_t& new_port)
-{
-    port_ = new_port;
-}
-
-bool uri::valid(void) const
-{
-    return valid_;
 }
 
 const uri_scheme& uri::scheme(void) const
