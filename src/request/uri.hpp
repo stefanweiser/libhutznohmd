@@ -48,6 +48,8 @@ public:
     const char_t* fragment(void) const;
 
 private:
+    size_t prepare_uri_data(char_t* const data, const size_t length);
+
     bool parse_scheme_and_authority(lexer& lex, int32_t& character,
                                     const bool skip_scheme);
     bool parse_scheme(lexer& lex, int32_t& ch);

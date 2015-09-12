@@ -147,6 +147,36 @@ const char_t* uri::fragment(void) const
     return fragment_.c_str();
 }
 
+size_t uri::prepare_uri_data(char_t* const data, const size_t length)
+{
+    assert(data != nullptr);
+
+    size_t head = 0;
+    size_t tail = 0;
+    while (head < length) {
+        const char_t ch = data[head++];
+        if ('%' == ch) {
+            if ((head + 2) <= length) {
+                const int16_t d = from_hex(data[head++]);
+                const int16_t e = from_hex(data[head++]);
+                if ((d != -1) && (e != -1)) {
+                    data[tail++] =
+                        static_cast<char_t>(static_cast<uint8_t>((d << 4) + e));
+                } else {
+                    tail = 0;
+                    head = length;
+                }
+            } else {
+                tail = 0;
+                head = length;
+            }
+        } else {
+            data[tail++] = ch;
+        }
+    }
+    return tail;
+}
+
 bool uri::parse_scheme_and_authority(lexer& lex, int32_t& ch,
                                      const bool skip_scheme)
 {
