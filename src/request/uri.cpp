@@ -29,7 +29,7 @@ namespace
 {
 
 template <typename... tn>
-size_t parse_uri_word(const char_t* data, size_t& remaining,
+size_t parse_uri_word(char_t*& data, size_t& remaining,
                       const tn... select_chars)
 {
     static const select_char_map map = make_select_char_map(select_chars...);
@@ -39,16 +39,22 @@ size_t parse_uri_word(const char_t* data, size_t& remaining,
     bool stop = false;
     while (false == stop) {
         const char_t ch = data[head];
-        if ((true == map[static_cast<uint8_t>(ch)]) || (0 == remaining)) {
+        if ((true == map[static_cast<uint8_t>(ch)]) || (head >= remaining)) {
             stop = true;
         } else if ('%' == ch) {
             if ((remaining - head) > 2) {
-                char_t a = from_hex(data[head + 1]);
-                char_t b = from_hex(data[head + 2]);
-                data[tail] = (a << 4) + b;
-                head += 3;
-                tail++;
+                uint8_t a = from_hex(data[head + 1]);
+                uint8_t b = from_hex(data[head + 2]);
+                if ((a < 16) && (b < 16)) {
+                    data[tail] = static_cast<uint8_t>((a << 4) + b);
+                    head += 3;
+                    tail++;
+                } else {
+                    tail = 0;
+                    stop = true;
+                }
             } else {
+                tail = 0;
                 stop = true;
             }
         } else {
@@ -59,38 +65,28 @@ size_t parse_uri_word(const char_t* data, size_t& remaining,
     }
 
     remaining -= head;
+    data += head;
     return tail;
 }
 
-//! Parses a URI specific word stopping if the continue condition gets wrong.
-template <size_t size, typename continue_function>
-bool parse_uri_word_(int32_t& ch, http::push_back_string<size>& result,
-                     const continue_function& continue_condition_functor,
-                     lexer& l)
+template <typename... tn>
+char_t* parse_optional_positional_token(
+    char_t*& data, size_t& remaining, char_t& last_char, size_t& result_size,
+    const char_t conditional_start_character, const tn... select_chars)
 {
-    while ((ch >= 0) &&
-           (true == continue_condition_functor(static_cast<uint8_t>(ch)))) {
-        if ('%' == ch) {
-            int32_t a = l.get();
-            int32_t b = l.get();
-            if ((a == -1) || (b == -1)) {
-                return false;
-            }
+    char_t* result = nullptr;
+    if ((remaining > 0) && (last_char == conditional_start_character)) {
+        remaining--;
+        data++;
 
-            char_t d = from_hex(static_cast<char_t>(a));
-            char_t e = from_hex(static_cast<char_t>(b));
-            if ((d == -1) || (e == -1)) {
-                return false;
-            }
-
-            result.push_back(static_cast<char_t>((d << 4) + e));
-        } else {
-            result.push_back(static_cast<char_t>(ch));
-        }
-        ch = l.get();
+        char_t* original_data = data;
+        size_t length = parse_uri_word(data, remaining, select_chars...);
+        last_char = *data;
+        original_data[length] = '\0';
+        result = original_data;
+        result_size = length;
     }
-
-    return true;
+    return result;
 }
 
 } // namespace
@@ -98,51 +94,44 @@ bool parse_uri_word_(int32_t& ch, http::push_back_string<size>& result,
 uri::uri(void)
     : already_called_(false)
     , scheme_(uri_scheme::UNKNOWN)
-    , userinfo_()
-    , host_()
+    , userinfo_(nullptr)
+    , host_(nullptr)
     , port_(0)
-    , path_()
-    , query_()
-    , fragment_()
+    , path_(nullptr)
+    , query_(nullptr)
+    , fragment_(nullptr)
 {
 }
 
-bool uri::parse(lexer& lex, int32_t& ch, const bool skip_scheme)
+bool uri::parse(char_t*& raw, size_t& remaining, bool skip_scheme)
 {
-    bool result = false;
-    if (false == already_called_) {
-        already_called_ = true;
-
-        if (false == parse_scheme_and_authority(lex, ch, skip_scheme)) {
-            return false;
-        }
-
-        if ((false == is_query_separator(ch)) &&
-            (false == is_fragment_separator(ch))) {
-            // Must be a path or the end of the URI.
-            if (false ==
-                parse_uri_word_(ch, path_, &is_valid_uri_path_character, lex)) {
-                return false;
+    first_pass_data data;
+    const bool passed_first_pass =
+        parse_1st_pass(raw, remaining, data, skip_scheme);
+    bool result = passed_first_pass;
+    if (true == passed_first_pass) {
+        // This implementation supports both: URIs with and without scheme or
+        // authority. Though is not conform with RFC 3986, but HTTP specifies
+        // request URIs without scheme and authority.
+        if (data.scheme_size > 0) {
+            if (false == parse_scheme(data.scheme, data.scheme_size)) {
+                result = false;
             }
         }
-
-        if (true == is_query_separator(ch)) {
-            ch = lex.get();
-            if (false == parse_uri_word_(ch, query_,
-                                         &is_valid_uri_query_character, lex)) {
-                return false;
+        if (data.authority_size > 0) {
+            if (false == parse_authority(data.authority, data.authority_size)) {
+                result = false;
             }
         }
-
-        if (true == is_fragment_separator(ch)) {
-            ch = lex.get();
-            if (false == parse_uri_word_(ch, fragment_,
-                                         &is_valid_uri_fragment_character,
-                                         lex)) {
-                return false;
-            }
+        if (data.path != nullptr) {
+            path_ = data.path;
         }
-        result = true;
+        if (data.query != nullptr) {
+            query_ = data.query;
+        }
+        if (data.fragment != nullptr) {
+            fragment_ = data.fragment;
+        }
     }
     return result;
 }
@@ -154,12 +143,12 @@ const uri_scheme& uri::scheme(void) const
 
 const char_t* uri::userinfo(void) const
 {
-    return userinfo_.c_str();
+    return userinfo_;
 }
 
 const char_t* uri::host(void) const
 {
-    return host_.c_str();
+    return host_;
 }
 
 const uint16_t& uri::port(void) const
@@ -169,48 +158,85 @@ const uint16_t& uri::port(void) const
 
 const char_t* uri::path(void) const
 {
-    return path_.c_str();
+    return path_;
 }
 
 const char_t* uri::query(void) const
 {
-    return query_.c_str();
+    return query_;
 }
 
 const char_t* uri::fragment(void) const
 {
-    return fragment_.c_str();
+    return fragment_;
 }
 
-bool uri::parse_scheme_and_authority(lexer& lex, int32_t& ch,
-                                     const bool skip_scheme)
+bool uri::parse_1st_pass(char_t*& raw, size_t& remaining, first_pass_data& data,
+                         bool skip_scheme)
 {
-    // Check whether there is a scheme and authority or neither of them. This is
-    // not conform with RFC 3986, but HTTP specifies request URIs without scheme
-    // and authority.
-    bool result = false;
-    if (false == is_path_separator(ch)) {
-        if (false == skip_scheme) {
-            if (true == parse_scheme(lex, ch)) {
-                ch = lex.get();
-                if ((ch >= 0) &&
-                    (true == parse_userinfo_and_authority(lex, ch))) {
-                    result = true;
+    if (remaining > 0) {
+        static const select_char_map path_query_fragment_map =
+            make_select_char_map('/', '?', '#');
+
+        if (false == path_query_fragment_map[static_cast<uint8_t>(*raw)]) {
+            char_t* scheme_or_authority_data = raw;
+            size_t length = parse_uri_word(raw, remaining, ':', '/', '?', '#',
+                                           ' ', '\t', '\r', '\n');
+            if ((false == skip_scheme) && (':' == raw[0])) {
+                scheme_or_authority_data[length] = '\0';
+                data.scheme = scheme_or_authority_data;
+                data.scheme_size = length;
+                remaining--;
+                raw++;
+
+                if ((remaining >= 2) && ('/' == raw[0]) && ('/' == raw[1])) {
+                    remaining -= 2;
+                    raw += 2;
+                }
+            } else {
+                length += parse_uri_word(raw, remaining, '/', '?', '#', ' ',
+                                         '\t', '\r', '\n');
+                scheme_or_authority_data[length] = '\0';
+                data.authority = scheme_or_authority_data;
+                data.authority_size = length;
+                if (remaining > 0) {
+                    remaining--;
+                    raw++;
                 }
             }
-        } else {
-            if (true == parse_authority(lex, ch)) {
-                result = true;
-            }
         }
-    } else {
-        result = true;
+
+        if (remaining > 0) {
+            char_t c = *raw;
+            if (false == path_query_fragment_map[static_cast<uint8_t>(c)]) {
+                char_t* authority_data = raw;
+                size_t length = parse_uri_word(raw, remaining, '/', '?', '#',
+                                               ' ', '\t', '\r', '\n');
+                c = *raw;
+                authority_data[length] = '\0';
+                data.authority = authority_data;
+                data.authority_size = length;
+            }
+
+            data.path = parse_optional_positional_token(
+                raw, remaining, c, data.path_size, '/', '?', '#', ' ', '\t',
+                '\r', '\n');
+            data.query = parse_optional_positional_token(
+                raw, remaining, c, data.query_size, '?', '#', ' ', '\t', '\r',
+                '\n');
+            data.fragment = parse_optional_positional_token(
+                raw, remaining, c, data.fragment_size, '#', ' ', '\t', '\r',
+                '\n');
+        }
     }
 
-    return result;
+    static const select_char_map empty_map =
+        make_select_char_map(' ', '\t', '\r', '\n');
+    return ((remaining == 0) ||
+            (true == empty_map[static_cast<uint8_t>(*raw)]));
 }
 
-bool uri::parse_scheme(lexer& lex, int32_t& ch)
+bool uri::parse_scheme(const char_t* const scheme_ptr, const size_t& size)
 {
     using value_type = std::tuple<uri_scheme, uint16_t>;
     trie<value_type> t{true};
@@ -218,44 +244,15 @@ bool uri::parse_scheme(lexer& lex, int32_t& ch)
     t.insert("https", value_type(uri_scheme::HTTPS, 443));
     t.insert("mailto", value_type(uri_scheme::MAILTO, 0));
 
-    auto equals_scheme_separator =
-        [](const char_t c) -> bool { return (':' == c); };
-
-    const size_t begin_index = lex.prev_index();
-    size_t max_length = 7;
-    const char_t* data = lex.header_data(begin_index);
-    const size_t length =
-        parse_specific(data, max_length, equals_scheme_separator);
-
-    auto r = t.find(lex.header_data(begin_index), length);
-    if (r.used_size() == length) {
+    auto r = t.find(scheme_ptr, size);
+    if (r.used_size() == size) {
         std::tie(scheme_, port_) = r.value();
-        lex.set_index(length);
-        ch = lex.get();
     }
 
     return (uri_scheme::UNKNOWN != scheme_);
 }
 
-bool uri::parse_userinfo_and_authority(lexer& lex, int32_t& character)
-{
-    bool result = true;
-    if ('/' == character) {
-        path_.push_back(static_cast<char_t>(character));
-        character = lex.get();
-        if ('/' == character) {
-            // It is no path. It is an authority.
-            path_.clear();
-            character = lex.get();
-            if (false == parse_authority(lex, character)) {
-                result = false;
-            }
-        }
-    }
-    return result;
-}
-
-bool uri::parse_authority(lexer& lex, int32_t& character)
+bool uri::parse_authority(char_t* const authority_ptr, const size_t& size)
 {
     // There is an ambiguity in the authority part of a URI specified by
     // RFC3986. You are not able to correctly parse the authority into tokens
@@ -267,86 +264,54 @@ bool uri::parse_authority(lexer& lex, int32_t& character)
     // perform a 2-pass parsing to determine, whether a '@' symbol occurs or
     // not.
 
-    bool result = parse_authority_1st_pass(lex, character);
-    if (true == result) {
-        result = parse_authority_2nd_pass();
-    }
-    return result;
-}
+    bool result = true;
 
-bool uri::parse_authority_1st_pass(lexer& lex, int32_t& character)
-{
-    if (false == parse_uri_word_(character, host_,
-                                 &is_valid_uri_authority_character, lex)) {
-        return false;
-    }
-
-    if ('@' == character) {
-        userinfo_.append_string(host_.c_str());
-        host_.clear();
-        character = lex.get();
-    }
-
-    if (false == parse_uri_word_(character, host_,
-                                 &is_valid_uri_authority_character, lex)) {
-        return false;
-    }
-
-    return true;
-}
-
-bool uri::parse_authority_2nd_pass(void)
-{
-    // Now there are all parts of the authority at the right place, except the
-    // port number, if it exists. We will search the host backwards for a
-    // number and search the ':' symbol.
-    uint32_t p = 0;
-    uint32_t factor = 1;
-    for (ssize_t i = (static_cast<ssize_t>(host_.size()) - 1); i >= 0; i--) {
-        const uint8_t c =
-            static_cast<uint8_t>(host_[static_cast<size_t>(i)] - '0');
-
-        if ((c < 10) && (factor <= 10000)) {
-
-            p += (factor * c);
-            factor *= 10;
-
-        } else if ((':' == host_[static_cast<size_t>(i)]) && (p > 0) &&
-                   (p < 65536)) {
-
-            port_ = static_cast<uint16_t>(p);
-
-            http::push_back_string<32> tmp;
-            host_[static_cast<size_t>(i)] = '\0';
-            tmp.append_string(host_.c_str());
-            host_.clear();
-            host_.append_string(tmp.c_str());
-
+    char_t* temp_host = authority_ptr;
+    size_t host_size = size;
+    for (size_t i = 0; i < size; i++) {
+        if ('@' == authority_ptr[i]) {
+            authority_ptr[i] = '\0';
+            userinfo_ = authority_ptr;
+            temp_host = authority_ptr + (i + 1);
+            host_size = size - (i + 1);
             break;
+        }
+    }
+    host_ = temp_host;
 
-        } else if (':' == host_[static_cast<size_t>(i)]) {
-            // This host is erroneous, because it has no correct port component,
-            // but a ':' symbol.
-            return false;
+    char_t* temp_port = nullptr;
+    size_t port_size = 0;
+    for (size_t i = 0; i < host_size; i++) {
+        if (':' == temp_host[i]) {
+            temp_host[i] = '\0';
+            temp_port = temp_host + (i + 1);
+            port_size = host_size - (i + 1);
+            break;
         }
     }
 
-    return true;
-}
+    if (port_size > 0) {
+        uint32_t port_number = 0;
+        bool port_valid = true;
+        for (size_t i = 0; i < port_size; i++) {
+            const uint8_t digit = static_cast<char_t>(temp_port[i] - '0');
+            if (digit < 10) {
+                port_number = (static_cast<uint32_t>(port_number) * 10) + digit;
+                if (port_number > std::numeric_limits<uint16_t>::max()) {
+                    port_valid = false;
+                }
+            } else {
+                port_valid = false;
+            }
+        }
+        if (true == port_valid) {
+            port_ = static_cast<uint16_t>(port_number);
+        } else {
+            result = false;
+        }
+    }
 
-bool uri::is_path_separator(const int32_t ch)
-{
-    return (static_cast<int32_t>('/') == ch);
-}
-
-bool uri::is_query_separator(const int32_t ch)
-{
-    return (static_cast<int32_t>('?') == ch);
-}
-
-bool uri::is_fragment_separator(const int32_t ch)
-{
-    return (static_cast<int32_t>('#') == ch);
+    return result;
 }
 
 } // namespace hutzn

@@ -21,8 +21,6 @@
 
 #include <memory>
 
-#include <libhutznohmd/mock_sockets.hpp>
-
 #include <request/uri.hpp>
 
 using namespace testing;
@@ -33,288 +31,566 @@ namespace hutzn
 class uri_test : public ::testing::Test
 {
 public:
-    void SetUp(void) override
+    uri::first_pass_data check_1st_pass(std::string& str,
+                                        const bool expect_sucess,
+                                        const bool skip_scheme = false)
     {
-        connection_ = std::make_shared<connection_interface_mock>();
+        uri u;
+        size_t s = str.size();
+        char_t* ptr = &(str[0]);
+        uri::first_pass_data data;
+        EXPECT_EQ(expect_sucess, u.parse_1st_pass(ptr, s, data, skip_scheme));
+        return data;
     }
 
-    void TearDown(void) override
-    {
-        connection_.reset();
-    }
-
-    void setup_lexer(const std::string& chunk)
-    {
-        EXPECT_CALL(*connection_, receive(_, _))
-            .Times(AtLeast(1))
-            .WillOnce(Invoke([chunk](buffer& b, const size_t& m) {
-                EXPECT_LE(chunk.size(), m);
-                b.insert(b.begin(), chunk.begin(), chunk.end());
-                return true;
-            }))
-            .WillRepeatedly(Return(false));
-        lexer_ = std::unique_ptr<lexer>(new lexer(connection_));
-        ASSERT_FALSE(lexer_->fetch_header());
-    }
-
-    std::unique_ptr<uri> parse(const bool expect_sucess = true)
+    std::unique_ptr<uri> check_parse(std::string& str,
+                                     const bool expect_sucess = true,
+                                     const bool skip_scheme = false)
     {
         std::unique_ptr<uri> u = std::unique_ptr<uri>(new uri());
-        int32_t ch = lexer_->get();
-        EXPECT_EQ(expect_sucess, u->parse(*lexer_, ch, false));
+        char_t* ptr = &(str[0]);
+        size_t size = str.size();
+        EXPECT_EQ(expect_sucess, u->parse(ptr, size, skip_scheme));
         return u;
     }
-
-protected:
-    connection_mock_pointer connection_;
-    std::unique_ptr<lexer> lexer_;
 };
 
-TEST_F(uri_test, empty)
+TEST_F(uri_test, first_pass_nullptr)
 {
-    setup_lexer("/");
-    const std::unique_ptr<uri> u = parse();
+    uri u;
+    char_t* ptr = nullptr;
+    size_t s = 0;
+    uri::first_pass_data data;
+    EXPECT_TRUE(u.parse_1st_pass(ptr, s, data, false));
+    EXPECT_STREQ(nullptr, data.scheme);
+    EXPECT_STREQ(nullptr, data.authority);
+    EXPECT_STREQ(nullptr, data.path);
+    EXPECT_STREQ(nullptr, data.query);
+    EXPECT_STREQ(nullptr, data.fragment);
+    EXPECT_EQ(0, data.scheme_size);
+    EXPECT_EQ(0, data.authority_size);
+    EXPECT_EQ(0, data.path_size);
+    EXPECT_EQ(0, data.query_size);
+    EXPECT_EQ(0, data.fragment_size);
+}
+
+TEST_F(uri_test, first_pass_empty)
+{
+    std::string str = "";
+    const uri::first_pass_data data = check_1st_pass(str, true);
+    EXPECT_STREQ(nullptr, data.scheme);
+    EXPECT_STREQ(nullptr, data.authority);
+    EXPECT_STREQ(nullptr, data.path);
+    EXPECT_STREQ(nullptr, data.query);
+    EXPECT_STREQ(nullptr, data.fragment);
+    EXPECT_EQ(0, data.scheme_size);
+    EXPECT_EQ(0, data.authority_size);
+    EXPECT_EQ(0, data.path_size);
+    EXPECT_EQ(0, data.query_size);
+    EXPECT_EQ(0, data.fragment_size);
+}
+
+TEST_F(uri_test, first_pass_simple_path)
+{
+    std::string str = "/";
+    const uri::first_pass_data data = check_1st_pass(str, true);
+    EXPECT_STREQ(nullptr, data.scheme);
+    EXPECT_STREQ(nullptr, data.authority);
+    EXPECT_STREQ("", data.path);
+    EXPECT_STREQ(nullptr, data.query);
+    EXPECT_STREQ(nullptr, data.fragment);
+    EXPECT_EQ(0, data.scheme_size);
+    EXPECT_EQ(0, data.authority_size);
+    EXPECT_EQ(0, data.path_size);
+    EXPECT_EQ(0, data.query_size);
+    EXPECT_EQ(0, data.fragment_size);
+}
+
+TEST_F(uri_test, first_pass_localhost)
+{
+    std::string str = "http://localhost/";
+    const uri::first_pass_data data = check_1st_pass(str, true);
+    EXPECT_STREQ("http", data.scheme);
+    EXPECT_STREQ("localhost", data.authority);
+    EXPECT_STREQ("", data.path);
+    EXPECT_STREQ(nullptr, data.query);
+    EXPECT_STREQ(nullptr, data.fragment);
+    EXPECT_EQ(4, data.scheme_size);
+    EXPECT_EQ(9, data.authority_size);
+    EXPECT_EQ(0, data.path_size);
+    EXPECT_EQ(0, data.query_size);
+    EXPECT_EQ(0, data.fragment_size);
+}
+
+TEST_F(uri_test, first_pass_complete_uri)
+{
+    std::string str = "http://user:password@localhost:80/?a=b#anchor";
+    const uri::first_pass_data data = check_1st_pass(str, true);
+    EXPECT_STREQ("http", data.scheme);
+    EXPECT_STREQ("user:password@localhost:80", data.authority);
+    EXPECT_STREQ("", data.path);
+    EXPECT_STREQ("a=b", data.query);
+    EXPECT_STREQ("anchor", data.fragment);
+    EXPECT_EQ(4, data.scheme_size);
+    EXPECT_EQ(26, data.authority_size);
+    EXPECT_EQ(0, data.path_size);
+    EXPECT_EQ(3, data.query_size);
+    EXPECT_EQ(6, data.fragment_size);
+}
+
+TEST_F(uri_test, first_pass_only_authority)
+{
+    std::string str = "localhost";
+    const uri::first_pass_data data = check_1st_pass(str, true);
+    EXPECT_STREQ(nullptr, data.scheme);
+    EXPECT_STREQ("localhost", data.authority);
+    EXPECT_STREQ(nullptr, data.path);
+    EXPECT_STREQ(nullptr, data.query);
+    EXPECT_STREQ(nullptr, data.fragment);
+    EXPECT_EQ(0, data.scheme_size);
+    EXPECT_EQ(9, data.authority_size);
+    EXPECT_EQ(0, data.path_size);
+    EXPECT_EQ(0, data.query_size);
+    EXPECT_EQ(0, data.fragment_size);
+}
+
+TEST_F(uri_test, first_pass_only_authority_with_userinfo)
+{
+    std::string str = "user:password@localhost";
+    const uri::first_pass_data data = check_1st_pass(str, true, true);
+    EXPECT_STREQ(nullptr, data.scheme);
+    EXPECT_STREQ("user:password@localhost", data.authority);
+    EXPECT_STREQ(nullptr, data.path);
+    EXPECT_STREQ(nullptr, data.query);
+    EXPECT_STREQ(nullptr, data.fragment);
+    EXPECT_EQ(0, data.scheme_size);
+    EXPECT_EQ(23, data.authority_size);
+    EXPECT_EQ(0, data.path_size);
+    EXPECT_EQ(0, data.query_size);
+    EXPECT_EQ(0, data.fragment_size);
+}
+
+TEST_F(uri_test, first_pass_only_scheme)
+{
+    std::string str = "http://";
+    const uri::first_pass_data data = check_1st_pass(str, true);
+    EXPECT_STREQ("http", data.scheme);
+    EXPECT_STREQ(nullptr, data.authority);
+    EXPECT_STREQ(nullptr, data.path);
+    EXPECT_STREQ(nullptr, data.query);
+    EXPECT_STREQ(nullptr, data.fragment);
+    EXPECT_EQ(4, data.scheme_size);
+    EXPECT_EQ(0, data.authority_size);
+    EXPECT_EQ(0, data.path_size);
+    EXPECT_EQ(0, data.query_size);
+    EXPECT_EQ(0, data.fragment_size);
+}
+
+TEST_F(uri_test, first_pass_no_authority)
+{
+    std::string str = "http:///";
+    const uri::first_pass_data data = check_1st_pass(str, true);
+    EXPECT_STREQ("http", data.scheme);
+    EXPECT_STREQ(nullptr, data.authority);
+    EXPECT_STREQ("", data.path);
+    EXPECT_STREQ(nullptr, data.query);
+    EXPECT_STREQ(nullptr, data.fragment);
+    EXPECT_EQ(4, data.scheme_size);
+    EXPECT_EQ(0, data.authority_size);
+    EXPECT_EQ(0, data.path_size);
+    EXPECT_EQ(0, data.query_size);
+    EXPECT_EQ(0, data.fragment_size);
+}
+
+TEST_F(uri_test, first_pass_only_query)
+{
+    std::string str = "http://?";
+    const uri::first_pass_data data = check_1st_pass(str, true);
+    EXPECT_STREQ("http", data.scheme);
+    EXPECT_STREQ(nullptr, data.authority);
+    EXPECT_STREQ(nullptr, data.path);
+    EXPECT_STREQ("", data.query);
+    EXPECT_STREQ(nullptr, data.fragment);
+    EXPECT_EQ(4, data.scheme_size);
+    EXPECT_EQ(0, data.authority_size);
+    EXPECT_EQ(0, data.path_size);
+    EXPECT_EQ(0, data.query_size);
+    EXPECT_EQ(0, data.fragment_size);
+}
+
+TEST_F(uri_test, first_pass_only_fragment)
+{
+    std::string str = "http://#";
+    const uri::first_pass_data data = check_1st_pass(str, true);
+    EXPECT_STREQ("http", data.scheme);
+    EXPECT_STREQ(nullptr, data.authority);
+    EXPECT_STREQ(nullptr, data.path);
+    EXPECT_STREQ(nullptr, data.query);
+    EXPECT_STREQ("", data.fragment);
+    EXPECT_EQ(4, data.scheme_size);
+    EXPECT_EQ(0, data.authority_size);
+    EXPECT_EQ(0, data.path_size);
+    EXPECT_EQ(0, data.query_size);
+    EXPECT_EQ(0, data.fragment_size);
+}
+
+TEST_F(uri_test, first_pass_encoded_characters_in_scheme)
+{
+    std::string str = "%68ttp://user:password@localhost:80/?a=b#anchor";
+    const uri::first_pass_data data = check_1st_pass(str, true);
+    EXPECT_STREQ("http", data.scheme);
+    EXPECT_STREQ("user:password@localhost:80", data.authority);
+    EXPECT_STREQ("", data.path);
+    EXPECT_STREQ("a=b", data.query);
+    EXPECT_STREQ("anchor", data.fragment);
+    EXPECT_EQ(4, data.scheme_size);
+    EXPECT_EQ(26, data.authority_size);
+    EXPECT_EQ(0, data.path_size);
+    EXPECT_EQ(3, data.query_size);
+    EXPECT_EQ(6, data.fragment_size);
+}
+
+TEST_F(uri_test, first_pass_encoded_characters_in_authority)
+{
+    std::string str = "http://us%65r:password@localhost:80/?a=b#anchor";
+    const uri::first_pass_data data = check_1st_pass(str, true);
+    EXPECT_STREQ("http", data.scheme);
+    EXPECT_STREQ("user:password@localhost:80", data.authority);
+    EXPECT_STREQ("", data.path);
+    EXPECT_STREQ("a=b", data.query);
+    EXPECT_STREQ("anchor", data.fragment);
+    EXPECT_EQ(4, data.scheme_size);
+    EXPECT_EQ(26, data.authority_size);
+    EXPECT_EQ(0, data.path_size);
+    EXPECT_EQ(3, data.query_size);
+    EXPECT_EQ(6, data.fragment_size);
+}
+
+TEST_F(uri_test, first_pass_encoded_characters_in_authority_2)
+{
+    std::string str = "user:password@loc%61lhost:80";
+    const uri::first_pass_data data = check_1st_pass(str, true, true);
+    EXPECT_STREQ(nullptr, data.scheme);
+    EXPECT_STREQ("user:password@localhost:80", data.authority);
+    EXPECT_STREQ(nullptr, data.path);
+    EXPECT_STREQ(nullptr, data.query);
+    EXPECT_STREQ(nullptr, data.fragment);
+    EXPECT_EQ(0, data.scheme_size);
+    EXPECT_EQ(26, data.authority_size);
+    EXPECT_EQ(0, data.path_size);
+    EXPECT_EQ(0, data.query_size);
+    EXPECT_EQ(0, data.fragment_size);
+}
+
+TEST_F(uri_test, first_pass_encoded_characters_in_path)
+{
+    std::string str = "http://user:password@localhost:80/%20?a=b#anchor";
+    const uri::first_pass_data data = check_1st_pass(str, true);
+    EXPECT_STREQ("http", data.scheme);
+    EXPECT_STREQ("user:password@localhost:80", data.authority);
+    EXPECT_STREQ(" ", data.path);
+    EXPECT_STREQ("a=b", data.query);
+    EXPECT_STREQ("anchor", data.fragment);
+    EXPECT_EQ(4, data.scheme_size);
+    EXPECT_EQ(26, data.authority_size);
+    EXPECT_EQ(1, data.path_size);
+    EXPECT_EQ(3, data.query_size);
+    EXPECT_EQ(6, data.fragment_size);
+}
+
+TEST_F(uri_test, first_pass_encoded_characters_in_query)
+{
+    std::string str = "http://user:password@localhost:80/?%61=b#anchor";
+    const uri::first_pass_data data = check_1st_pass(str, true);
+    EXPECT_STREQ("http", data.scheme);
+    EXPECT_STREQ("user:password@localhost:80", data.authority);
+    EXPECT_STREQ("", data.path);
+    EXPECT_STREQ("a=b", data.query);
+    EXPECT_STREQ("anchor", data.fragment);
+    EXPECT_EQ(4, data.scheme_size);
+    EXPECT_EQ(26, data.authority_size);
+    EXPECT_EQ(0, data.path_size);
+    EXPECT_EQ(3, data.query_size);
+    EXPECT_EQ(6, data.fragment_size);
+}
+
+TEST_F(uri_test, first_pass_encoded_characters_in_fragment)
+{
+    std::string str = "http://user:password@localhost:80/?a=b#%61nchor";
+    const uri::first_pass_data data = check_1st_pass(str, true);
+    EXPECT_STREQ("http", data.scheme);
+    EXPECT_STREQ("user:password@localhost:80", data.authority);
+    EXPECT_STREQ("", data.path);
+    EXPECT_STREQ("a=b", data.query);
+    EXPECT_STREQ("anchor", data.fragment);
+    EXPECT_EQ(4, data.scheme_size);
+    EXPECT_EQ(26, data.authority_size);
+    EXPECT_EQ(0, data.path_size);
+    EXPECT_EQ(3, data.query_size);
+    EXPECT_EQ(6, data.fragment_size);
+}
+
+TEST_F(uri_test, first_pass_encoded_characters_at_the_end)
+{
+    std::string str = "http://user:password@localhost:80/?a=b#ancho%72";
+    const uri::first_pass_data data = check_1st_pass(str, true);
+    EXPECT_STREQ("http", data.scheme);
+    EXPECT_STREQ("user:password@localhost:80", data.authority);
+    EXPECT_STREQ("", data.path);
+    EXPECT_STREQ("a=b", data.query);
+    EXPECT_STREQ("anchor", data.fragment);
+    EXPECT_EQ(4, data.scheme_size);
+    EXPECT_EQ(26, data.authority_size);
+    EXPECT_EQ(0, data.path_size);
+    EXPECT_EQ(3, data.query_size);
+    EXPECT_EQ(6, data.fragment_size);
+}
+
+TEST_F(uri_test, path_only)
+{
+    std::string str = "/";
+    const std::unique_ptr<uri> u = check_parse(str);
     EXPECT_EQ(uri_scheme::UNKNOWN, u->scheme());
-    EXPECT_EQ(std::string(""), u->userinfo());
-    EXPECT_EQ(std::string(""), u->host());
+    EXPECT_STREQ(nullptr, u->userinfo());
+    EXPECT_STREQ(nullptr, u->host());
     EXPECT_EQ(0, u->port());
-    EXPECT_EQ(std::string("/"), u->path());
-    EXPECT_EQ(std::string(""), u->query());
-    EXPECT_EQ(std::string(""), u->fragment());
+    EXPECT_STREQ("", u->path());
+    EXPECT_STREQ(nullptr, u->query());
+    EXPECT_STREQ(nullptr, u->fragment());
 }
 
 TEST_F(uri_test, http_localhost)
 {
-    setup_lexer("http://localhost/");
-    const std::unique_ptr<uri> u = parse();
+    std::string str = "http://localhost/";
+    const std::unique_ptr<uri> u = check_parse(str);
     EXPECT_EQ(uri_scheme::HTTP, u->scheme());
-    EXPECT_EQ(std::string(""), u->userinfo());
-    EXPECT_EQ(std::string("localhost"), u->host());
+    EXPECT_STREQ(nullptr, u->userinfo());
+    EXPECT_STREQ("localhost", u->host());
     EXPECT_EQ(80, u->port());
-    EXPECT_EQ(std::string("/"), u->path());
-    EXPECT_EQ(std::string(""), u->query());
-    EXPECT_EQ(std::string(""), u->fragment());
+    EXPECT_STREQ("", u->path());
+    EXPECT_STREQ(nullptr, u->query());
+    EXPECT_STREQ(nullptr, u->fragment());
 }
 
 TEST_F(uri_test, complete_uri)
 {
-    setup_lexer("http://user:password@localhost:80/?a=b#anchor");
-    const std::unique_ptr<uri> u = parse();
+    std::string str = "http://user:password@localhost:80/?a=b#anchor";
+    const std::unique_ptr<uri> u = check_parse(str);
     EXPECT_EQ(uri_scheme::HTTP, u->scheme());
-    EXPECT_EQ(std::string("user:password"), u->userinfo());
-    EXPECT_EQ(std::string("localhost"), u->host());
+    EXPECT_STREQ("user:password", u->userinfo());
+    EXPECT_STREQ("localhost", u->host());
     EXPECT_EQ(80, u->port());
-    EXPECT_EQ(std::string("/"), u->path());
-    EXPECT_EQ(std::string("a=b"), u->query());
-    EXPECT_EQ(std::string("anchor"), u->fragment());
+    EXPECT_STREQ("", u->path());
+    EXPECT_STREQ("a=b", u->query());
+    EXPECT_STREQ("anchor", u->fragment());
 }
 
 TEST_F(uri_test, erroneous_port)
 {
-    setup_lexer("http://localhost:80000/");
-    const std::unique_ptr<uri> u = parse(false);
+    std::string str = "http://localhost:80000/";
+    const std::unique_ptr<uri> u = check_parse(str, false);
     EXPECT_EQ(uri_scheme::HTTP, u->scheme());
-    EXPECT_EQ(std::string(""), u->userinfo());
-    EXPECT_EQ(std::string("localhost:80000"), u->host());
+    EXPECT_STREQ(nullptr, u->userinfo());
+    EXPECT_STREQ("localhost", u->host());
     EXPECT_EQ(80, u->port());
-    EXPECT_EQ(std::string(""), u->path());
-    EXPECT_EQ(std::string(""), u->query());
-    EXPECT_EQ(std::string(""), u->fragment());
+    EXPECT_STREQ("", u->path());
+    EXPECT_STREQ(nullptr, u->query());
+    EXPECT_STREQ(nullptr, u->fragment());
 }
 
 TEST_F(uri_test, mailto_user_at_localhost)
 {
-    setup_lexer("mailto://user@localhost");
-    const std::unique_ptr<uri> u = parse();
+    std::string str = "mailto://user@localhost";
+    const std::unique_ptr<uri> u = check_parse(str);
     EXPECT_EQ(uri_scheme::MAILTO, u->scheme());
-    EXPECT_EQ(std::string("user"), u->userinfo());
-    EXPECT_EQ(std::string("localhost"), u->host());
+    EXPECT_STREQ("user", u->userinfo());
+    EXPECT_STREQ("localhost", u->host());
     EXPECT_EQ(0, u->port());
-    EXPECT_EQ(std::string(""), u->path());
-    EXPECT_EQ(std::string(""), u->query());
-    EXPECT_EQ(std::string(""), u->fragment());
+    EXPECT_STREQ(nullptr, u->path());
+    EXPECT_STREQ(nullptr, u->query());
+    EXPECT_STREQ(nullptr, u->fragment());
 }
 
 TEST_F(uri_test, no_authority)
 {
-    setup_lexer("http:/");
-    const std::unique_ptr<uri> u = parse();
+    std::string str = "http:/";
+    const std::unique_ptr<uri> u = check_parse(str);
     EXPECT_EQ(uri_scheme::HTTP, u->scheme());
-    EXPECT_EQ(std::string(""), u->userinfo());
-    EXPECT_EQ(std::string(""), u->host());
+    EXPECT_STREQ(nullptr, u->userinfo());
+    EXPECT_STREQ(nullptr, u->host());
     EXPECT_EQ(80, u->port());
-    EXPECT_EQ(std::string("/"), u->path());
-    EXPECT_EQ(std::string(""), u->query());
-    EXPECT_EQ(std::string(""), u->fragment());
+    EXPECT_STREQ("", u->path());
+    EXPECT_STREQ(nullptr, u->query());
+    EXPECT_STREQ(nullptr, u->fragment());
 }
 
 TEST_F(uri_test, query_only)
 {
-    setup_lexer("http:?a=b");
-    const std::unique_ptr<uri> u = parse();
+    std::string str = "http:?a=b";
+    const std::unique_ptr<uri> u = check_parse(str);
     EXPECT_EQ(uri_scheme::HTTP, u->scheme());
-    EXPECT_EQ(std::string(""), u->userinfo());
-    EXPECT_EQ(std::string(""), u->host());
+    EXPECT_STREQ(nullptr, u->userinfo());
+    EXPECT_STREQ(nullptr, u->host());
     EXPECT_EQ(80, u->port());
-    EXPECT_EQ(std::string(""), u->path());
-    EXPECT_EQ(std::string("a=b"), u->query());
-    EXPECT_EQ(std::string(""), u->fragment());
+    EXPECT_STREQ(nullptr, u->path());
+    EXPECT_STREQ("a=b", u->query());
+    EXPECT_STREQ(nullptr, u->fragment());
 }
 
 TEST_F(uri_test, fragment_only)
 {
-    setup_lexer("http:#anchor");
-    const std::unique_ptr<uri> u = parse();
+    std::string str = "http:#anchor";
+    const std::unique_ptr<uri> u = check_parse(str);
     EXPECT_EQ(uri_scheme::HTTP, u->scheme());
-    EXPECT_EQ(std::string(""), u->userinfo());
-    EXPECT_EQ(std::string(""), u->host());
+    EXPECT_STREQ(nullptr, u->userinfo());
+    EXPECT_STREQ(nullptr, u->host());
     EXPECT_EQ(80, u->port());
-    EXPECT_EQ(std::string(""), u->path());
-    EXPECT_EQ(std::string(""), u->query());
-    EXPECT_EQ(std::string("anchor"), u->fragment());
+    EXPECT_STREQ(nullptr, u->path());
+    EXPECT_STREQ(nullptr, u->query());
+    EXPECT_STREQ("anchor", u->fragment());
 }
 
 TEST_F(uri_test, no_scheme_no_authority)
 {
-    setup_lexer("/");
-    const std::unique_ptr<uri> u = parse();
+    std::string str = "/";
+    const std::unique_ptr<uri> u = check_parse(str);
     EXPECT_EQ(uri_scheme::UNKNOWN, u->scheme());
-    EXPECT_EQ(std::string(""), u->userinfo());
-    EXPECT_EQ(std::string(""), u->host());
+    EXPECT_STREQ(nullptr, u->userinfo());
+    EXPECT_STREQ(nullptr, u->host());
     EXPECT_EQ(0, u->port());
-    EXPECT_EQ(std::string("/"), u->path());
-    EXPECT_EQ(std::string(""), u->query());
-    EXPECT_EQ(std::string(""), u->fragment());
+    EXPECT_STREQ("", u->path());
+    EXPECT_STREQ(nullptr, u->query());
+    EXPECT_STREQ(nullptr, u->fragment());
 }
 
 TEST_F(uri_test, http_localhost_with_percent_encoding)
 {
-    setup_lexer("http://localhost/%48%65%6c%6C%6f%20%57%6F%72%6c%64%21");
-    const std::unique_ptr<uri> u = parse();
+    std::string str = "http://localhost/%48%65%6c%6C%6f%20%57%6F%72%6c%64%21";
+    const std::unique_ptr<uri> u = check_parse(str);
     EXPECT_EQ(uri_scheme::HTTP, u->scheme());
-    EXPECT_EQ(std::string(""), u->userinfo());
-    EXPECT_EQ(std::string("localhost"), u->host());
+    EXPECT_STREQ(nullptr, u->userinfo());
+    EXPECT_STREQ("localhost", u->host());
     EXPECT_EQ(80, u->port());
-    EXPECT_EQ(std::string("/Hello World!"), u->path());
-    EXPECT_EQ(std::string(""), u->query());
-    EXPECT_EQ(std::string(""), u->fragment());
+    EXPECT_STREQ("Hello World!", u->path());
+    EXPECT_STREQ(nullptr, u->query());
+    EXPECT_STREQ(nullptr, u->fragment());
 }
 
 TEST_F(uri_test, http_localhost_with_erroneous_percent_encoding)
 {
-    setup_lexer("http://localhost/%48%65%6g%6C%6f%20%57%6F%72%6c%64%21");
-    const std::unique_ptr<uri> u = parse(false);
-    EXPECT_EQ(uri_scheme::HTTP, u->scheme());
-    EXPECT_EQ(std::string(""), u->userinfo());
-    EXPECT_EQ(std::string("localhost"), u->host());
-    EXPECT_EQ(80, u->port());
-    EXPECT_EQ(std::string("/He"), u->path());
-    EXPECT_EQ(std::string(""), u->query());
-    EXPECT_EQ(std::string(""), u->fragment());
+    std::string str = "http://localhost/%48%65%6g%6C%6f%20%57%6F%72%6c%64%21";
+    const std::unique_ptr<uri> u = check_parse(str, false);
+    EXPECT_EQ(uri_scheme::UNKNOWN, u->scheme());
+    EXPECT_STREQ(nullptr, u->userinfo());
+    EXPECT_STREQ(nullptr, u->host());
+    EXPECT_EQ(0, u->port());
+    EXPECT_STREQ(nullptr, u->path());
+    EXPECT_STREQ(nullptr, u->query());
+    EXPECT_STREQ(nullptr, u->fragment());
 }
 
 TEST_F(uri_test, http_localhost_with_erroneous_percent_encoding2)
 {
-    setup_lexer("http://localhost/%48%65%6");
-    const std::unique_ptr<uri> u = parse(false);
-    EXPECT_EQ(uri_scheme::HTTP, u->scheme());
-    EXPECT_EQ(std::string(""), u->userinfo());
-    EXPECT_EQ(std::string("localhost"), u->host());
-    EXPECT_EQ(80, u->port());
-    EXPECT_EQ(std::string("/He"), u->path());
-    EXPECT_EQ(std::string(""), u->query());
-    EXPECT_EQ(std::string(""), u->fragment());
+    std::string str = "http://localhost/%48%65%6";
+    const std::unique_ptr<uri> u = check_parse(str, false);
+    EXPECT_EQ(uri_scheme::UNKNOWN, u->scheme());
+    EXPECT_STREQ(nullptr, u->userinfo());
+    EXPECT_STREQ(nullptr, u->host());
+    EXPECT_EQ(0, u->port());
+    EXPECT_STREQ(nullptr, u->path());
+    EXPECT_STREQ(nullptr, u->query());
+    EXPECT_STREQ(nullptr, u->fragment());
 }
 
 TEST_F(uri_test, erroneous_scheme)
 {
-    setup_lexer("html");
-    const std::unique_ptr<uri> u = parse(false);
+    std::string str = "html";
+    const std::unique_ptr<uri> u = check_parse(str, true);
     EXPECT_EQ(uri_scheme::UNKNOWN, u->scheme());
-    EXPECT_EQ(std::string(""), u->userinfo());
-    EXPECT_EQ(std::string(""), u->host());
+    EXPECT_STREQ(nullptr, u->userinfo());
+    EXPECT_STREQ("html", u->host());
     EXPECT_EQ(0, u->port());
-    EXPECT_EQ(std::string(""), u->path());
-    EXPECT_EQ(std::string(""), u->query());
-    EXPECT_EQ(std::string(""), u->fragment());
+    EXPECT_STREQ(nullptr, u->path());
+    EXPECT_STREQ(nullptr, u->query());
+    EXPECT_STREQ(nullptr, u->fragment());
 }
 
 TEST_F(uri_test, erroneous_scheme2)
 {
-    setup_lexer("http//");
-    const std::unique_ptr<uri> u = parse(false);
+    std::string str = "http//";
+    const std::unique_ptr<uri> u = check_parse(str, true);
     EXPECT_EQ(uri_scheme::UNKNOWN, u->scheme());
-    EXPECT_EQ(std::string(""), u->userinfo());
-    EXPECT_EQ(std::string(""), u->host());
+    EXPECT_STREQ(nullptr, u->userinfo());
+    EXPECT_STREQ("http", u->host());
     EXPECT_EQ(0, u->port());
-    EXPECT_EQ(std::string(""), u->path());
-    EXPECT_EQ(std::string(""), u->query());
-    EXPECT_EQ(std::string(""), u->fragment());
+    EXPECT_STREQ("", u->path());
+    EXPECT_STREQ(nullptr, u->query());
+    EXPECT_STREQ(nullptr, u->fragment());
 }
 
 TEST_F(uri_test, erroneous_scheme3)
 {
-    setup_lexer("http:");
-    const std::unique_ptr<uri> u = parse(false);
+    std::string str = "http:";
+    const std::unique_ptr<uri> u = check_parse(str, true);
     EXPECT_EQ(uri_scheme::HTTP, u->scheme());
-    EXPECT_EQ(std::string(""), u->userinfo());
-    EXPECT_EQ(std::string(""), u->host());
+    EXPECT_STREQ(nullptr, u->userinfo());
+    EXPECT_STREQ(nullptr, u->host());
     EXPECT_EQ(80, u->port());
-    EXPECT_EQ(std::string(""), u->path());
-    EXPECT_EQ(std::string(""), u->query());
-    EXPECT_EQ(std::string(""), u->fragment());
+    EXPECT_STREQ(nullptr, u->path());
+    EXPECT_STREQ(nullptr, u->query());
+    EXPECT_STREQ(nullptr, u->fragment());
 }
 
 TEST_F(uri_test, erroneous_query)
 {
-    setup_lexer("/?a%2");
-    const std::unique_ptr<uri> u = parse(false);
+    std::string str = "/?a%2";
+    const std::unique_ptr<uri> u = check_parse(str, false);
     EXPECT_EQ(uri_scheme::UNKNOWN, u->scheme());
-    EXPECT_EQ(std::string(""), u->userinfo());
-    EXPECT_EQ(std::string(""), u->host());
+    EXPECT_STREQ(nullptr, u->userinfo());
+    EXPECT_STREQ(nullptr, u->host());
     EXPECT_EQ(0, u->port());
-    EXPECT_EQ(u->path(), std::string("/"));
-    EXPECT_EQ(u->query(), std::string("a"));
-    EXPECT_EQ(u->fragment(), std::string(""));
+    EXPECT_STREQ(nullptr, u->path());
+    EXPECT_STREQ(nullptr, u->query());
+    EXPECT_STREQ(nullptr, u->fragment());
 }
 
 TEST_F(uri_test, erroneous_fragment)
 {
-    setup_lexer("/#a%2");
-    const std::unique_ptr<uri> u = parse(false);
+    std::string str = "/#a%2";
+    const std::unique_ptr<uri> u = check_parse(str, false);
     EXPECT_EQ(uri_scheme::UNKNOWN, u->scheme());
-    EXPECT_EQ(std::string(""), u->userinfo());
-    EXPECT_EQ(std::string(""), u->host());
+    EXPECT_STREQ(nullptr, u->userinfo());
+    EXPECT_STREQ(nullptr, u->host());
     EXPECT_EQ(0, u->port());
-    EXPECT_EQ(u->path(), std::string("/"));
-    EXPECT_EQ(u->query(), std::string(""));
-    EXPECT_EQ(u->fragment(), std::string("a"));
+    EXPECT_STREQ(nullptr, u->path());
+    EXPECT_STREQ(nullptr, u->query());
+    EXPECT_STREQ(nullptr, u->fragment());
 }
 
 TEST_F(uri_test, erroneous_authority1)
 {
-    setup_lexer("http://loca%2lhost/");
-    const std::unique_ptr<uri> u = parse(false);
-    EXPECT_EQ(uri_scheme::HTTP, u->scheme());
-    EXPECT_EQ(std::string(""), u->userinfo());
-    EXPECT_EQ(std::string("loca"), u->host());
-    EXPECT_EQ(80, u->port());
-    EXPECT_EQ(std::string(""), u->path());
-    EXPECT_EQ(std::string(""), u->query());
-    EXPECT_EQ(std::string(""), u->fragment());
+    std::string str = "http://loca%2lhost/";
+    const std::unique_ptr<uri> u = check_parse(str, false);
+    EXPECT_EQ(uri_scheme::UNKNOWN, u->scheme());
+    EXPECT_STREQ(nullptr, u->userinfo());
+    EXPECT_STREQ(nullptr, u->host());
+    EXPECT_EQ(0, u->port());
+    EXPECT_STREQ(nullptr, u->path());
+    EXPECT_STREQ(nullptr, u->query());
+    EXPECT_STREQ(nullptr, u->fragment());
 }
 
 TEST_F(uri_test, erroneous_authority2)
 {
-    setup_lexer("http://user@loca%2lhost/");
-    const std::unique_ptr<uri> u = parse(false);
-    EXPECT_EQ(uri_scheme::HTTP, u->scheme());
-    EXPECT_EQ(std::string("user"), u->userinfo());
-    EXPECT_EQ(std::string("loca"), u->host());
-    EXPECT_EQ(80, u->port());
-    EXPECT_EQ(std::string(""), u->path());
-    EXPECT_EQ(std::string(""), u->query());
-    EXPECT_EQ(std::string(""), u->fragment());
+    std::string str = "http://user@loca%2lhost/";
+    const std::unique_ptr<uri> u = check_parse(str, false);
+    EXPECT_EQ(uri_scheme::UNKNOWN, u->scheme());
+    EXPECT_STREQ(nullptr, u->userinfo());
+    EXPECT_STREQ(nullptr, u->host());
+    EXPECT_EQ(0, u->port());
+    EXPECT_STREQ(nullptr, u->path());
+    EXPECT_STREQ(nullptr, u->query());
+    EXPECT_STREQ(nullptr, u->fragment());
 }
 
 } // namespace hutzn

@@ -19,7 +19,6 @@
 #ifndef LIBHUTZNOHMD_REQUEST_URI_HPP
 #define LIBHUTZNOHMD_REQUEST_URI_HPP
 
-#include <request/lexer.hpp>
 #include <http/parser/utility/push_back_string.hpp>
 
 #include <hutzn.hpp>
@@ -37,7 +36,7 @@ public:
     explicit uri(const uri& rhs) = delete;
     uri& operator=(const uri& rhs) = delete;
 
-    bool parse(lexer& lex, int32_t& character, const bool skip_scheme);
+    bool parse(char_t*& data, size_t& remaining, bool skip_scheme = false);
 
     const uri_scheme& scheme(void) const;
     const char_t* userinfo(void) const;
@@ -47,27 +46,41 @@ public:
     const char_t* query(void) const;
     const char_t* fragment(void) const;
 
-private:
-    bool parse_scheme_and_authority(lexer& lex, int32_t& character,
-                                    const bool skip_scheme);
-    bool parse_scheme(lexer& lex, int32_t& ch);
-    bool parse_userinfo_and_authority(lexer& lex, int32_t& character);
-    bool parse_authority(lexer& lex, int32_t& character);
-    bool parse_authority_1st_pass(lexer& lex, int32_t& character);
-    bool parse_authority_2nd_pass(void);
+    struct first_pass_data
+    {
+        const char_t* scheme{nullptr};
+        size_t scheme_size{0};
 
-    static bool is_path_separator(const int32_t ch);
-    static bool is_query_separator(const int32_t ch);
-    static bool is_fragment_separator(const int32_t ch);
+        char_t* authority{nullptr};
+        size_t authority_size{0};
+
+        const char_t* path{nullptr};
+        size_t path_size{0};
+
+        const char_t* query{nullptr};
+        size_t query_size{0};
+
+        const char_t* fragment{nullptr};
+        size_t fragment_size{0};
+    };
+
+private:
+    bool parse_1st_pass(char_t*& raw, size_t& remaining, first_pass_data& data,
+                        bool skip_scheme);
+    bool parse_scheme(const char_t* const scheme_ptr, const size_t& size);
+    bool parse_authority(char_t* const authority_ptr, const size_t& size);
 
     bool already_called_;
     uri_scheme scheme_;
-    http::push_back_string<16> userinfo_;
-    http::push_back_string<32> host_;
+    const char_t* userinfo_;
+    const char_t* host_;
     uint16_t port_;
-    http::push_back_string<32> path_;
-    http::push_back_string<32> query_;
-    http::push_back_string<32> fragment_;
+    const char_t* path_;
+    const char_t* query_;
+    const char_t* fragment_;
+
+    friend class uri_test;
+    friend class uri_test_first_pass_nullptr_Test;
 };
 
 } // namespace hutzn
