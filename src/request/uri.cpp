@@ -29,13 +29,13 @@ namespace
 
 //! Parses a URI specific word stopping if the continue condition gets wrong.
 template <size_t size, typename continue_function>
-bool parse_uri_word(int32_t& character, http::push_back_string<size>& result,
+bool parse_uri_word(int32_t& ch, http::push_back_string<size>& result,
                     const continue_function& continue_condition_functor,
                     lexer& l)
 {
-    while ((character >= 0) && (true == continue_condition_functor(
-                                            static_cast<uint8_t>(character)))) {
-        if ('%' == character) {
+    while ((ch >= 0) &&
+           (true == continue_condition_functor(static_cast<uint8_t>(ch)))) {
+        if ('%' == ch) {
             int32_t a = l.get();
             int32_t b = l.get();
             if ((a == -1) || (b == -1)) {
@@ -50,9 +50,9 @@ bool parse_uri_word(int32_t& character, http::push_back_string<size>& result,
 
             result.push_back(static_cast<char_t>((d << 4) + e));
         } else {
-            result.push_back(static_cast<char_t>(character));
+            result.push_back(static_cast<char_t>(ch));
         }
-        character = l.get();
+        ch = l.get();
     }
 
     return true;
@@ -61,7 +61,7 @@ bool parse_uri_word(int32_t& character, http::push_back_string<size>& result,
 } // namespace
 
 uri::uri(void)
-    : valid_(false)
+    : already_called_(false)
     , scheme_(uri_scheme::UNKNOWN)
     , userinfo_()
     , host_()
@@ -74,41 +74,42 @@ uri::uri(void)
 
 bool uri::parse(lexer& lex, int32_t& ch, const bool skip_scheme)
 {
-    if (true == valid_) {
-        return true;
-    }
+    bool result = false;
+    if (false == already_called_) {
+        already_called_ = true;
 
-    if (false == parse_scheme_and_authority(lex, ch, skip_scheme)) {
-        return false;
-    }
-
-    if ((false == is_query_separator(ch)) &&
-        (false == is_fragment_separator(ch))) {
-        // Must be a path or the end of the URI.
-        if (false ==
-            parse_uri_word(ch, path_, &is_valid_uri_path_character, lex)) {
+        if (false == parse_scheme_and_authority(lex, ch, skip_scheme)) {
             return false;
         }
-    }
 
-    if (true == is_query_separator(ch)) {
-        ch = lex.get();
-        if (false ==
-            parse_uri_word(ch, query_, &is_valid_uri_query_character, lex)) {
-            return false;
+        if ((false == is_query_separator(ch)) &&
+            (false == is_fragment_separator(ch))) {
+            // Must be a path or the end of the URI.
+            if (false ==
+                parse_uri_word(ch, path_, &is_valid_uri_path_character, lex)) {
+                return false;
+            }
         }
-    }
 
-    if (true == is_fragment_separator(ch)) {
-        ch = lex.get();
-        if (false == parse_uri_word(ch, fragment_,
-                                    &is_valid_uri_fragment_character, lex)) {
-            return false;
+        if (true == is_query_separator(ch)) {
+            ch = lex.get();
+            if (false == parse_uri_word(ch, query_,
+                                        &is_valid_uri_query_character, lex)) {
+                return false;
+            }
         }
-    }
 
-    valid_ = true;
-    return true;
+        if (true == is_fragment_separator(ch)) {
+            ch = lex.get();
+            if (false == parse_uri_word(ch, fragment_,
+                                        &is_valid_uri_fragment_character,
+                                        lex)) {
+                return false;
+            }
+        }
+        result = true;
+    }
+    return result;
 }
 
 const uri_scheme& uri::scheme(void) const

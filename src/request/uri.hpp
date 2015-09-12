@@ -60,7 +60,7 @@ private:
     static bool is_query_separator(const int32_t ch);
     static bool is_fragment_separator(const int32_t ch);
 
-    bool valid_;
+    bool already_called_;
     uri_scheme scheme_;
     http::push_back_string<16> userinfo_;
     http::push_back_string<32> host_;
