@@ -152,28 +152,26 @@ bool uri::parse_scheme_and_authority(lexer& lex, int32_t& ch,
     // Check whether there is a scheme and authority or neither of them. This is
     // not conform with RFC 3986, but HTTP specifies request URIs without scheme
     // and authority.
+    bool result = false;
     if (false == is_path_separator(ch)) {
         if (false == skip_scheme) {
-            if (false == parse_scheme(lex, ch)) {
-                return false;
-            }
-
-            ch = lex.get();
-            if (ch < 0) {
-                return false;
-            }
-
-            if (false == parse_userinfo_and_authority(lex, ch)) {
-                return false;
+            if (true == parse_scheme(lex, ch)) {
+                ch = lex.get();
+                if ((ch >= 0) &&
+                    (true == parse_userinfo_and_authority(lex, ch))) {
+                    result = true;
+                }
             }
         } else {
-            if (false == parse_authority(lex, ch)) {
-                return false;
+            if (true == parse_authority(lex, ch)) {
+                result = true;
             }
         }
+    } else {
+        return true;
     }
 
-    return true;
+    return result;
 }
 
 bool uri::parse_scheme(lexer& lex, int32_t& ch)
