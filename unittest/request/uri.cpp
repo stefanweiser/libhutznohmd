@@ -385,7 +385,7 @@ TEST_F(uri_test, complete_uri)
     EXPECT_STREQ("anchor", u->fragment());
 }
 
-TEST_F(uri_test, erroneous_port)
+TEST_F(uri_test, erroneous_port_1)
 {
     std::string str = "http://localhost:80000/";
     const std::unique_ptr<uri> u = check_parse(str, false);
@@ -541,7 +541,7 @@ TEST_F(uri_test, erroneous_scheme)
     EXPECT_STREQ(nullptr, u->fragment());
 }
 
-TEST_F(uri_test, erroneous_scheme3)
+TEST_F(uri_test, only_scheme)
 {
     std::string str = "http:";
     const std::unique_ptr<uri> u = check_parse(str, true);
