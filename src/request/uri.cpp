@@ -174,6 +174,7 @@ size_t uri::prepare_uri_data(char_t* const data, const size_t length)
             data[tail++] = ch;
         }
     }
+
     return tail;
 }
 
@@ -199,7 +200,7 @@ bool uri::parse_scheme_and_authority(lexer& lex, int32_t& ch,
             }
         }
     } else {
-        return true;
+        result = true;
     }
 
     return result;
@@ -217,11 +218,16 @@ bool uri::parse_scheme(lexer& lex, int32_t& ch)
         [](const char_t c) -> bool { return (':' == c); };
 
     const size_t begin_index = lex.prev_index();
-    const size_t length = parse_specific(lex, ch, equals_scheme_separator);
+    size_t max_length = 7;
+    const char_t* data = lex.header_data(begin_index);
+    const size_t length =
+        parse_specific(data, max_length, equals_scheme_separator);
 
     auto r = t.find(lex.header_data(begin_index), length);
     if (r.used_size() == length) {
         std::tie(scheme_, port_) = r.value();
+        lex.set_index(length);
+        ch = lex.get();
     }
 
     return (uri_scheme::UNKNOWN != scheme_);

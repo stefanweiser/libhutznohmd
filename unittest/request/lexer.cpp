@@ -248,10 +248,11 @@ TEST_F(lexer_test, get_length_from_parse_specific)
     lexer lex(connection);
     EXPECT_FALSE(lex.fetch_header());
     ASSERT_EQ(0, lex.index());
-    int32_t ch = lex.get();
-    EXPECT_EQ(3, parse_specific(lex, ch, is_d));
-    EXPECT_EQ(4, lex.index());
-    EXPECT_EQ('e', lex.get());
+    const char_t* data = lex.header_data(0);
+    size_t max_length = chunk.size();
+    EXPECT_EQ(3, parse_specific(data, max_length, is_d));
+    EXPECT_EQ(chunk.size() - 3, max_length);
+    EXPECT_EQ(lex.header_data(3), data);
 }
 
 TEST_F(lexer_test, parse_specific_fails)
@@ -273,11 +274,11 @@ TEST_F(lexer_test, parse_specific_fails)
     lexer lex(connection);
     EXPECT_FALSE(lex.fetch_header());
     ASSERT_EQ(0, lex.index());
-    int32_t ch = lex.get();
-    EXPECT_EQ(0, parse_specific(lex, ch, is_i));
-    EXPECT_EQ('a', ch);
-    EXPECT_EQ(1, lex.index());
-    EXPECT_EQ('b', lex.get());
+    const char_t* data = lex.header_data(0);
+    size_t max_length = chunk.size();
+    EXPECT_EQ(0, parse_specific(data, max_length, is_i));
+    EXPECT_EQ(chunk.size(), max_length);
+    EXPECT_EQ(lex.header_data(0), data);
 }
 
 TEST_F(lexer_test, content)
