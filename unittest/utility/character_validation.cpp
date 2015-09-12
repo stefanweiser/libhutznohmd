@@ -100,6 +100,10 @@ TEST(character_handling, reserved_uri_character)
     std::array<bool, 256> validity_map;
     std::fill(validity_map.begin(), validity_map.end(), false);
 
+    // Possible of a URI in general.
+    validity_map[' '] = true;
+    validity_map['\n'] = true;
+
     // gen-delims
     validity_map[':'] = true;
     validity_map['/'] = true;
