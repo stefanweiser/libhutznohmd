@@ -111,8 +111,8 @@ bool uri::parse(char_t*& raw, size_t& remaining, bool skip_scheme)
     bool result = passed_first_pass;
     if (true == passed_first_pass) {
         // This implementation supports both: URIs with and without scheme or
-        // authority. Though is not conform with RFC 3986, but HTTP specifies
-        // request URIs without scheme and authority.
+        // authority. Though it is not strictly conforming with RFC 3986, HTTP
+        // specifies request URIs without scheme and authority.
         if (data.scheme_size > 0) {
             if (false == parse_scheme(data.scheme, data.scheme_size)) {
                 result = false;
