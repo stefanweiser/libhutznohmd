@@ -37,7 +37,7 @@ public:
     explicit uri(const uri& rhs) = delete;
     uri& operator=(const uri& rhs) = delete;
 
-    bool parse(lexer& l, int32_t& character, const bool skip_scheme);
+    bool parse(lexer& lex, int32_t& character, const bool skip_scheme);
 
     void set_scheme(const uri_scheme& new_scheme);
     bool set_userinfo(const char_t* const new_userinfo);
@@ -54,16 +54,17 @@ public:
     const char_t* fragment(void) const;
 
 private:
-    bool parse_scheme_and_authority(int32_t& character, const bool skip_scheme);
-    bool parse_scheme(int32_t& ch);
-    bool parse_userinfo_and_authority(int32_t& character);
-    bool parse_authority(int32_t& character);
-    bool parse_authority_1st_pass(int32_t& character);
+    bool parse_scheme_and_authority(lexer& lex, int32_t& character,
+                                    const bool skip_scheme);
+    bool parse_scheme(lexer& lex, int32_t& ch);
+    bool parse_userinfo_and_authority(lexer& lex, int32_t& character);
+    bool parse_authority(lexer& lex, int32_t& character);
+    bool parse_authority_1st_pass(lexer& lex, int32_t& character);
     bool parse_authority_2nd_pass(void);
 
-    bool parse_word(void);
+    static bool is_query_seperator(const int32_t ch);
+    static bool is_fragment_seperator(const int32_t ch);
 
-    lexer* lexer_;
     bool valid_;
     uri_scheme scheme_;
     http::push_back_string<16> userinfo_;
