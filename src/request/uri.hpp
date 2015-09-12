@@ -56,6 +56,7 @@ private:
     bool parse_authority_1st_pass(lexer& lex, int32_t& character);
     bool parse_authority_2nd_pass(void);
 
+    static bool is_path_seperator(const int32_t ch);
     static bool is_query_seperator(const int32_t ch);
     static bool is_fragment_seperator(const int32_t ch);
 

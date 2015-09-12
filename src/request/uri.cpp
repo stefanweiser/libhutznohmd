@@ -146,28 +146,28 @@ const char_t* uri::fragment(void) const
     return fragment_.c_str();
 }
 
-bool uri::parse_scheme_and_authority(lexer& lex, int32_t& character,
+bool uri::parse_scheme_and_authority(lexer& lex, int32_t& ch,
                                      const bool skip_scheme)
 {
     // Check whether there is a scheme and authority or neither of them. This is
     // not conform with RFC 3986, but HTTP specifies request URIs without scheme
     // and authority.
-    if ('/' != character) {
+    if (false == is_path_seperator(ch)) {
         if (false == skip_scheme) {
-            if (false == parse_scheme(lex, character)) {
+            if (false == parse_scheme(lex, ch)) {
                 return false;
             }
 
-            character = lex.get();
-            if (character < 0) {
+            ch = lex.get();
+            if (ch < 0) {
                 return false;
             }
 
-            if (false == parse_userinfo_and_authority(lex, character)) {
+            if (false == parse_userinfo_and_authority(lex, ch)) {
                 return false;
             }
         } else {
-            if (false == parse_authority(lex, character)) {
+            if (false == parse_authority(lex, ch)) {
                 return false;
             }
         }
@@ -293,6 +293,11 @@ bool uri::parse_authority_2nd_pass(void)
     }
 
     return true;
+}
+
+bool uri::is_path_seperator(const int32_t ch)
+{
+    return (static_cast<int32_t>('/') == ch);
 }
 
 bool uri::is_query_seperator(const int32_t ch)
