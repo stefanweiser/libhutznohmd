@@ -36,12 +36,12 @@ static trie<http_verb> get_method_trie(size_t& max_size)
 
     // Filling methods and automatically calculate the maximum length.
     max_size = 0;
-    const std::vector<std::pair<const char* const, http_verb>> verbs = {
+    const std::vector<std::pair<const char_t* const, http_verb>> verbs = {
         std::make_pair("GET", http_verb::GET),
         std::make_pair("PUT", http_verb::PUT),
         std::make_pair("DELETE", http_verb::DELETE),
         std::make_pair("POST", http_verb::POST)};
-    for (const std::pair<const char* const, http_verb>& pair : verbs) {
+    for (const std::pair<const char_t* const, http_verb>& pair : verbs) {
         result.insert(pair.first, pair.second);
         max_size = std::max(max_size, ::strlen(pair.first));
     }
@@ -55,11 +55,11 @@ static trie<http_version> get_version_trie(size_t& max_size)
 
     // Filling versions and automatically calculate the maximum length.
     max_size = 0;
-    const std::vector<std::pair<const char* const, http_version>> methods = {
+    const std::vector<std::pair<const char_t* const, http_version>> methods = {
         std::make_pair("HTTP/1.0", http_version::HTTP_1_0),
         std::make_pair("HTTP/1.1", http_version::HTTP_1_1),
         std::make_pair("HTTP/2", http_version::HTTP_2)};
-    for (const std::pair<const char* const, http_version>& pair : methods) {
+    for (const std::pair<const char_t* const, http_version>& pair : methods) {
         result.insert(pair.first, pair.second);
         max_size = std::max(max_size, ::strlen(pair.first));
     }
