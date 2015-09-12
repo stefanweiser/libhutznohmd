@@ -281,11 +281,11 @@ TEST(character_handling, token_characters)
     }
     validity_map[127] = false;
 
-    // And no seperators
-    std::vector<char_t> seperators = {'(', ')',  '<', '>', '@', ',', ';',
+    // And no separators
+    std::vector<char_t> separators = {'(', ')',  '<', '>', '@', ',', ';',
                                       ':', '\\', '"', '/', '[', ']', '?',
                                       '=', '{',  '}', ' ', '\t'};
-    for (const char_t& c : seperators) {
+    for (const char_t& c : separators) {
         validity_map[static_cast<uint8_t>(c)] = false;
     }
 

@@ -32,12 +32,12 @@ namespace http
 //! Encodes data in base64 format based defined in
 //! [RFC4648|http://tools.ietf.org/html/rfc4648] and returns the encoded
 //! string. The characters 62 and 63 are '+' and '/'. The encoding doesn't
-//! have lines seperated and uses padding characters at the end.
+//! have lines separated and uses padding characters at the end.
 std::string encode_base64(const std::vector<uint8_t>& data);
 
 //! Decodes a base64 formatted string into binary data. It will act a bit
 //! more tolerant than [RFC4648|http://tools.ietf.org/html/rfc4648] in case
-//! of invalid characters, line seperators, char 62 and char 63 encodings.
+//! of invalid characters, line separators, char 62 and char 63 encodings.
 //! It will accept '+' and '-' as character 62 and therefore accepts also '/'
 //! and '_' for character 63. It will skip any characters, that are not part
 //! of the encoding.

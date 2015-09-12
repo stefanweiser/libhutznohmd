@@ -221,8 +221,8 @@ bool request::parse_header(int32_t& ch)
 
     const char_t* key = lexer_.header_data(lexer_.prev_index());
     while (ch != -1) {
-        if (true == is_key_value_seperator(ch)) {
-            // Overwrite the seperator with null. The key is getting null
+        if (true == is_key_value_separator(ch)) {
+            // Overwrite the separator with null. The key is getting null
             // terminated by this.
             lexer_.header_data(lexer_.prev_index())[0] = '\0';
             break;
@@ -364,7 +364,7 @@ bool request::is_newline(const int32_t ch)
     return (static_cast<int32_t>('\n') == ch);
 }
 
-bool request::is_key_value_seperator(const int32_t ch)
+bool request::is_key_value_separator(const int32_t ch)
 {
     // The character has to get converted into the more common data type.
     // Otherwise the comparison may offer some ambiguities (e.g. 1024 get to 0).

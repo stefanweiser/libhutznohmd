@@ -82,8 +82,8 @@ bool uri::parse(lexer& lex, int32_t& ch, const bool skip_scheme)
         return false;
     }
 
-    if ((false == is_query_seperator(ch)) &&
-        (false == is_fragment_seperator(ch))) {
+    if ((false == is_query_separator(ch)) &&
+        (false == is_fragment_separator(ch))) {
         // Must be a path or the end of the URI.
         if (false ==
             parse_uri_word(ch, path_, &is_valid_uri_path_character, lex)) {
@@ -91,7 +91,7 @@ bool uri::parse(lexer& lex, int32_t& ch, const bool skip_scheme)
         }
     }
 
-    if (false == is_query_seperator(ch)) {
+    if (false == is_query_separator(ch)) {
         ch = lex.get();
         if (false ==
             parse_uri_word(ch, query_, &is_valid_uri_query_character, lex)) {
@@ -99,7 +99,7 @@ bool uri::parse(lexer& lex, int32_t& ch, const bool skip_scheme)
         }
     }
 
-    if (false == is_fragment_seperator(ch)) {
+    if (false == is_fragment_separator(ch)) {
         ch = lex.get();
         if (false == parse_uri_word(ch, fragment_,
                                     &is_valid_uri_fragment_character, lex)) {
@@ -152,7 +152,7 @@ bool uri::parse_scheme_and_authority(lexer& lex, int32_t& ch,
     // Check whether there is a scheme and authority or neither of them. This is
     // not conform with RFC 3986, but HTTP specifies request URIs without scheme
     // and authority.
-    if (false == is_path_seperator(ch)) {
+    if (false == is_path_separator(ch)) {
         if (false == skip_scheme) {
             if (false == parse_scheme(lex, ch)) {
                 return false;
@@ -184,11 +184,11 @@ bool uri::parse_scheme(lexer& lex, int32_t& ch)
     t.insert("https", value_type(uri_scheme::HTTPS, 443));
     t.insert("mailto", value_type(uri_scheme::MAILTO, 0));
 
-    auto equals_scheme_seperator =
+    auto equals_scheme_separator =
         [](const char_t c) -> bool { return (':' == c); };
 
     const size_t begin_index = lex.prev_index();
-    const size_t length = parse_specific(lex, ch, equals_scheme_seperator);
+    const size_t length = parse_specific(lex, ch, equals_scheme_separator);
 
     auto r = t.find(lex.header_data(begin_index), length);
     if (r.used_size() == length) {
@@ -295,17 +295,17 @@ bool uri::parse_authority_2nd_pass(void)
     return true;
 }
 
-bool uri::is_path_seperator(const int32_t ch)
+bool uri::is_path_separator(const int32_t ch)
 {
     return (static_cast<int32_t>('/') == ch);
 }
 
-bool uri::is_query_seperator(const int32_t ch)
+bool uri::is_query_separator(const int32_t ch)
 {
     return (static_cast<int32_t>('?') == ch);
 }
 
-bool uri::is_fragment_seperator(const int32_t ch)
+bool uri::is_fragment_separator(const int32_t ch)
 {
     return (static_cast<int32_t>('#') == ch);
 }

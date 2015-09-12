@@ -68,7 +68,7 @@ public:
 private:
     static bool is_whitespace(const int32_t ch);
     static bool is_newline(const int32_t ch);
-    static bool is_key_value_seperator(const int32_t ch);
+    static bool is_key_value_separator(const int32_t ch);
 
     lexer lexer_;
 
