@@ -398,6 +398,19 @@ TEST_F(uri_test, erroneous_port)
     EXPECT_STREQ(nullptr, u->fragment());
 }
 
+TEST_F(uri_test, erroneous_port_2)
+{
+    std::string str = "http://localhost:8x/";
+    const std::unique_ptr<uri> u = check_parse(str, false);
+    EXPECT_EQ(uri_scheme::HTTP, u->scheme());
+    EXPECT_STREQ(nullptr, u->userinfo());
+    EXPECT_STREQ("localhost", u->host());
+    EXPECT_EQ(80, u->port());
+    EXPECT_STREQ("", u->path());
+    EXPECT_STREQ(nullptr, u->query());
+    EXPECT_STREQ(nullptr, u->fragment());
+}
+
 TEST_F(uri_test, mailto_user_at_localhost)
 {
     std::string str = "mailto://user@localhost";
@@ -407,6 +420,19 @@ TEST_F(uri_test, mailto_user_at_localhost)
     EXPECT_STREQ("localhost", u->host());
     EXPECT_EQ(0, u->port());
     EXPECT_STREQ(nullptr, u->path());
+    EXPECT_STREQ(nullptr, u->query());
+    EXPECT_STREQ(nullptr, u->fragment());
+}
+
+TEST_F(uri_test, userinfo_at_localhost)
+{
+    std::string str = "user:pass@localhost/x";
+    const std::unique_ptr<uri> u = check_parse(str, true, true);
+    EXPECT_EQ(uri_scheme::UNKNOWN, u->scheme());
+    EXPECT_STREQ("user:pass", u->userinfo());
+    EXPECT_STREQ("localhost", u->host());
+    EXPECT_EQ(0, u->port());
+    EXPECT_STREQ("x", u->path());
     EXPECT_STREQ(nullptr, u->query());
     EXPECT_STREQ(nullptr, u->fragment());
 }
