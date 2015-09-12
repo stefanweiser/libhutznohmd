@@ -541,19 +541,6 @@ TEST_F(uri_test, erroneous_scheme)
     EXPECT_STREQ(nullptr, u->fragment());
 }
 
-TEST_F(uri_test, erroneous_scheme2)
-{
-    std::string str = "http//";
-    const std::unique_ptr<uri> u = check_parse(str, true);
-    EXPECT_EQ(uri_scheme::UNKNOWN, u->scheme());
-    EXPECT_STREQ(nullptr, u->userinfo());
-    EXPECT_STREQ("http", u->host());
-    EXPECT_EQ(0, u->port());
-    EXPECT_STREQ("", u->path());
-    EXPECT_STREQ(nullptr, u->query());
-    EXPECT_STREQ(nullptr, u->fragment());
-}
-
 TEST_F(uri_test, erroneous_scheme3)
 {
     std::string str = "http:";
