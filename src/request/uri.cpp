@@ -178,7 +178,8 @@ bool uri::parse_1st_pass(char_t*& raw, size_t& remaining, first_pass_data& data,
         static const select_char_map path_query_fragment_map =
             make_select_char_map('/', '?', '#');
 
-        if (false == path_query_fragment_map[static_cast<uint8_t>(*raw)]) {
+        char_t c = *raw;
+        if (false == path_query_fragment_map[static_cast<uint8_t>(c)]) {
             char_t* scheme_or_authority_data = raw;
             size_t length = parse_uri_word(raw, remaining, ':', '/', '?', '#',
                                            ' ', '\t', '\r', '\n');
@@ -196,18 +197,14 @@ bool uri::parse_1st_pass(char_t*& raw, size_t& remaining, first_pass_data& data,
             } else {
                 length += parse_uri_word(raw, remaining, '/', '?', '#', ' ',
                                          '\t', '\r', '\n');
+                c = *raw;
                 scheme_or_authority_data[length] = '\0';
                 data.authority = scheme_or_authority_data;
                 data.authority_size = length;
-                if (remaining > 0) {
-                    remaining--;
-                    raw++;
-                }
             }
         }
 
         if (remaining > 0) {
-            char_t c = *raw;
             if (false == path_query_fragment_map[static_cast<uint8_t>(c)]) {
                 char_t* authority_data = raw;
                 size_t length = parse_uri_word(raw, remaining, '/', '?', '#',

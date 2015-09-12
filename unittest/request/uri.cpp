@@ -191,7 +191,7 @@ TEST_F(uri_test, first_pass_no_authority)
     std::string str = "http:///";
     const uri::first_pass_data data = check_1st_pass(str, true);
     EXPECT_STREQ("http", data.scheme);
-    EXPECT_STREQ(nullptr, data.authority);
+    EXPECT_STREQ("", data.authority);
     EXPECT_STREQ("", data.path);
     EXPECT_STREQ(nullptr, data.query);
     EXPECT_STREQ(nullptr, data.fragment);
@@ -207,7 +207,7 @@ TEST_F(uri_test, first_pass_only_query)
     std::string str = "http://?";
     const uri::first_pass_data data = check_1st_pass(str, true);
     EXPECT_STREQ("http", data.scheme);
-    EXPECT_STREQ(nullptr, data.authority);
+    EXPECT_STREQ("", data.authority);
     EXPECT_STREQ(nullptr, data.path);
     EXPECT_STREQ("", data.query);
     EXPECT_STREQ(nullptr, data.fragment);
@@ -223,7 +223,7 @@ TEST_F(uri_test, first_pass_only_fragment)
     std::string str = "http://#";
     const uri::first_pass_data data = check_1st_pass(str, true);
     EXPECT_STREQ("http", data.scheme);
-    EXPECT_STREQ(nullptr, data.authority);
+    EXPECT_STREQ("", data.authority);
     EXPECT_STREQ(nullptr, data.path);
     EXPECT_STREQ(nullptr, data.query);
     EXPECT_STREQ("", data.fragment);
@@ -530,11 +530,11 @@ TEST_F(uri_test, http_localhost_with_erroneous_percent_encoding2)
 
 TEST_F(uri_test, erroneous_scheme)
 {
-    std::string str = "html";
-    const std::unique_ptr<uri> u = check_parse(str, true);
+    std::string str = "html:";
+    const std::unique_ptr<uri> u = check_parse(str, false);
     EXPECT_EQ(uri_scheme::UNKNOWN, u->scheme());
     EXPECT_STREQ(nullptr, u->userinfo());
-    EXPECT_STREQ("html", u->host());
+    EXPECT_STREQ(nullptr, u->host());
     EXPECT_EQ(0, u->port());
     EXPECT_STREQ(nullptr, u->path());
     EXPECT_STREQ(nullptr, u->query());
