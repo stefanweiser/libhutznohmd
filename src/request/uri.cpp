@@ -17,6 +17,7 @@
  */
 
 #include <utility/character_validation.hpp>
+#include <utility/select_char_map.hpp>
 #include <utility/trie.hpp>
 
 #include "uri.hpp"
@@ -27,11 +28,45 @@ namespace hutzn
 namespace
 {
 
+template <typename... tn>
+size_t parse_uri_word(const char_t* data, size_t& remaining,
+                      const tn... select_chars)
+{
+    static const select_char_map map = make_select_char_map(select_chars...);
+
+    size_t head = 0;
+    size_t tail = 0;
+    bool stop = false;
+    while (false == stop) {
+        const char_t ch = data[head];
+        if ((true == map[static_cast<uint8_t>(ch)]) || (0 == remaining)) {
+            stop = true;
+        } else if ('%' == ch) {
+            if ((remaining - head) > 2) {
+                char_t a = from_hex(data[head + 1]);
+                char_t b = from_hex(data[head + 2]);
+                data[tail] = (a << 4) + b;
+                head += 3;
+                tail++;
+            } else {
+                stop = true;
+            }
+        } else {
+            data[tail] = data[head];
+            head++;
+            tail++;
+        }
+    }
+
+    remaining -= head;
+    return tail;
+}
+
 //! Parses a URI specific word stopping if the continue condition gets wrong.
 template <size_t size, typename continue_function>
-bool parse_uri_word(int32_t& ch, http::push_back_string<size>& result,
-                    const continue_function& continue_condition_functor,
-                    lexer& l)
+bool parse_uri_word_(int32_t& ch, http::push_back_string<size>& result,
+                     const continue_function& continue_condition_functor,
+                     lexer& l)
 {
     while ((ch >= 0) &&
            (true == continue_condition_functor(static_cast<uint8_t>(ch)))) {
@@ -86,24 +121,24 @@ bool uri::parse(lexer& lex, int32_t& ch, const bool skip_scheme)
             (false == is_fragment_separator(ch))) {
             // Must be a path or the end of the URI.
             if (false ==
-                parse_uri_word(ch, path_, &is_valid_uri_path_character, lex)) {
+                parse_uri_word_(ch, path_, &is_valid_uri_path_character, lex)) {
                 return false;
             }
         }
 
         if (true == is_query_separator(ch)) {
             ch = lex.get();
-            if (false == parse_uri_word(ch, query_,
-                                        &is_valid_uri_query_character, lex)) {
+            if (false == parse_uri_word_(ch, query_,
+                                         &is_valid_uri_query_character, lex)) {
                 return false;
             }
         }
 
         if (true == is_fragment_separator(ch)) {
             ch = lex.get();
-            if (false == parse_uri_word(ch, fragment_,
-                                        &is_valid_uri_fragment_character,
-                                        lex)) {
+            if (false == parse_uri_word_(ch, fragment_,
+                                         &is_valid_uri_fragment_character,
+                                         lex)) {
                 return false;
             }
         }
@@ -145,37 +180,6 @@ const char_t* uri::query(void) const
 const char_t* uri::fragment(void) const
 {
     return fragment_.c_str();
-}
-
-size_t uri::prepare_uri_data(char_t* const data, const size_t length)
-{
-    assert(data != nullptr);
-
-    size_t head = 0;
-    size_t tail = 0;
-    while (head < length) {
-        const char_t ch = data[head++];
-        if ('%' == ch) {
-            if ((head + 2) <= length) {
-                const int16_t d = from_hex(data[head++]);
-                const int16_t e = from_hex(data[head++]);
-                if ((d != -1) && (e != -1)) {
-                    data[tail++] =
-                        static_cast<char_t>(static_cast<uint8_t>((d << 4) + e));
-                } else {
-                    tail = 0;
-                    head = length;
-                }
-            } else {
-                tail = 0;
-                head = length;
-            }
-        } else {
-            data[tail++] = ch;
-        }
-    }
-
-    return tail;
 }
 
 bool uri::parse_scheme_and_authority(lexer& lex, int32_t& ch,
@@ -272,8 +276,8 @@ bool uri::parse_authority(lexer& lex, int32_t& character)
 
 bool uri::parse_authority_1st_pass(lexer& lex, int32_t& character)
 {
-    if (false == parse_uri_word(character, host_,
-                                &is_valid_uri_authority_character, lex)) {
+    if (false == parse_uri_word_(character, host_,
+                                 &is_valid_uri_authority_character, lex)) {
         return false;
     }
 
@@ -283,8 +287,8 @@ bool uri::parse_authority_1st_pass(lexer& lex, int32_t& character)
         character = lex.get();
     }
 
-    if (false == parse_uri_word(character, host_,
-                                &is_valid_uri_authority_character, lex)) {
+    if (false == parse_uri_word_(character, host_,
+                                 &is_valid_uri_authority_character, lex)) {
         return false;
     }
 
