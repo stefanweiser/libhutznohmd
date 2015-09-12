@@ -91,7 +91,7 @@ bool uri::parse(lexer& lex, int32_t& ch, const bool skip_scheme)
         }
     }
 
-    if (false == is_query_separator(ch)) {
+    if (true == is_query_separator(ch)) {
         ch = lex.get();
         if (false ==
             parse_uri_word(ch, query_, &is_valid_uri_query_character, lex)) {
@@ -99,7 +99,7 @@ bool uri::parse(lexer& lex, int32_t& ch, const bool skip_scheme)
         }
     }
 
-    if (false == is_fragment_separator(ch)) {
+    if (true == is_fragment_separator(ch)) {
         ch = lex.get();
         if (false == parse_uri_word(ch, fragment_,
                                     &is_valid_uri_fragment_character, lex)) {
