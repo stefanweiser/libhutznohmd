@@ -39,6 +39,8 @@ static trie<std::tuple<uri_scheme, uint16_t>> make_scheme_trie()
     return t;
 }
 
+//! Parses maximal remaining characters of data and stops, when one of the
+//! selected characters is discovered.
 template <typename... tn>
 size_t parse_uri_word(char_t*& data, size_t& remaining,
                       const tn... select_chars)
