@@ -16,9 +16,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "mailto.hpp"
+#ifndef LIBHUTZNOHMD_REQUEST_URI_MAILTO_URI_PARSER_HPP
+#define LIBHUTZNOHMD_REQUEST_URI_MAILTO_URI_PARSER_HPP
+
+#include <hutzn.hpp>
 
 namespace hutzn
 {
 
 } // namespace hutzn
+
+#endif // LIBHUTZNOHMD_REQUEST_URI_MAILTO_URI_PARSER_HPP
