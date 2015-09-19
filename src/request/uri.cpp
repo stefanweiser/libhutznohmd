@@ -35,7 +35,6 @@ static trie<std::tuple<uri_scheme, uint16_t>> make_scheme_trie()
     trie<value_type> t{true};
     t.insert("http", value_type(uri_scheme::HTTP, 80));
     t.insert("https", value_type(uri_scheme::HTTPS, 443));
-    t.insert("mailto", value_type(uri_scheme::MAILTO, 0));
     return t;
 }
 

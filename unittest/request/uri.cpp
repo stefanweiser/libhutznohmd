@@ -411,19 +411,6 @@ TEST_F(uri_test, erroneous_port_2)
     EXPECT_STREQ(nullptr, u->fragment());
 }
 
-TEST_F(uri_test, mailto_user_at_localhost)
-{
-    std::string str = "mailto://user@localhost";
-    const std::unique_ptr<uri> u = check_parse(str);
-    EXPECT_EQ(uri_scheme::MAILTO, u->scheme());
-    EXPECT_STREQ("user", u->userinfo());
-    EXPECT_STREQ("localhost", u->host());
-    EXPECT_EQ(0, u->port());
-    EXPECT_STREQ(nullptr, u->path());
-    EXPECT_STREQ(nullptr, u->query());
-    EXPECT_STREQ(nullptr, u->fragment());
-}
-
 TEST_F(uri_test, userinfo_at_localhost)
 {
     std::string str = "user:pass@localhost/x";
