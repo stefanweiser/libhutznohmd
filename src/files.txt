@@ -32,8 +32,6 @@
 ./request/request.cpp
 ./request/request.hpp
 ./request/uri.hpp
-./request/uri/mailto_uri_parser.cpp
-./request/uri/mailto_uri_parser.hpp
 ./request/mime_data.hpp
 ./request/response.cpp
 ./request/uri.cpp
