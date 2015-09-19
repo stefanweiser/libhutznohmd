@@ -24,6 +24,18 @@
 namespace hutzn
 {
 
+//! These URI schemes are supported by the parser and needed for HTTP.
+enum class uri_scheme : uint8_t {
+    //! Scheme is not known or invalid.
+    UNKNOWN = 0,
+
+    //! URI describes a URL as used in HTTP for plain data transport.
+    HTTP = 1,
+
+    //! URI describes a URL as used in HTTP within an encrypted channel.
+    HTTPS = 2
+};
+
 //! Implements parsing of URIs as specified in RFC 3986. It supports only the
 //! specified schemes.
 class uri
