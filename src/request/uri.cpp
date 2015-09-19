@@ -43,10 +43,11 @@ size_t parse_uri_word(char_t*& data, size_t& remaining,
             stop = true;
         } else if ('%' == ch) {
             if ((remaining - head) > 2) {
-                uint8_t a = from_hex(data[head + 1]);
-                uint8_t b = from_hex(data[head + 2]);
+                uint8_t a = static_cast<uint8_t>(from_hex(data[head + 1]));
+                uint8_t b = static_cast<uint8_t>(from_hex(data[head + 2]));
                 if ((a < 16) && (b < 16)) {
-                    data[tail] = static_cast<uint8_t>((a << 4) + b);
+                    data[tail] =
+                        static_cast<char_t>(static_cast<uint8_t>((a << 4) + b));
                     head += 3;
                     tail++;
                 } else {
@@ -171,6 +172,20 @@ const char_t* uri::fragment(void) const
     return fragment_;
 }
 
+uri::first_pass_data::first_pass_data(void)
+    : scheme(nullptr)
+    , scheme_size(0)
+    , authority(nullptr)
+    , authority_size(0)
+    , path(nullptr)
+    , path_size(0)
+    , query(nullptr)
+    , query_size(0)
+    , fragment(nullptr)
+    , fragment_size(0)
+{
+}
+
 bool uri::parse_1st_pass(char_t*& raw, size_t& remaining, first_pass_data& data,
                          bool skip_scheme)
 {
@@ -291,7 +306,7 @@ bool uri::parse_authority(char_t* const authority_ptr, const size_t& size)
         uint32_t port_number = 0;
         bool port_valid = true;
         for (size_t i = 0; i < port_size; i++) {
-            const uint8_t digit = static_cast<char_t>(temp_port[i] - '0');
+            const uint8_t digit = static_cast<uint8_t>(temp_port[i] - '0');
             if (digit < 10) {
                 port_number = (static_cast<uint32_t>(port_number) * 10) + digit;
                 if (port_number > std::numeric_limits<uint16_t>::max()) {

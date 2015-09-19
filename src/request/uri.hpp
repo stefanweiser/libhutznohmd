@@ -46,22 +46,25 @@ public:
     const char_t* query(void) const;
     const char_t* fragment(void) const;
 
-    struct first_pass_data
+    class first_pass_data
     {
-        const char_t* scheme{nullptr};
-        size_t scheme_size{0};
+    public:
+        explicit first_pass_data(void);
 
-        char_t* authority{nullptr};
-        size_t authority_size{0};
+        const char_t* scheme;
+        size_t scheme_size;
 
-        const char_t* path{nullptr};
-        size_t path_size{0};
+        char_t* authority;
+        size_t authority_size;
 
-        const char_t* query{nullptr};
-        size_t query_size{0};
+        const char_t* path;
+        size_t path_size;
 
-        const char_t* fragment{nullptr};
-        size_t fragment_size{0};
+        const char_t* query;
+        size_t query_size;
+
+        const char_t* fragment;
+        size_t fragment_size;
     };
 
 private:
