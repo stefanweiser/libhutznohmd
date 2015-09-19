@@ -18,37 +18,18 @@
 SETUP_COMPILER_FLAGS()
 DISABLE_GMOCK_DEPENDENT_WARNINGS()
 
-FILE(GLOB_RECURSE
-     FILES
-     *.cpp
-     *.hpp
-     *.c
-     *.h)
-FILE(GLOB_RECURSE
-     GMOCK
-     ${GMOCK_PATH}/*.cc
-     ${GMOCK_PATH}/*.h)
-
-ADD_EXECUTABLE(integrationtest_hutznohmd
-               ${FILES}
-               ${GMOCK})
-STYLE_FILES(integrationtest_hutznohmd
-            ${FILES})
+GET_SOURCE_FILES("files.txt" "${CMAKE_CURRENT_SOURCE_DIR}" FILES)
+GET_SOURCE_FILES("${GMOCK_PATH}/files.txt" "${GMOCK_PATH}" GMOCK)
+ADD_EXECUTABLE(integrationtest_hutznohmd ${FILES} ${GMOCK})
+STYLE_FILES(integrationtest_hutznohmd ${FILES})
 ADD_TEST(integrationtest
          "${CMAKE_CURRENT_BINARY_DIR}/integrationtest_hutznohmd")
 
-SET_SOURCE_FILES_PROPERTIES(${GMOCK}
-                            PROPERTIES
-                            COMPILE_FLAGS
-                            -w)
+SET_SOURCE_FILES_PROPERTIES(${GMOCK} PROPERTIES COMPILE_FLAGS -w)
 
-TARGET_LINK_LIBRARIES(integrationtest_hutznohmd
-                      hutznohmd)
-
+TARGET_LINK_LIBRARIES(integrationtest_hutznohmd hutznohmd)
 INCLUDE_DIRECTORIES("${PROJECT_PATH}/src")
 INCLUDE_DIRECTORIES("${PROJECT_PATH}/integrationtest")
-
-INCLUDE_DIRECTORIES(SYSTEM
-                    "${PROJECT_PATH}/gmock")
+INCLUDE_DIRECTORIES(SYSTEM "${PROJECT_PATH}/gmock")
 
 INSTALL(TARGETS integrationtest_hutznohmd DESTINATION bin)

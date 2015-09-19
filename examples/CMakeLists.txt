@@ -15,6 +15,4 @@
 # along with the libhutznohmd project; if not, see
 # <http://www.gnu.org/licenses/>.
 
-RECURSIVE_SUBDIRS(http
-                  performance
-                  socket)
+RECURSIVE_SUBDIRS(http performance socket)

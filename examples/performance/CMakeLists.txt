@@ -17,20 +17,11 @@
 
 SETUP_COMPILER_FLAGS()
 
-FILE(GLOB_RECURSE
-     FILES
-     *.cpp
-     *.hpp
-     *.c
-     *.h)
-
-ADD_EXECUTABLE(example_performance
-               ${FILES})
-STYLE_FILES(example_performance
-            ${FILES})
+GET_SOURCE_FILES("files.txt" "${CMAKE_CURRENT_SOURCE_DIR}" FILES)
+ADD_EXECUTABLE(example_performance ${FILES})
+STYLE_FILES(example_performance ${FILES})
 
 TARGET_LINK_LIBRARIES(example_performance hutznohmd)
-
 INCLUDE_DIRECTORIES("${PROJECT_PATH}/src")
 
 INSTALL(TARGETS example_performance DESTINATION bin)

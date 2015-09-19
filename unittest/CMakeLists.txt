@@ -18,41 +18,19 @@
 SETUP_COMPILER_FLAGS()
 DISABLE_GMOCK_DEPENDENT_WARNINGS()
 
-FILE(GLOB_RECURSE
-     FILES
-     *.cpp
-     *.hpp
-     *.c
-     *.h)
-FILE(GLOB_RECURSE
-     GMOCK
-     ${GMOCK_PATH}/*.cc
-     ${GMOCK_PATH}/*.h)
+GET_SOURCE_FILES("files.txt" "${CMAKE_CURRENT_SOURCE_DIR}" FILES)
+GET_SOURCE_FILES("${GMOCK_PATH}/files.txt" "${GMOCK_PATH}" GMOCK)
+ADD_EXECUTABLE(unittest_hutznohmd ${FILES} ${GMOCK})
+STYLE_FILES(unittest_hutznohmd ${FILES})
+ADD_TEST(unittest "${CMAKE_CURRENT_BINARY_DIR}/unittest_hutznohmd")
 
-ADD_EXECUTABLE(unittest_hutznohmd
-               ${FILES}
-               ${GMOCK})
-STYLE_FILES(unittest_hutznohmd
-            ${FILES})
-ADD_TEST(unittest
-         "${CMAKE_CURRENT_BINARY_DIR}/unittest_hutznohmd")
+COVERAGE_TARGET(coverage unittest_hutznohmd 'unittest/*')
 
-COVERAGE_TARGET(coverage
-                unittest_hutznohmd
-                'unittest/*')
+SET_SOURCE_FILES_PROPERTIES(${GMOCK} PROPERTIES COMPILE_FLAGS -w)
 
-SET_SOURCE_FILES_PROPERTIES(${GMOCK}
-                            PROPERTIES
-                            COMPILE_FLAGS
-                            -w)
-
-TARGET_LINK_LIBRARIES(unittest_hutznohmd
-                      hutznohmd)
-
+TARGET_LINK_LIBRARIES(unittest_hutznohmd hutznohmd)
 INCLUDE_DIRECTORIES("${PROJECT_PATH}/src")
 INCLUDE_DIRECTORIES("${PROJECT_PATH}/unittest")
-
-INCLUDE_DIRECTORIES(SYSTEM
-                    "${PROJECT_PATH}/gmock")
+INCLUDE_DIRECTORIES(SYSTEM "${PROJECT_PATH}/gmock")
 
 INSTALL(TARGETS unittest_hutznohmd DESTINATION bin)

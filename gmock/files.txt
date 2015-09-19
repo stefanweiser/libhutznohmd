@@ -1,0 +1,4 @@
+./gmock-gtest-all.cc
+./gmock_main.cc
+./gmock/gmock.h
+./gtest/gtest.h

@@ -17,24 +17,12 @@
 
 SETUP_COMPILER_FLAGS()
 
-FILE(GLOB_RECURSE
-     FILES
-     *.cpp
-     *.hpp
-     *.c
-     *.h)
-
+GET_SOURCE_FILES("files.txt" "${CMAKE_CURRENT_SOURCE_DIR}" FILES)
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/version.cpp.in"
                "${CMAKE_BINARY_DIR}/version.cpp")
-
-ADD_LIBRARY(hutznohmd
-            SHARED
-            ${FILES}
-            "${CMAKE_BINARY_DIR}/version.cpp")
-STYLE_FILES(hutznohmd
-            ${FILES})
-ADD_DEPENDENCIES(hutznohmd
-                 cppcheck)
+ADD_LIBRARY(hutznohmd SHARED ${FILES} "${CMAKE_BINARY_DIR}/version.cpp")
+STYLE_FILES(hutznohmd ${FILES})
+ADD_DEPENDENCIES(hutznohmd cppcheck)
 SET_TARGET_PROPERTIES(hutznohmd PROPERTIES VERSION "${LIBRARY_VERSION}")
 
 INCLUDE_DIRECTORIES("${CMAKE_BINARY_DIR}")
