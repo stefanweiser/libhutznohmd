@@ -28,6 +28,17 @@ namespace hutzn
 namespace
 {
 
+//! Makes and returns a newly created scheme trie.
+static trie<std::tuple<uri_scheme, uint16_t>> make_scheme_trie()
+{
+    using value_type = std::tuple<uri_scheme, uint16_t>;
+    trie<value_type> t{true};
+    t.insert("http", value_type(uri_scheme::HTTP, 80));
+    t.insert("https", value_type(uri_scheme::HTTPS, 443));
+    t.insert("mailto", value_type(uri_scheme::MAILTO, 0));
+    return t;
+}
+
 template <typename... tn>
 size_t parse_uri_word(char_t*& data, size_t& remaining,
                       const tn... select_chars)
@@ -251,10 +262,7 @@ bool uri::parse_1st_pass(char_t*& raw, size_t& remaining, first_pass_data& data,
 bool uri::parse_scheme(const char_t* const scheme_ptr, const size_t& size)
 {
     using value_type = std::tuple<uri_scheme, uint16_t>;
-    trie<value_type> t{true};
-    t.insert("http", value_type(uri_scheme::HTTP, 80));
-    t.insert("https", value_type(uri_scheme::HTTPS, 443));
-    t.insert("mailto", value_type(uri_scheme::MAILTO, 0));
+    static const trie<value_type> t = make_scheme_trie();
 
     auto r = t.find(scheme_ptr, size);
     if (r.used_size() == size) {
