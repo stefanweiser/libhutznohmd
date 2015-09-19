@@ -24,6 +24,7 @@
 #include <libhutznohmd/request.hpp>
 
 #include <request/lexer.hpp>
+#include <request/uri.hpp>
 
 namespace hutzn
 {
@@ -73,8 +74,7 @@ private:
     lexer lexer_;
 
     http_verb method_;
-    const char_t* path_;
-    const char_t* fragment_;
+    uri path_uri_;
     http_version version_;
 
     //! Do not use this in any other case than for storing header fields and

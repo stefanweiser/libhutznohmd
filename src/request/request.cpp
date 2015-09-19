@@ -72,8 +72,7 @@ static trie<http_version> get_version_trie(size_t& max_size)
 request::request(const connection_pointer& connection)
     : lexer_(connection)
     , method_(http_verb::GET)
-    , path_(nullptr)
-    , fragment_(nullptr)
+    , path_uri_()
     , version_(http_version::HTTP_UNKNOWN)
     , header_fields_()
     , query_entries_()
@@ -157,18 +156,19 @@ bool request::parse_uri(int32_t& ch)
         ch = lexer_.get();
     }
 
-    const char_t* value = lexer_.header_data(lexer_.prev_index());
+    char_t* value = lexer_.header_data(lexer_.prev_index());
+    size_t length = 0;
     while (ch >= 0) {
         if (true == is_whitespace(ch)) {
             // Overwrite the newline with null. The value is getting null
             // terminated by this.
             lexer_.header_data(lexer_.prev_index())[0] = '\0';
-            path_ = value;
-            result = true;
+            result = path_uri_.parse(value, length, true);
             break;
         }
 
         ch = lexer_.get();
+        length++;
     }
 
     return result;
@@ -259,12 +259,12 @@ http_verb request::method(void) const
 
 const char_t* request::path(void) const
 {
-    return path_;
+    return path_uri_.path();
 }
 
 const char_t* request::host(void) const
 {
-    return nullptr;
+    return path_uri_.host();
 }
 
 const char_t* request::query(const char_t* const key) const
@@ -279,7 +279,7 @@ const char_t* request::query(const char_t* const key) const
 
 const char_t* request::fragment(void) const
 {
-    return fragment_;
+    return path_uri_.fragment();
 }
 
 http_version request::version(void) const

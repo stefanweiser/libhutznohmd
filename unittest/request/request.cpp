@@ -96,7 +96,7 @@ TEST_F(request_test, default_request)
     ASSERT_TRUE(r.parse());
 
     EXPECT_EQ(http_verb::GET, r.method());
-    EXPECT_STREQ("/", r.path());
+    EXPECT_STREQ("", r.path());
     EXPECT_EQ(nullptr, r.host());
     EXPECT_EQ(nullptr, r.query(nullptr));
     EXPECT_EQ(nullptr, r.fragment());
@@ -126,7 +126,7 @@ TEST_F(request_test, custom_header)
     ASSERT_TRUE(r.parse());
 
     EXPECT_EQ(http_verb::GET, r.method());
-    EXPECT_STREQ("/", r.path());
+    EXPECT_STREQ("", r.path());
     EXPECT_EQ(nullptr, r.host());
     EXPECT_EQ(nullptr, r.query(nullptr));
     EXPECT_EQ(nullptr, r.fragment());
