@@ -12,10 +12,10 @@ sys.path.insert(0, python_script_path)
 
 from argparse import ArgumentParser
 from multiprocessing import cpu_count
-from shutil import rmtree
-from subprocess import CalledProcessError, check_call
+from subprocess import CalledProcessError, check_call, PIPE, Popen
 from sys import version, version_info
 from termcolor import colorize, RED
+from evalfile import eval_file
 
 
 class Struct:
@@ -124,18 +124,50 @@ def execute_package(args):
     tar_name = 'libhutznohmd-' + args.library_version + '.tar.gz'
     src_tar_name = 'libhutznohmd_src-' + args.library_version + '.tar.gz'
 
-    check_call(['tar', 'cf', os.path.join(build_path, tar_name), '--owner=root',
-                '--group=root', '.'], cwd=install_path)
+    check_call(['tar', 'cf', os.path.join(build_path, tar_name),
+                '--owner=root', '--group=root', '.'], cwd=install_path)
     check_call(['tar', 'cf', os.path.join(build_path, src_tar_name),
                 '--owner=root', '--group=root', '--exclude=./.git',
                 '--exclude=./.gitignore', '--exclude=./build',
                 '--exclude=./install', '--exclude=./python/__pycache__',
                 '--exclude=*.user', '.'], cwd=script_path)
 
+
 def execute_rats(args):
     check_is_bootstrapped()
 
     check_call(['make', 'rats'], cwd=build_path)
+
+
+def execute_sonar(args):
+    check_is_bootstrapped()
+
+    os.environ['project_key'] = 'libhutznohmd'
+    os.environ['project_name'] = 'libhutznohmd'
+    os.environ['project_path'] = script_path
+    os.environ['build_path'] = build_path
+    os.environ['version'] = '0.0.1'
+    os.environ['include_paths'] = '/usr/include/c++/4.8.3,/usr/include/' + \
+                                  'c++/4.8.3/x86_64-redhat-linux,/usr/' + \
+                                  'include/c++/4.8.3/backward,/usr/lib/' + \
+                                  'gcc/x86_64-redhat-linux/4.8.3/include,' + \
+                                  '/usr/local/include,/usr/include'
+
+    execute_coverage(args)
+
+    check_call(['./unittest/unittest_hutznohmd',
+                '--gtest_output=xml:./unit_test_report.xml'], cwd=build_path)
+
+    define_dump = Popen(['g++', '-dM', '-E', '-xc', os.devnull], cwd=build_path,
+                       stdout=PIPE)
+    defines = define_dump.communicate()[0]
+    defines_file = open(build_path + '/defines.h', 'w')
+    defines_file.write(defines)
+    defines_file.close()
+
+    eval_file(script_path + '/sonar-cxx.template',
+              build_path + '/sonar.properties')
+    check_call(['make', 'sonar'], cwd=build_path)
 
 
 def execute_test(args):
@@ -188,6 +220,8 @@ if __name__ == "__main__":
                                   help='builds packages'),
                 'rats': Struct(fn=execute_rats,
                                help='searches for security issues'),
+                'sonar': Struct(fn=execute_sonar,
+                                help='uploads sonar results'),
                 'test': Struct(fn=execute_test,
                                help='executes unit and integration tests'),
                 'valgrind': Struct(fn=execute_valgrind,
