@@ -1,0 +1,12 @@
+sonar.projectKey=cxx:${project_key}
+sonar.projectName=${project_name}
+sonar.projectVersion=${version}
+sonar.language=c++
+sonar.sourceEncoding=UTF-8
+
+sonar.sources=${project_path}/src
+sonar.cxx.includeDirectories=${include_paths},${project_path}/src
+sonar.cxx.forceIncludes=${build_path}/defines.h
+
+sonar.cxx.xunit.reportPath=${build_path}/unit_test_report.xml
+sonar.cxx.xunit.provideDetails=True
