@@ -36,6 +36,7 @@ INCLUDE(Documentation)
 INCLUDE(Lizard)
 INCLUDE(RATS)
 INCLUDE(RecursiveSubdirs)
+INCLUDE(Sonar)
 INCLUDE(Toolchain)
 INCLUDE(Valgrind)
 
