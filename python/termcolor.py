@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys
+from sys import stdout
 
 BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range(8)
 
@@ -16,7 +16,7 @@ def has_colours(stream):
         return curses.tigetnum("colors") > 2
     except:
         return False
-has_colours = has_colours(sys.stdout)
+has_colours = has_colours(stdout)
 
 
 def colorize(text, color=WHITE):
