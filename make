@@ -12,6 +12,7 @@ sys.path.insert(0, python_script_path)
 
 from argparse import ArgumentParser
 from multiprocessing import cpu_count
+from shutil import rmtree
 from subprocess import CalledProcessError, check_call, PIPE, Popen
 from sys import version, version_info
 from termcolor import colorize, RED
@@ -94,7 +95,6 @@ def execute_clean(args):
 
 
 def execute_coverage(args):
-    execute_clean(args)
     args.target = 'coverage'
     execute_bootstrap(args)
     check_call(['make', '-j' + str(cpu_count()), 'coverage'], cwd=build_path)
@@ -153,17 +153,41 @@ def execute_sonar(args):
                                   'gcc/x86_64-redhat-linux/4.8.3/include,' + \
                                   '/usr/local/include,/usr/include'
 
+    rmtree(build_path)
+    os.makedirs(build_path)
+
     execute_coverage(args)
 
-    check_call(['./unittest/unittest_hutznohmd',
+    output_file = open(build_path + '/cppcheck_report.xml', 'w')
+    process = Popen(['cppcheck', '--xml', '--xml-version=2', '--quiet',
+                     '--language=c++', '--platform=unix64', '--enable=all',
+                     '--std=c++11', '--force', '-I', script_path + '/src',
+                     script_path + '/src'], cwd=build_path, stderr=output_file)
+    process.wait()
+    output_file.close()
+
+    output_file = open(build_path + '/rats_report.xml', 'w')
+    process = Popen(['rats', '--xml', '--resultsonly', '-w', '3',
+                     script_path + '/examples',
+                     script_path + '/integrationtest', script_path + '/src',
+                     script_path + '/unittest'], cwd=build_path,
+                    stdout=output_file)
+    process.wait()
+    output_file.close()
+
+    check_call(['valgrind', '--leak-check=full', '--xml=yes',
+                '--xml-file=' + build_path + '/valgrind_report.xml',
+                build_path + '/unittest/unittest_hutznohmd'],
+               cwd=build_path)
+
+    check_call([build_path + '/unittest/unittest_hutznohmd',
                 '--gtest_output=xml:./unit_test_report.xml'], cwd=build_path)
 
-    define_dump = Popen(['g++', '-dM', '-E', '-xc', os.devnull], cwd=build_path,
-                       stdout=PIPE)
-    defines = define_dump.communicate()[0]
-    defines_file = open(build_path + '/defines.h', 'w')
-    defines_file.write(defines)
-    defines_file.close()
+    output_file = open(build_path + '/defines.h', 'w')
+    process = Popen(['g++', '-dM', '-E', '-xc', os.devnull], cwd=build_path,
+                    stdout=output_file)
+    process.wait()
+    output_file.close()
 
     eval_file(script_path + '/sonar-cxx.template',
               build_path + '/sonar.properties')
