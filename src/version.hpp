@@ -24,6 +24,7 @@
 namespace hutzn
 {
 
+//! @brief Returns the version number as a string.
 std::string get_version(void);
 
 } // namespace hutzn

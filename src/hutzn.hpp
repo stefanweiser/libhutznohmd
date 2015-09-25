@@ -674,13 +674,23 @@ namespace http
 {
 
 //! These URI schemes are supported by the parser and needed for HTTP.
-enum class uri_scheme : uint8_t { UNKNOWN = 0, HTTP = 1, MAILTO = 2 };
+enum class uri_scheme : uint8_t {
+    //! Invalid or unknown value.
+    UNKNOWN = 0,
+
+    //! http scheme.
+    HTTP = 1,
+
+    //! mailto scheme.
+    MAILTO = 2
+};
 
 //! Contains a URI as used in the HTTP protocol (e.g.
 //! http://user\@example.com:8080/?a=b#anchor).
 class uri_interface
 {
 public:
+    //! Virtual destructor.
     virtual ~uri_interface(void);
 
     //! Returns whether the containing URI is valid or not.
@@ -713,22 +723,55 @@ public:
 class media_type_interface
 {
 public:
+    //! Legacy mime type.
     enum class mime_type : int8_t {
+        //! Custom
         CUSTOM = -1,
+
+        //! Wildcard
         WILDCARD = 0,
+
+        //! Application
         APPLICATION = 1,
+
+        //! Audio
         AUDIO = 2,
+
+        //! Example
         EXAMPLE = 3,
+
+        //! Image
         IMAGE = 4,
+
+        //! Message
         MESSAGE = 5,
+
+        //! Model
         MODEL = 6,
+
+        //! Multipart
         MULTIPART = 7,
+
+        //! Text
         TEXT = 8,
+
+        //! Video
         VIDEO = 9
     };
 
-    enum class mime_subtype : int16_t { CUSTOM = -1, WILDCARD = 0, PLAIN = 1 };
+    //! Legacy mime subtype.
+    enum class mime_subtype : int16_t {
+        //! Custom
+        CUSTOM = -1,
 
+        //! Wildcard
+        WILDCARD = 0,
+
+        //! Plain
+        PLAIN = 1
+    };
+
+    //! Virtual destructor.
     virtual ~media_type_interface(void);
 
     //! Returns the type, if the media type is known or media_type_type::CUSTOM
@@ -918,6 +961,7 @@ enum class header_type {
 class request_interface
 {
 public:
+    //! Virtual destructor.
     virtual ~request_interface(void);
 
     //! Requested HTTP method.
@@ -946,6 +990,7 @@ public:
 class response_interface
 {
 public:
+    //! Virtual destructor.
     virtual ~response_interface(void);
 
     //! Sets the status code.
@@ -970,6 +1015,7 @@ using transaction_function = std::function<
 class server_interface
 {
 public:
+    //! Virtual destructor.
     virtual ~server_interface(void);
 
     //! Runs the server. Won't return till the server shall stop.

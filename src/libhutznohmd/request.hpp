@@ -788,6 +788,7 @@ enum class http_expectation : uint8_t {
 class request_interface
 {
 public:
+    //! Virtual destructor.
     virtual ~request_interface(void);
 
     //! Returns the HTTP verb used by the request (GET, PUT, DELETE or POST are
@@ -880,6 +881,7 @@ public:
 class response_interface
 {
 public:
+    //! Virtual destructor.
     virtual ~response_interface(void);
 
     //! Sets or overwrites a custom header. Every header field name, which is
