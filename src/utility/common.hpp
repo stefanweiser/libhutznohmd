@@ -24,8 +24,12 @@
 namespace hutzn
 {
 
+//! Number of bits per byte.
+static constexpr size_t BITS_PER_BYTE = 8;
+
 //! Contains the number of values, that can be represented by one byte.
-constexpr size_t NUMBER_OF_VALUES_PER_BYTE = 1 << (8 * sizeof(uint8_t));
+static constexpr size_t NUMBER_OF_VALUES_PER_BYTE =
+    1 << (BITS_PER_BYTE * sizeof(uint8_t));
 
 //! @brief Checking, whether a value is inbetween a range.
 //!
