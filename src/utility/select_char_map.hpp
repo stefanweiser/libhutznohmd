@@ -32,12 +32,15 @@ namespace hutzn
 namespace detail
 {
 
+//! Base type of the select_char_map.
 using select_char_map_base_type = char_t;
 
+//! Unsigned type of the select_char_map_base_type.
 using select_char_map_unsigned_type = std::make_unsigned<char_t>::type;
 
 } // namespace detail
 
+//! Type definition of the select_char_map.
 using select_char_map = std::bitset<
     std::numeric_limits<detail::select_char_map_unsigned_type>::max() + 1>;
 
