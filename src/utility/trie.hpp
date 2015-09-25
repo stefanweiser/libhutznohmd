@@ -34,23 +34,28 @@ template <typename value_type>
 class trie_find_result
 {
 public:
+    //! @brief Constructs the result of a trie's find operation with no result.
     trie_find_result(void)
         : used_size_(0)
         , value_()
     {
     }
 
+    //! C@brief onstructs the result of a trie's find operation with size and
+    //! value.
     trie_find_result(const size_t s, const value_type& v)
         : used_size_(s)
         , value_(v)
     {
     }
 
+    //! @brief Returns the used size attribute.
     size_t used_size(void) const
     {
         return used_size_;
     }
 
+    //! @brief Returns the value attribute.
     const value_type& value(void) const
     {
         return value_;
@@ -68,12 +73,15 @@ private:
 namespace detail
 {
 
+//! Implements a node of the trie.
 template <typename value_type>
 class trie_node
 {
 public:
+    //! Specializes the result of the find operation.
     using trie_find_result_ = trie_find_result<value_type>;
 
+    //! @brief Constructs the node.
     explicit trie_node(void)
         : has_value_(false)
         , value_()
@@ -82,6 +90,8 @@ public:
     {
     }
 
+    //! @brief Destroys the node. Deletes its children recursively. Clears the
+    //! pointers if they are case sensitive.
     ~trie_node(void)
     {
         // Release all children first.
@@ -108,6 +118,8 @@ public:
         }
     }
 
+    //! @brief Makes a find result by calculating the distance between curr and
+    //! begin pointer.
     trie_find_result_ make_find_result(const char_t* const begin,
                                        const char_t* const curr) const
     {
@@ -116,6 +128,7 @@ public:
         return trie_find_result_{used_chars, value_};
     }
 
+    //! Find the longest element recursively and returns it and the used length.
     trie_find_result_ find(const char_t* const original,
                            const char_t* const curr,
                            const size_t remaining) const
@@ -138,6 +151,8 @@ public:
         return result;
     }
 
+    //! @brief Inserts a new token. Returns true, when the insertion was
+    //! completely successful.
     bool insert(const char_t* token, const value_type& value,
                 const bool is_case_insensitive)
     {
@@ -158,6 +173,8 @@ public:
         return result;
     }
 
+    //! @brief Erases an token. Returns true, when the token was completely
+    //! removed.
     bool erase(const char_t* token, const bool is_case_insensitive)
     {
         bool result = false;
@@ -283,6 +300,7 @@ template <typename value_type>
 class trie
 {
 public:
+    //! Specializes the result of the find operation.
     using trie_find_result_ = trie_find_result<value_type>;
 
     static_assert(
@@ -301,6 +319,8 @@ public:
         (*count_) = 1;
     }
 
+    //! @brief Copies a trie. This increases the number of references to the
+    //! root node.
     trie(const trie& rhs)
         : is_case_insensitive_(rhs.is_case_insensitive_)
         , count_(rhs.count_)
@@ -310,6 +330,8 @@ public:
         (*count_)++;
     }
 
+    //! @brief Assigns the content of a trie. This increases the number of
+    //! references to the root node.
     trie& operator=(const trie& rhs)
     {
         is_case_insensitive_ = rhs.is_case_insensitive_;
@@ -321,6 +343,8 @@ public:
         return *this;
     }
 
+    //! @brief Destroys the trie. Removes the trie node, when the reference
+    //! count drops to zero.
     ~trie()
     {
         (*count_)--;
