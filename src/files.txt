@@ -76,6 +76,7 @@ socket/utility.hpp
 utility/character_validation.hpp
 utility/common.cpp
 utility/common.hpp
+utility/parsing.hpp
 utility/select_char_map.hpp
 utility/trie.hpp
 version.hpp

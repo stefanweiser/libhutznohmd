@@ -19,6 +19,7 @@
 #include <cstring>
 
 #include <utility/common.hpp>
+#include <utility/parsing.hpp>
 #include <utility/select_char_map.hpp>
 #include <utility/trie.hpp>
 
@@ -83,48 +84,6 @@ static trie<int32_t> get_month_trie(size_t& max_size)
 }
 
 } // namespace
-
-void skip_whitespace(const char_t*& data, size_t& remaining)
-{
-    static const select_char_map map = make_select_char_map(' ', '\n');
-    while ((remaining > 0) && (true == map[static_cast<uint8_t>(*data)])) {
-        data++;
-        remaining--;
-    }
-}
-
-void skip_one_character(const char_t*& data, size_t& remaining)
-{
-    if (remaining > 0) {
-        data++;
-        remaining--;
-    }
-}
-
-int32_t parse_unsigned_integer(const char_t*& data, size_t& remaining)
-{
-    char_t character = *data;
-    int32_t result = 0;
-    if (remaining > 0) {
-        while ((remaining > 0) && (character >= '0') && (character <= '9')) {
-            int32_t old_result = result;
-            result = (result * 10) + (character - 0x30);
-
-            // Check for overflow.
-            if (old_result > result) {
-                result = -1;
-                break;
-            }
-
-            data++;
-            remaining--;
-            character = *data;
-        }
-    } else {
-        result = -1;
-    }
-    return result;
-}
 
 int32_t parse_time(const char_t*& data, size_t& remaining)
 {
