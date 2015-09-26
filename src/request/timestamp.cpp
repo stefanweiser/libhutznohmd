@@ -84,7 +84,7 @@ static trie<int32_t> get_month_trie(size_t& max_size)
 
 } // namespace
 
-void skip_optional_whitespace(const char_t* data, size_t& remaining)
+void skip_optional_whitespace(const char_t*& data, size_t& remaining)
 {
     static const select_char_map map = make_select_char_map(' ', '\n');
     while ((remaining > 0) && (true == map[static_cast<uint8_t>(*data)])) {
@@ -93,7 +93,7 @@ void skip_optional_whitespace(const char_t* data, size_t& remaining)
     }
 }
 
-void skip_whitespace(const char_t* data, size_t& remaining)
+void skip_whitespace(const char_t*& data, size_t& remaining)
 {
     static const select_char_map map = make_select_char_map(' ', '\n');
     if (remaining > 1) {
@@ -104,28 +104,32 @@ void skip_whitespace(const char_t* data, size_t& remaining)
     }
 }
 
-int32_t parse_unsigned_integer(const char_t* data, size_t& remaining)
+int32_t parse_unsigned_integer(const char_t*& data, size_t& remaining)
 {
     char_t character = *data;
-    int32_t result = -1;
-    while ((remaining > 0) && (character >= '0') && (character <= '9')) {
-        int32_t old_result = result;
-        result = (result * 10) + (character - 0x30);
+    int32_t result = 0;
+    if (remaining > 0) {
+        while ((remaining > 0) && (character >= '0') && (character <= '9')) {
+            int32_t old_result = result;
+            result = (result * 10) + (character - 0x30);
 
-        // Check for overflow.
-        if (old_result > result) {
-            result = -1;
-            break;
+            // Check for overflow.
+            if (old_result > result) {
+                result = -1;
+                break;
+            }
+
+            data++;
+            remaining--;
+            character = *data;
         }
-
-        data++;
-        remaining--;
-        character = *data;
+    } else {
+        result = -1;
     }
     return result;
 }
 
-int32_t parse_time(const char_t* data, size_t& remaining)
+int32_t parse_time(const char_t*& data, size_t& remaining)
 {
     int32_t hour = parse_unsigned_integer(data, remaining);
     if ((false == check_range<int32_t, 0, 23>(hour)) || ((*data) != ':')) {
@@ -144,7 +148,7 @@ int32_t parse_time(const char_t* data, size_t& remaining)
     return (60 * ((60 * hour) + minute)) + second;
 }
 
-int32_t parse_month(const char_t* data, size_t& remaining)
+int32_t parse_month(const char_t*& data, size_t& remaining)
 {
     static size_t maximum_month_length = 0;
     static const trie<int32_t> months = get_month_trie(maximum_month_length);
@@ -223,10 +227,10 @@ time_t seconds_since_epoch(const time_t second_of_day, const time_t day,
     return year_seconds_since_epoch + second_of_year;
 }
 
-bool parse_gmt(const char_t* data, size_t& remaining)
+bool parse_gmt(const char_t*& data, size_t& remaining)
 {
     bool result;
-    if ((remaining > 3) && (0 == strncmp(data, "gmt", 3))) {
+    if ((remaining >= 3) && (0 == ::strncasecmp(data, "gmt", 3))) {
         result = true;
     } else {
         result = false;
@@ -234,32 +238,32 @@ bool parse_gmt(const char_t* data, size_t& remaining)
     return result;
 }
 
-// time_t parse_rfc1123_date_time(int32_t& character, const lexer& l)
-//{
-//    character = l.get_non_whitespace();
-//    const int32_t day = l.get_unsigned_integer(character);
+time_t parse_rfc1123_date_time(const char_t*& data, size_t& remaining)
+{
+    skip_whitespace(data, remaining);
+    const int32_t day = parse_unsigned_integer(data, remaining);
 
-//    parse_optional_whitespace(character, l);
-//    const int32_t month = parse_month(character, l);
+    skip_optional_whitespace(data, remaining);
+    const int32_t month = parse_month(data, remaining);
 
-//    parse_optional_whitespace(character, l);
-//    const int32_t year = l.get_unsigned_integer(character);
+    skip_optional_whitespace(data, remaining);
+    const int32_t year = parse_unsigned_integer(data, remaining);
 
-//    parse_optional_whitespace(character, l);
-//    const int32_t second_of_day = parse_time(character, l);
-//    if (second_of_day < 0) {
-//        return -1;
-//    }
+    skip_optional_whitespace(data, remaining);
+    const int32_t second_of_day = parse_time(data, remaining);
+    if (second_of_day < 0) {
+        return -1;
+    }
 
-//    parse_optional_whitespace(character, l);
-//    if (false == parse_gmt(character, l)) {
-//        return -1;
-//    }
+    skip_optional_whitespace(data, remaining);
+    if (false == parse_gmt(data, remaining)) {
+        return -1;
+    }
 
-//    return seconds_since_epoch(second_of_day, day, month, year);
-//}
+    return seconds_since_epoch(second_of_day, day, month, year);
+}
 
-time_t parse_rfc850_date_time(const char_t* data, size_t& remaining)
+time_t parse_rfc850_date_time(const char_t*& data, size_t& remaining)
 {
     skip_optional_whitespace(data, remaining);
     if ((*data) != ',') {
@@ -300,28 +304,28 @@ time_t parse_rfc850_date_time(const char_t* data, size_t& remaining)
     return seconds_since_epoch(second_of_day, day, month, year);
 }
 
-// time_t parse_asctime_date_time(int32_t& character, const lexer& l)
-//{
-//    parse_optional_whitespace(character, l);
-//    const int32_t month = parse_month(character, l);
+time_t parse_asctime_date_time(const char_t*& data, size_t& remaining)
+{
+    skip_optional_whitespace(data, remaining);
+    const int32_t month = parse_month(data, remaining);
 
-//    character = l.get_non_whitespace();
-//    const int32_t day = l.get_unsigned_integer(character);
+    skip_whitespace(data, remaining);
+    const int32_t day = parse_unsigned_integer(data, remaining);
 
-//    character = l.get_non_whitespace();
-//    const int32_t second_of_day = parse_time(character, l);
+    skip_whitespace(data, remaining);
+    const int32_t second_of_day = parse_time(data, remaining);
 
-//    character = l.get_non_whitespace();
-//    const int32_t year = l.get_unsigned_integer(character);
+    skip_whitespace(data, remaining);
+    const int32_t year = parse_unsigned_integer(data, remaining);
 
-//    if (character == ' ') {
-//        character = l.get_non_whitespace();
-//    }
+    if ((*data) == ' ') {
+        skip_whitespace(data, remaining);
+    }
 
-//    return seconds_since_epoch(second_of_day, day, month, year);
-//}
+    return seconds_since_epoch(second_of_day, day, month, year);
+}
 
-weekday_value_type parse_weekday(const char_t* data, size_t& remaining)
+weekday_value_type parse_weekday(const char_t*& data, size_t& remaining)
 {
     static size_t maximum_weekday_length = 0;
     static const trie<weekday_value_type> weekdays =
@@ -343,12 +347,11 @@ time_t parse_timestamp(const char_t* const data, const size_t length)
     std::tie(weekday, is_long_format) = parse_weekday(ptr, remaining);
     if (true == is_long_format) {
         return parse_rfc850_date_time(ptr, remaining);
-        //    } else if ((character == ' ') || (character == '\t')) {
-        //        return parse_asctime_date_time(character, l);
-        //    } else {
-        //        return parse_rfc1123_date_time(character, l);
+    } else if (((*ptr) == ' ') || ((*ptr) == '\t')) {
+        return parse_asctime_date_time(ptr, remaining);
+    } else {
+        return parse_rfc1123_date_time(ptr, remaining);
     }
-    return 0;
 }
 
 } // namespace hutzn
