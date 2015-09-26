@@ -31,7 +31,7 @@ namespace hutzn
 namespace http
 {
 
-TEST(md5, empty)
+TEST(old_md5, empty)
 {
     std::array<uint8_t, 16> digest = calculate_md5(std::vector<char_t>());
     std::array<uint8_t, 16> sum{{0xD4, 0x1D, 0x8C, 0xD9, 0x8F, 0x00, 0xB2, 0x04,
@@ -40,7 +40,7 @@ TEST(md5, empty)
     EXPECT_EQ(sum, digest);
 }
 
-TEST(md5, hello_world)
+TEST(old_md5, hello_world)
 {
     std::array<uint8_t, 16> digest = calculate_md5(
         {{'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '!'}});
@@ -50,7 +50,7 @@ TEST(md5, hello_world)
     EXPECT_EQ(sum, digest);
 }
 
-TEST(md5, pangram)
+TEST(old_md5, pangram)
 {
     std::array<uint8_t, 16> digest = calculate_md5(
         {{'P', 'a', 'c', 'k', ' ', 'm', 'y', ' ', 'b', 'o', 'x', ' ', 'w', 'i',
@@ -62,7 +62,7 @@ TEST(md5, pangram)
     EXPECT_EQ(sum, digest);
 }
 
-TEST(md5, long_data)
+TEST(old_md5, long_data)
 {
     std::array<uint8_t, 16> digest =
         calculate_md5(std::vector<char_t>(80, '0'));
@@ -72,7 +72,7 @@ TEST(md5, long_data)
     EXPECT_EQ(sum, digest);
 }
 
-TEST(md5, nearly_full_block)
+TEST(old_md5, nearly_full_block)
 {
     std::array<uint8_t, 16> digest =
         calculate_md5(std::vector<char_t>(60, '0'));

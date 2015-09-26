@@ -31,26 +31,26 @@ namespace hutzn
 namespace http
 {
 
-TEST(base64, encode_empty)
+TEST(old_base64, encode_empty)
 {
     std::string base64 = encode_base64({});
     EXPECT_EQ("", base64);
 }
 
-TEST(base64, encode_space)
+TEST(old_base64, encode_space)
 {
     std::string base64 = encode_base64({' '});
     EXPECT_EQ("IA==", base64);
 }
 
-TEST(base64, encode_hello_world)
+TEST(old_base64, encode_hello_world)
 {
     std::string base64 = encode_base64(
         {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '!'});
     EXPECT_EQ("SGVsbG8gV29ybGQh", base64);
 }
 
-TEST(base64, encode_pangram)
+TEST(old_base64, encode_pangram)
 {
     std::string base64 = encode_base64(
         {'P', 'u', 'b', 'l', 'i', 'c', ' ', 'j', 'u', 'n', 'k', ' ', 'd', 'w',
@@ -59,48 +59,48 @@ TEST(base64, encode_pangram)
     EXPECT_EQ("UHVibGljIGp1bmsgZHdhcnZlcyBodWcgbXkgcXVhcnR6IGZveC4=", base64);
 }
 
-TEST(base64, decode_empty)
+TEST(old_base64, decode_empty)
 {
     std::vector<uint8_t> decoded_data = decode_base64("");
     EXPECT_EQ(std::vector<uint8_t>(), decoded_data);
 }
 
-TEST(base64, decode_space)
+TEST(old_base64, decode_space)
 {
     std::vector<uint8_t> decoded_data = decode_base64("IA==");
     std::vector<uint8_t> data{' '};
     EXPECT_EQ(data, decoded_data);
 }
 
-TEST(base64, decode_double_space)
+TEST(old_base64, decode_double_space)
 {
     std::vector<uint8_t> decoded_data = decode_base64("ICA=");
     std::vector<uint8_t> data{' ', ' '};
     EXPECT_EQ(data, decoded_data);
 }
 
-TEST(base64, decode_space_without_pad)
+TEST(old_base64, decode_space_without_pad)
 {
     std::vector<uint8_t> decoded_data = decode_base64("IA");
     std::vector<uint8_t> data{' '};
     EXPECT_EQ(data, decoded_data);
 }
 
-TEST(base64, decode_char62_char63)
+TEST(old_base64, decode_char62_char63)
 {
     std::vector<uint8_t> decoded_data = decode_base64("+/+/");
     std::vector<uint8_t> data{251, 255, 191};
     EXPECT_EQ(data, decoded_data);
 }
 
-TEST(base64, decode_alternative_char62_char63)
+TEST(old_base64, decode_alternative_char62_char63)
 {
     std::vector<uint8_t> decoded_data = decode_base64("-_-_");
     std::vector<uint8_t> data{251, 255, 191};
     EXPECT_EQ(data, decoded_data);
 }
 
-TEST(base64, decode_hello_world)
+TEST(old_base64, decode_hello_world)
 {
     std::vector<uint8_t> decoded_data = decode_base64("SGVsbG8gV29ybGQh");
     std::vector<uint8_t> data{'H', 'e', 'l', 'l', 'o', ' ',
@@ -108,7 +108,7 @@ TEST(base64, decode_hello_world)
     EXPECT_EQ(data, decoded_data);
 }
 
-TEST(base64, decode_errornous)
+TEST(old_base64, decode_errornous)
 {
     std::vector<uint8_t> decoded_data = decode_base64("I");
     EXPECT_EQ(std::vector<uint8_t>(), decoded_data);
