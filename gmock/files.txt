@@ -1,4 +1,4 @@
-./gmock-gtest-all.cc
-./gmock_main.cc
-./gmock/gmock.h
-./gtest/gtest.h
+gmock-gtest-all.cc
+gmock/gmock.h
+gmock_main.cc
+gtest/gtest.h
