@@ -157,6 +157,9 @@ def execute_sonar(args):
     os.makedirs(build_path)
 
     execute_coverage(args)
+    check_call(['gcovr', '--verbose', '--keep', '--xml', '--output=' +
+                build_path + '/coverage_gcovr.xml', '-r', script_path,
+                script_path])
 
     output_file = open(build_path + '/cppcheck_report.xml', 'w')
     process = Popen(['cppcheck', '--xml', '--xml-version=2', '--quiet',
