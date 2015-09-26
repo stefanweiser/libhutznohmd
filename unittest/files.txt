@@ -27,5 +27,6 @@ request/timestamp.cpp
 request/uri.cpp
 utility/character_validation.cpp
 utility/common.cpp
+utility/parsing.cpp
 utility/select_char_map.cpp
 utility/trie.cpp
