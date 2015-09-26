@@ -27,7 +27,7 @@ namespace hutzn
 
 inline void skip_whitespace(const char_t*& data, size_t& remaining)
 {
-    static const select_char_map map = make_select_char_map(' ', '\n');
+    static const select_char_map map = make_select_char_map(' ', '\t');
     while ((remaining > 0) && (true == map[static_cast<uint8_t>(*data)])) {
         data++;
         remaining--;
