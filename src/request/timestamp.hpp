@@ -19,15 +19,14 @@
 #ifndef LIBHUTZNOHMD_REQUEST_TIMESTAMP_HPP
 #define LIBHUTZNOHMD_REQUEST_TIMESTAMP_HPP
 
-#include <cstddef>
 #include <ctime>
 
-#include <http/parser/utility/lexer.hpp>
+#include <request/lexer.hpp>
 
 namespace hutzn
 {
 
-time_t parse_timestamp(int32_t& character, const http::lexer& l);
+time_t parse_timestamp(const char_t* const data, const size_t length);
 
 } // namespace hutzn
 
