@@ -38,6 +38,18 @@ TEST(parsing, skip_whitespace_nothing)
     EXPECT_EQ(str.size(), remaining);
 }
 
+TEST(parsing, skip_whitespace_empty)
+{
+    std::string str = "";
+    const char_t* data = str.c_str();
+    size_t remaining = str.size();
+
+    skip_whitespace(data, remaining);
+
+    EXPECT_STREQ("", data);
+    EXPECT_EQ(str.size(), remaining);
+}
+
 TEST(parsing, skip_whitespace_one_space)
 {
     std::string str = " abc";
@@ -84,6 +96,30 @@ TEST(parsing, skip_whitespace_mixed_spaces_and_tabs)
 
     EXPECT_STREQ("abc", data);
     EXPECT_EQ(str.size() - 4, remaining);
+}
+
+TEST(parsing, skip_one_character)
+{
+    std::string str = "abc";
+    const char_t* data = str.c_str();
+    size_t remaining = str.size();
+
+    skip_one_character(data, remaining);
+
+    EXPECT_STREQ("bc", data);
+    EXPECT_EQ(str.size() - 1, remaining);
+}
+
+TEST(parsing, skip_one_character_nothing)
+{
+    std::string str = "";
+    const char_t* data = str.c_str();
+    size_t remaining = str.size();
+
+    skip_one_character(data, remaining);
+
+    EXPECT_STREQ("", data);
+    EXPECT_EQ(str.size(), remaining);
 }
 
 } // namespace hutzn
