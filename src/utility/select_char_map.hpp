@@ -48,7 +48,7 @@ namespace detail
 {
 
 //! @brief Is used as termination function, that is doing nothing.
-void fill_select_char_map(select_char_map&)
+static void fill_select_char_map(select_char_map&)
 {
 }
 
