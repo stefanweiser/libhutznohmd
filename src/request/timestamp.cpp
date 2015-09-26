@@ -84,7 +84,7 @@ static trie<int32_t> get_month_trie(size_t& max_size)
 
 } // namespace
 
-void skip_optional_whitespace(const char_t*& data, size_t& remaining)
+void skip_whitespace(const char_t*& data, size_t& remaining)
 {
     static const select_char_map map = make_select_char_map(' ', '\n');
     while ((remaining > 0) && (true == map[static_cast<uint8_t>(*data)])) {
@@ -93,14 +93,11 @@ void skip_optional_whitespace(const char_t*& data, size_t& remaining)
     }
 }
 
-void skip_whitespace(const char_t*& data, size_t& remaining)
+void skip_one_character(const char_t*& data, size_t& remaining)
 {
-    static const select_char_map map = make_select_char_map(' ', '\n');
-    if (remaining > 1) {
-        do {
-            data++;
-            remaining--;
-        } while ((remaining > 0) && (true == map[static_cast<uint8_t>(*data)]));
+    if (remaining > 0) {
+        data++;
+        remaining--;
     }
 }
 
@@ -135,11 +132,13 @@ int32_t parse_time(const char_t*& data, size_t& remaining)
     if ((false == check_range<int32_t, 0, 23>(hour)) || ((*data) != ':')) {
         return -1;
     }
+    skip_one_character(data, remaining);
     skip_whitespace(data, remaining);
     int32_t minute = parse_unsigned_integer(data, remaining);
     if ((false == check_range<int32_t, 0, 59>(minute)) || ((*data) != ':')) {
         return -1;
     }
+    skip_one_character(data, remaining);
     skip_whitespace(data, remaining);
     int32_t second = parse_unsigned_integer(data, remaining);
     if (false == check_range<int32_t, 0, 59>(second)) {
@@ -240,22 +239,23 @@ bool parse_gmt(const char_t*& data, size_t& remaining)
 
 time_t parse_rfc1123_date_time(const char_t*& data, size_t& remaining)
 {
+    skip_one_character(data, remaining);
     skip_whitespace(data, remaining);
     const int32_t day = parse_unsigned_integer(data, remaining);
 
-    skip_optional_whitespace(data, remaining);
+    skip_whitespace(data, remaining);
     const int32_t month = parse_month(data, remaining);
 
-    skip_optional_whitespace(data, remaining);
+    skip_whitespace(data, remaining);
     const int32_t year = parse_unsigned_integer(data, remaining);
 
-    skip_optional_whitespace(data, remaining);
+    skip_whitespace(data, remaining);
     const int32_t second_of_day = parse_time(data, remaining);
     if (second_of_day < 0) {
         return -1;
     }
 
-    skip_optional_whitespace(data, remaining);
+    skip_whitespace(data, remaining);
     if (false == parse_gmt(data, remaining)) {
         return -1;
     }
@@ -265,10 +265,11 @@ time_t parse_rfc1123_date_time(const char_t*& data, size_t& remaining)
 
 time_t parse_rfc850_date_time(const char_t*& data, size_t& remaining)
 {
-    skip_optional_whitespace(data, remaining);
+    skip_whitespace(data, remaining);
     if ((*data) != ',') {
         return -1;
     }
+    skip_one_character(data, remaining);
     skip_whitespace(data, remaining);
     const int32_t day = parse_unsigned_integer(data, remaining);
 
@@ -293,10 +294,10 @@ time_t parse_rfc850_date_time(const char_t*& data, size_t& remaining)
         return -1;
     }
 
-    skip_optional_whitespace(data, remaining);
+    skip_whitespace(data, remaining);
     const int32_t second_of_day = parse_time(data, remaining);
 
-    skip_optional_whitespace(data, remaining);
+    skip_whitespace(data, remaining);
     if (false == parse_gmt(data, remaining)) {
         return -1;
     }
@@ -306,19 +307,23 @@ time_t parse_rfc850_date_time(const char_t*& data, size_t& remaining)
 
 time_t parse_asctime_date_time(const char_t*& data, size_t& remaining)
 {
-    skip_optional_whitespace(data, remaining);
+    skip_whitespace(data, remaining);
     const int32_t month = parse_month(data, remaining);
 
+    skip_one_character(data, remaining);
     skip_whitespace(data, remaining);
     const int32_t day = parse_unsigned_integer(data, remaining);
 
+    skip_one_character(data, remaining);
     skip_whitespace(data, remaining);
     const int32_t second_of_day = parse_time(data, remaining);
 
+    skip_one_character(data, remaining);
     skip_whitespace(data, remaining);
     const int32_t year = parse_unsigned_integer(data, remaining);
 
     if ((*data) == ' ') {
+        skip_one_character(data, remaining);
         skip_whitespace(data, remaining);
     }
 
