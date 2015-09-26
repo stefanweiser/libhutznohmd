@@ -116,6 +116,7 @@ uri::uri(void)
 {
 }
 
+//! @todo seperate http and mailto uri parser to get rid of skip_scheme param.
 bool uri::parse(char_t*& raw, size_t& remaining, bool skip_scheme)
 {
     first_pass_data data;
