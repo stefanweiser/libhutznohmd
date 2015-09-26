@@ -67,11 +67,11 @@ inline void skip_one_character(const char_t*& data, size_t& size)
 inline int32_t parse_unsigned_integer(const char_t*& data, size_t& size)
 {
     int32_t result;
-    char_t character = *data;
 
     // If there is data to read and the first character is a digit.
-    if ((size > 0) && (character >= '0') && (character <= '9')) {
+    if ((size > 0) && ((*data) >= '0') && ((*data) <= '9')) {
         result = 0;
+        char_t character = *data;
 
         // Loop until there are characters available, there is no overflow and
         // the current character is a digit.
