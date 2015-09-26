@@ -43,7 +43,7 @@ static trie<http_verb> get_method_trie(size_t& max_size)
         std::make_pair("POST", http_verb::POST)};
     for (const std::pair<const char_t* const, http_verb>& pair : verbs) {
         result.insert(pair.first, pair.second);
-        max_size = std::max(max_size, ::strlen(pair.first));
+        max_size = std::max(max_size, ::strnlen(pair.first, 16));
     }
 
     return result;
@@ -61,7 +61,7 @@ static trie<http_version> get_version_trie(size_t& max_size)
         std::make_pair("HTTP/2", http_version::HTTP_2)};
     for (const std::pair<const char_t* const, http_version>& pair : methods) {
         result.insert(pair.first, pair.second);
-        max_size = std::max(max_size, ::strlen(pair.first));
+        max_size = std::max(max_size, ::strnlen(pair.first, 16));
     }
 
     return result;
