@@ -122,4 +122,92 @@ TEST(parsing, skip_one_character_nothing)
     EXPECT_EQ(str.size(), remaining);
 }
 
+TEST(parsing, parse_unsigned_interger_nothing)
+{
+    std::string str = "";
+    const char_t* data = str.c_str();
+    size_t remaining = str.size();
+
+    EXPECT_EQ(-1, parse_unsigned_integer(data, remaining));
+    EXPECT_STREQ(str.c_str(), data);
+    EXPECT_EQ(str.size(), remaining);
+}
+
+TEST(parsing, parse_unsigned_interger_space)
+{
+    std::string str = " ";
+    const char_t* data = str.c_str();
+    size_t remaining = str.size();
+
+    EXPECT_EQ(-1, parse_unsigned_integer(data, remaining));
+    EXPECT_STREQ(str.c_str(), data);
+    EXPECT_EQ(str.size(), remaining);
+}
+
+TEST(parsing, parse_unsigned_interger_letter)
+{
+    std::string str = "a";
+    const char_t* data = str.c_str();
+    size_t remaining = str.size();
+
+    EXPECT_EQ(-1, parse_unsigned_integer(data, remaining));
+    EXPECT_STREQ(str.c_str(), data);
+    EXPECT_EQ(str.size(), remaining);
+}
+
+TEST(parsing, parse_unsigned_interger_zero)
+{
+    std::string str = "0";
+    const char_t* data = str.c_str();
+    size_t remaining = str.size();
+
+    EXPECT_EQ(0, parse_unsigned_integer(data, remaining));
+    EXPECT_STREQ("", data);
+    EXPECT_EQ(0, remaining);
+}
+
+TEST(parsing, parse_unsigned_interger_zero_stop_due_to_space)
+{
+    std::string str = "0 ";
+    const char_t* data = str.c_str();
+    size_t remaining = str.size();
+
+    EXPECT_EQ(0, parse_unsigned_integer(data, remaining));
+    EXPECT_STREQ(" ", data);
+    EXPECT_EQ(1, remaining);
+}
+
+TEST(parsing, parse_unsigned_interger_zero_stop_due_to_letter)
+{
+    std::string str = "0a";
+    const char_t* data = str.c_str();
+    size_t remaining = str.size();
+
+    EXPECT_EQ(0, parse_unsigned_integer(data, remaining));
+    EXPECT_STREQ("a", data);
+    EXPECT_EQ(1, remaining);
+}
+
+TEST(parsing, parse_unsigned_interger_zero_stop_due_to_overflow)
+{
+    std::string str = "3000000000";
+    const char_t* data = str.c_str();
+    size_t remaining = str.size();
+
+    EXPECT_EQ(-1, parse_unsigned_integer(data, remaining));
+    EXPECT_STREQ("", data);
+    EXPECT_EQ(0, remaining);
+}
+
+TEST(parsing, parse_unsigned_interger_useful_number)
+{
+    std::string str = "42";
+    const char_t* data = str.c_str();
+    size_t remaining = str.size();
+
+    EXPECT_EQ(42, parse_unsigned_integer(data, remaining));
+    EXPECT_STREQ("", data);
+    EXPECT_EQ(0, remaining);
+}
+
 } // namespace hutzn
