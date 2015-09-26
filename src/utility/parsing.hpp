@@ -25,38 +25,65 @@
 namespace hutzn
 {
 
-inline void skip_whitespace(const char_t*& data, size_t& remaining)
+//! @brief Skips whitespace from a size-based string.
+//!
+//! Skips whitespace characters by increasing the data pointer until the first
+//! character is neither space, tabs, linefeed nor carriage return. The
+//! size parameter (which actual is the length of the string) is decreased by
+//! the number of increases. Does nothing on an empty string or a nullptr.
+inline void skip_whitespace(const char_t*& data, size_t& size)
 {
-    static const select_char_map map = make_select_char_map(' ', '\t');
-    while ((remaining > 0) && (true == map[static_cast<uint8_t>(*data)])) {
+    static const select_char_map map =
+        make_select_char_map(' ', '\t', '\n', '\r');
+
+    // Loop until the end of the string is reached or the current front
+    // character is no whitespace.
+    while ((size > 0) && (true == map[static_cast<uint8_t>(*data)])) {
         data++;
-        remaining--;
+        size--;
     }
 }
 
-inline void skip_one_character(const char_t*& data, size_t& remaining)
+//! @brief Skips one character from a size-based string.
+//!
+//! Skips one character by increasing the data pointer once. The size parameter
+//! (which actual is the length of the string) is decreased one time. Does
+//! nothing on an empty string or on a nullptr.
+inline void skip_one_character(const char_t*& data, size_t& size)
 {
-    if (remaining > 0) {
+    // Do only something, when the size is greater zero.
+    if (size > 0) {
         data++;
-        remaining--;
+        size--;
     }
 }
 
-inline int32_t parse_unsigned_integer(const char_t*& data, size_t& remaining)
+//! @brief Parses an unsigned integer at the front of a string.
+//!
+//! The string has to begin with digits. These digits are read until a character
+//! is no digit or the end of the string is reached. The data parameter is
+//! increased by the number of characters read and the size is decreased by that
+//! number. Returns -1 in case of nothing has been read or overflow.
+inline int32_t parse_unsigned_integer(const char_t*& data, size_t& size)
 {
     int32_t result;
     char_t character = *data;
-    if ((remaining > 0) && (character >= '0') && (character <= '9')) {
+
+    // If there is data to read and the first character is a digit.
+    if ((size > 0) && (character >= '0') && (character <= '9')) {
         result = 0;
 
         // Loop until there are characters available, there is no overflow and
         // the current character is a digit.
         do {
             int32_t old = result;
-            result = (result * 10) + (character - 0x30);
 
+            // Shift the new digit in on the right side.
+            result = (result * 10) + (character - '0');
+
+            // Consume the character.
             data++;
-            remaining--;
+            size--;
 
             // Check for overflow.
             if (old > result) {
@@ -65,7 +92,7 @@ inline int32_t parse_unsigned_integer(const char_t*& data, size_t& remaining)
             }
 
             character = *data;
-        } while ((remaining > 0) && (character >= '0') && (character <= '9'));
+        } while ((size > 0) && (character >= '0') && (character <= '9'));
     } else {
         result = -1;
     }
