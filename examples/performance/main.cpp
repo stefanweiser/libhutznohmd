@@ -25,9 +25,9 @@
 #include <http/parser/utility/timestamp.hpp>
 #include <http/parser/utility/trie.hpp>
 #include <http/parser/utility/uri.hpp>
+#include <libhutznohmd/types.hpp>
 #include <request/timestamp.hpp>
 #include <request/uri.hpp>
-#include <utility/common.hpp>
 
 template <typename value_type>
 using trie = hutzn::http::trie<value_type>;
