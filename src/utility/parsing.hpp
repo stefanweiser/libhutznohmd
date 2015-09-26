@@ -44,23 +44,28 @@ inline void skip_one_character(const char_t*& data, size_t& remaining)
 
 inline int32_t parse_unsigned_integer(const char_t*& data, size_t& remaining)
 {
+    int32_t result;
     char_t character = *data;
-    int32_t result = 0;
-    if (remaining > 0) {
-        while ((remaining > 0) && (character >= '0') && (character <= '9')) {
-            int32_t old_result = result;
+    if ((remaining > 0) && (character >= '0') && (character <= '9')) {
+        result = 0;
+
+        // Loop until there are characters available, there is no overflow and
+        // the current character is a digit.
+        do {
+            int32_t old = result;
             result = (result * 10) + (character - 0x30);
 
+            data++;
+            remaining--;
+
             // Check for overflow.
-            if (old_result > result) {
+            if (old > result) {
                 result = -1;
                 break;
             }
 
-            data++;
-            remaining--;
             character = *data;
-        }
+        } while ((remaining > 0) && (character >= '0') && (character <= '9'));
     } else {
         result = -1;
     }
