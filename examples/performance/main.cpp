@@ -25,6 +25,9 @@
 #include <http/parser/utility/timestamp.hpp>
 #include <http/parser/utility/trie.hpp>
 #include <http/parser/utility/uri.hpp>
+#include <request/timestamp.hpp>
+#include <request/uri.hpp>
+#include <utility/common.hpp>
 
 template <typename value_type>
 using trie = hutzn::http::trie<value_type>;
@@ -125,10 +128,27 @@ void test_http_date_parser(const std::string& date_string)
     auto diff =
         std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
     std::cout << std::fixed << std::setprecision(3) << (diff.count() * 1000.0)
-              << " us for date string: " << date_string << std::endl;
+              << " us for old date string: " << date_string << std::endl;
 }
 
-void test_uri_parser(const std::string& uri)
+void test_date_parser(const std::string& date_string)
+{
+    // This initializes all static variables, that else would sophisticate
+    // the results.
+    hutzn::parse_timestamp(date_string.c_str(), date_string.size());
+
+    std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
+    for (size_t i = 0; i < 1000000; i++) {
+        hutzn::parse_timestamp(date_string.c_str(), date_string.size());
+    }
+    std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
+    auto diff =
+        std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+    std::cout << std::fixed << std::setprecision(0) << (diff.count() * 1000.0)
+              << " ns for date string: " << date_string << std::endl;
+}
+
+void test_http_uri_parser(const std::string& uri)
 {
     {
         // This initializes all static variables, that else would sophisticate
@@ -149,6 +169,33 @@ void test_uri_parser(const std::string& uri)
         int32_t result = l.get();
         hutzn::http::uri u;
         u.parse(l, result, false);
+    }
+    std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
+    auto diff =
+        std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+    std::cout << std::fixed << std::setprecision(3) << (diff.count() * 1000.0)
+              << " ns for http uri: " << uri << std::endl;
+}
+
+void test_uri_parser(const std::string& uri)
+{
+    {
+        // This initializes all static variables, that else would sophisticate
+        // the results.
+        hutzn::uri u;
+        std::string tmp = uri;
+        size_t s = tmp.size();
+        hutzn::char_t* ptr = &(tmp[0]);
+        u.parse(ptr, s, false);
+    }
+
+    std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
+    for (size_t i = 0; i < 1000000; i++) {
+        hutzn::uri u;
+        std::string tmp = uri;
+        size_t s = tmp.size();
+        hutzn::char_t* ptr = &(tmp[0]);
+        u.parse(ptr, s, false);
     }
     std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
     auto diff =
@@ -178,10 +225,20 @@ int main(void)
     test_http_date_parser("Sunday, 06-Nov-94 08:49:37 GMT");
     test_http_date_parser("Sun Nov  6 08:49:37 1994");
 
+    test_date_parser("Sun, 06 Nov 1994 08:49:37 GMT");
+    test_date_parser("Sunday, 06-Nov-94 08:49:37 GMT");
+    test_date_parser("Sun Nov  6 08:49:37 1994");
+
     test_trie_parse("");
     test_trie_parse("content-length");
     test_trie_parse("content-type");
     test_trie_parse("date");
+
+    test_http_uri_parser("/");
+    test_http_uri_parser("http://localhost/");
+    test_http_uri_parser("http://localhost:80/");
+    test_http_uri_parser("http://user:pw@localhost:80/");
+    test_http_uri_parser("http://user:pw@localhost:80/?a=b#anchor");
 
     test_uri_parser("/");
     test_uri_parser("http://localhost/");
