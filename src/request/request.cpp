@@ -125,6 +125,109 @@ bool request::parse(void)
     return result;
 }
 
+void request::fetch_content(void)
+{
+    const size_t length = content_length();
+    if ((length > 0) && (true == lexer_.fetch_content(length))) {
+        content_ = lexer_.content();
+    }
+}
+
+http_verb request::method(void) const
+{
+    return method_;
+}
+
+const char_t* request::path(void) const
+{
+    return path_uri_.path();
+}
+
+const char_t* request::host(void) const
+{
+    return path_uri_.host();
+}
+
+const char_t* request::query(const char_t* const key) const
+{
+    const char_t* result = nullptr;
+    auto it = query_entries_.find(key);
+    if (it != query_entries_.end()) {
+        result = it->second;
+    }
+    return result;
+}
+
+const char_t* request::fragment(void) const
+{
+    return path_uri_.fragment();
+}
+
+http_version request::version(void) const
+{
+    return version_;
+}
+
+const char_t* request::header_value(const char_t* const name) const
+{
+    const char_t* result = nullptr;
+    auto it = header_fields_.find(name);
+    if (it != header_fields_.end()) {
+        result = it->second;
+    }
+    return result;
+}
+
+bool request::keeps_connection(void) const
+{
+    return false;
+}
+
+time_t request::date(void) const
+{
+    return date_;
+}
+
+const void* request::content(void) const
+{
+    return content_;
+}
+
+size_t request::content_length(void) const
+{
+    return content_length_;
+}
+
+mime request::content_type(void) const
+{
+    return mime(mime_type::INVALID, mime_subtype::INVALID);
+}
+
+bool request::accept(void*& /*handle*/, mime& /*type*/) const
+{
+    return false;
+}
+
+http_expectation request::expect(void) const
+{
+    return http_expectation::UNKNOWN;
+}
+
+const char_t* request::from(void) const
+{
+    return nullptr;
+}
+
+const char_t* request::referer(void) const
+{
+    return nullptr;
+}
+
+const char_t* request::user_agent(void) const
+{
+    return nullptr;
+}
+
 bool request::parse_method(int32_t& ch)
 {
     static size_t maximum_method_length = 0;
@@ -316,109 +419,6 @@ void request::add_header(header_key key, const char_t* const key_string,
         header_fields_[key_string] = value_string;
         break;
     }
-}
-
-void request::fetch_content(void)
-{
-    const size_t length = content_length();
-    if ((length > 0) && (true == lexer_.fetch_content(length))) {
-        content_ = lexer_.content();
-    }
-}
-
-http_verb request::method(void) const
-{
-    return method_;
-}
-
-const char_t* request::path(void) const
-{
-    return path_uri_.path();
-}
-
-const char_t* request::host(void) const
-{
-    return path_uri_.host();
-}
-
-const char_t* request::query(const char_t* const key) const
-{
-    const char_t* result = nullptr;
-    auto it = query_entries_.find(key);
-    if (it != query_entries_.end()) {
-        result = it->second;
-    }
-    return result;
-}
-
-const char_t* request::fragment(void) const
-{
-    return path_uri_.fragment();
-}
-
-http_version request::version(void) const
-{
-    return version_;
-}
-
-const char_t* request::header_value(const char_t* const name) const
-{
-    const char_t* result = nullptr;
-    auto it = header_fields_.find(name);
-    if (it != header_fields_.end()) {
-        result = it->second;
-    }
-    return result;
-}
-
-bool request::keeps_connection(void) const
-{
-    return false;
-}
-
-time_t request::date(void) const
-{
-    return date_;
-}
-
-const void* request::content(void) const
-{
-    return content_;
-}
-
-size_t request::content_length(void) const
-{
-    return content_length_;
-}
-
-mime request::content_type(void) const
-{
-    return mime(mime_type::INVALID, mime_subtype::INVALID);
-}
-
-bool request::accept(void*& /*handle*/, mime& /*type*/) const
-{
-    return false;
-}
-
-http_expectation request::expect(void) const
-{
-    return http_expectation::UNKNOWN;
-}
-
-const char_t* request::from(void) const
-{
-    return nullptr;
-}
-
-const char_t* request::referer(void) const
-{
-    return nullptr;
-}
-
-const char_t* request::user_agent(void) const
-{
-    return nullptr;
 }
 
 bool request::is_whitespace(const int32_t ch)
