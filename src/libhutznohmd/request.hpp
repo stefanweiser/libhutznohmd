@@ -791,6 +791,10 @@ public:
     //! Virtual destructor.
     virtual ~request_interface(void);
 
+    //! Fetches the content, which is not fetched by the request processor. Call
+    //! it at least one time before calling @ref request_interface::content.
+    virtual void fetch_content(void) = 0;
+
     //! Returns the HTTP verb used by the request (GET, PUT, DELETE or POST are
     //! allowed).
     virtual http_verb method(void) const = 0;
@@ -832,7 +836,9 @@ public:
     //! Returns a pointer to the begin of the content in the buffer. This data
     //! buffer is @b not null-terminated and has the length of the
     //! content-length header field. If there is no content it returns nullptr.
-    virtual void* content(void) const = 0;
+    //! Returns also nullptr, when @ref request_interface::fetch_content was not
+    //! called before.
+    virtual const void* content(void) const = 0;
 
     //! Returns the length of the buffer returned by
     //! @ref request_interface::content(). If there is no content it returns 0.

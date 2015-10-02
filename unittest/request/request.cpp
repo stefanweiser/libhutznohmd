@@ -119,6 +119,42 @@ TEST_F(request_test, default_request)
     EXPECT_EQ(nullptr, r.user_agent());
 }
 
+TEST_F(request_test, request_with_content)
+{
+    request r{connection_};
+    setup_receive("GET / HTTP/1.1\r\nContent-Length: 12\r\n\r\nHello World!");
+    ASSERT_TRUE(r.parse());
+
+    EXPECT_EQ(http_verb::GET, r.method());
+    EXPECT_STREQ("", r.path());
+    EXPECT_EQ(nullptr, r.host());
+    EXPECT_EQ(nullptr, r.query(nullptr));
+    EXPECT_EQ(nullptr, r.fragment());
+    EXPECT_EQ(http_version::HTTP_1_1, r.version());
+    EXPECT_EQ(nullptr, r.header_value(nullptr));
+    EXPECT_EQ(false, r.keeps_connection());
+    EXPECT_EQ(0, r.date());
+
+    // fetch_content() will set the content's result.
+    EXPECT_EQ(12, r.content_length());
+    EXPECT_EQ(nullptr, r.content());
+    r.fetch_content();
+    EXPECT_EQ(12, r.content_length());
+    EXPECT_EQ(0, memcmp("Hello World!", r.content(), r.content_length()));
+
+    EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
+              r.content_type());
+
+    void* handle = nullptr;
+    mime m{mime_type::INVALID, mime_subtype::INVALID};
+    EXPECT_EQ(false, r.accept(handle, m));
+
+    EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
+    EXPECT_EQ(nullptr, r.from());
+    EXPECT_EQ(nullptr, r.referer());
+    EXPECT_EQ(nullptr, r.user_agent());
+}
+
 TEST_F(request_test, request_with_timestamp)
 {
     request r{connection_};

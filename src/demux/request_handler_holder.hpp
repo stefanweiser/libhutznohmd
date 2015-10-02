@@ -36,7 +36,7 @@ public:
                                     const request_handler_callback& callback);
     ~request_handler_holder(void) noexcept(true);
 
-    http_status_code call(const request_interface& request,
+    http_status_code call(request_interface& request,
                           response_interface& response) override;
 
 private:

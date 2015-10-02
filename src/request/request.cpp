@@ -21,7 +21,7 @@
 #include <limits>
 
 #include <request/timestamp.hpp>
-
+#include <utility/parsing.hpp>
 #include <utility/trie.hpp>
 
 #include "request.hpp"
@@ -76,7 +76,8 @@ static trie<header_key> get_header_key_trie(size_t& max_size)
     // Filling versions and automatically calculate the maximum length.
     max_size = 0;
     const std::vector<std::pair<const char_t* const, header_key>> header_keys =
-        {std::make_pair("date", header_key::DATE)};
+        {std::make_pair("date", header_key::DATE),
+         std::make_pair("content-length", header_key::CONTENT_LENGTH)};
     for (const std::pair<const char_t* const, header_key>& pair : header_keys) {
         result.insert(pair.first, pair.second);
         max_size = std::max(max_size, ::strnlen(pair.first, 16));
@@ -92,6 +93,8 @@ request::request(const connection_pointer& connection)
     , method_(http_verb::GET)
     , path_uri_()
     , version_(http_version::HTTP_UNKNOWN)
+    , content_length_(0)
+    , content_(nullptr)
     , date_(0)
     , header_fields_()
     , query_entries_()
@@ -295,10 +298,31 @@ void request::add_header(header_key key, const char_t* const key_string,
     case header_key::DATE:
         date_ = parse_timestamp(value_string, value_length);
         break;
-    case header_key::CUSTOM:
-        header_fields_[key_string] = value_string;
-    default:
+
+    case header_key::CONTENT_LENGTH: {
+        const char_t* value_string_copy = value_string;
+        size_t value_length_copy = value_length;
+        skip_whitespace(value_string_copy, value_length_copy);
+        const int32_t length =
+            parse_unsigned_integer(value_string_copy, value_length_copy);
+        if (length >= 0) {
+            content_length_ = static_cast<size_t>(length);
+        }
         break;
+    }
+
+    case header_key::CUSTOM:
+    default:
+        header_fields_[key_string] = value_string;
+        break;
+    }
+}
+
+void request::fetch_content(void)
+{
+    const size_t length = content_length();
+    if ((length > 0) && (true == lexer_.fetch_content(length))) {
+        content_ = lexer_.content();
     }
 }
 
@@ -357,14 +381,14 @@ time_t request::date(void) const
     return date_;
 }
 
-void* request::content(void) const
+const void* request::content(void) const
 {
-    return nullptr;
+    return content_;
 }
 
 size_t request::content_length(void) const
 {
-    return 0;
+    return content_length_;
 }
 
 mime request::content_type(void) const

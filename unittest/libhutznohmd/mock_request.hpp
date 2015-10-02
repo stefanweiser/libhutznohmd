@@ -29,6 +29,7 @@ namespace hutzn
 class request_interface_mock : public request_interface
 {
 public:
+    MOCK_METHOD0(fetch_content, void(void));
     MOCK_CONST_METHOD0(method, http_verb(void));
     MOCK_CONST_METHOD0(path, const char_t*(void));
     MOCK_CONST_METHOD0(host, const char_t*(void));
@@ -38,7 +39,7 @@ public:
     MOCK_CONST_METHOD1(header_value, const char_t*(const char_t* const));
     MOCK_CONST_METHOD0(keeps_connection, bool(void));
     MOCK_CONST_METHOD0(date, time_t(void));
-    MOCK_CONST_METHOD0(content, void*(void));
+    MOCK_CONST_METHOD0(content, const void*(void));
     MOCK_CONST_METHOD0(content_length, size_t(void));
     MOCK_CONST_METHOD0(content_type, mime(void));
     MOCK_CONST_METHOD2(accept, bool(void*&, mime&));

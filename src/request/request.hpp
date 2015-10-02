@@ -29,7 +29,7 @@
 namespace hutzn
 {
 
-enum class header_key : uint8_t { CUSTOM = 0, DATE = 1 };
+enum class header_key : uint8_t { CUSTOM = 0, DATE = 1, CONTENT_LENGTH = 2 };
 
 class request : public request_interface
 {
@@ -41,6 +41,7 @@ public:
 
     bool parse(void);
 
+    void fetch_content(void) override;
     http_verb method(void) const override;
     const char_t* path(void) const override;
     const char_t* host(void) const override;
@@ -50,7 +51,7 @@ public:
     const char_t* header_value(const char_t* const name) const override;
     bool keeps_connection(void) const override;
     time_t date(void) const override;
-    void* content(void) const override;
+    const void* content(void) const override;
     size_t content_length(void) const override;
     mime content_type(void) const override;
     bool accept(void*& handle, mime& type) const override;
@@ -83,6 +84,8 @@ private:
     uri path_uri_;
     http_version version_;
 
+    size_t content_length_;
+    const void* content_;
     time_t date_;
 
     //! Do not use this in any other case than for storing header fields and

@@ -36,7 +36,7 @@ request_handler_holder::~request_handler_holder(void) noexcept(true)
     demuxer_.decrease_usage_counter(id_);
 }
 
-http_status_code request_handler_holder::call(const request_interface& request,
+http_status_code request_handler_holder::call(request_interface& request,
                                               response_interface& response)
 {
     const http_status_code result = callback_(request, response);

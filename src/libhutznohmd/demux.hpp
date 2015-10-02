@@ -257,7 +257,7 @@ public:
     //! This will increase the request handlers usage counter before calling the
     //! handler and decreasing it afterwards. This method may throw exceptions
     //! which are thrown from the request handler.
-    virtual http_status_code call(const request_interface& request,
+    virtual http_status_code call(request_interface& request,
                                   response_interface& response) = 0;
 };
 
@@ -267,8 +267,8 @@ using request_handler_holder_pointer =
 
 //! Is used when the demultiplexer calls a request handler in order to get a
 //! response on a request.
-using request_handler_callback = std::function<
-    http_status_code(const request_interface&, response_interface&)>;
+using request_handler_callback =
+    std::function<http_status_code(request_interface&, response_interface&)>;
 
 //! @brief Demultiplexes the requests.
 //!
