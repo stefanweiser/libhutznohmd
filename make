@@ -147,11 +147,22 @@ def execute_sonar(args):
     os.environ['project_path'] = script_path
     os.environ['build_path'] = build_path
     os.environ['version'] = '0.0.1'
-    os.environ['include_paths'] = '/usr/include/c++/4.8.3,/usr/include/' + \
-                                  'c++/4.8.3/x86_64-redhat-linux,/usr/' + \
-                                  'include/c++/4.8.3/backward,/usr/lib/' + \
-                                  'gcc/x86_64-redhat-linux/4.8.3/include,' + \
-                                  '/usr/local/include,/usr/include'
+    os.environ['include_paths'] = '/usr/include/c++/4.8,' + \
+                                  '/usr/include/x86_64-linux-gnu/c++/4.8,' + \
+                                  '/usr/include/c++/4.8/backward,' + \
+                                  '/usr/lib/gcc/x86_64-linux-gnu/4.8/include,' + \
+\
+                                  '/usr/include/c++/4.8.3,' + \
+                                  '/usr/include/c++/4.8.3/x86_64-redhat-linux,' + \
+                                  '/usr/include/c++/4.8.3/backward,' + \
+                                  '/usr/lib/gcc/x86_64-redhat-linux/4.8.3/include,' + \
+\
+                                  '/usr/local/include,' + \
+\
+                                  '/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed,' + \
+                                  '/usr/include/x86_64-linux-gnu,' + \
+\
+                                  '/usr/include'
 
     rmtree(build_path)
     os.makedirs(build_path)
