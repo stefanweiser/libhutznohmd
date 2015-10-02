@@ -119,16 +119,16 @@ bool request::parse(const mime_handler& handler)
 
     const bool fetch_result = lexer_.fetch_header();
     int32_t ch = lexer_.get();
-    if ((true == fetch_result) && (true == parse_method(ch)) &&
-        (true == parse_uri(ch)) && (true == parse_version(ch))) {
+    if ((fetch_result) && (parse_method(ch)) && (parse_uri(ch)) &&
+        (parse_version(ch))) {
         ch = lexer_.get();
         while (ch >= 0) {
-            if (true == is_newline(ch)) {
+            if (is_newline(ch)) {
                 result = true;
                 break;
             }
 
-            if (true == parse_header(handler, ch)) {
+            if (parse_header(handler, ch)) {
                 ch = lexer_.get();
             }
         }
@@ -140,7 +140,7 @@ bool request::parse(const mime_handler& handler)
 void request::fetch_content(void)
 {
     const size_t length = content_length();
-    if ((length > 0) && (true == lexer_.fetch_content(length))) {
+    if ((length > 0) && (lexer_.fetch_content(length))) {
         content_ = lexer_.content();
     }
 }
@@ -192,8 +192,7 @@ const char_t* request::header_value(const char_t* const name) const
 
 bool request::keeps_connection(void) const
 {
-    return ((version() > http_version::HTTP_1_0) ||
-            (true == is_keep_alive_set_));
+    return ((version() > http_version::HTTP_1_0) || (is_keep_alive_set_));
 }
 
 time_t request::date(void) const
@@ -251,7 +250,7 @@ bool request::parse_method(int32_t& ch)
 
     size_t method_begin = 0;
     while (ch >= 0) {
-        if (false == is_whitespace(ch)) {
+        if (!is_whitespace(ch)) {
             method_begin = lexer_.prev_index();
             break;
         }
@@ -260,7 +259,7 @@ bool request::parse_method(int32_t& ch)
     }
 
     while (ch >= 0) {
-        if (true == is_whitespace(ch)) {
+        if (is_whitespace(ch)) {
             const size_t method_length = lexer_.prev_index() - method_begin;
 
             // Parsing the version will succeed, when the token is not too
@@ -287,7 +286,7 @@ bool request::parse_uri(int32_t& ch)
     bool result = false;
 
     while (ch >= 0) {
-        if (false == is_whitespace(ch)) {
+        if (!is_whitespace(ch)) {
             break;
         }
 
@@ -297,7 +296,7 @@ bool request::parse_uri(int32_t& ch)
     char_t* value = lexer_.header_data(lexer_.prev_index());
     size_t length = 0;
     while (ch >= 0) {
-        if (true == is_whitespace(ch)) {
+        if (is_whitespace(ch)) {
             // Overwrite the newline with null. The value is getting null
             // terminated by this.
             lexer_.header_data(lexer_.prev_index())[0] = '\0';
@@ -322,7 +321,7 @@ bool request::parse_version(int32_t& ch)
 
     size_t version_begin = 0;
     while (ch >= 0) {
-        if (false == is_whitespace(ch)) {
+        if (!is_whitespace(ch)) {
             version_begin = lexer_.prev_index();
             break;
         }
@@ -331,7 +330,7 @@ bool request::parse_version(int32_t& ch)
     }
 
     while (ch >= 0) {
-        if (true == is_newline(ch)) {
+        if (is_newline(ch)) {
             const size_t version_length = lexer_.prev_index() - version_begin;
 
             // Parsing the version will succeed, when the token is not too
@@ -364,7 +363,7 @@ bool request::parse_header(const mime_handler& handler, int32_t& ch)
     size_t key_size = 0;
     const char_t* key = lexer_.header_data(key_begin);
     while (ch >= 0) {
-        if (true == is_key_value_separator(ch)) {
+        if (is_key_value_separator(ch)) {
             // Overwrite the separator with null. The key is getting null
             // terminated by this.
             const size_t key_end = lexer_.prev_index();
@@ -389,7 +388,7 @@ bool request::parse_header(const mime_handler& handler, int32_t& ch)
     // The value of -1 signalizes end of file.
     while (ch >= 0) {
         // Searching a newline character. This is the end of the header field.
-        if (true == is_newline(ch)) {
+        if (is_newline(ch)) {
             // Overwrite the newline with null. The value is getting null
             // terminated by this.
             const size_t value_end = lexer_.prev_index();

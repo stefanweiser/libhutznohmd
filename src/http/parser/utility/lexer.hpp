@@ -55,8 +55,8 @@ void parse_word(int32_t& character, push_back_string<size>& result,
                 const continue_function& continue_condition_functor,
                 const lexer& l)
 {
-    while ((character >= 0) && (true == continue_condition_functor(
-                                            static_cast<uint8_t>(character)))) {
+    while ((character >= 0) &&
+           (continue_condition_functor(static_cast<uint8_t>(character)))) {
         result.push_back(static_cast<char_t>(character));
         character = l.get();
     }
@@ -81,8 +81,8 @@ bool parse_quoted_string(int32_t& character, push_back_string<size>& result,
     // Fill the result string till a valid end is detected. This could be
     // 1. the end of the stream or
     // 2. an invalid character.
-    while ((character >= 0) && (true == is_valid_quoted_string_character(
-                                            static_cast<uint8_t>(character)))) {
+    while ((character >= 0) && (is_valid_quoted_string_character(
+                                   static_cast<uint8_t>(character)))) {
         result.push_back(static_cast<char_t>(character));
         character = l.get();
     }

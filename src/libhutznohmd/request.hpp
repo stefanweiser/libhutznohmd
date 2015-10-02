@@ -860,7 +860,7 @@ public:
     //! @code{.cpp}
     //! void* handle = nullptr;
     //! mime type;
-    //! while (true == request->accept(handle, type)) {
+    //! while (request->accept(handle, type)) {
     //!     // Do some fancy stuff.
     //! }
     //! @endcode

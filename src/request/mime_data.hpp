@@ -54,7 +54,7 @@ public:
         value_type result = value_type::INVALID;
         if (next_value_ != 0) {
             value_type value = static_cast<value_type>(next_value_);
-            if (true == types_.insert(type.c_str(), value)) {
+            if (types_.insert(type.c_str(), value)) {
                 next_value_++;
                 registered_types_[value] = type;
                 result = value;

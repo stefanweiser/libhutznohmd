@@ -49,7 +49,7 @@ bool lexer::fetch_header(void)
            (state_ != lexer_state::error)) {
 
         // Need more data.
-        if (true == connection_->receive(header_, chunk_size)) {
+        if (connection_->receive(header_, chunk_size)) {
 
             // At least one character is available to get evaluated, because
             // block_device_interface::receive returns true, when at least one
@@ -115,13 +115,13 @@ bool lexer::fetch_content(const size_t length)
 
         // Fetching more data when necessary.
         bool fetch_more = (content_.size() < length);
-        while (true == fetch_more) {
+        while (fetch_more) {
 
             // This must be done in a loop, because receive returns true, if
             // something is read. There is no gurantee, that all the necessary
             // bytes are read.
             const size_t bytes_to_read = length - content_.size();
-            if (true == connection_->receive(content_, bytes_to_read)) {
+            if (connection_->receive(content_, bytes_to_read)) {
                 // Recalculate fetch_more. Continue receiving, when the content
                 // is not yet complete.
                 fetch_more = (content_.size() < length);
@@ -198,7 +198,7 @@ char_t* lexer::header_data(const size_t idx)
 const char_t* lexer::content(void) const
 {
     const char_t* result;
-    if (true == fetch_content_succeeded_) {
+    if (fetch_content_succeeded_) {
         result = &(content_[0]);
     } else {
         result = nullptr;
@@ -209,7 +209,7 @@ const char_t* lexer::content(void) const
 size_t lexer::content_length(void) const
 {
     size_t result;
-    if (true == fetch_content_succeeded_) {
+    if (fetch_content_succeeded_) {
         result = content_.size();
     } else {
         result = 0;

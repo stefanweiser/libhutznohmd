@@ -64,7 +64,7 @@ request_handler_holder_pointer demultiplexer::determine_request_handler(
             // Loop over the accept types for a matching request handler.
             void* handle = nullptr;
             mime type;
-            while (true == request.accept(handle, type)) {
+            while (request.accept(handle, type)) {
                 request_handler_callback find_result = accept_map.find(type);
                 if (!!find_result) {
                     request_handler_id id{path, method, content_type, type};
@@ -85,11 +85,10 @@ handler_pointer demultiplexer::connect(const request_handler_id& id,
     handler_pointer result;
 
     // Check for invalid uri paths.
-    if (true == is_valid_uri_path(id.path)) {
+    if (is_valid_uri_path(id.path)) {
 
         // Check whether the content and accept mime is valid.
-        if (true ==
-            mime_handler_.are_two_types_valid(id.content_type,
+        if (mime_handler_.are_two_types_valid(id.content_type,
                                               id.accept_type)) {
 
             // Get specific map with handlers.
@@ -98,7 +97,7 @@ handler_pointer demultiplexer::connect(const request_handler_id& id,
             auto& accept_map = resource_callbacks_[key];
 
             // Check if there is already a registered request handler.
-            if (true == accept_map.insert(id.accept_type, fn)) {
+            if (accept_map.insert(id.accept_type, fn)) {
                 // The id have been inserted. There is no need to keep the lock,
                 // when creating the resulting handler.
                 cb_lock.unlock();
@@ -127,7 +126,7 @@ void demultiplexer::disconnect(const request_handler_id& id)
             demultiplexer_ordered_mime_map& accept_map = resource_it->second;
 
             // Erase handler id.
-            if (false == accept_map.erase(id.accept_type)) {
+            if (!accept_map.erase(id.accept_type)) {
                 repeat = true;
                 resource_callbacks_usage_changed_.wait(lock);
             }
@@ -139,7 +138,7 @@ void demultiplexer::disconnect(const request_handler_id& id)
                 UNUSED(erased_number);
             }
         }
-    } while (true == repeat);
+    } while (repeat);
 }
 
 void demultiplexer::disable(const request_handler_id& id)

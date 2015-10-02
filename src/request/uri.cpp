@@ -49,9 +49,9 @@ size_t parse_uri_word(char_t*& data, size_t& remaining,
     size_t head = 0;
     size_t tail = 0;
     bool stop = false;
-    while (false == stop) {
+    while (!stop) {
         const char_t ch = data[head];
-        if ((true == map[static_cast<uint8_t>(ch)]) || (head >= remaining)) {
+        if ((map[static_cast<uint8_t>(ch)]) || (head >= remaining)) {
             stop = true;
         } else if ('%' == ch) {
             if ((remaining - head) > 2) {
@@ -123,17 +123,17 @@ bool uri::parse(char_t*& raw, size_t& remaining, bool skip_scheme)
     const bool passed_first_pass =
         parse_1st_pass(raw, remaining, data, skip_scheme);
     bool result = passed_first_pass;
-    if (true == passed_first_pass) {
+    if (passed_first_pass) {
         // This implementation supports both: URIs with and without scheme or
         // authority. Though it is not strictly conforming with RFC 3986, HTTP
         // specifies request URIs without scheme and authority.
         if (data.scheme_size > 0) {
-            if (false == parse_scheme(data.scheme, data.scheme_size)) {
+            if (!parse_scheme(data.scheme, data.scheme_size)) {
                 result = false;
             }
         }
         if (data.authority_size > 0) {
-            if (false == parse_authority(data.authority, data.authority_size)) {
+            if (!parse_authority(data.authority, data.authority_size)) {
                 result = false;
             }
         }
@@ -207,11 +207,11 @@ bool uri::parse_1st_pass(char_t*& raw, size_t& remaining, first_pass_data& data,
             make_select_char_map('/', '?', '#');
 
         char_t c = *raw;
-        if (false == path_query_fragment_map[static_cast<uint8_t>(c)]) {
+        if (!path_query_fragment_map[static_cast<uint8_t>(c)]) {
             char_t* scheme_or_authority_data = raw;
             size_t length = parse_uri_word(raw, remaining, ':', '/', '?', '#',
                                            ' ', '\t', '\r', '\n');
-            if ((false == skip_scheme) && (':' == raw[0])) {
+            if ((!skip_scheme) && (':' == raw[0])) {
                 scheme_or_authority_data[length] = '\0';
                 data.scheme = scheme_or_authority_data;
                 data.scheme_size = length;
@@ -233,7 +233,7 @@ bool uri::parse_1st_pass(char_t*& raw, size_t& remaining, first_pass_data& data,
         }
 
         if (remaining > 0) {
-            if (false == path_query_fragment_map[static_cast<uint8_t>(c)]) {
+            if (!path_query_fragment_map[static_cast<uint8_t>(c)]) {
                 char_t* authority_data = raw;
                 size_t length = parse_uri_word(raw, remaining, '/', '?', '#',
                                                ' ', '\t', '\r', '\n');
@@ -257,8 +257,7 @@ bool uri::parse_1st_pass(char_t*& raw, size_t& remaining, first_pass_data& data,
 
     static const select_char_map empty_map =
         make_select_char_map(' ', '\t', '\r', '\n');
-    return ((remaining == 0) ||
-            (true == empty_map[static_cast<uint8_t>(*raw)]));
+    return ((remaining == 0) || (empty_map[static_cast<uint8_t>(*raw)]));
 }
 
 bool uri::parse_scheme(const char_t* const scheme_ptr, const size_t& size)
@@ -326,7 +325,7 @@ bool uri::parse_authority(char_t* const authority_ptr, const size_t& size)
                 port_valid = false;
             }
         }
-        if (true == port_valid) {
+        if (port_valid) {
             port_ = static_cast<uint16_t>(port_number);
         } else {
             result = false;

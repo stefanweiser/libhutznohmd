@@ -92,9 +92,8 @@ bool is_base64(uint8_t c)
 bool base_parser::parse_content_md5(int32_t& character)
 {
     std::string s;
-    while ((character >= 0) &&
-           ((true == is_base64(static_cast<uint8_t>(character))) ||
-            ('=' == character))) {
+    while ((character >= 0) && ((is_base64(static_cast<uint8_t>(character))) ||
+                                ('=' == character))) {
         s += static_cast<char_t>(character);
         character = lexer_.get();
     }

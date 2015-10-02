@@ -30,17 +30,17 @@ namespace http
 int32_t parse_time(int32_t& character, const lexer& l)
 {
     int32_t hour = l.get_unsigned_integer(character);
-    if ((false == check_range<int32_t, 0, 23>(hour)) || (character != ':')) {
+    if ((!check_range<int32_t, 0, 23>(hour)) || (character != ':')) {
         return -1;
     }
     character = l.get_non_whitespace();
     int32_t minute = l.get_unsigned_integer(character);
-    if ((false == check_range<int32_t, 0, 59>(minute)) || (character != ':')) {
+    if ((!check_range<int32_t, 0, 59>(minute)) || (character != ':')) {
         return -1;
     }
     character = l.get_non_whitespace();
     int32_t second = l.get_unsigned_integer(character);
-    if (false == check_range<int32_t, 0, 59>(second)) {
+    if (!check_range<int32_t, 0, 59>(second)) {
         return -1;
     }
     return (60 * ((60 * hour) + minute)) + second;
@@ -106,8 +106,8 @@ bool is_valid_day(const time_t day, const time_t month, const time_t year)
 bool is_valid_epoch_date(const time_t day, const time_t month,
                          const time_t year)
 {
-    if ((year < 1970) || (false == check_range<time_t, 1, 12>(month)) ||
-        (false == is_valid_day(day, month, year))) {
+    if ((year < 1970) || (!check_range<time_t, 1, 12>(month)) ||
+        (!is_valid_day(day, month, year))) {
         return false;
     }
     return true;
@@ -116,7 +116,7 @@ bool is_valid_epoch_date(const time_t day, const time_t month,
 time_t seconds_since_epoch(const time_t second_of_day, const time_t day,
                            const time_t month, const time_t year)
 {
-    if (false == is_valid_epoch_date(day, month, year)) {
+    if (!is_valid_epoch_date(day, month, year)) {
         return -1;
     }
 
@@ -163,7 +163,7 @@ time_t parse_rfc1123_date_time(int32_t& character, const lexer& l)
     }
 
     parse_optional_whitespace(character, l);
-    if (false == parse_gmt(character, l)) {
+    if (!parse_gmt(character, l)) {
         return -1;
     }
 
@@ -190,7 +190,7 @@ time_t parse_rfc850_date_time(int32_t& character, const lexer& l)
     }
     character = l.get();
     const int32_t year = 1900 + l.get_unsigned_integer(character);
-    if (false == check_range<int32_t, 1900, 1999>(year)) {
+    if (!check_range<int32_t, 1900, 1999>(year)) {
         return -1;
     }
 
@@ -198,7 +198,7 @@ time_t parse_rfc850_date_time(int32_t& character, const lexer& l)
     const int32_t second_of_day = parse_time(character, l);
 
     parse_optional_whitespace(character, l);
-    if (false == parse_gmt(character, l)) {
+    if (!parse_gmt(character, l)) {
         return -1;
     }
 
@@ -257,7 +257,7 @@ time_t parse_timestamp(int32_t& character, const lexer& l)
     int32_t weekday = -1;
     int32_t is_long_format = false;
     std::tie(weekday, is_long_format) = parse_weekday(character, l);
-    if (true == is_long_format) {
+    if (is_long_format) {
         return parse_rfc850_date_time(character, l);
     } else if ((character == ' ') || (character == '\t')) {
         return parse_asctime_date_time(character, l);

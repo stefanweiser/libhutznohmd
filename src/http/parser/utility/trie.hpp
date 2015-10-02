@@ -78,7 +78,7 @@ value_type trie<value_type>::parse(int32_t& character,
     const std::unique_ptr<trie>& child =
         children_[static_cast<uint8_t>(character)];
     if (std::unique_ptr<trie>() == child) {
-        if (false == has_value_) {
+        if (!has_value_) {
             fail_safe_result.append_string(name_.c_str());
         }
         return value_;
@@ -133,17 +133,17 @@ trie<value_type>::trie(const std::vector<value_info>& values,
         std::vector<value_info> next_values;
         fill_next_values(next_values, values, index, c);
 
-        if (false == next_values.empty()) {
+        if (!next_values.empty()) {
             children_[c] = std::unique_ptr<trie>(
                 new trie(next_values, name_ + static_cast<char_t>(c), index + 1,
                          default_value));
 
             // The trie parsing is case insensitive.
-            if (true == check_range<uint8_t, 'a', 'z'>(c)) {
+            if (check_range<uint8_t, 'a', 'z'>(c)) {
                 children_[c & 0xDFU] = std::unique_ptr<trie>(new trie(
                     next_values, name_ + static_cast<char_t>(c & 0xDFU),
                     index + 1, default_value));
-            } else if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
+            } else if (check_range<uint8_t, 'A', 'Z'>(c)) {
                 children_[c | 0x20U] = std::unique_ptr<trie>(new trie(
                     next_values, name_ + static_cast<char_t>(c | 0x20U),
                     index + 1, default_value));

@@ -81,7 +81,7 @@ listener::~listener(void)
 connection_pointer listener::accept(void) const
 {
     connection_pointer result;
-    if (true == is_listening_) {
+    if (is_listening_) {
 
         // This is an accepted exceptional use of an union (breaks MISRA
         // C++:2008 Rule 9-5-1). Alternatively a reinterpret_cast could be used,

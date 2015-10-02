@@ -80,7 +80,7 @@ bool media_type::parse(const lexer& l, int32_t& character)
     parse_subtype(character);
     while (';' == character) {
         character = lexer_->get_non_whitespace();
-        if (false == parse_parameter(character)) {
+        if (!parse_parameter(character)) {
             return false;
         }
     }
@@ -158,7 +158,7 @@ void media_type::parse_type(int32_t& character)
         types, media_type_interface::mime_type::CUSTOM);
     type_ = t.parse(character, custom_type_, *lexer_);
     if ((media_type_interface::mime_type::CUSTOM != type_) &&
-        (true == is_valid_token_character(static_cast<uint8_t>(character)))) {
+        (is_valid_token_character(static_cast<uint8_t>(character)))) {
         custom_type_.append_string(
             std::get<0>(types[static_cast<size_t>(type_)]));
         type_ = media_type_interface::mime_type::CUSTOM;
@@ -184,7 +184,7 @@ void media_type::parse_subtype(int32_t& character)
         types, media_type_interface::mime_subtype::CUSTOM);
     subtype_ = t.parse(character, custom_subtype_, *lexer_);
     if ((media_type_interface::mime_subtype::CUSTOM != subtype_) &&
-        (true == is_valid_token_character(static_cast<uint8_t>(character)))) {
+        (is_valid_token_character(static_cast<uint8_t>(character)))) {
         custom_subtype_.append_string(
             std::get<0>(types[static_cast<size_t>(subtype_)]));
         subtype_ = media_type_interface::mime_subtype::CUSTOM;
@@ -232,7 +232,7 @@ bool media_type::parse_parameter(int32_t& character)
     }
     character = lexer_->get();
     if ('"' == character) {
-        if (false == parse_quoted_string(character, value, *lexer_)) {
+        if (!parse_quoted_string(character, value, *lexer_)) {
             return false;
         }
     } else {

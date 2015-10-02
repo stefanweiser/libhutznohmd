@@ -35,8 +35,8 @@ bool parse_uri_word(int32_t& character, push_back_string<size>& result,
                     const continue_function& continue_condition_functor,
                     const lexer& l)
 {
-    while ((character >= 0) && (true == continue_condition_functor(
-                                            static_cast<uint8_t>(character)))) {
+    while ((character >= 0) &&
+           (continue_condition_functor(static_cast<uint8_t>(character)))) {
         if ('%' == character) {
             int32_t a = l.get();
             int32_t b = l.get();
@@ -77,37 +77,36 @@ uri::uri()
 
 bool uri::parse(const lexer& l, int32_t& character, const bool skip_scheme)
 {
-    if (true == valid_) {
+    if (valid_) {
         return true;
     }
 
     lexer_ = &l;
 
-    if (false == parse_scheme_and_authority(character, skip_scheme)) {
+    if (!parse_scheme_and_authority(character, skip_scheme)) {
         return false;
     }
 
     if (('?' != character) && ('#' != character)) {
         // Must be a path or the end of the URI.
-        if (false == parse_uri_word(character, path_,
-                                    &is_valid_uri_path_character, *lexer_)) {
+        if (!parse_uri_word(character, path_, &is_valid_uri_path_character,
+                            *lexer_)) {
             return false;
         }
     }
 
     if ('?' == character) {
         character = lexer_->get();
-        if (false == parse_uri_word(character, query_,
-                                    &is_valid_uri_query_character, *lexer_)) {
+        if (!parse_uri_word(character, query_, &is_valid_uri_query_character,
+                            *lexer_)) {
             return false;
         }
     }
 
     if ('#' == character) {
         character = lexer_->get();
-        if (false == parse_uri_word(character, fragment_,
-                                    &is_valid_uri_fragment_character,
-                                    *lexer_)) {
+        if (!parse_uri_word(character, fragment_,
+                            &is_valid_uri_fragment_character, *lexer_)) {
             return false;
         }
     }
@@ -125,8 +124,7 @@ bool uri::set_userinfo(const char_t* const new_userinfo)
 {
     const char_t* c = new_userinfo;
     while ('\0' != (*c)) {
-        if (false ==
-            is_valid_uri_authority_character(static_cast<uint8_t>(*c))) {
+        if (!is_valid_uri_authority_character(static_cast<uint8_t>(*c))) {
             return false;
         }
         c++;
@@ -141,8 +139,7 @@ bool uri::set_host(const char_t* const new_host)
 {
     const char_t* c = new_host;
     while ('\0' != (*c)) {
-        if (false ==
-            is_valid_uri_authority_character(static_cast<uint8_t>(*c))) {
+        if (!is_valid_uri_authority_character(static_cast<uint8_t>(*c))) {
             return false;
         }
         c++;
@@ -204,8 +201,8 @@ bool uri::parse_scheme_and_authority(int32_t& character, const bool skip_scheme)
     // not conform with
     // RFC 3986, but HTTP specifies request URIs without scheme and authority.
     if ('/' != character) {
-        if (false == skip_scheme) {
-            if (false == parse_scheme(character)) {
+        if (!skip_scheme) {
+            if (!parse_scheme(character)) {
                 return false;
             }
 
@@ -218,11 +215,11 @@ bool uri::parse_scheme_and_authority(int32_t& character, const bool skip_scheme)
                 return false;
             }
 
-            if (false == parse_userinfo_and_authority(character)) {
+            if (!parse_userinfo_and_authority(character)) {
                 return false;
             }
         } else {
-            if (false == parse_authority(character)) {
+            if (!parse_authority(character)) {
                 return false;
             }
         }
@@ -255,7 +252,7 @@ bool uri::parse_userinfo_and_authority(int32_t& character)
             // It is no path. It is an authority.
             path_.clear();
             character = lexer_->get();
-            if (false == parse_authority(character)) {
+            if (!parse_authority(character)) {
                 return false;
             }
         }
@@ -275,7 +272,7 @@ bool uri::parse_authority(int32_t& character)
     // easier to perform a 2-pass parsing to determine, whether a '@' symbol
     // occurs or not.
 
-    if (false == parse_authority_1st_pass(character)) {
+    if (!parse_authority_1st_pass(character)) {
         return false;
     }
 
@@ -284,8 +281,8 @@ bool uri::parse_authority(int32_t& character)
 
 bool uri::parse_authority_1st_pass(int32_t& character)
 {
-    if (false == parse_uri_word(character, host_,
-                                &is_valid_uri_authority_character, *lexer_)) {
+    if (!parse_uri_word(character, host_, &is_valid_uri_authority_character,
+                        *lexer_)) {
         return false;
     }
 
@@ -295,8 +292,8 @@ bool uri::parse_authority_1st_pass(int32_t& character)
         character = lexer_->get();
     }
 
-    if (false == parse_uri_word(character, host_,
-                                &is_valid_uri_authority_character, *lexer_)) {
+    if (!parse_uri_word(character, host_, &is_valid_uri_authority_character,
+                        *lexer_)) {
         return false;
     }
 

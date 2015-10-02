@@ -58,7 +58,7 @@ bool mime_handler::are_two_types_valid(const mime& type1,
                                        const mime& type2) const
 {
     std::lock_guard<std::mutex> lock(mime_type_mutex_);
-    return (true == is_mime_valid(type1)) && (true == is_mime_valid(type2));
+    return (is_mime_valid(type1)) && (is_mime_valid(type2));
 }
 
 mime mime_handler::parse(const char_t* const data,
@@ -87,7 +87,7 @@ mime mime_handler::parse(const char_t* const data,
     const char_t* const subtype_begin = string;
 
     while ((remaining > 0) &&
-           (false == whitespace_map[static_cast<uint8_t>(*string)])) {
+           (!whitespace_map[static_cast<uint8_t>(*string)])) {
         string++;
         remaining--;
     }
@@ -119,8 +119,8 @@ bool mime_handler::is_mime_valid(const mime& t) const
 
     // Valid values must be registered. Unset types are unregistered but also
     // valid.
-    if ((false == mime_types_.is_registered(type)) ||
-        (false == mime_subtypes_.is_registered(subtype))) {
+    if ((!mime_types_.is_registered(type)) ||
+        (!mime_subtypes_.is_registered(subtype))) {
         if ((type != mime_type::NONE) && (subtype != mime_subtype::NONE)) {
             result = false;
         }

@@ -99,13 +99,13 @@ void response_parser::parse()
     }
 
     result = common_.lexer_.get_non_whitespace();
-    if (false == lex_reason_phrase(result, reason_phrase_, common_.lexer_)) {
+    if (!lex_reason_phrase(result, reason_phrase_, common_.lexer_)) {
         common_.state_ = parser_state::ERROR;
         return;
     }
 
     result = common_.lexer_.get();
-    if (false == parse_headers(result)) {
+    if (!parse_headers(result)) {
         common_.state_ = parser_state::ERROR;
         return;
     }
@@ -208,7 +208,7 @@ bool response_parser::parse_headers(int32_t& character)
                     trie_value_{&response_parser::parse_connection, 4}}}};
 
     while (character != '\n') {
-        if (false == common_.parse_generic_header(types, *this, character)) {
+        if (!common_.parse_generic_header(types, *this, character)) {
             return false;
         }
         character = common_.lexer_.get();

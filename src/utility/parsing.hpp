@@ -38,7 +38,7 @@ inline void skip_whitespace(const char_t*& data, size_t& size)
 
     // Loop until the end of the string is reached or the current front
     // character is no whitespace.
-    while ((size > 0) && (true == map[static_cast<uint8_t>(*data)])) {
+    while ((size > 0) && (map[static_cast<uint8_t>(*data)])) {
         data++;
         size--;
     }

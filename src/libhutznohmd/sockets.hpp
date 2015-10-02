@@ -96,7 +96,7 @@ int main()
     auto listener = listen("0.0.0.0", 80);
     auto connection = listener->accept();
     buffer request;
-    if (true == connection->read(request, 1024)) {
+    if (connection->read(request, 1024)) {
         buffer response;
         // Parse the HTTP request and build a response.
         connection->send(response);

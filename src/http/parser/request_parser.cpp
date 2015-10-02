@@ -72,7 +72,7 @@ void request_parser::parse()
     }
 
     character = common_.lexer_.get_non_whitespace();
-    if (false == request_uri_.parse(common_.lexer_, character, false)) {
+    if (!request_uri_.parse(common_.lexer_, character, false)) {
         common_.state_ = parser_state::ERROR;
         return;
     }
@@ -105,7 +105,7 @@ void request_parser::parse()
     }
 
     character = common_.lexer_.get();
-    if (false == parse_headers(character)) {
+    if (!parse_headers(character)) {
         common_.state_ = parser_state::ERROR;
         return;
     }
@@ -185,7 +185,7 @@ bool request_parser::parse_accept(int32_t& character)
 {
     do {
         accept_header_.push_back(media_type());
-        if (false == accept_header_.back().parse(common_.lexer_, character)) {
+        if (!accept_header_.back().parse(common_.lexer_, character)) {
             return false;
         }
 
@@ -225,7 +225,7 @@ bool request_parser::parse_date(int32_t& character)
 bool request_parser::parse_from(int32_t& character)
 {
     from_uri_.set_scheme(uri_scheme::MAILTO);
-    if (false == from_uri_.parse(common_.lexer_, character, true)) {
+    if (!from_uri_.parse(common_.lexer_, character, true)) {
         return false;
     }
 
@@ -235,7 +235,7 @@ bool request_parser::parse_from(int32_t& character)
 bool request_parser::parse_host(int32_t& character)
 {
     uri host;
-    if (false == host.parse(common_.lexer_, character, true)) {
+    if (!host.parse(common_.lexer_, character, true)) {
         return false;
     }
 
@@ -272,7 +272,7 @@ bool request_parser::parse_headers(int32_t& character)
          value_info{"from", trie_value_{&request_parser::parse_from, 7}}}};
 
     while (character != '\n') {
-        if (false == common_.parse_generic_header(types, *this, character)) {
+        if (!common_.parse_generic_header(types, *this, character)) {
             return false;
         }
         character = common_.lexer_.get();

@@ -79,8 +79,7 @@ bool request::parse()
     }
 
     bool result = request_parser_.valid();
-    if ((true == result) && (true == request_parser_.has_md5()) &&
-        (true == parameters_.check_md5)) {
+    if ((result) && (request_parser_.has_md5()) && (parameters_.check_md5)) {
         const std::array<uint8_t, 16>& md5 = request_parser_.md5();
         result = (md5 == calculate_md5(data_));
     }
@@ -130,7 +129,7 @@ bool request::keeps_connection() const
 int32_t request::get()
 {
     if (index_ >= buffer_.size()) {
-        if (false == connection_->receive(buffer_, 4000)) {
+        if (!connection_->receive(buffer_, 4000)) {
             return -1;
         }
     }
@@ -141,7 +140,7 @@ int32_t request::get()
 int32_t request::peek()
 {
     if (index_ >= buffer_.size()) {
-        if (false == connection_->receive(buffer_, 4000)) {
+        if (!connection_->receive(buffer_, 4000)) {
             return -1;
         }
     }

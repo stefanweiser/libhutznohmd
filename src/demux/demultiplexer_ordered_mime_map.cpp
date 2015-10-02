@@ -44,7 +44,7 @@ bool demultiplexer_ordered_mime_map::insert(const mime& type,
 
         auto insertion_result = map_.insert(
             std::make_pair(type, request_handler_infos{fn, 0, true}));
-        if (true == insertion_result.second) {
+        if (insertion_result.second) {
             vector_.push_back(type);
             result = true;
         }
@@ -71,14 +71,13 @@ request_handler_callback demultiplexer_ordered_mime_map::find(mime& type) const
     request_handler_callback result;
     const bool has_any_wildcard = (type.first == mime_type::WILDCARD) ||
                                   (type.second == mime_subtype::WILDCARD);
-    if (true == has_any_wildcard) {
+    if (has_any_wildcard) {
         if (request_handler_callback find_result = find_ordered(type)) {
             result = find_result;
         }
     } else {
         const auto accept_it = map_.find(type);
-        if ((accept_it != map_.end()) &&
-            (true == accept_it->second.is_available)) {
+        if ((accept_it != map_.end()) && (accept_it->second.is_available)) {
             result = accept_it->second.handler;
             // The type contains already the mime type of the result.
         }
@@ -133,12 +132,11 @@ request_handler_callback demultiplexer_ordered_mime_map::find_ordered(
             (type.second == value.second) ||
             (type.second == mime_subtype::WILDCARD);
 
-        if ((true == type_equal_or_wildcard) &&
-            (true == subtype_equal_or_wildcard)) {
+        if ((type_equal_or_wildcard) && (subtype_equal_or_wildcard)) {
 
             auto it = map_.find(value);
             assert(it != map_.end());
-            if (true == it->second.is_available) {
+            if (it->second.is_available) {
                 result = it->second.handler;
                 type = it->first;
                 break;

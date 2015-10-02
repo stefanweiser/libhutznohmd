@@ -45,7 +45,7 @@ server::server(const listener_pointer& s,
 
 void server::run()
 {
-    while (false == shutdown_) {
+    while (!shutdown_) {
         auto connection = socket_->accept();
         if (connection) {
             threads_.insert(std::make_shared<std::thread>(
@@ -77,7 +77,7 @@ void server::parse_request(const connection_pointer& connection)
     resp.deliver();
 
     // Close the connection if needed.
-    if (false == req.keeps_connection()) {
+    if (!req.keeps_connection()) {
         connection->close();
     }
 }

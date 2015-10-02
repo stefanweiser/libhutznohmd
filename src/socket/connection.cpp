@@ -70,7 +70,7 @@ void connection::close(void)
 bool connection::receive(buffer& data, const size_t& max_size)
 {
     bool result = false;
-    if (true == is_connected_) {
+    if (is_connected_) {
         const size_t old_size = data.size();
         data.resize(old_size + max_size);
         void* const p = data.data() + old_size;
@@ -95,7 +95,7 @@ bool connection::send(const std::string& data)
 bool connection::send(const char_t* data, const size_t& size)
 {
     bool result = false;
-    if ((true == is_connected_) &&
+    if ((is_connected_) &&
         (size <= static_cast<size_t>(std::numeric_limits<ssize_t>::max()))) {
 
         const ssize_t ssize = static_cast<ssize_t>(size);
@@ -134,7 +134,7 @@ bool connection::set_lingering_timeout(const int32_t& timeout)
 bool connection::connect(void)
 {
     bool result = false;
-    if (false == is_connected_) {
+    if (!is_connected_) {
 
         // This is an accepted exceptional use of an union (breaks MISRA
         // C++:2008 Rule 9-5-1). Alternatively a reinterpret_cast could be used,

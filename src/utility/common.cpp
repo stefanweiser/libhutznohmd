@@ -31,7 +31,7 @@ bool is_valid_uri_path(const std::string& path)
 
     bool result = true;
     for (const char_t& c : path) {
-        if (true == must_be_a_slash) {
+        if (must_be_a_slash) {
             if (c != slash) {
                 result = false;
                 break;
@@ -39,7 +39,7 @@ bool is_valid_uri_path(const std::string& path)
             must_be_a_slash = false;
         }
 
-        if (true == could_be_a_slash) {
+        if (could_be_a_slash) {
             if (c == slash) {
                 could_be_a_slash = false;
             } else {
@@ -53,7 +53,7 @@ bool is_valid_uri_path(const std::string& path)
             could_be_a_slash = true;
         }
 
-        if (false == is_valid_uri_path_character(static_cast<uint8_t>(c))) {
+        if (!is_valid_uri_path_character(static_cast<uint8_t>(c))) {
             result = false;
             break;
         }

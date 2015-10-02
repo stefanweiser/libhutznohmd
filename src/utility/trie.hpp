@@ -108,7 +108,7 @@ public:
                 // this holds true, then reset that pointer to avoid double
                 // deletion. It is important to use the binary to look
                 // forward and not backward!
-                if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
+                if (check_range<uint8_t, 'A', 'Z'>(c)) {
                     trie_node*& other = children_[make_lower(c)];
                     if (child == other) {
                         other = nullptr;
@@ -160,7 +160,7 @@ public:
         if (static_cast<uint8_t>(*token) == 0) {
 
             // Check if node is not already possessed.
-            if (false == has_value_) {
+            if (!has_value_) {
                 has_value_ = true;
                 value_ = value;
                 result = true;
@@ -181,7 +181,7 @@ public:
         if (static_cast<uint8_t>(*token) == 0) {
 
             // Check if node is possessed.
-            if (true == has_value_) {
+            if (has_value_) {
                 has_value_ = false;
                 result = true;
             }
@@ -223,10 +223,10 @@ private:
     trie_node** get_pendant(const uint8_t c, const bool is_case_insensitive)
     {
         trie_node** result = nullptr;
-        if (true == is_case_insensitive) {
-            if (true == check_range<uint8_t, 'A', 'Z'>(c)) {
+        if (is_case_insensitive) {
+            if (check_range<uint8_t, 'A', 'Z'>(c)) {
                 result = &(children_[make_lower(c)]);
-            } else if (true == check_range<uint8_t, 'a', 'z'>(c)) {
+            } else if (check_range<uint8_t, 'a', 'z'>(c)) {
                 result = &(children_[make_upper(c)]);
             } else {
                 // Character is no letter.
@@ -247,7 +247,7 @@ private:
         }
 
         bool result = false;
-        if (true == child->insert(next, value, is_case_insensitive)) {
+        if (child->insert(next, value, is_case_insensitive)) {
             trie_node** other = get_pendant(c, is_case_insensitive);
             if ((other != nullptr) && (nullptr == (*other))) {
                 add_child_reference(*other, child);
@@ -264,10 +264,9 @@ private:
 
         bool result = false;
         trie_node*& child = children_[c];
-        if ((child != nullptr) &&
-            (true == child->erase(next, is_case_insensitive))) {
+        if ((child != nullptr) && (child->erase(next, is_case_insensitive))) {
 
-            if ((0 == child->used_children_) && (false == child->has_value_)) {
+            if ((0 == child->used_children_) && (!child->has_value_)) {
                 delete child;
                 remove_child_reference(child);
 

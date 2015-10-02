@@ -88,19 +88,19 @@ static trie<int32_t> get_month_trie(size_t& max_size)
 int32_t parse_time(const char_t*& data, size_t& remaining)
 {
     int32_t hour = parse_unsigned_integer(data, remaining);
-    if ((false == check_range<int32_t, 0, 23>(hour)) || ((*data) != ':')) {
+    if ((!check_range<int32_t, 0, 23>(hour)) || ((*data) != ':')) {
         return -1;
     }
     skip_one_character(data, remaining);
     skip_whitespace(data, remaining);
     int32_t minute = parse_unsigned_integer(data, remaining);
-    if ((false == check_range<int32_t, 0, 59>(minute)) || ((*data) != ':')) {
+    if ((!check_range<int32_t, 0, 59>(minute)) || ((*data) != ':')) {
         return -1;
     }
     skip_one_character(data, remaining);
     skip_whitespace(data, remaining);
     int32_t second = parse_unsigned_integer(data, remaining);
-    if (false == check_range<int32_t, 0, 59>(second)) {
+    if (!check_range<int32_t, 0, 59>(second)) {
         return -1;
     }
     return (60 * ((60 * hour) + minute)) + second;
@@ -163,8 +163,8 @@ bool is_valid_day(const time_t day, const time_t month, const time_t year)
 bool is_valid_epoch_date(const time_t day, const time_t month,
                          const time_t year)
 {
-    if ((year < 1970) || (false == check_range<time_t, 1, 12>(month)) ||
-        (false == is_valid_day(day, month, year))) {
+    if ((year < 1970) || (!check_range<time_t, 1, 12>(month)) ||
+        (!is_valid_day(day, month, year))) {
         return false;
     }
     return true;
@@ -173,7 +173,7 @@ bool is_valid_epoch_date(const time_t day, const time_t month,
 time_t seconds_since_epoch(const time_t second_of_day, const time_t day,
                            const time_t month, const time_t year)
 {
-    if (false == is_valid_epoch_date(day, month, year)) {
+    if (!is_valid_epoch_date(day, month, year)) {
         return -1;
     }
 
@@ -215,7 +215,7 @@ time_t parse_rfc1123_date_time(const char_t*& data, size_t& remaining)
     }
 
     skip_whitespace(data, remaining);
-    if (false == parse_gmt(data, remaining)) {
+    if (!parse_gmt(data, remaining)) {
         return -1;
     }
 
@@ -249,7 +249,7 @@ time_t parse_rfc850_date_time(const char_t*& data, size_t& remaining)
     remaining--;
 
     const int32_t year = 1900 + parse_unsigned_integer(data, remaining);
-    if (false == check_range<int32_t, 1900, 1999>(year)) {
+    if (!check_range<int32_t, 1900, 1999>(year)) {
         return -1;
     }
 
@@ -257,7 +257,7 @@ time_t parse_rfc850_date_time(const char_t*& data, size_t& remaining)
     const int32_t second_of_day = parse_time(data, remaining);
 
     skip_whitespace(data, remaining);
-    if (false == parse_gmt(data, remaining)) {
+    if (!parse_gmt(data, remaining)) {
         return -1;
     }
 
@@ -310,7 +310,7 @@ time_t parse_timestamp(const char_t* const data, const size_t length)
     const char_t* ptr = data;
     size_t remaining = length;
     std::tie(weekday, is_long_format) = parse_weekday(ptr, remaining);
-    if (true == is_long_format) {
+    if (is_long_format) {
         return parse_rfc850_date_time(ptr, remaining);
     } else if (((*ptr) == ' ') || ((*ptr) == '\t')) {
         return parse_asctime_date_time(ptr, remaining);

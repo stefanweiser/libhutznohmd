@@ -59,7 +59,7 @@ handler_pointer request_processor::set_error_handler(
         error_handlers_.insert(std::make_pair(code, std::make_tuple(fn, true)));
 
     handler_pointer result;
-    if (true == insertion_result.second) {
+    if (insertion_result.second) {
         result = std::make_shared<error_handler>(*this, code);
     }
     return result;
@@ -69,7 +69,7 @@ void request_processor::reset_error_handler(const http_status_code& code)
 {
     std::lock_guard<std::mutex> lock(error_handler_mutex_);
     const bool erase_result = (error_handlers_.erase(code) > 0);
-    assert(true == erase_result);
+    assert(erase_result);
     UNUSED(erase_result);
 }
 

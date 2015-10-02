@@ -28,14 +28,14 @@ void client(void)
 
     std::cout << "  connecting" << std::endl;
     auto connection = hutzn::connection::create("127.0.0.1", 30000);
-    if (false == connection->connect()) {
+    if (!connection->connect()) {
         std::cout << "  client not connected" << std::endl;
         abort();
     }
 
     std::cout << "  client receiving" << std::endl;
     hutzn::buffer data2;
-    if (false == connection->receive(data2, 8)) {
+    if (!connection->receive(data2, 8)) {
         std::cout << "  client aborts on receive" << std::endl;
         abort();
     }
@@ -46,7 +46,7 @@ void client(void)
     }
 
     std::cout << "  client sending" << std::endl;
-    if (false == connection->send(data2)) {
+    if (!connection->send(data2)) {
         std::cout << "  client aborts on send" << std::endl;
     }
 
@@ -67,13 +67,13 @@ int main(void)
     auto connection = listener->accept();
 
     std::cout << "  server sending" << std::endl;
-    if (false == connection->send(data)) {
+    if (!connection->send(data)) {
         std::cout << "  server aborts on send" << std::endl;
     }
 
     std::cout << "  server receiving" << std::endl;
     hutzn::buffer data2;
-    if (false == connection->receive(data2, 8)) {
+    if (!connection->receive(data2, 8)) {
         std::cout << "  server aborts on receive" << std::endl;
     }
 
