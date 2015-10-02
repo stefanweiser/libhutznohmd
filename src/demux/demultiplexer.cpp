@@ -57,21 +57,14 @@ request_handler_holder_pointer demultiplexer::determine_request_handler(
         const resource_key key{path, method, content_type};
         const auto accept_it = resource_callbacks_.find(key);
         if (accept_it != resource_callbacks_.end()) {
-
-            const demultiplexer_ordered_mime_map& accept_map =
-                accept_it->second;
-
-            // Loop over the accept types for a matching request handler.
-            void* handle = nullptr;
             mime type;
-            while (request.accept(handle, type)) {
-                request_handler_callback find_result = accept_map.find(type);
-                if (!!find_result) {
-                    request_handler_id id{path, method, content_type, type};
-                    result = std::make_shared<request_handler_holder>(
-                        *this, id, find_result);
-                    break;
-                }
+            request_handler_callback callback;
+            std::tie(type, callback) =
+                lookup_in_accept_map(request, accept_it->second);
+            if (!!callback) {
+                request_handler_id id{path, method, content_type, type};
+                result = std::make_shared<request_handler_holder>(*this, id,
+                                                                  callback);
             }
         }
     }
@@ -243,6 +236,23 @@ bool demultiplexer::resource_key::operator<(const resource_key& rhs) const
 {
     return (path < rhs.path) || (method < rhs.method) ||
            (content_type < rhs.content_type);
+}
+
+std::tuple<mime, request_handler_callback> demultiplexer::lookup_in_accept_map(
+    const request_interface& request,
+    const demultiplexer_ordered_mime_map& accept_map) const
+{
+    std::tuple<mime, request_handler_callback> result;
+
+    // Loop over the accept types for a matching request handler.
+    void* handle = nullptr;
+    mime type;
+    while ((!std::get<1>(result)) && request.accept(handle, type)) {
+        request_handler_callback callback = accept_map.find(type);
+        result = std::make_tuple(type, callback);
+    }
+
+    return result;
 }
 
 } // namespace hutzn

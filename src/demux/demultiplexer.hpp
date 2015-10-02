@@ -74,6 +74,10 @@ private:
         bool operator<(const resource_key& rhs) const;
     };
 
+    std::tuple<mime, request_handler_callback> lookup_in_accept_map(
+        const request_interface& request,
+        const demultiplexer_ordered_mime_map& accept_map) const;
+
     using resource_map = std::map<resource_key, demultiplexer_ordered_mime_map>;
 
     //! Guards the access to the resource map from mutual access.
