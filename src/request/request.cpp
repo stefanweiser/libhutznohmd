@@ -412,7 +412,7 @@ void request::add_header(header_key key, const char_t* const key_string,
         static constexpr char_t keep_alive_str[] = "keep-alive";
         static constexpr size_t keep_alive_size = sizeof(keep_alive_str);
         static_assert(keep_alive_size > 0,
-                      "Size of string keep-alive is greater than 0.");
+                      "Size of string keep-alive must be greater than 0.");
         if (0 == ::strncasecmp(value_string, keep_alive_str, keep_alive_size)) {
             is_keep_alive_set_ = true;
         }
