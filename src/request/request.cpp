@@ -240,6 +240,26 @@ const char_t* request::user_agent(void) const
     return user_agent_;
 }
 
+template <typename T>
+bool request::parse_specific_value(const trie<T>& t, const size_t& max_length,
+                                   const char_t* const string,
+                                   const size_t& length, T& value)
+{
+    bool result = false;
+
+    // Parsing the value will succeed, when the token is not too long and the
+    // found value length is exactly the token length.
+    if (length <= max_length) {
+        auto r = t.find(string, length);
+        if (r.used_size() == length) {
+            value = r.value();
+            result = true;
+        }
+    }
+
+    return result;
+}
+
 bool request::parse_method(int32_t& ch)
 {
     static size_t maximum_method_length = 0;
@@ -262,16 +282,9 @@ bool request::parse_method(int32_t& ch)
         if (is_whitespace(ch)) {
             const size_t method_length = lexer_.prev_index() - method_begin;
 
-            // Parsing the version will succeed, when the token is not too
-            // long and the found method length is exactly the token length.
-            if (method_length <= maximum_method_length) {
-                auto r = methods.find(lexer_.header_data(method_begin),
-                                      method_length);
-                if (r.used_size() == method_length) {
-                    method_ = r.value();
-                    result = true;
-                }
-            }
+            result = parse_specific_value(methods, maximum_method_length,
+                                          lexer_.header_data(method_begin),
+                                          method_length, method_);
             break;
         }
 
@@ -333,16 +346,9 @@ bool request::parse_version(int32_t& ch)
         if (is_newline(ch)) {
             const size_t version_length = lexer_.prev_index() - version_begin;
 
-            // Parsing the version will succeed, when the token is not too
-            // long and the found method length is exactly the token length.
-            if (version_length <= maximum_version_length) {
-                auto r = versions.find(lexer_.header_data(version_begin),
-                                       version_length);
-                if (r.used_size() == version_length) {
-                    version_ = r.value();
-                    result = true;
-                }
-            }
+            result = parse_specific_value(versions, maximum_version_length,
+                                          lexer_.header_data(version_begin),
+                                          version_length, version_);
             break;
         }
 
