@@ -77,6 +77,8 @@ public:
     push_back_string& operator=(const push_back_string&) = delete;
 
 private:
+    void need_more_dynamic_memory();
+
     size_t current_length_;
     size_t dynamic_size_;
     mutable char_t static_buffer_[maximum_size + 1];
@@ -108,22 +110,7 @@ void push_back_string<maximum_size>::push_back(const char_t c)
     } else {
         // The string is too long for static memory.
         if ((current_length_ + 1) >= dynamic_size_) {
-            if (nullptr == dynamic_buffer_) {
-                dynamic_size_ = (2 * maximum_size) + 1;
-                dynamic_buffer_ = static_cast<char_t*>(malloc(dynamic_size_));
-                memcpy(dynamic_buffer_, static_buffer_, maximum_size);
-            } else {
-                dynamic_size_ += maximum_size;
-
-                // Don't forget to free the buffer block that was used before
-                // reallocation in case of a failed reallocation.
-                char_t* new_buffer = static_cast<char_t*>(
-                    realloc(dynamic_buffer_, dynamic_size_));
-                if (nullptr == new_buffer) {
-                    free(dynamic_buffer_);
-                }
-                dynamic_buffer_ = new_buffer;
-            }
+            need_more_dynamic_memory();
         }
         dynamic_buffer_[current_length_++] = c;
     }
@@ -185,6 +172,27 @@ void push_back_string<maximum_size>::clear()
         dynamic_size_ = 0;
     }
     current_length_ = 0;
+}
+
+template <size_t maximum_size>
+void push_back_string<maximum_size>::need_more_dynamic_memory()
+{
+    if (nullptr == dynamic_buffer_) {
+        dynamic_size_ = (2 * maximum_size) + 1;
+        dynamic_buffer_ = static_cast<char_t*>(malloc(dynamic_size_));
+        memcpy(dynamic_buffer_, static_buffer_, maximum_size);
+    } else {
+        dynamic_size_ += maximum_size;
+
+        // Don't forget to free the buffer block that was used before
+        // reallocation in case of a failed reallocation.
+        char_t* new_buffer =
+            static_cast<char_t*>(realloc(dynamic_buffer_, dynamic_size_));
+        if (nullptr == new_buffer) {
+            free(dynamic_buffer_);
+        }
+        dynamic_buffer_ = new_buffer;
+    }
 }
 
 } // namespace http
