@@ -60,14 +60,14 @@ bool mime_handler::are_two_types_valid(const mime& type1,
 }
 
 mime_type mime_handler::parse_type(const char_t* const string,
-                                   const size_t max_length)
+                                   const size_t max_length) const
 {
     std::lock_guard<std::mutex> lock(mime_type_mutex_);
     return mime_types_.parse_type(string, max_length);
 }
 
 mime_subtype mime_handler::parse_subtype(const char_t* const string,
-                                         const size_t max_length)
+                                         const size_t max_length) const
 {
     std::lock_guard<std::mutex> lock(mime_type_mutex_);
     return mime_subtypes_.parse_type(string, max_length);
