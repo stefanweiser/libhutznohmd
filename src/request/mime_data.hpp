@@ -83,11 +83,11 @@ public:
     }
 
     value_type parse_type(const char_t* const string,
-                          const size_t max_length) const
+                          const size_t expected_length) const
     {
         value_type result;
-        auto found_element = types_.find(string, max_length);
-        if (found_element.used_size() == max_length) {
+        auto found_element = types_.find(string, expected_length);
+        if (found_element.used_size() == expected_length) {
             result = found_element.value();
         } else {
             result = value_type::INVALID;
