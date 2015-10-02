@@ -21,7 +21,7 @@
 #include <iterator>
 #include <set>
 
-#include <http/parser/utility/md5.hpp>
+#include <request/md5.hpp>
 
 #include "request.hpp"
 

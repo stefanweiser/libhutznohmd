@@ -25,8 +25,6 @@ http/parser/utility/base_parser.cpp
 http/parser/utility/base_parser.hpp
 http/parser/utility/lexer.cpp
 http/parser/utility/lexer.hpp
-http/parser/utility/md5.cpp
-http/parser/utility/md5.hpp
 http/parser/utility/media_type.cpp
 http/parser/utility/media_type.hpp
 http/parser/utility/push_back_string.hpp
