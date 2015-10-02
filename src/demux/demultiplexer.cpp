@@ -90,11 +90,8 @@ handler_pointer demultiplexer::connect(const request_handler_id& id,
     if (true == is_valid_uri_path(id.path)) {
 
         // Check whether the content and accept mime is valid.
-        std::unique_lock<std::mutex> lock(mime_type_mutex_);
-        if ((true == is_mime_valid(id.content_type)) &&
-            (true == is_mime_valid(id.accept_type))) {
-
-            lock.unlock();
+        if (true ==
+            is_content_and_accept_type_valid(id.content_type, id.accept_type)) {
 
             // Get specific map with handlers.
             std::unique_lock<std::mutex> cb_lock(resource_callbacks_mutex_);
@@ -245,6 +242,13 @@ void demultiplexer::decrease_usage_counter(const request_handler_id& id)
         // Wake up potentially pending disconnect calls.
         resource_callbacks_usage_changed_.notify_one();
     }
+}
+
+bool demultiplexer::is_content_and_accept_type_valid(const mime& content,
+                                                     const mime& accept) const
+{
+    std::lock_guard<std::mutex> lock(mime_type_mutex_);
+    return (true == is_mime_valid(content)) && (true == is_mime_valid(accept));
 }
 
 bool demultiplexer::is_mime_valid(const mime& t) const

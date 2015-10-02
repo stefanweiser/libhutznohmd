@@ -76,6 +76,13 @@ private:
 
     using resource_map = std::map<resource_key, demultiplexer_ordered_mime_map>;
 
+    //! @brief Determines, whether a content and accept type is valid or not.
+    //!
+    //! Returns true, when both types are valid ones and false in any other
+    //! case.
+    bool is_content_and_accept_type_valid(const mime& content,
+                                          const mime& accept) const;
+
     //! @brief Determines, whether a mime type is valid or not.
     //!
     //! Checks whether a type and subtype is consequently none or not. No part
@@ -92,7 +99,7 @@ private:
     resource_map resource_callbacks_;
 
     //! Guards the request parser data from mutual access.
-    std::mutex mime_type_mutex_;
+    mutable std::mutex mime_type_mutex_;
 
     //! Stores registered mime types.
     mime_data<mime_type, uint8_t> mime_types_;
