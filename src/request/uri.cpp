@@ -17,6 +17,7 @@
  */
 
 #include <utility/character_validation.hpp>
+#include <utility/parsing.hpp>
 #include <utility/select_char_map.hpp>
 #include <utility/trie.hpp>
 
@@ -298,7 +299,7 @@ bool uri::parse_authority(char_t* const authority_ptr, const size_t& size)
     }
     host_ = temp_host;
 
-    char_t* temp_port = nullptr;
+    const char_t* temp_port = nullptr;
     size_t port_size = 0;
     for (size_t i = 0; i < host_size; i++) {
         if (':' == temp_host[i]) {
@@ -310,20 +311,8 @@ bool uri::parse_authority(char_t* const authority_ptr, const size_t& size)
     }
 
     if (port_size > 0) {
-        uint32_t port_number = 0;
-        bool port_valid = true;
-        for (size_t i = 0; i < port_size; i++) {
-            const uint8_t digit = static_cast<uint8_t>(temp_port[i] - '0');
-            if (digit < 10) {
-                port_number = (static_cast<uint32_t>(port_number) * 10) + digit;
-                if (port_number > std::numeric_limits<uint16_t>::max()) {
-                    port_valid = false;
-                }
-            } else {
-                port_valid = false;
-            }
-        }
-        if (port_valid) {
+        int32_t port_number = parse_unsigned_integer(temp_port, port_size);
+        if ((port_size == 0) && (port_number > 0) && (port_number <= 65536)) {
             port_ = static_cast<uint16_t>(port_number);
         } else {
             result = false;
