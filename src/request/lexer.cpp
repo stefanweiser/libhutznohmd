@@ -103,7 +103,7 @@ bool lexer::fetch_header(void)
     // complete.
     assert((state_ == lexer_state::reached_content) ||
            (state_ == lexer_state::error));
-    return (state_ == lexer_state::reached_content);
+    return state_ == lexer_state::reached_content;
 }
 
 bool lexer::fetch_content(const size_t length)

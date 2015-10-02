@@ -212,12 +212,12 @@ private:
 
     static uint8_t make_lower(const uint8_t c)
     {
-        return (c | LETTER_CASE_BIT);
+        return c | LETTER_CASE_BIT;
     }
 
     static uint8_t make_upper(const uint8_t c)
     {
-        return (c & INVERSE_LETTER_CASE_BIT);
+        return c & INVERSE_LETTER_CASE_BIT;
     }
 
     trie_node** get_pendant(const uint8_t c, const bool is_case_insensitive)

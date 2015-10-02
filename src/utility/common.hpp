@@ -39,7 +39,7 @@ bool check_range(const type& value)
 {
     static_assert(lower_bound <= upper_bound,
                   "Lower bound must be less or equal to upper bound.");
-    return ((value >= lower_bound) && (value <= upper_bound));
+    return (value >= lower_bound) && (value <= upper_bound);
 }
 
 //! @brief Checks if a given url path is valid.

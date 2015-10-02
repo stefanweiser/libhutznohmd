@@ -115,7 +115,7 @@ void listener::stop(void)
 bool listener::set_lingering_timeout(const int32_t& timeout)
 {
     const linger l{1, timeout};
-    return (setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0);
+    return setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0;
 }
 
 } // namespace hutzn

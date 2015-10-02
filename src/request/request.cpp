@@ -192,7 +192,7 @@ const char_t* request::header_value(const char_t* const name) const
 
 bool request::keeps_connection(void) const
 {
-    return ((version() > http_version::HTTP_1_0) || (is_keep_alive_set_));
+    return (version() > http_version::HTTP_1_0) || (is_keep_alive_set_);
 }
 
 time_t request::date(void) const
@@ -473,8 +473,8 @@ bool request::is_whitespace(const int32_t ch)
     // The character has to get converted into the more common data type.
     // Otherwise the comparison may offer some ambiguities (e.g. 1024 get to 0).
     // Doing this explicitly is more clear.
-    return ((static_cast<int32_t>(' ') == ch) ||
-            (static_cast<int32_t>('\t') == ch));
+    return (static_cast<int32_t>(' ') == ch) ||
+           (static_cast<int32_t>('\t') == ch);
 }
 
 bool request::is_newline(const int32_t ch)
@@ -482,7 +482,7 @@ bool request::is_newline(const int32_t ch)
     // The character has to get converted into the more common data type.
     // Otherwise the comparison may offer some ambiguities (e.g. 1024 get to 0).
     // Doing this explicitly is more clear.
-    return (static_cast<int32_t>('\n') == ch);
+    return static_cast<int32_t>('\n') == ch;
 }
 
 bool request::is_key_value_separator(const int32_t ch)
@@ -490,7 +490,7 @@ bool request::is_key_value_separator(const int32_t ch)
     // The character has to get converted into the more common data type.
     // Otherwise the comparison may offer some ambiguities (e.g. 1024 get to 0).
     // Doing this explicitly is more clear.
-    return (static_cast<int32_t>(':') == ch);
+    return static_cast<int32_t>(':') == ch;
 }
 
 bool request::enforced_null_terminated_less::operator()(

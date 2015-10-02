@@ -114,7 +114,7 @@ void request_parser::parse()
 
 bool request_parser::valid() const
 {
-    return (parser_state::SUCCEEDED == common_.state_);
+    return parser_state::SUCCEEDED == common_.state_;
 }
 
 const http::version& request_parser::version() const
@@ -144,7 +144,7 @@ const time_t& request_parser::date() const
 
 bool request_parser::keeps_connection() const
 {
-    return (common_.connection_ == connection_type::KEEP_ALIVE);
+    return common_.connection_ == connection_type::KEEP_ALIVE;
 }
 
 const std::array<uint8_t, 16>& request_parser::md5() const

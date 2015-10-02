@@ -84,7 +84,7 @@ namespace
 
 bool is_base64(uint8_t c)
 {
-    return (std::isalnum(c) || (c == '+') || (c == '/'));
+    return std::isalnum(c) || (c == '+') || (c == '/');
 }
 
 } // namespace

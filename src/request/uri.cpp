@@ -257,7 +257,7 @@ bool uri::parse_1st_pass(char_t*& raw, size_t& remaining, first_pass_data& data,
 
     static const select_char_map empty_map =
         make_select_char_map(' ', '\t', '\r', '\n');
-    return ((remaining == 0) || (empty_map[static_cast<uint8_t>(*raw)]));
+    return (remaining == 0) || (empty_map[static_cast<uint8_t>(*raw)]);
 }
 
 bool uri::parse_scheme(const char_t* const scheme_ptr, const size_t& size)
@@ -270,7 +270,7 @@ bool uri::parse_scheme(const char_t* const scheme_ptr, const size_t& size)
         std::tie(scheme_, port_) = r.value();
     }
 
-    return (uri_scheme::UNKNOWN != scheme_);
+    return uri_scheme::UNKNOWN != scheme_;
 }
 
 bool uri::parse_authority(char_t* const authority_ptr, const size_t& size)

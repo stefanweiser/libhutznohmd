@@ -244,8 +244,8 @@ void demultiplexer::decrease_usage_counter(const request_handler_id& id)
 
 bool demultiplexer::resource_key::operator<(const resource_key& rhs) const
 {
-    return ((path < rhs.path) || (method < rhs.method) ||
-            (content_type < rhs.content_type));
+    return (path < rhs.path) || (method < rhs.method) ||
+           (content_type < rhs.content_type);
 }
 
 } // namespace hutzn

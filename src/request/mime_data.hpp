@@ -97,7 +97,7 @@ public:
 
     bool is_registered(const value_type& type) const
     {
-        return (registered_types_.find(type) != registered_types_.end());
+        return registered_types_.find(type) != registered_types_.end();
     }
 
 private:

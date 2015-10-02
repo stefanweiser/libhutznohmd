@@ -84,21 +84,21 @@ bool is_valid_day(const time_t day, const time_t month, const time_t year)
 
     if (month > 7) {
         if ((month % 2) == 0) {
-            return (day <= 31);
+            return day <= 31;
         } else {
-            return (day <= 30);
+            return day <= 30;
         }
     } else {
         if (month == 2) {
             if ((year % 4) == 0) {
-                return (day <= 29);
+                return day <= 29;
             } else {
-                return (day <= 28);
+                return day <= 28;
             }
         } else if ((month % 2) == 0) {
-            return (day <= 30);
+            return day <= 30;
         } else {
-            return (day <= 31);
+            return day <= 31;
         }
     }
 }

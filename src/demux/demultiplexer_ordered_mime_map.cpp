@@ -103,7 +103,7 @@ bool demultiplexer_ordered_mime_map::is_used(const mime& type) const
 {
     auto it = map_.find(type);
     assert(it != map_.end());
-    return (0 != it->second.usage_counter);
+    return 0 != it->second.usage_counter;
 }
 
 void demultiplexer_ordered_mime_map::set_availability(const mime& type,

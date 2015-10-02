@@ -77,7 +77,7 @@ inline bool is_reserved_uri_character(const uint8_t c)
              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
              0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
-    return (uri_reserved_validity_map[c] != 0);
+    return uri_reserved_validity_map[c] != 0;
 }
 
 //! @brief Returns true, if the given character is a valid character for a URI
@@ -97,7 +97,7 @@ inline bool is_valid_uri_authority_character(uint8_t c)
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
-    return (uri_authority_validity_map[c] != 0);
+    return uri_authority_validity_map[c] != 0;
 }
 
 //! @brief Returns true, if the given character is a valid character for a URI
@@ -117,7 +117,7 @@ inline bool is_valid_uri_path_character(uint8_t c)
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
-    return (uri_path_validity_map[c] != 0);
+    return uri_path_validity_map[c] != 0;
 }
 
 //! @brief Returns true, if the given character is a valid character for a URI
@@ -137,7 +137,7 @@ inline bool is_valid_uri_query_character(uint8_t c)
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
-    return (uri_query_validity_map[c] != 0);
+    return uri_query_validity_map[c] != 0;
 }
 
 //! @brief Returns true, if the given character is a valid character for a URI
@@ -157,7 +157,7 @@ inline bool is_valid_uri_fragment_character(uint8_t c)
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
-    return (uri_fragment_validity_map[c] != 0);
+    return uri_fragment_validity_map[c] != 0;
 }
 
 //! @brief Returns true, if the given character is a valid token character.
@@ -176,7 +176,7 @@ inline bool is_valid_token_character(uint8_t c)
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
-    return (token_validity_map[c] != 0);
+    return token_validity_map[c] != 0;
 }
 
 //! @brief Returns true, if the given character is a valid character for a
@@ -196,7 +196,7 @@ inline bool is_valid_header_value_character(uint8_t c)
          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
-    return (header_value_validity_map[c] != 0);
+    return header_value_validity_map[c] != 0;
 }
 
 //! @brief Returns true, if the given character is a valid character for a
@@ -216,7 +216,7 @@ inline bool is_valid_quoted_string_character(uint8_t c)
          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
-    return (quoted_string_validity_map[c] != 0);
+    return quoted_string_validity_map[c] != 0;
 }
 
 } // namespace hutzn

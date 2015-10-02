@@ -240,7 +240,7 @@ bool uri::parse_scheme(int32_t& character)
                                     value_type{http::uri_scheme::UNKNOWN, 0});
     push_back_string<8> tmp;
     std::tie(scheme_, port_) = t.parse(character, tmp, *lexer_);
-    return (uri_scheme::UNKNOWN != scheme_);
+    return uri_scheme::UNKNOWN != scheme_;
 }
 
 bool uri::parse_userinfo_and_authority(int32_t& character)

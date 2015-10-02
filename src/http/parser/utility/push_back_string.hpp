@@ -165,7 +165,7 @@ const char_t* push_back_string<maximum_size>::c_str() const
 template <size_t maximum_size>
 bool push_back_string<maximum_size>::empty() const
 {
-    return (current_length_ == 0);
+    return current_length_ == 0;
 }
 
 template <size_t maximum_size>
