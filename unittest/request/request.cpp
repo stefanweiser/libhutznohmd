@@ -97,11 +97,11 @@ TEST_F(request_test, default_request)
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
-    EXPECT_EQ(nullptr, r.host());
-    EXPECT_EQ(nullptr, r.query(nullptr));
-    EXPECT_EQ(nullptr, r.fragment());
+    EXPECT_STREQ(nullptr, r.host());
+    EXPECT_STREQ(nullptr, r.query(nullptr));
+    EXPECT_STREQ(nullptr, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_1, r.version());
-    EXPECT_EQ(nullptr, r.header_value(nullptr));
+    EXPECT_STREQ(nullptr, r.header_value(nullptr));
     EXPECT_EQ(false, r.keeps_connection());
     EXPECT_EQ(0, r.date());
     EXPECT_EQ(nullptr, r.content());
@@ -114,9 +114,9 @@ TEST_F(request_test, default_request)
     EXPECT_EQ(false, r.accept(handle, m));
 
     EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
-    EXPECT_EQ(nullptr, r.from());
-    EXPECT_EQ(nullptr, r.referer());
-    EXPECT_EQ(nullptr, r.user_agent());
+    EXPECT_STREQ(nullptr, r.from());
+    EXPECT_STREQ(nullptr, r.referer());
+    EXPECT_STREQ(nullptr, r.user_agent());
 }
 
 TEST_F(request_test, request_with_content)
@@ -127,11 +127,11 @@ TEST_F(request_test, request_with_content)
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
-    EXPECT_EQ(nullptr, r.host());
-    EXPECT_EQ(nullptr, r.query(nullptr));
-    EXPECT_EQ(nullptr, r.fragment());
+    EXPECT_STREQ(nullptr, r.host());
+    EXPECT_STREQ(nullptr, r.query(nullptr));
+    EXPECT_STREQ(nullptr, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_1, r.version());
-    EXPECT_EQ(nullptr, r.header_value(nullptr));
+    EXPECT_STREQ(nullptr, r.header_value(nullptr));
     EXPECT_EQ(false, r.keeps_connection());
     EXPECT_EQ(0, r.date());
 
@@ -150,9 +150,9 @@ TEST_F(request_test, request_with_content)
     EXPECT_EQ(false, r.accept(handle, m));
 
     EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
-    EXPECT_EQ(nullptr, r.from());
-    EXPECT_EQ(nullptr, r.referer());
-    EXPECT_EQ(nullptr, r.user_agent());
+    EXPECT_STREQ(nullptr, r.from());
+    EXPECT_STREQ(nullptr, r.referer());
+    EXPECT_STREQ(nullptr, r.user_agent());
 }
 
 TEST_F(request_test, request_with_timestamp)
@@ -164,11 +164,11 @@ TEST_F(request_test, request_with_timestamp)
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
-    EXPECT_EQ(nullptr, r.host());
-    EXPECT_EQ(nullptr, r.query(nullptr));
-    EXPECT_EQ(nullptr, r.fragment());
+    EXPECT_STREQ(nullptr, r.host());
+    EXPECT_STREQ(nullptr, r.query(nullptr));
+    EXPECT_STREQ(nullptr, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_1, r.version());
-    EXPECT_EQ(nullptr, r.header_value(nullptr));
+    EXPECT_STREQ(nullptr, r.header_value(nullptr));
     EXPECT_EQ(false, r.keeps_connection());
     EXPECT_EQ(784111777, r.date());
     EXPECT_EQ(nullptr, r.content());
@@ -181,9 +181,9 @@ TEST_F(request_test, request_with_timestamp)
     EXPECT_EQ(false, r.accept(handle, m));
 
     EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
-    EXPECT_EQ(nullptr, r.from());
-    EXPECT_EQ(nullptr, r.referer());
-    EXPECT_EQ(nullptr, r.user_agent());
+    EXPECT_STREQ(nullptr, r.from());
+    EXPECT_STREQ(nullptr, r.referer());
+    EXPECT_STREQ(nullptr, r.user_agent());
 }
 
 TEST_F(request_test, custom_header)
@@ -194,9 +194,9 @@ TEST_F(request_test, custom_header)
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
-    EXPECT_EQ(nullptr, r.host());
-    EXPECT_EQ(nullptr, r.query(nullptr));
-    EXPECT_EQ(nullptr, r.fragment());
+    EXPECT_STREQ(nullptr, r.host());
+    EXPECT_STREQ(nullptr, r.query(nullptr));
+    EXPECT_STREQ(nullptr, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_1, r.version());
     EXPECT_STREQ("b", r.header_value("a"));
     EXPECT_EQ(false, r.keeps_connection());
@@ -211,9 +211,9 @@ TEST_F(request_test, custom_header)
     EXPECT_EQ(false, r.accept(handle, m));
 
     EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
-    EXPECT_EQ(nullptr, r.from());
-    EXPECT_EQ(nullptr, r.referer());
-    EXPECT_EQ(nullptr, r.user_agent());
+    EXPECT_STREQ(nullptr, r.from());
+    EXPECT_STREQ(nullptr, r.referer());
+    EXPECT_STREQ(nullptr, r.user_agent());
 }
 
 TEST_F(request_test, parsing_method_failed_because_no_data)
