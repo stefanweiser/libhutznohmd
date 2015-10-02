@@ -55,34 +55,7 @@ bool lexer::fetch_header(void)
             // block_device_interface::receive returns true, when at least one
             // byte was read.
             do {
-                const char_t ch = header_[head];
-
-                switch (state_) {
-                case lexer_state::copy:
-                    fetch_header_copy(tail, head, ch, last);
-                    break;
-
-                case lexer_state::possible_cr_lf:
-                    fetch_header_possible_cr_lf(head, ch, last);
-                    break;
-
-                case lexer_state::possible_lws:
-                    fetch_header_possible_lws(tail, head, ch, last);
-                    break;
-
-                case lexer_state::reached_content:
-                    fetch_header_reached_content(tail, head);
-                    break;
-
-                // Also treat errors as reason to crash, because the only way to
-                // get in error state is when receive returns false. The program
-                // will not get here in this case, because this is a reason to
-                // break from the outermost while loop first.
-                case lexer_state::error:
-                default:
-                    assert(false);
-                    break;
-                }
+                fetch_header_step(tail, head, last);
             } while (head < header_.size());
         } else {
             state_ = lexer_state::error;
@@ -215,6 +188,38 @@ size_t lexer::content_length(void) const
         result = 0;
     }
     return result;
+}
+
+void lexer::fetch_header_step(size_t& tail, size_t& head, char_t& last)
+{
+    const char_t ch = header_[head];
+
+    switch (state_) {
+    case lexer_state::copy:
+        fetch_header_copy(tail, head, ch, last);
+        break;
+
+    case lexer_state::possible_cr_lf:
+        fetch_header_possible_cr_lf(head, ch, last);
+        break;
+
+    case lexer_state::possible_lws:
+        fetch_header_possible_lws(tail, head, ch, last);
+        break;
+
+    case lexer_state::reached_content:
+        fetch_header_reached_content(tail, head);
+        break;
+
+    // Also treat errors as reason to crash, because the only way to
+    // get in error state is when receive returns false. The program
+    // will not get here in this case, because this is a reason to
+    // break from the outermost while loop first.
+    case lexer_state::error:
+    default:
+        assert(false);
+        break;
+    }
 }
 
 void lexer::fetch_header_copy(size_t& tail, size_t& head, const char_t ch,

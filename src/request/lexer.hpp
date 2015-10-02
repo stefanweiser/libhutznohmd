@@ -79,6 +79,9 @@ public:
     size_t content_length(void) const;
 
 private:
+    //! Steps the state machine of fetch_header one time.
+    void fetch_header_step(size_t& tail, size_t& head, char_t& last);
+
     //! Called by the fetch_header state machine when in state copy.
     void fetch_header_copy(size_t& tail, size_t& head, const char_t ch,
                            char_t& last);
