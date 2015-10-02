@@ -31,10 +31,11 @@ namespace hutzn
 
 enum class header_key : uint8_t {
     CUSTOM = 0,
-    CONTENT_LENGTH = 1,
-    DATE = 2,
-    REFERER = 3,
-    USER_AGENT = 4
+    CONTENT_LENGTH,
+    DATE,
+    FROM,
+    REFERER,
+    USER_AGENT
 };
 
 class request : public request_interface
@@ -92,6 +93,7 @@ private:
     size_t content_length_;
     const void* content_;
     time_t date_;
+    const char_t* from_;
     const char_t* referer_;
     const char_t* user_agent_;
 

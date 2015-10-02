@@ -78,6 +78,7 @@ static trie<header_key> get_header_key_trie(size_t& max_size)
     const std::vector<std::pair<const char_t* const, header_key>> header_keys =
         {std::make_pair("content-length", header_key::CONTENT_LENGTH),
          std::make_pair("date", header_key::DATE),
+         std::make_pair("from", header_key::FROM),
          std::make_pair("referer", header_key::REFERER),
          std::make_pair("user-agent", header_key::USER_AGENT)};
     for (const std::pair<const char_t* const, header_key>& pair : header_keys) {
@@ -98,6 +99,7 @@ request::request(const connection_pointer& connection)
     , content_length_(0)
     , content_(nullptr)
     , date_(0)
+    , from_(nullptr)
     , referer_(nullptr)
     , user_agent_(nullptr)
     , header_fields_()
@@ -219,7 +221,7 @@ http_expectation request::expect(void) const
 
 const char_t* request::from(void) const
 {
-    return nullptr;
+    return from_;
 }
 
 const char_t* request::referer(void) const
@@ -414,6 +416,10 @@ void request::add_header(header_key key, const char_t* const key_string,
 
     case header_key::DATE:
         date_ = parse_timestamp(value_string, value_length);
+        break;
+
+    case header_key::FROM:
+        from_ = value_string;
         break;
 
     case header_key::REFERER:
