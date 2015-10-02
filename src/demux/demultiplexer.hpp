@@ -76,12 +76,11 @@ private:
 
     using resource_map = std::map<resource_key, demultiplexer_ordered_mime_map>;
 
-    //! @brief Determines, whether a content and accept type is valid or not.
+    //! @brief Determines, whether two types are valid or not.
     //!
     //! Returns true, when both types are valid ones and false in any other
     //! case.
-    bool is_content_and_accept_type_valid(const mime& content,
-                                          const mime& accept) const;
+    bool are_two_types_valid(const mime& content, const mime& accept) const;
 
     //! @brief Determines, whether a mime type is valid or not.
     //!
