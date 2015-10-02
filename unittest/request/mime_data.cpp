@@ -70,7 +70,7 @@ TEST(mime_data, parse_type_successful)
     const mime_type type = t.register_type("abc");
     EXPECT_NE(mime_type::INVALID, type);
     EXPECT_EQ(type, t.parse_type("abc", 3));
-    EXPECT_EQ(type, t.parse_type("abcdef", 6));
+    EXPECT_EQ(mime_type::INVALID, t.parse_type("abcdef", 6));
     EXPECT_TRUE(t.unregister_type(type));
 }
 
