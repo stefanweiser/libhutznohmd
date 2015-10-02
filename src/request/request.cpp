@@ -433,7 +433,7 @@ void request::add_header(const mime_handler& handler, header_key key,
     }
 
     case header_key::CONTENT_TYPE:
-        set_content_type(handler, value_string, value_length);
+        content_type_ = handler.parse(value_string, value_length);
         break;
 
     case header_key::DATE:
@@ -467,40 +467,6 @@ void request::add_header(const mime_handler& handler, header_key key,
         header_fields_[key_string] = value_string;
         break;
     }
-}
-
-void request::set_content_type(const mime_handler& handler,
-                               const char_t* value_string, size_t value_length)
-{
-    const char_t* type_begin = value_string;
-    size_t type_size = 0;
-
-    while ((type_size < value_length) && ('/' != (*value_string))) {
-        value_string++;
-        type_size++;
-    }
-
-    value_length -= type_size;
-    if (value_length > 0) {
-        value_string++;
-        value_length--;
-    }
-
-    const char_t* subtype_begin = value_string;
-    size_t subtype_size = 0;
-
-    static const select_char_map whitespace_map =
-        make_select_char_map(' ', '\t', '\n', '\r');
-
-    while ((subtype_size < value_length) &&
-           (false == whitespace_map[static_cast<uint8_t>(*value_string)])) {
-        value_string++;
-        subtype_size++;
-    }
-
-    mime_type type = handler.parse_type(type_begin, type_size);
-    mime_subtype subtype = handler.parse_subtype(subtype_begin, subtype_size);
-    content_type_ = mime(type, subtype);
 }
 
 bool request::is_whitespace(const int32_t ch)

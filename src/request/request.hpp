@@ -84,8 +84,6 @@ private:
     void add_header(const mime_handler& handler, header_key key,
                     const char_t* const key_string, const char_t* value_string,
                     size_t value_length);
-    void set_content_type(const mime_handler& handler,
-                          const char_t* value_string, size_t value_length);
 
     static bool is_whitespace(const int32_t ch);
     static bool is_newline(const int32_t ch);

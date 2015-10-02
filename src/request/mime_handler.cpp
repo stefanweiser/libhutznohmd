@@ -16,6 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include <utility/select_char_map.hpp>
+
 #include "mime_handler.hpp"
 
 namespace hutzn
@@ -59,18 +61,42 @@ bool mime_handler::are_two_types_valid(const mime& type1,
     return (true == is_mime_valid(type1)) && (true == is_mime_valid(type2));
 }
 
-mime_type mime_handler::parse_type(const char_t* const string,
-                                   const size_t max_length) const
+mime mime_handler::parse(const char_t* const data,
+                         const size_t max_length) const
 {
-    std::lock_guard<std::mutex> lock(mime_type_mutex_);
-    return mime_types_.parse_type(string, max_length);
-}
+    static const select_char_map whitespace_map =
+        make_select_char_map(' ', '\t', '\n', '\r');
 
-mime_subtype mime_handler::parse_subtype(const char_t* const string,
-                                         const size_t max_length) const
-{
     std::lock_guard<std::mutex> lock(mime_type_mutex_);
-    return mime_subtypes_.parse_type(string, max_length);
+
+    const char_t* string = data;
+    size_t remaining = max_length;
+    while ((remaining > 0) && ('/' != (*string))) {
+        string++;
+        remaining--;
+    }
+
+    const char_t* const type_begin = data;
+    const size_t type_size = max_length - remaining;
+
+    if (remaining > 0) {
+        string++;
+        remaining--;
+    }
+
+    const char_t* const subtype_begin = string;
+
+    while ((remaining > 0) &&
+           (false == whitespace_map[static_cast<uint8_t>(*string)])) {
+        string++;
+        remaining--;
+    }
+    const size_t subtype_size = static_cast<size_t>(string - subtype_begin);
+
+    const mime_type type = mime_types_.parse_type(type_begin, type_size);
+    const mime_subtype subtype =
+        mime_subtypes_.parse_type(subtype_begin, subtype_size);
+    return mime(type, subtype);
 }
 
 bool mime_handler::is_mime_valid(const mime& t) const

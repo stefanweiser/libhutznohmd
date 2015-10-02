@@ -55,21 +55,12 @@ public:
     //! case.
     bool are_two_types_valid(const mime& type1, const mime& type2) const;
 
-    //! @brief Parses a mime type.
+    //! @brief Parses a complete mime.
     //!
     //! Takes a string with a fixed size, which may not be null-terminated.
-    //! Returns the parsed mime type or mime_type::INVALID when the string does
-    //! not exactly match a registered mime type.
-    mime_type parse_type(const char_t* const string,
-                         const size_t max_length) const;
-
-    //! @brief Parses a mime subtype.
-    //!
-    //! Takes a string with a fixed size, which may not be null-terminated.
-    //! Returns the parsed mime subtype or mime_subtype::INVALID when the string
-    //! does not exactly match a registered mime subtype.
-    mime_subtype parse_subtype(const char_t* const string,
-                               const size_t max_length) const;
+    //! Returns the parsed mime type or invalid type and subtype when the string
+    //! does not exactly match a registered mime type or subtype.
+    mime parse(const char_t* const data, const size_t max_length) const;
 
 private:
     //! @brief Determines, whether a mime type is valid or not.
