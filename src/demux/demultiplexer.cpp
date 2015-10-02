@@ -115,8 +115,12 @@ void demultiplexer::disconnect(const request_handler_id& id)
 {
     std::unique_lock<std::mutex> lock(resource_callbacks_mutex_);
 
-    bool repeat = false;
+    bool repeat;
     do {
+        // Must reset the stop condition, because it gets only set true inside
+        // the conditions.
+        repeat = false;
+
         // Getting target resource map.
         const resource_key key{id.path, id.method, id.content_type};
         auto resource_it = resource_callbacks_.find(key);
