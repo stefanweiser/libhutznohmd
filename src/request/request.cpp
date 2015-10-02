@@ -394,20 +394,18 @@ bool request::parse_header(int32_t& ch)
 }
 
 void request::add_header(header_key key, const char_t* const key_string,
-                         const char_t* const value_string,
-                         const size_t value_length)
+                         const char_t* value_string, size_t value_length)
 {
+    skip_whitespace(value_string, value_length);
+
     switch (key) {
     case header_key::DATE:
         date_ = parse_timestamp(value_string, value_length);
         break;
 
     case header_key::CONTENT_LENGTH: {
-        const char_t* value_string_copy = value_string;
-        size_t value_length_copy = value_length;
-        skip_whitespace(value_string_copy, value_length_copy);
         const int32_t length =
-            parse_unsigned_integer(value_string_copy, value_length_copy);
+            parse_unsigned_integer(value_string, value_length);
         if (length >= 0) {
             content_length_ = static_cast<size_t>(length);
         }
