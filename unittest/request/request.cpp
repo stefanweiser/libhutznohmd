@@ -102,7 +102,7 @@ TEST_F(request_test, default_request)
     EXPECT_STREQ(nullptr, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_1, r.version());
     EXPECT_STREQ(nullptr, r.header_value(nullptr));
-    EXPECT_EQ(false, r.keeps_connection());
+    EXPECT_EQ(true, r.keeps_connection());
     EXPECT_EQ(0, r.date());
     EXPECT_EQ(nullptr, r.content());
     EXPECT_EQ(0, r.content_length());
@@ -132,7 +132,7 @@ TEST_F(request_test, request_with_content)
     EXPECT_STREQ(nullptr, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_1, r.version());
     EXPECT_STREQ(nullptr, r.header_value(nullptr));
-    EXPECT_EQ(false, r.keeps_connection());
+    EXPECT_EQ(true, r.keeps_connection());
     EXPECT_EQ(0, r.date());
 
     // fetch_content() will set the content's result.
@@ -155,7 +155,97 @@ TEST_F(request_test, request_with_content)
     EXPECT_STREQ(nullptr, r.user_agent());
 }
 
-TEST_F(request_test, request_with_timestamp)
+TEST_F(request_test, http_1_0_request_without_keep_alive)
+{
+    request r{connection_};
+    setup_receive("GET / HTTP/1.0\r\n\r\n");
+    ASSERT_TRUE(r.parse());
+
+    EXPECT_EQ(http_verb::GET, r.method());
+    EXPECT_STREQ("", r.path());
+    EXPECT_STREQ(nullptr, r.host());
+    EXPECT_STREQ(nullptr, r.query(nullptr));
+    EXPECT_STREQ(nullptr, r.fragment());
+    EXPECT_EQ(http_version::HTTP_1_0, r.version());
+    EXPECT_STREQ(nullptr, r.header_value(nullptr));
+    EXPECT_EQ(false, r.keeps_connection());
+    EXPECT_EQ(0, r.date());
+    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(0, r.content_length());
+    EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
+              r.content_type());
+
+    void* handle = nullptr;
+    mime m{mime_type::INVALID, mime_subtype::INVALID};
+    EXPECT_EQ(false, r.accept(handle, m));
+
+    EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
+    EXPECT_STREQ(nullptr, r.from());
+    EXPECT_STREQ(nullptr, r.referer());
+    EXPECT_STREQ(nullptr, r.user_agent());
+}
+
+TEST_F(request_test, http_1_0_request_with_non_keep_alive)
+{
+    request r{connection_};
+    setup_receive("GET / HTTP/1.0\r\nConnection: close\r\n\r\n");
+    ASSERT_TRUE(r.parse());
+
+    EXPECT_EQ(http_verb::GET, r.method());
+    EXPECT_STREQ("", r.path());
+    EXPECT_STREQ(nullptr, r.host());
+    EXPECT_STREQ(nullptr, r.query(nullptr));
+    EXPECT_STREQ(nullptr, r.fragment());
+    EXPECT_EQ(http_version::HTTP_1_0, r.version());
+    EXPECT_STREQ(nullptr, r.header_value(nullptr));
+    EXPECT_EQ(false, r.keeps_connection());
+    EXPECT_EQ(0, r.date());
+    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(0, r.content_length());
+    EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
+              r.content_type());
+
+    void* handle = nullptr;
+    mime m{mime_type::INVALID, mime_subtype::INVALID};
+    EXPECT_EQ(false, r.accept(handle, m));
+
+    EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
+    EXPECT_STREQ(nullptr, r.from());
+    EXPECT_STREQ(nullptr, r.referer());
+    EXPECT_STREQ(nullptr, r.user_agent());
+}
+
+TEST_F(request_test, http_1_0_request_with_keep_alive)
+{
+    request r{connection_};
+    setup_receive("GET / HTTP/1.0\r\nConnection: keep-alive\r\n\r\n");
+    ASSERT_TRUE(r.parse());
+
+    EXPECT_EQ(http_verb::GET, r.method());
+    EXPECT_STREQ("", r.path());
+    EXPECT_STREQ(nullptr, r.host());
+    EXPECT_STREQ(nullptr, r.query(nullptr));
+    EXPECT_STREQ(nullptr, r.fragment());
+    EXPECT_EQ(http_version::HTTP_1_0, r.version());
+    EXPECT_STREQ(nullptr, r.header_value(nullptr));
+    EXPECT_EQ(true, r.keeps_connection());
+    EXPECT_EQ(0, r.date());
+    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(0, r.content_length());
+    EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
+              r.content_type());
+
+    void* handle = nullptr;
+    mime m{mime_type::INVALID, mime_subtype::INVALID};
+    EXPECT_EQ(false, r.accept(handle, m));
+
+    EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
+    EXPECT_STREQ(nullptr, r.from());
+    EXPECT_STREQ(nullptr, r.referer());
+    EXPECT_STREQ(nullptr, r.user_agent());
+}
+
+TEST_F(request_test, request_with_date)
 {
     request r{connection_};
     setup_receive(
@@ -169,7 +259,7 @@ TEST_F(request_test, request_with_timestamp)
     EXPECT_STREQ(nullptr, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_1, r.version());
     EXPECT_STREQ(nullptr, r.header_value(nullptr));
-    EXPECT_EQ(false, r.keeps_connection());
+    EXPECT_EQ(true, r.keeps_connection());
     EXPECT_EQ(784111777, r.date());
     EXPECT_EQ(nullptr, r.content());
     EXPECT_EQ(0, r.content_length());
@@ -189,7 +279,7 @@ TEST_F(request_test, request_with_timestamp)
 TEST_F(request_test, request_with_from)
 {
     request r{connection_};
-    setup_receive("GET / HTTP/1.1\r\nfrom: info@example.com\r\n\r\n");
+    setup_receive("GET / HTTP/1.1\r\nFrom: info@example.com\r\n\r\n");
     ASSERT_TRUE(r.parse());
 
     EXPECT_EQ(http_verb::GET, r.method());
@@ -199,7 +289,7 @@ TEST_F(request_test, request_with_from)
     EXPECT_STREQ(nullptr, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_1, r.version());
     EXPECT_STREQ(nullptr, r.header_value(nullptr));
-    EXPECT_EQ(false, r.keeps_connection());
+    EXPECT_EQ(true, r.keeps_connection());
     EXPECT_EQ(0, r.date());
     EXPECT_EQ(nullptr, r.content());
     EXPECT_EQ(0, r.content_length());
@@ -229,7 +319,7 @@ TEST_F(request_test, request_with_referer)
     EXPECT_STREQ(nullptr, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_1, r.version());
     EXPECT_STREQ(nullptr, r.header_value(nullptr));
-    EXPECT_EQ(false, r.keeps_connection());
+    EXPECT_EQ(true, r.keeps_connection());
     EXPECT_EQ(0, r.date());
     EXPECT_EQ(nullptr, r.content());
     EXPECT_EQ(0, r.content_length());
@@ -259,7 +349,7 @@ TEST_F(request_test, request_with_user_agent)
     EXPECT_STREQ(nullptr, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_1, r.version());
     EXPECT_STREQ(nullptr, r.header_value(nullptr));
-    EXPECT_EQ(false, r.keeps_connection());
+    EXPECT_EQ(true, r.keeps_connection());
     EXPECT_EQ(0, r.date());
     EXPECT_EQ(nullptr, r.content());
     EXPECT_EQ(0, r.content_length());
@@ -289,7 +379,7 @@ TEST_F(request_test, custom_header)
     EXPECT_STREQ(nullptr, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_1, r.version());
     EXPECT_STREQ("b", r.header_value("a"));
-    EXPECT_EQ(false, r.keeps_connection());
+    EXPECT_EQ(true, r.keeps_connection());
     EXPECT_EQ(0, r.date());
     EXPECT_EQ(nullptr, r.content());
     EXPECT_EQ(0, r.content_length());

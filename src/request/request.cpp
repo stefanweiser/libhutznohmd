@@ -76,7 +76,8 @@ static trie<header_key> get_header_key_trie(size_t& max_size)
     // Filling versions and automatically calculate the maximum length.
     max_size = 0;
     const std::vector<std::pair<const char_t* const, header_key>> header_keys =
-        {std::make_pair("content-length", header_key::CONTENT_LENGTH),
+        {std::make_pair("connection", header_key::CONNECTION),
+         std::make_pair("content-length", header_key::CONTENT_LENGTH),
          std::make_pair("date", header_key::DATE),
          std::make_pair("from", header_key::FROM),
          std::make_pair("referer", header_key::REFERER),
@@ -98,6 +99,7 @@ request::request(const connection_pointer& connection)
     , version_(http_version::HTTP_UNKNOWN)
     , content_length_(0)
     , content_(nullptr)
+    , is_keep_alive_set_(false)
     , date_(0)
     , from_(nullptr)
     , referer_(nullptr)
@@ -186,7 +188,8 @@ const char_t* request::header_value(const char_t* const name) const
 
 bool request::keeps_connection(void) const
 {
-    return false;
+    return ((version() > http_version::HTTP_1_0) ||
+            (true == is_keep_alive_set_));
 }
 
 time_t request::date(void) const
@@ -405,6 +408,16 @@ void request::add_header(header_key key, const char_t* const key_string,
     skip_whitespace(value_string, value_length);
 
     switch (key) {
+    case header_key::CONNECTION:
+        static constexpr char_t keep_alive_str[] = "keep-alive";
+        static constexpr size_t keep_alive_size = sizeof(keep_alive_str);
+        static_assert(keep_alive_size > 0,
+                      "Size of string keep-alive is greater than 0.");
+        if (0 == ::strncasecmp(value_string, keep_alive_str, keep_alive_size)) {
+            is_keep_alive_set_ = true;
+        }
+        break;
+
     case header_key::CONTENT_LENGTH: {
         const int32_t length =
             parse_unsigned_integer(value_string, value_length);

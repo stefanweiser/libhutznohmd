@@ -31,6 +31,7 @@ namespace hutzn
 
 enum class header_key : uint8_t {
     CUSTOM = 0,
+    CONNECTION,
     CONTENT_LENGTH,
     DATE,
     FROM,
@@ -92,6 +93,7 @@ private:
 
     size_t content_length_;
     const void* content_;
+    bool is_keep_alive_set_;
     time_t date_;
     const char_t* from_;
     const char_t* referer_;
