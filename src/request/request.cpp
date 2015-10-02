@@ -20,6 +20,8 @@
 #include <cstring>
 #include <limits>
 
+#include <request/timestamp.hpp>
+
 #include <utility/trie.hpp>
 
 #include "request.hpp"
@@ -90,6 +92,7 @@ request::request(const connection_pointer& connection)
     , method_(http_verb::GET)
     , path_uri_()
     , version_(http_version::HTTP_UNKNOWN)
+    , date_(0)
     , header_fields_()
     , query_entries_()
 {
@@ -261,7 +264,8 @@ bool request::parse_header(int32_t& ch)
     }
 
     ch = lexer_.get();
-    const char_t* value = lexer_.header_data(lexer_.prev_index());
+    const size_t value_begin = lexer_.prev_index();
+    const char_t* value = lexer_.header_data(value_begin);
 
     // The value of -1 signalizes end of file.
     while (ch >= 0) {
@@ -269,8 +273,10 @@ bool request::parse_header(int32_t& ch)
         if (true == is_newline(ch)) {
             // Overwrite the newline with null. The value is getting null
             // terminated by this.
-            lexer_.header_data(lexer_.prev_index())[0] = '\0';
-            add_header(key_enum, key, value);
+            const size_t value_end = lexer_.prev_index();
+            lexer_.header_data(value_end)[0] = '\0';
+            const size_t value_size = value_end - value_begin;
+            add_header(key_enum, key, value, value_size);
             result = true;
             break;
         }
@@ -282,11 +288,12 @@ bool request::parse_header(int32_t& ch)
 }
 
 void request::add_header(header_key key, const char_t* const key_string,
-                         const char_t* const value_string)
+                         const char_t* const value_string,
+                         const size_t value_length)
 {
     switch (key) {
     case header_key::DATE:
-        header_fields_[key_string] = value_string;
+        date_ = parse_timestamp(value_string, value_length);
         break;
     case header_key::CUSTOM:
         header_fields_[key_string] = value_string;
@@ -347,7 +354,7 @@ bool request::keeps_connection(void) const
 
 time_t request::date(void) const
 {
-    return 0;
+    return date_;
 }
 
 void* request::content(void) const
