@@ -77,7 +77,8 @@ static trie<header_key> get_header_key_trie(size_t& max_size)
     max_size = 0;
     const std::vector<std::pair<const char_t* const, header_key>> header_keys =
         {std::make_pair("date", header_key::DATE),
-         std::make_pair("content-length", header_key::CONTENT_LENGTH)};
+         std::make_pair("content-length", header_key::CONTENT_LENGTH),
+         std::make_pair("user-agent", header_key::USER_AGENT)};
     for (const std::pair<const char_t* const, header_key>& pair : header_keys) {
         result.insert(pair.first, pair.second);
         max_size = std::max(max_size, ::strnlen(pair.first, 16));
@@ -96,6 +97,7 @@ request::request(const connection_pointer& connection)
     , content_length_(0)
     , content_(nullptr)
     , date_(0)
+    , user_agent_(nullptr)
     , header_fields_()
     , query_entries_()
 {
@@ -225,7 +227,7 @@ const char_t* request::referer(void) const
 
 const char_t* request::user_agent(void) const
 {
-    return nullptr;
+    return user_agent_;
 }
 
 bool request::parse_method(int32_t& ch)
@@ -411,6 +413,10 @@ void request::add_header(header_key key, const char_t* const key_string,
         }
         break;
     }
+
+    case header_key::USER_AGENT:
+        user_agent_ = value_string;
+        break;
 
     case header_key::CUSTOM:
     default:

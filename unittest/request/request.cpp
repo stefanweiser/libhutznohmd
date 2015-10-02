@@ -186,6 +186,36 @@ TEST_F(request_test, request_with_timestamp)
     EXPECT_STREQ(nullptr, r.user_agent());
 }
 
+TEST_F(request_test, request_with_user_agent)
+{
+    request r{connection_};
+    setup_receive("GET / HTTP/1.1\r\nUser-Agent: libhutznohmd/0.0.1\r\n\r\n");
+    ASSERT_TRUE(r.parse());
+
+    EXPECT_EQ(http_verb::GET, r.method());
+    EXPECT_STREQ("", r.path());
+    EXPECT_STREQ(nullptr, r.host());
+    EXPECT_STREQ(nullptr, r.query(nullptr));
+    EXPECT_STREQ(nullptr, r.fragment());
+    EXPECT_EQ(http_version::HTTP_1_1, r.version());
+    EXPECT_STREQ(nullptr, r.header_value(nullptr));
+    EXPECT_EQ(false, r.keeps_connection());
+    EXPECT_EQ(0, r.date());
+    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(0, r.content_length());
+    EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
+              r.content_type());
+
+    void* handle = nullptr;
+    mime m{mime_type::INVALID, mime_subtype::INVALID};
+    EXPECT_EQ(false, r.accept(handle, m));
+
+    EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
+    EXPECT_STREQ(nullptr, r.from());
+    EXPECT_STREQ(nullptr, r.referer());
+    EXPECT_STREQ("libhutznohmd/0.0.1", r.user_agent());
+}
+
 TEST_F(request_test, custom_header)
 {
     request r{connection_};
