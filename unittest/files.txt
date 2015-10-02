@@ -4,7 +4,6 @@ demux/demultiplexer_ordered_mime_map.cpp
 demux/mock_disconnect_interface.hpp
 http/parser/request_parser.cpp
 http/parser/response_parser.cpp
-http/parser/utility/base64.cpp
 http/parser/utility/lexer.cpp
 http/parser/utility/md5.cpp
 http/parser/utility/media_type.cpp

@@ -21,7 +21,7 @@
 #include <limits>
 #include <map>
 
-#include <http/parser/utility/base64.hpp>
+#include <request/base64.hpp>
 #include <http/parser/utility/timestamp.hpp>
 #include <http/parser/utility/trie.hpp>
 

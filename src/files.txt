@@ -21,8 +21,6 @@ http/parser/request_parser.hpp
 http/parser/response_parser.cpp
 http/parser/response_parser.hpp
 http/parser/utility/anonymous_int_function.hpp
-http/parser/utility/base64.cpp
-http/parser/utility/base64.hpp
 http/parser/utility/base_parser.cpp
 http/parser/utility/base_parser.hpp
 http/parser/utility/lexer.cpp
