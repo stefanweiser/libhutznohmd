@@ -101,6 +101,7 @@ request::request(const connection_pointer& connection)
     , content_(nullptr)
     , is_keep_alive_set_(false)
     , date_(0)
+    , expect_(http_expectation::UNKNOWN)
     , from_(nullptr)
     , referer_(nullptr)
     , user_agent_(nullptr)
@@ -219,7 +220,7 @@ bool request::accept(void*& /*handle*/, mime& /*type*/) const
 
 http_expectation request::expect(void) const
 {
-    return http_expectation::UNKNOWN;
+    return expect_;
 }
 
 const char_t* request::from(void) const
@@ -429,6 +430,16 @@ void request::add_header(header_key key, const char_t* const key_string,
 
     case header_key::DATE:
         date_ = parse_timestamp(value_string, value_length);
+        break;
+
+    case header_key::EXPECT:
+        static constexpr char_t continue_str[] = "100-continue";
+        static constexpr size_t continue_size = sizeof(continue_str);
+        static_assert(continue_size > 0,
+                      "Size of string 100-continue must be greater than 0.");
+        if (0 == ::strncasecmp(value_string, continue_str, continue_size)) {
+            expect_ = http_expectation::CONTINUE;
+        }
         break;
 
     case header_key::FROM:

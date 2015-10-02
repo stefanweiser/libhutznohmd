@@ -34,6 +34,7 @@ enum class header_key : uint8_t {
     CONNECTION,
     CONTENT_LENGTH,
     DATE,
+    EXPECT,
     FROM,
     REFERER,
     USER_AGENT
@@ -95,6 +96,7 @@ private:
     const void* content_;
     bool is_keep_alive_set_;
     time_t date_;
+    http_expectation expect_;
     const char_t* from_;
     const char_t* referer_;
     const char_t* user_agent_;
