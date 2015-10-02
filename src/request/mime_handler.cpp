@@ -59,6 +59,20 @@ bool mime_handler::are_two_types_valid(const mime& type1,
     return (true == is_mime_valid(type1)) && (true == is_mime_valid(type2));
 }
 
+mime_type mime_handler::parse_type(const char_t* const string,
+                                   const size_t max_length)
+{
+    std::lock_guard<std::mutex> lock(mime_type_mutex_);
+    return mime_types_.parse_type(string, max_length);
+}
+
+mime_subtype mime_handler::parse_subtype(const char_t* const string,
+                                         const size_t max_length)
+{
+    std::lock_guard<std::mutex> lock(mime_type_mutex_);
+    return mime_subtypes_.parse_type(string, max_length);
+}
+
 bool mime_handler::is_mime_valid(const mime& t) const
 {
     const mime_type type = t.first;
