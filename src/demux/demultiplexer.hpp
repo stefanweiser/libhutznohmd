@@ -25,7 +25,7 @@
 
 #include <libhutznohmd/demux.hpp>
 
-#include <request/mime_data.hpp>
+#include <request/mime_handler.hpp>
 #include <demux/demultiplexer_ordered_mime_map.hpp>
 
 #include <demux/disconnect_interface.hpp>
@@ -76,18 +76,6 @@ private:
 
     using resource_map = std::map<resource_key, demultiplexer_ordered_mime_map>;
 
-    //! @brief Determines, whether two types are valid or not.
-    //!
-    //! Returns true, when both types are valid ones and false in any other
-    //! case.
-    bool are_two_types_valid(const mime& content, const mime& accept) const;
-
-    //! @brief Determines, whether a mime type is valid or not.
-    //!
-    //! Checks whether a type and subtype is consequently none or not. No part
-    //! must be invalid and both parts must be registered, when not none.
-    bool is_mime_valid(const mime& t) const;
-
     //! Guards the access to the resource map from mutual access.
     mutable std::mutex resource_callbacks_mutex_;
 
@@ -97,14 +85,9 @@ private:
     //! Stores all request handler callbacks.
     resource_map resource_callbacks_;
 
-    //! Guards the request parser data from mutual access.
-    mutable std::mutex mime_type_mutex_;
-
-    //! Stores registered mime types.
-    mime_data<mime_type, uint8_t> mime_types_;
-
-    //! Stores registered mime subtypes.
-    mime_data<mime_subtype, uint16_t> mime_subtypes_;
+    //! Used to store registered mime types and subtypes and to determine
+    //! validity.
+    mime_handler mime_handler_;
 };
 
 } // namespace hutzn

@@ -19,8 +19,46 @@
 #ifndef LIBHUTZNOHMD_REQUEST_MIME_HANDLER_HPP
 #define LIBHUTZNOHMD_REQUEST_MIME_HANDLER_HPP
 
+#include <mutex>
+
+#include <libhutznohmd/request.hpp>
+
+#include <request/mime_data.hpp>
+
 namespace hutzn
 {
+
+class mime_handler
+{
+public:
+    explicit mime_handler(void);
+    mime_type register_mime_type(const std::string& type);
+    mime_subtype register_mime_subtype(const std::string& subtype);
+    bool unregister_mime_type(const mime_type& type);
+    bool unregister_mime_subtype(const mime_subtype& subtype);
+
+    //! @brief Determines, whether two types are valid or not.
+    //!
+    //! Returns true, when both types are valid ones and false in any other
+    //! case.
+    bool are_two_types_valid(const mime& type1, const mime& type2) const;
+
+private:
+    //! @brief Determines, whether a mime type is valid or not.
+    //!
+    //! Checks whether a type and subtype is consequently none or not. No part
+    //! must be invalid and both parts must be registered, when not none.
+    bool is_mime_valid(const mime& t) const;
+
+    //! Guards the request parser data from mutual access.
+    mutable std::mutex mime_type_mutex_;
+
+    //! Stores registered mime types.
+    mime_data<mime_type, uint8_t> mime_types_;
+
+    //! Stores registered mime subtypes.
+    mime_data<mime_subtype, uint16_t> mime_subtypes_;
+};
 
 } // namespace hutzn
 
