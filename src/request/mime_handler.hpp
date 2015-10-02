@@ -31,10 +31,22 @@ namespace hutzn
 class mime_handler
 {
 public:
+    //! @brief The only way to construct a mime handler.
     explicit mime_handler(void);
+
+    //! @brief Registers a string as mime type. Returns the resulting mime type.
     mime_type register_mime_type(const std::string& type);
+
+    //! @brief Registers a string as mime subtype. Returns the resulting mime
+    //! subtype.
     mime_subtype register_mime_subtype(const std::string& subtype);
+
+    //! @brief Unregisters a mime type. Returns true if the unregistering was
+    //! successful.
     bool unregister_mime_type(const mime_type& type);
+
+    //! @brief Unregisters a mime subtype. Returns true if the unregistering was
+    //! successful.
     bool unregister_mime_subtype(const mime_subtype& subtype);
 
     //! @brief Determines, whether two types are valid or not.
