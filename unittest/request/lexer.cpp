@@ -229,58 +229,6 @@ TEST_F(lexer_test, set_index_to_eof)
     EXPECT_EQ(1, lex.index());
 }
 
-TEST_F(lexer_test, get_length_from_parse_specific)
-{
-    std::string chunk = "abcdefgh";
-    connection_mock_pointer connection =
-        std::make_shared<connection_interface_mock>();
-    EXPECT_CALL(*connection, receive(_, _))
-        .Times(2)
-        .WillOnce(Invoke([chunk](buffer& b, const size_t& m) {
-            EXPECT_LE(chunk.size(), m);
-            b.insert(b.begin(), chunk.begin(), chunk.end());
-            return true;
-        }))
-        .WillOnce(Return(false));
-
-    auto is_d = [](const char_t c) -> bool { return ('d' == c); };
-
-    lexer lex(connection);
-    EXPECT_FALSE(lex.fetch_header());
-    ASSERT_EQ(0, lex.index());
-    const char_t* data = lex.header_data(0);
-    size_t max_length = chunk.size();
-    EXPECT_EQ(3, parse_specific(data, max_length, is_d));
-    EXPECT_EQ(chunk.size() - 3, max_length);
-    EXPECT_EQ(lex.header_data(3), data);
-}
-
-TEST_F(lexer_test, parse_specific_fails)
-{
-    std::string chunk = "abcdefgh";
-    connection_mock_pointer connection =
-        std::make_shared<connection_interface_mock>();
-    EXPECT_CALL(*connection, receive(_, _))
-        .Times(2)
-        .WillOnce(Invoke([chunk](buffer& b, const size_t& m) {
-            EXPECT_LE(chunk.size(), m);
-            b.insert(b.begin(), chunk.begin(), chunk.end());
-            return true;
-        }))
-        .WillOnce(Return(false));
-
-    auto is_i = [](const char_t c) -> bool { return ('i' == c); };
-
-    lexer lex(connection);
-    EXPECT_FALSE(lex.fetch_header());
-    ASSERT_EQ(0, lex.index());
-    const char_t* data = lex.header_data(0);
-    size_t max_length = chunk.size();
-    EXPECT_EQ(0, parse_specific(data, max_length, is_i));
-    EXPECT_EQ(chunk.size(), max_length);
-    EXPECT_EQ(lex.header_data(0), data);
-}
-
 TEST_F(lexer_test, content)
 {
     std::string chunk1 = "\r\n\r\n";

@@ -19,8 +19,6 @@
 #ifndef LIBHUTZNOHMD_REQUEST_LEXER_HPP
 #define LIBHUTZNOHMD_REQUEST_LEXER_HPP
 
-#include <cassert>
-
 #include <libhutznohmd/request.hpp>
 
 namespace hutzn
@@ -137,35 +135,6 @@ private:
     bool fetch_content_succeeded_;
     size_t index_;
 };
-
-//! Parses a token and returns the number of characters read from the lexer. A
-//! token is a logical unit consisting of several consecutive characters (at
-//! least one). There is a stop function to determine the token's borders.
-//! Returns the length of the token. If no valid stop character is found, the
-//! lexer's index gets resetted to its starting value and 0 is returned from the
-//! function.
-template <typename stop_function>
-size_t parse_specific(const char_t*& data, size_t& remaining,
-                      const stop_function& stop)
-{
-    const size_t remaining_bytes_at_start = remaining;
-
-    size_t available_bytes = remaining;
-    const char_t* data_iterator = data;
-    while (available_bytes > 0) {
-        const char_t ch = *data_iterator;
-        if (true == stop(ch)) {
-            data = data_iterator;
-            remaining = available_bytes;
-            available_bytes = 0;
-        } else {
-            data_iterator++;
-            available_bytes--;
-        }
-    }
-
-    return (remaining_bytes_at_start - remaining);
-}
 
 } // namespace hutzn
 
