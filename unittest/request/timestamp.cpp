@@ -364,4 +364,18 @@ TEST(timestamp, year2000_date)
     EXPECT_EQ(951868800, timestamp);
 }
 
+TEST(timestamp, space_before_date)
+{
+    fixture f(" Sun, 06 Nov 1994 08:49:37 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(784111777, timestamp);
+}
+
+TEST(timestamp, tab_before_date)
+{
+    fixture f("\tSun, 06 Nov 1994 08:49:37 GMT");
+    const time_t timestamp = f.parse();
+    EXPECT_EQ(784111777, timestamp);
+}
+
 } // namespace hutzn

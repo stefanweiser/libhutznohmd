@@ -295,6 +295,7 @@ weekday_value_type parse_weekday(const char_t*& data, size_t& remaining)
     static const trie<weekday_value_type> weekdays =
         get_weekday_trie(maximum_weekday_length);
 
+    skip_whitespace(data, remaining);
     trie_find_result<weekday_value_type> result =
         weekdays.find(data, remaining);
     data += result.used_size();
