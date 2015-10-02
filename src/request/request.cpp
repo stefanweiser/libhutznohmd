@@ -76,8 +76,9 @@ static trie<header_key> get_header_key_trie(size_t& max_size)
     // Filling versions and automatically calculate the maximum length.
     max_size = 0;
     const std::vector<std::pair<const char_t* const, header_key>> header_keys =
-        {std::make_pair("date", header_key::DATE),
-         std::make_pair("content-length", header_key::CONTENT_LENGTH),
+        {std::make_pair("content-length", header_key::CONTENT_LENGTH),
+         std::make_pair("date", header_key::DATE),
+         std::make_pair("referer", header_key::REFERER),
          std::make_pair("user-agent", header_key::USER_AGENT)};
     for (const std::pair<const char_t* const, header_key>& pair : header_keys) {
         result.insert(pair.first, pair.second);
@@ -97,6 +98,7 @@ request::request(const connection_pointer& connection)
     , content_length_(0)
     , content_(nullptr)
     , date_(0)
+    , referer_(nullptr)
     , user_agent_(nullptr)
     , header_fields_()
     , query_entries_()
@@ -222,7 +224,7 @@ const char_t* request::from(void) const
 
 const char_t* request::referer(void) const
 {
-    return nullptr;
+    return referer_;
 }
 
 const char_t* request::user_agent(void) const
@@ -401,10 +403,6 @@ void request::add_header(header_key key, const char_t* const key_string,
     skip_whitespace(value_string, value_length);
 
     switch (key) {
-    case header_key::DATE:
-        date_ = parse_timestamp(value_string, value_length);
-        break;
-
     case header_key::CONTENT_LENGTH: {
         const int32_t length =
             parse_unsigned_integer(value_string, value_length);
@@ -413,6 +411,14 @@ void request::add_header(header_key key, const char_t* const key_string,
         }
         break;
     }
+
+    case header_key::DATE:
+        date_ = parse_timestamp(value_string, value_length);
+        break;
+
+    case header_key::REFERER:
+        referer_ = value_string;
+        break;
 
     case header_key::USER_AGENT:
         user_agent_ = value_string;
