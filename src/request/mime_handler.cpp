@@ -119,11 +119,10 @@ bool mime_handler::is_mime_valid(const mime& t) const
 
     // Valid values must be registered. Unset types are unregistered but also
     // valid.
-    if ((!mime_types_.is_registered(type)) ||
-        (!mime_subtypes_.is_registered(subtype))) {
-        if ((type != mime_type::NONE) && (subtype != mime_subtype::NONE)) {
-            result = false;
-        }
+    if (((!mime_types_.is_registered(type)) ||
+         (!mime_subtypes_.is_registered(subtype))) &&
+        (type != mime_type::NONE) && (subtype != mime_subtype::NONE)) {
+        result = false;
     }
 
     return result;

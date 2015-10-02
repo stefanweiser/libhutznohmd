@@ -85,24 +85,21 @@ handler_pointer demultiplexer::connect(const request_handler_id& id,
     handler_pointer result;
 
     // Check for invalid uri paths.
-    if (is_valid_uri_path(id.path)) {
+    // Check whether the content and accept mime is valid.
+    if (is_valid_uri_path(id.path) &&
+        mime_handler_.are_two_types_valid(id.content_type, id.accept_type)) {
 
-        // Check whether the content and accept mime is valid.
-        if (mime_handler_.are_two_types_valid(id.content_type,
-                                              id.accept_type)) {
+        // Get specific map with handlers.
+        std::unique_lock<std::mutex> cb_lock(resource_callbacks_mutex_);
+        const resource_key key{id.path, id.method, id.content_type};
+        auto& accept_map = resource_callbacks_[key];
 
-            // Get specific map with handlers.
-            std::unique_lock<std::mutex> cb_lock(resource_callbacks_mutex_);
-            const resource_key key{id.path, id.method, id.content_type};
-            auto& accept_map = resource_callbacks_[key];
-
-            // Check if there is already a registered request handler.
-            if (accept_map.insert(id.accept_type, fn)) {
-                // The id have been inserted. There is no need to keep the lock,
-                // when creating the resulting handler.
-                cb_lock.unlock();
-                result = std::make_shared<demultiplex_handler>(*this, id);
-            }
+        // Check if there is already a registered request handler.
+        if (accept_map.insert(id.accept_type, fn)) {
+            // The id have been inserted. There is no need to keep the lock,
+            // when creating the resulting handler.
+            cb_lock.unlock();
+            result = std::make_shared<demultiplex_handler>(*this, id);
         }
     }
 

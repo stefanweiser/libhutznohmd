@@ -87,12 +87,11 @@ bool uri::parse(const lexer& l, int32_t& character, const bool skip_scheme)
         return false;
     }
 
-    if (('?' != character) && ('#' != character)) {
+    if (('?' != character) && ('#' != character) &&
+        (!parse_uri_word(character, path_, &is_valid_uri_path_character,
+                         *lexer_))) {
         // Must be a path or the end of the URI.
-        if (!parse_uri_word(character, path_, &is_valid_uri_path_character,
-                            *lexer_)) {
-            return false;
-        }
+        return false;
     }
 
     if ('?' == character) {

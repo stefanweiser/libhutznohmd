@@ -128,10 +128,8 @@ bool request::keeps_connection() const
 
 int32_t request::get()
 {
-    if (index_ >= buffer_.size()) {
-        if (!connection_->receive(buffer_, 4000)) {
-            return -1;
-        }
+    if ((index_ >= buffer_.size()) && (!connection_->receive(buffer_, 4000))) {
+        return -1;
     }
 
     return static_cast<uint8_t>(buffer_[index_++]);
@@ -139,10 +137,8 @@ int32_t request::get()
 
 int32_t request::peek()
 {
-    if (index_ >= buffer_.size()) {
-        if (!connection_->receive(buffer_, 4000)) {
-            return -1;
-        }
+    if ((index_ >= buffer_.size()) && (!connection_->receive(buffer_, 4000))) {
+        return -1;
     }
 
     return static_cast<uint8_t>(buffer_[index_]);
