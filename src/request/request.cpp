@@ -20,6 +20,7 @@
 #include <cstring>
 #include <limits>
 
+#include <request/mime_handler.hpp>
 #include <request/timestamp.hpp>
 #include <utility/parsing.hpp>
 #include <utility/trie.hpp>
@@ -78,6 +79,7 @@ static trie<header_key> get_header_key_trie(size_t& max_size)
     const std::vector<std::pair<const char_t* const, header_key>> header_keys =
         {std::make_pair("connection", header_key::CONNECTION),
          std::make_pair("content-length", header_key::CONTENT_LENGTH),
+         std::make_pair("content-type", header_key::CONTENT_TYPE),
          std::make_pair("date", header_key::DATE),
          std::make_pair("from", header_key::FROM),
          std::make_pair("referer", header_key::REFERER),
@@ -98,6 +100,7 @@ request::request(const connection_pointer& connection)
     , path_uri_()
     , version_(http_version::HTTP_UNKNOWN)
     , content_length_(0)
+    , content_type_(mime_type::INVALID, mime_subtype::INVALID)
     , content_(nullptr)
     , is_keep_alive_set_(false)
     , date_(0)
@@ -110,7 +113,7 @@ request::request(const connection_pointer& connection)
 {
 }
 
-bool request::parse(void)
+bool request::parse(const mime_handler& handler)
 {
     bool result = false;
 
@@ -125,7 +128,7 @@ bool request::parse(void)
                 break;
             }
 
-            if (true == parse_header(ch)) {
+            if (true == parse_header(handler, ch)) {
                 ch = lexer_.get();
             }
         }
@@ -210,7 +213,7 @@ size_t request::content_length(void) const
 
 mime request::content_type(void) const
 {
-    return mime(mime_type::INVALID, mime_subtype::INVALID);
+    return content_type_;
 }
 
 bool request::accept(void*& /*handle*/, mime& /*type*/) const
@@ -350,7 +353,7 @@ bool request::parse_version(int32_t& ch)
     return result;
 }
 
-bool request::parse_header(int32_t& ch)
+bool request::parse_header(const mime_handler& handler, int32_t& ch)
 {
     bool result = false;
     static size_t maximum_header_key_length = 0;
@@ -392,7 +395,7 @@ bool request::parse_header(int32_t& ch)
             const size_t value_end = lexer_.prev_index();
             lexer_.header_data(value_end)[0] = '\0';
             const size_t value_size = value_end - value_begin;
-            add_header(key_enum, key, value, value_size);
+            add_header(handler, key_enum, key, value, value_size);
             result = true;
             break;
         }
@@ -403,7 +406,8 @@ bool request::parse_header(int32_t& ch)
     return result;
 }
 
-void request::add_header(header_key key, const char_t* const key_string,
+void request::add_header(const mime_handler& handler, header_key key,
+                         const char_t* const key_string,
                          const char_t* value_string, size_t value_length)
 {
     skip_whitespace(value_string, value_length);
@@ -427,6 +431,10 @@ void request::add_header(header_key key, const char_t* const key_string,
         }
         break;
     }
+
+    case header_key::CONTENT_TYPE:
+        set_content_type(handler, value_string, value_length);
+        break;
 
     case header_key::DATE:
         date_ = parse_timestamp(value_string, value_length);
@@ -459,6 +467,40 @@ void request::add_header(header_key key, const char_t* const key_string,
         header_fields_[key_string] = value_string;
         break;
     }
+}
+
+void request::set_content_type(const mime_handler& handler,
+                               const char_t* value_string, size_t value_length)
+{
+    const char_t* type_begin = value_string;
+    size_t type_size = 0;
+
+    while ((type_size < value_length) && ('/' != (*value_string))) {
+        value_string++;
+        type_size++;
+    }
+
+    value_length -= type_size;
+    if (value_length > 0) {
+        value_string++;
+        value_length--;
+    }
+
+    const char_t* subtype_begin = value_string;
+    size_t subtype_size = 0;
+
+    static const select_char_map whitespace_map =
+        make_select_char_map(' ', '\t', '\n', '\r');
+
+    while ((subtype_size < value_length) &&
+           (false == whitespace_map[static_cast<uint8_t>(*value_string)])) {
+        value_string++;
+        subtype_size++;
+    }
+
+    mime_type type = handler.parse_type(type_begin, type_size);
+    mime_subtype subtype = handler.parse_subtype(subtype_begin, subtype_size);
+    content_type_ = mime(type, subtype);
 }
 
 bool request::is_whitespace(const int32_t ch)

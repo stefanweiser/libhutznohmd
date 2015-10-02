@@ -34,10 +34,14 @@ public:
     void SetUp(void) override
     {
         connection_ = std::make_shared<connection_interface_mock>();
+        text_type_ = handler_.register_mime_type("text");
+        plain_subtype_ = handler_.register_mime_subtype("plain");
     }
 
     void TearDown(void) override
     {
+        ASSERT_TRUE(handler_.unregister_mime_subtype(plain_subtype_));
+        ASSERT_TRUE(handler_.unregister_mime_type(text_type_));
         connection_.reset();
     }
 
@@ -81,6 +85,9 @@ public:
 
 protected:
     connection_mock_pointer connection_;
+    mime_handler handler_;
+    mime_type text_type_;
+    mime_subtype plain_subtype_;
 };
 
 TEST_F(request_test, construction)
@@ -93,7 +100,7 @@ TEST_F(request_test, default_request)
 {
     request r{connection_};
     setup_receive("GET / HTTP/1.1\r\n\r\n");
-    ASSERT_TRUE(r.parse());
+    ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
@@ -123,7 +130,7 @@ TEST_F(request_test, request_with_content)
 {
     request r{connection_};
     setup_receive("GET / HTTP/1.1\r\nContent-Length: 12\r\n\r\nHello World!");
-    ASSERT_TRUE(r.parse());
+    ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
@@ -155,11 +162,48 @@ TEST_F(request_test, request_with_content)
     EXPECT_STREQ(nullptr, r.user_agent());
 }
 
+TEST_F(request_test, request_with_content_type)
+{
+    request r{connection_};
+    setup_receive(
+        "GET / HTTP/1.1\r\nContent-Length: 12\r\nContent-Type: "
+        "text/plain\r\n\r\nHello World!");
+    ASSERT_TRUE(r.parse(handler_));
+
+    EXPECT_EQ(http_verb::GET, r.method());
+    EXPECT_STREQ("", r.path());
+    EXPECT_STREQ(nullptr, r.host());
+    EXPECT_STREQ(nullptr, r.query(nullptr));
+    EXPECT_STREQ(nullptr, r.fragment());
+    EXPECT_EQ(http_version::HTTP_1_1, r.version());
+    EXPECT_STREQ(nullptr, r.header_value(nullptr));
+    EXPECT_EQ(true, r.keeps_connection());
+    EXPECT_EQ(0, r.date());
+
+    // fetch_content() will set the content's result.
+    EXPECT_EQ(12, r.content_length());
+    EXPECT_EQ(mime(text_type_, plain_subtype_), r.content_type());
+    EXPECT_EQ(nullptr, r.content());
+    r.fetch_content();
+    EXPECT_EQ(12, r.content_length());
+    EXPECT_EQ(mime(text_type_, plain_subtype_), r.content_type());
+    EXPECT_EQ(0, memcmp("Hello World!", r.content(), r.content_length()));
+
+    void* handle = nullptr;
+    mime m{mime_type::INVALID, mime_subtype::INVALID};
+    EXPECT_EQ(false, r.accept(handle, m));
+
+    EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
+    EXPECT_STREQ(nullptr, r.from());
+    EXPECT_STREQ(nullptr, r.referer());
+    EXPECT_STREQ(nullptr, r.user_agent());
+}
+
 TEST_F(request_test, http_1_0_request_without_keep_alive)
 {
     request r{connection_};
     setup_receive("GET / HTTP/1.0\r\n\r\n");
-    ASSERT_TRUE(r.parse());
+    ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
@@ -189,7 +233,7 @@ TEST_F(request_test, http_1_0_request_with_non_keep_alive)
 {
     request r{connection_};
     setup_receive("GET / HTTP/1.0\r\nConnection: close\r\n\r\n");
-    ASSERT_TRUE(r.parse());
+    ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
@@ -219,7 +263,7 @@ TEST_F(request_test, http_1_0_request_with_keep_alive)
 {
     request r{connection_};
     setup_receive("GET / HTTP/1.0\r\nConnection: keep-alive\r\n\r\n");
-    ASSERT_TRUE(r.parse());
+    ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
@@ -250,7 +294,7 @@ TEST_F(request_test, request_with_date)
     request r{connection_};
     setup_receive(
         "GET / HTTP/1.1\r\nDate: Sun, 06 Nov 1994 08:49:37 GMT\r\n\r\n");
-    ASSERT_TRUE(r.parse());
+    ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
@@ -280,7 +324,7 @@ TEST_F(request_test, request_with_from)
 {
     request r{connection_};
     setup_receive("GET / HTTP/1.1\r\nFrom: info@example.com\r\n\r\n");
-    ASSERT_TRUE(r.parse());
+    ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
@@ -310,7 +354,7 @@ TEST_F(request_test, request_with_referer)
 {
     request r{connection_};
     setup_receive("GET / HTTP/1.1\r\nReferer: http://www.google.com/\r\n\r\n");
-    ASSERT_TRUE(r.parse());
+    ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
@@ -340,7 +384,7 @@ TEST_F(request_test, request_with_user_agent)
 {
     request r{connection_};
     setup_receive("GET / HTTP/1.1\r\nUser-Agent: libhutznohmd/0.0.1\r\n\r\n");
-    ASSERT_TRUE(r.parse());
+    ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
@@ -370,7 +414,7 @@ TEST_F(request_test, custom_header)
 {
     request r{connection_};
     setup_receive("GET / HTTP/1.1\r\na:b\r\n\r\n");
-    ASSERT_TRUE(r.parse());
+    ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
@@ -400,7 +444,7 @@ TEST_F(request_test, parsing_method_failed_because_no_data)
 {
     request r{connection_};
     setup_receive(" ");
-    EXPECT_FALSE(r.parse());
+    EXPECT_FALSE(r.parse(handler_));
     check_request_data(r);
 }
 
@@ -408,7 +452,7 @@ TEST_F(request_test, parsing_method_failed_because_no_whitespace_found)
 {
     request r{connection_};
     setup_receive("PUT");
-    EXPECT_FALSE(r.parse());
+    EXPECT_FALSE(r.parse(handler_));
     check_request_data(r);
 }
 
@@ -416,7 +460,7 @@ TEST_F(request_test, parsing_method_failed_because_not_a_method)
 {
     request r{connection_};
     setup_receive("ARGHH ");
-    EXPECT_FALSE(r.parse());
+    EXPECT_FALSE(r.parse(handler_));
     check_request_data(r);
 }
 
@@ -424,7 +468,7 @@ TEST_F(request_test, parsing_method_failed_because_method_token_too_long)
 {
     request r{connection_};
     setup_receive("PUTT ");
-    EXPECT_FALSE(r.parse());
+    EXPECT_FALSE(r.parse(handler_));
     check_request_data(r);
 }
 
@@ -432,7 +476,7 @@ TEST_F(request_test, parsing_method_failed_because_method_token_much_too_long)
 {
     request r{connection_};
     setup_receive("DELETEE ");
-    EXPECT_FALSE(r.parse());
+    EXPECT_FALSE(r.parse(handler_));
     check_request_data(r);
 }
 
@@ -440,7 +484,7 @@ TEST_F(request_test, parsing_uri_failed_because_no_data)
 {
     request r{connection_};
     setup_receive("PUT ");
-    EXPECT_FALSE(r.parse());
+    EXPECT_FALSE(r.parse(handler_));
     check_request_data(r);
 }
 
@@ -448,7 +492,7 @@ TEST_F(request_test, parsing_uri_failed_because_no_whitespace_found)
 {
     request r{connection_};
     setup_receive("PUT /");
-    EXPECT_FALSE(r.parse());
+    EXPECT_FALSE(r.parse(handler_));
     check_request_data(r);
 }
 
@@ -456,7 +500,7 @@ TEST_F(request_test, parsing_version_failed_because_no_data)
 {
     request r{connection_};
     setup_receive("PUT / ");
-    EXPECT_FALSE(r.parse());
+    EXPECT_FALSE(r.parse(handler_));
     check_request_data(r);
 }
 
@@ -464,7 +508,7 @@ TEST_F(request_test, parsing_version_failed_because_no_newline_found)
 {
     request r{connection_};
     setup_receive("PUT / HTTP/1.1");
-    EXPECT_FALSE(r.parse());
+    EXPECT_FALSE(r.parse(handler_));
     check_request_data(r);
 }
 
@@ -472,7 +516,7 @@ TEST_F(request_test, parsing_version_failed_because_not_a_version)
 {
     request r{connection_};
     setup_receive("PUT / HTTP/x.x\n");
-    EXPECT_FALSE(r.parse());
+    EXPECT_FALSE(r.parse(handler_));
     check_request_data(r);
 }
 
@@ -480,7 +524,7 @@ TEST_F(request_test, parsing_version_failed_because_version_too_long)
 {
     request r{connection_};
     setup_receive("PUT / HTTP/22\n");
-    EXPECT_FALSE(r.parse());
+    EXPECT_FALSE(r.parse(handler_));
     check_request_data(r);
 }
 
@@ -488,7 +532,7 @@ TEST_F(request_test, parsing_version_failed_because_version_much_too_long)
 {
     request r{connection_};
     setup_receive("PUT / HTTP/1.11\n");
-    EXPECT_FALSE(r.parse());
+    EXPECT_FALSE(r.parse(handler_));
     check_request_data(r);
 }
 
@@ -496,7 +540,7 @@ TEST_F(request_test, parsing_header_failed_because_no_data)
 {
     request r{connection_};
     setup_receive("PUT / HTTP/1.1\na");
-    EXPECT_FALSE(r.parse());
+    EXPECT_FALSE(r.parse(handler_));
     check_request_data(r);
 }
 
@@ -504,7 +548,7 @@ TEST_F(request_test, parsing_header_failed_because_no_newline_found)
 {
     request r{connection_};
     setup_receive("PUT / HTTP/2\na:b");
-    EXPECT_FALSE(r.parse());
+    EXPECT_FALSE(r.parse(handler_));
     check_request_data(r);
 }
 

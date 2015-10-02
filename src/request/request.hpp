@@ -24,6 +24,7 @@
 #include <libhutznohmd/request.hpp>
 
 #include <request/lexer.hpp>
+#include <request/mime_handler.hpp>
 #include <request/uri.hpp>
 
 namespace hutzn
@@ -33,6 +34,7 @@ enum class header_key : uint8_t {
     CUSTOM = 0,
     CONNECTION,
     CONTENT_LENGTH,
+    CONTENT_TYPE,
     DATE,
     EXPECT,
     FROM,
@@ -48,7 +50,7 @@ public:
 
     explicit request(const connection_pointer& connection);
 
-    bool parse(void);
+    bool parse(const mime_handler& handler);
 
     void fetch_content(void) override;
     http_verb method(void) const override;
@@ -77,10 +79,13 @@ private:
     //! Parses a header utilizing the lexer member. Returns true, if a header
     //! could successfully get parsed. Returning false means, that the lexer has
     //! reached the end of the file. The in/out parameter c is -1 in this case.
-    bool parse_header(int32_t& ch);
+    bool parse_header(const mime_handler& handler, int32_t& ch);
 
-    void add_header(header_key key, const char_t* const key_string,
-                    const char_t* value_string, size_t value_length);
+    void add_header(const mime_handler& handler, header_key key,
+                    const char_t* const key_string, const char_t* value_string,
+                    size_t value_length);
+    void set_content_type(const mime_handler& handler,
+                          const char_t* value_string, size_t value_length);
 
     static bool is_whitespace(const int32_t ch);
     static bool is_newline(const int32_t ch);
@@ -93,6 +98,7 @@ private:
     http_version version_;
 
     size_t content_length_;
+    mime content_type_;
     const void* content_;
     bool is_keep_alive_set_;
     time_t date_;
