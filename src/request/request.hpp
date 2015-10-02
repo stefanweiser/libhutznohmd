@@ -29,6 +29,8 @@
 namespace hutzn
 {
 
+enum class header_key : uint8_t { CUSTOM = 0, DATE = 1 };
+
 class request : public request_interface
 {
 public:
@@ -38,15 +40,6 @@ public:
     explicit request(const connection_pointer& connection);
 
     bool parse(void);
-
-    bool parse_method(int32_t& ch);
-    bool parse_uri(int32_t& ch);
-    bool parse_version(int32_t& ch);
-
-    //! Parses a header utilizing the lexer member. Returns true, if a header
-    //! could successfully get parsed. Returning false means, that the lexer has
-    //! reached the end of the file. The in/out parameter c is -1 in this case.
-    bool parse_header(int32_t& ch);
 
     http_verb method(void) const override;
     const char_t* path(void) const override;
@@ -67,6 +60,18 @@ public:
     const char_t* user_agent(void) const override;
 
 private:
+    bool parse_method(int32_t& ch);
+    bool parse_uri(int32_t& ch);
+    bool parse_version(int32_t& ch);
+
+    //! Parses a header utilizing the lexer member. Returns true, if a header
+    //! could successfully get parsed. Returning false means, that the lexer has
+    //! reached the end of the file. The in/out parameter c is -1 in this case.
+    bool parse_header(int32_t& ch);
+
+    void add_header(header_key key, const char_t* const key_string,
+                    const char_t* const value_string);
+
     static bool is_whitespace(const int32_t ch);
     static bool is_newline(const int32_t ch);
     static bool is_key_value_separator(const int32_t ch);

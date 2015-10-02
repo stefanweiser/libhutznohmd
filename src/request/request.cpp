@@ -67,6 +67,22 @@ static trie<http_version> get_version_trie(size_t& max_size)
     return result;
 }
 
+static trie<header_key> get_header_key_trie(size_t& max_size)
+{
+    trie<header_key> result{true};
+
+    // Filling versions and automatically calculate the maximum length.
+    max_size = 0;
+    const std::vector<std::pair<const char_t* const, header_key>> header_keys =
+        {std::make_pair("date", header_key::DATE)};
+    for (const std::pair<const char_t* const, header_key>& pair : header_keys) {
+        result.insert(pair.first, pair.second);
+        max_size = std::max(max_size, ::strnlen(pair.first, 16));
+    }
+
+    return result;
+}
+
 } // namespace
 
 request::request(const connection_pointer& connection)
@@ -218,17 +234,30 @@ bool request::parse_version(int32_t& ch)
 bool request::parse_header(int32_t& ch)
 {
     bool result = false;
+    static size_t maximum_header_key_length = 0;
+    static const trie<header_key> header_keys =
+        get_header_key_trie(maximum_header_key_length);
 
-    const char_t* key = lexer_.header_data(lexer_.prev_index());
+    const size_t key_begin = lexer_.prev_index();
+    size_t key_size = 0;
+    const char_t* key = lexer_.header_data(key_begin);
     while (ch >= 0) {
         if (true == is_key_value_separator(ch)) {
             // Overwrite the separator with null. The key is getting null
             // terminated by this.
-            lexer_.header_data(lexer_.prev_index())[0] = '\0';
+            const size_t key_end = lexer_.prev_index();
+            lexer_.header_data(key_end)[0] = '\0';
+            key_size = key_end - key_begin;
             break;
         }
 
         ch = lexer_.get();
+    }
+
+    trie_find_result<header_key> key_result = header_keys.find(key, key_size);
+    header_key key_enum = header_key::CUSTOM;
+    if (key_result.used_size() > 0) {
+        key_enum = key_result.value();
     }
 
     ch = lexer_.get();
@@ -241,7 +270,7 @@ bool request::parse_header(int32_t& ch)
             // Overwrite the newline with null. The value is getting null
             // terminated by this.
             lexer_.header_data(lexer_.prev_index())[0] = '\0';
-            header_fields_[key] = value;
+            add_header(key_enum, key, value);
             result = true;
             break;
         }
@@ -250,6 +279,20 @@ bool request::parse_header(int32_t& ch)
     }
 
     return result;
+}
+
+void request::add_header(header_key key, const char_t* const key_string,
+                         const char_t* const value_string)
+{
+    switch (key) {
+    case header_key::DATE:
+        header_fields_[key_string] = value_string;
+        break;
+    case header_key::CUSTOM:
+        header_fields_[key_string] = value_string;
+    default:
+        break;
+    }
 }
 
 http_verb request::method(void) const
