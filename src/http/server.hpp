@@ -34,17 +34,24 @@ namespace hutzn
 namespace http
 {
 
+//! ...
 class server : public server_interface
 {
 public:
+    //! ...
     server(const listener_pointer& s,
            const transaction_function& transaction_functor);
 
+    //! ...
     void run() override;
+
+    //! ...
     void stop() override;
 
+    //! ...
     void parse_request(const connection_pointer& connection);
 
+    //! ...
     const listener_pointer& socket() const;
 
 private:

@@ -33,14 +33,21 @@ namespace hutzn
 namespace http
 {
 
+//! ...
 class lexer
 {
 public:
+    //! ...
     explicit lexer(const anonymous_int_function& get_functor,
                    const anonymous_int_function& peek_functor);
 
+    //! ...
     int32_t get() const;
+
+    //! ...
     int32_t get_non_whitespace() const;
+
+    //! ...
     int32_t get_unsigned_integer(int32_t& character) const;
 
 private:

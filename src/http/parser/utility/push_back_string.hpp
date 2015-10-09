@@ -85,6 +85,7 @@ private:
     mutable char_t* dynamic_buffer_;
 };
 
+//! ...
 template <size_t maximum_size>
 push_back_string<maximum_size>::push_back_string()
     : current_length_(0)
@@ -94,12 +95,14 @@ push_back_string<maximum_size>::push_back_string()
 {
 }
 
+//! ...
 template <size_t maximum_size>
 push_back_string<maximum_size>::~push_back_string()
 {
     free(dynamic_buffer_);
 }
 
+//! ...
 template <size_t maximum_size>
 void push_back_string<maximum_size>::push_back(const char_t c)
 {
@@ -116,6 +119,7 @@ void push_back_string<maximum_size>::push_back(const char_t c)
     }
 }
 
+//! ...
 template <size_t maximum_size>
 void push_back_string<maximum_size>::append_string(const char_t* s)
 {
@@ -125,6 +129,7 @@ void push_back_string<maximum_size>::append_string(const char_t* s)
     }
 }
 
+//! ...
 template <size_t maximum_size>
 char_t& push_back_string<maximum_size>::operator[](const size_t& index)
 {
@@ -135,6 +140,7 @@ char_t& push_back_string<maximum_size>::operator[](const size_t& index)
     }
 }
 
+//! ...
 template <size_t maximum_size>
 const char_t* push_back_string<maximum_size>::c_str() const
 {
@@ -149,18 +155,21 @@ const char_t* push_back_string<maximum_size>::c_str() const
     }
 }
 
+//! ...
 template <size_t maximum_size>
 bool push_back_string<maximum_size>::empty() const
 {
     return current_length_ == 0;
 }
 
+//! ...
 template <size_t maximum_size>
 size_t push_back_string<maximum_size>::size() const
 {
     return current_length_;
 }
 
+//! ...
 template <size_t maximum_size>
 void push_back_string<maximum_size>::clear()
 {
@@ -174,6 +183,7 @@ void push_back_string<maximum_size>::clear()
     current_length_ = 0;
 }
 
+//! ...
 template <size_t maximum_size>
 void push_back_string<maximum_size>::need_more_dynamic_memory()
 {

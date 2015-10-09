@@ -33,8 +33,10 @@ namespace hutzn
 namespace http
 {
 
+//! ...
 static const size_t reason_phrase_size = 100;
 
+//! ...
 class response_parser
 {
 public:
@@ -48,17 +50,41 @@ public:
     //! than 0 for invalid character.
     explicit response_parser(const anonymous_int_function& get_functor,
                              const anonymous_int_function& peek_functor);
+
+    //! ...
     void parse();
+
+    //! ...
     bool valid() const;
+
+    //! ...
     const http::version& version() const;
+
+    //! ...
     const std::map<std::string, std::string>& headers() const;
+
+    //! ...
     const size_t& content_length() const;
+
+    //! ...
     const media_type_interface& content_type() const;
+
+    //! ...
     const time_t& date() const;
+
+    //! ...
     bool keeps_connection() const;
+
+    //! ...
     const md5_array& md5() const;
+
+    //! ...
     bool has_md5() const;
+
+    //! ...
     const uint16_t& status_code() const;
+
+    //! ...
     const char_t* reason_phrase() const;
 
 private:

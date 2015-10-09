@@ -35,28 +35,51 @@ namespace hutzn
 namespace http
 {
 
+//! ...
 class request : public request_interface
 {
 public:
+    //! ...
     struct parameters
     {
-        bool check_md5;
+        bool check_md5; //!< ...
     };
 
+    //! ...
     explicit request(const connection_pointer& connection,
                      const parameters& param);
+
+    //! ...
     bool parse();
 
+    //! ...
     hutzn::method method() const override;
+
+    //! ...
     const uri_interface& request_uri() const override;
+
+    //! ...
     http::version version() const override;
+
+    //! ...
     const std::map<std::string, std::string>& headers() const override;
+
+    //! ...
     const buffer& data() const override;
+
+    //! ...
     const media_type_interface& data_content_type() const override;
+
+    //! ...
     time_t date() const override;
+
+    //! ...
     bool keeps_connection() const;
 
+    //! ...
     int32_t get();
+
+    //! ...
     int32_t peek();
 
 private:

@@ -41,12 +41,15 @@ template <typename value_type>
 class trie
 {
 public:
+    //! ...
     using value_info = std::tuple<const char_t* const, value_type>;
 
+    //! ...
     explicit trie(const std::vector<value_info>& values,
                   const value_type& default_value);
 
     template <size_t size>
+    //! ...
     value_type parse(int32_t& character,
                      push_back_string<size>& fail_safe_result,
                      const lexer& l) const;
@@ -62,6 +65,7 @@ private:
     std::array<std::unique_ptr<trie>, NUMBER_OF_VALUES_PER_BYTE> children_;
 };
 
+//! ...
 template <typename value_type>
 trie<value_type>::trie(const std::vector<value_info>& values,
                        const value_type& default_value)
@@ -70,7 +74,9 @@ trie<value_type>::trie(const std::vector<value_info>& values,
 }
 
 template <typename value_type>
+//! ...
 template <size_t size>
+//! ...
 value_type trie<value_type>::parse(int32_t& character,
                                    push_back_string<size>& fail_safe_result,
                                    const lexer& l) const
@@ -88,6 +94,7 @@ value_type trie<value_type>::parse(int32_t& character,
     return child->parse(character, fail_safe_result, l);
 }
 
+//! ...
 template <typename value_info>
 void fill_next_values(std::vector<value_info>& next_values,
                       const std::vector<value_info>& values,
@@ -102,6 +109,7 @@ void fill_next_values(std::vector<value_info>& next_values,
     }
 }
 
+//! ...
 template <typename value_type>
 trie<value_type>::trie(const std::vector<value_info>& values,
                        const std::string& name, const size_t& index,

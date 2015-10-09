@@ -34,6 +34,7 @@ namespace hutzn
 namespace http
 {
 
+//! ...
 class request_parser
 {
 public:
@@ -47,20 +48,47 @@ public:
     //! than 0 for invalid character.
     explicit request_parser(const anonymous_int_function& get_functor,
                             const anonymous_int_function& peek_functor);
+
+    //! ...
     void parse();
 
+    //! ...
     bool valid() const;
+
+    //! ...
     const http::version& version() const;
+
+    //! ...
     const std::map<std::string, std::string>& headers() const;
+
+    //! ...
     const size_t& content_length() const;
+
+    //! ...
     const media_type_interface& content_type() const;
+
+    //! ...
     const time_t& date() const;
+
+    //! ...
     bool keeps_connection() const;
+
+    //! ...
     const md5_array& md5() const;
+
+    //! ...
     bool has_md5() const;
+
+    //! ...
     const hutzn::method& method() const;
+
+    //! ...
     const uri_interface& request_uri() const;
+
+    //! ...
     const uri_interface& from_uri() const;
+
+    //! ...
     std::vector<const media_type_interface*> accept_header() const;
 
 private:

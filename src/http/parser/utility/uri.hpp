@@ -35,25 +35,49 @@ namespace http
 class uri : public uri_interface
 {
 public:
+    //! ...
     explicit uri();
 
     explicit uri(const uri& rhs) = delete;
     uri& operator=(const uri& rhs) = delete;
 
+    //! ...
     bool parse(const lexer& l, int32_t& character, const bool skip_scheme);
 
+    //! ...
     void set_scheme(const uri_scheme& new_scheme);
+
+    //! ...
     bool set_userinfo(const char_t* const new_userinfo);
+
+    //! ...
     bool set_host(const char_t* const new_host);
+
+    //! ...
     void set_port(const uint16_t& new_port);
 
+    //! ...
     bool valid() const override;
+
+    //! ...
     const uri_scheme& scheme() const override;
+
+    //! ...
     const char_t* userinfo() const override;
+
+    //! ...
     const char_t* host() const override;
+
+    //! ...
     const uint16_t& port() const override;
+
+    //! ...
     const char_t* path() const override;
+
+    //! ...
     const char_t* query() const override;
+
+    //! ...
     const char_t* fragment() const override;
 
 private:

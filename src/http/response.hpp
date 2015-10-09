@@ -32,15 +32,26 @@ namespace hutzn
 namespace http
 {
 
+//! ...
 class response : public response_interface
 {
 public:
+    //! ...
     explicit response(const connection_pointer& connection);
+
+    //! ...
     void deliver();
 
+    //! ...
     void set_status_code(const http_status_code& status_code) override;
+
+    //! ...
     void set_version(const http::version& version) override;
+
+    //! ...
     void set_header(const std::string& key, const std::string& value) override;
+
+    //! ...
     void set_data(const buffer& data) override;
 
 private:

@@ -44,6 +44,7 @@ private:
     void* handle_;
 };
 
+//! ...
 inline anonymous_int_function::anonymous_int_function(int32_t (*functor)(void*),
                                                       void* handle)
     : functor_(functor)
@@ -51,6 +52,7 @@ inline anonymous_int_function::anonymous_int_function(int32_t (*functor)(void*),
 {
 }
 
+//! ...
 inline int32_t anonymous_int_function::operator()() const
 {
     return functor_(handle_);

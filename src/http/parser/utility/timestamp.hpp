@@ -30,6 +30,7 @@ namespace hutzn
 namespace http
 {
 
+//! ...
 time_t parse_timestamp(int32_t& character, const lexer& l);
 
 } // namespace http
