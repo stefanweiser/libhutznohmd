@@ -1,6 +1,8 @@
 sonar.projectKey=cxx:${project_key}
 sonar.projectName=${project_name}
+sonar.projectBaseDir=..
 sonar.projectVersion=${version}
+sonar.working.directory=${build_path}/sonar
 sonar.language=c++
 sonar.sourceEncoding=UTF-8
 
