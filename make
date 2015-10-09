@@ -97,7 +97,9 @@ def execute_clean(args):
 def execute_coverage(args):
     args.target = 'coverage'
     execute_bootstrap(args)
-    check_call(['make', '-j' + str(cpu_count()), 'coverage'], cwd=build_path)
+    check_call(['make', '-j' + str(cpu_count()), 'coverage',
+                'OUTPUT_TYPE=--html', 'OUTPUT_ENDING=.html'],
+               cwd=build_path)
 
 
 def execute_doc(args):
@@ -167,7 +169,11 @@ def execute_sonar(args):
 
     rmtree(build_path)
     os.makedirs(build_path)
-    execute_coverage(args)
+    args.target = 'coverage'
+    execute_bootstrap(args)
+    check_call(['make', '-j' + str(cpu_count()), 'coverage',
+                'OUTPUT_TYPE=--xml', 'OUTPUT_ENDING=.xml'],
+               cwd=build_path)
 
     output_file = open(build_path + '/cppcheck_report.xml', 'w')
     process = Popen(['cppcheck', '--xml', '--xml-version=2', '--quiet',

@@ -22,17 +22,17 @@ IF(NOT MINIMAL)
     FILE(MAKE_DIRECTORY "${COVERAGE_PATH}")
     ADD_CUSTOM_TARGET(coverage
       unittest_hutznohmd
-      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --delete --verbose --keep --xml
-        "--output=${COVERAGE_PATH}/unittest.xml" --branches --root
+      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --delete --branches \${OUTPUT_TYPE}
+        "--output=${COVERAGE_PATH}/unittest\${OUTPUT_ENDING}" --root
         "${CMAKE_CURRENT_SOURCE_DIR}"
       COMMAND integrationtest_hutznohmd
-      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --delete --verbose --keep --xml
-        "--output=${COVERAGE_PATH}/integrationtest.xml" --branches --root
+      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --delete --branches \${OUTPUT_TYPE}
+        "--output=${COVERAGE_PATH}/integrationtest\${OUTPUT_ENDING}" --root
         ${CMAKE_CURRENT_SOURCE_DIR}
       COMMAND unittest_hutznohmd
       COMMAND integrationtest_hutznohmd
-      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --delete --verbose --keep --xml
-        "--output=${COVERAGE_PATH}/overall.xml" --branches --root
+      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --delete --branches \${OUTPUT_TYPE}
+        "--output=${COVERAGE_PATH}/overall\${OUTPUT_ENDING}" --root
         ${CMAKE_CURRENT_SOURCE_DIR}
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 ENDIF()

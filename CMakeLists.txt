@@ -37,8 +37,9 @@ INCLUDE(Lizard)
 INCLUDE(RATS)
 INCLUDE(RecursiveSubdirs)
 INCLUDE(Sonar)
-INCLUDE(Toolchain)
 INCLUDE(Valgrind)
+
+INCLUDE(Toolchain)
 
 ENABLE_TESTING()
 
