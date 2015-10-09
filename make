@@ -117,8 +117,7 @@ def execute_clean(args):
 def execute_coverage(args):
     args.target = 'coverage'
     execute_bootstrap(args)
-    check_call(['make', '-j' + str(cpu_count()), 'coverage',
-                'OUTPUT_TYPE=--html', 'OUTPUT_ENDING=.html'],
+    check_call(['make', '-j' + str(cpu_count()), 'coverage'],
                cwd=build_path)
 
 
@@ -175,8 +174,7 @@ def execute_sonar(args):
     os.makedirs(build_path)
     args.target = 'coverage'
     execute_bootstrap(args)
-    check_call(['make', '-j' + str(cpu_count()), 'coverage',
-                'OUTPUT_TYPE=--xml', 'OUTPUT_ENDING=.xml'],
+    check_call(['make', '-j' + str(cpu_count()), 'coverage'],
                cwd=build_path)
 
     os.makedirs(build_path + '/reports')

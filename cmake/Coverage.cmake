@@ -22,17 +22,35 @@ IF(NOT MINIMAL)
     FILE(MAKE_DIRECTORY "${COVERAGE_PATH}")
     ADD_CUSTOM_TARGET(coverage
       unittest_hutznohmd
-      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --delete --branches \${OUTPUT_TYPE}
-        "--output=${COVERAGE_PATH}/unittest\${OUTPUT_ENDING}" --root
+      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --branches --xml
+        "--output=${COVERAGE_PATH}/unittest.xml" --root
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --branches --html
+        "--output=${COVERAGE_PATH}/unittest.html" --root
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --delete --branches
+        "--output=${COVERAGE_PATH}/unittest.txt" --root
         "${CMAKE_CURRENT_SOURCE_DIR}"
       COMMAND integrationtest_hutznohmd
-      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --delete --branches \${OUTPUT_TYPE}
-        "--output=${COVERAGE_PATH}/integrationtest\${OUTPUT_ENDING}" --root
+      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --branches --xml
+        "--output=${COVERAGE_PATH}/integrationtest.xml" --root
+        ${CMAKE_CURRENT_SOURCE_DIR}
+      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --branches --html
+        "--output=${COVERAGE_PATH}/integrationtest.html" --root
+        ${CMAKE_CURRENT_SOURCE_DIR}
+      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --delete --branches
+        "--output=${COVERAGE_PATH}/integrationtest" --root
         ${CMAKE_CURRENT_SOURCE_DIR}
       COMMAND unittest_hutznohmd
       COMMAND integrationtest_hutznohmd
-      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --delete --branches \${OUTPUT_TYPE}
-        "--output=${COVERAGE_PATH}/overall\${OUTPUT_ENDING}" --root
+      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --branches --xml
+        "--output=${COVERAGE_PATH}/overall.xml" --root
+        ${CMAKE_CURRENT_SOURCE_DIR}
+      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --branches --html
+        "--output=${COVERAGE_PATH}/overall.html" --root
+        ${CMAKE_CURRENT_SOURCE_DIR}
+      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --delete --branches
+        "--output=${COVERAGE_PATH}/overall" --root
         ${CMAKE_CURRENT_SOURCE_DIR}
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 ENDIF()
