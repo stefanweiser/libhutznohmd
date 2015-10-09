@@ -10,6 +10,7 @@ build_path = os.path.join(script_path, 'build')
 install_path = os.path.join(script_path, 'install')
 reports_path = os.path.join(build_path, 'reports')
 coverage_path = os.path.join(build_path, 'coverage')
+log_file_path = os.path.join(build_path, 'build.log')
 
 # add the python subdirectory to the search path
 sys.path.insert(0, python_script_path)
@@ -98,22 +99,21 @@ def execute_check(args):
     os.makedirs(reports_path)
 
     print(colorize('[INFO]: Compile all...', GREEN))
-    log_file = open(build_path + '/build.log', 'w')
     process = Popen(['make', '-j' + str(cpu_count()), 'all'], cwd=build_path,
-                    stdout=log_file, stderr=log_file)
+                    stdout=args.log_file, stderr=args.log_file)
     process.wait()
 
     print(colorize('[INFO]: Run valgrind...', GREEN))
     process = Popen(['valgrind', '--leak-check=full', '--xml=yes',
                      '--xml-file=' + reports_path + '/valgrind.xml',
                      build_path + '/unittest/unittest_hutznohmd'],
-                    cwd=build_path, stdout=log_file, stderr=log_file)
+                    cwd=build_path, stdout=args.log_file, stderr=args.log_file)
     process.wait()
 
     print(colorize('[INFO]: Run unittest...', GREEN))
     process = Popen([build_path + '/unittest/unittest_hutznohmd',
                      '--gtest_output=xml:' + reports_path + '/unittest.xml'],
-                    cwd=build_path, stdout=log_file, stderr=log_file)
+                    cwd=build_path, stdout=args.log_file, stderr=args.log_file)
     process.wait()
 
     print(colorize('[INFO]: Run cppcheck...', GREEN))
@@ -121,8 +121,8 @@ def execute_check(args):
     process = Popen(['cppcheck', '--xml', '--xml-version=2', '--quiet',
                      '--language=c++', '--platform=unix64', '--enable=all',
                      '--std=c++11', '--force', '-I', script_path + '/src',
-                     script_path + '/src'], cwd=build_path, stdout=log_file,
-                    stderr=output_file)
+                     script_path + '/src'], cwd=build_path,
+                    stdout=args.log_file, stderr=output_file)
     process.wait()
     output_file.close()
 
@@ -132,10 +132,9 @@ def execute_check(args):
                      script_path + '/examples',
                      script_path + '/integrationtest', script_path + '/src',
                      script_path + '/unittest'], cwd=build_path,
-                    stdout=output_file, stderr=log_file)
+                    stdout=output_file, stderr=args.log_file)
     process.wait()
     output_file.close()
-    log_file.close()
 
     print(colorize('[INFO]: All report files were written to ' + reports_path +
                    '.', GREEN))
@@ -151,8 +150,8 @@ def run_gcovr(output_filename_base):
                 '.xml', '--root', script_path], cwd=build_path)
     check_call(['gcovr', '--branches', '--html', '--output=' + filename_base +
                 '.html', '--root', script_path], cwd=build_path)
-    check_call(['gcovr', '--delete', '--branches', '--output=' + filename_base +
-                '.txt', '--root', script_path], cwd=build_path)
+    check_call(['gcovr', '--delete', '--branches', '--output=' +
+                filename_base + '.txt', '--root', script_path], cwd=build_path)
 
 
 def execute_coverage(args):
@@ -161,28 +160,24 @@ def execute_coverage(args):
     execute_build(args)
     os.makedirs(coverage_path)
 
-    log_file = open(build_path + '/build.log', 'w')
-
     print(colorize('[INFO]: Collect unittest\'s coverage information...',
                    GREEN))
-    Popen(['./unittest/unittest_hutznohmd'], cwd=build_path, stdout=log_file,
-          stderr=log_file).wait()
+    Popen(['./unittest/unittest_hutznohmd'], cwd=build_path,
+          stdout=args.log_file, stderr=args.log_file).wait()
     run_gcovr('unittest')
-    
+
     print(colorize('[INFO]: Collect integrationtest\'s coverage' +
                    ' information...', GREEN))
     Popen(['./integrationtest/integrationtest_hutznohmd'], cwd=build_path,
-          stdout=log_file, stderr=log_file).wait()
+          stdout=args.log_file, stderr=args.log_file).wait()
     run_gcovr('integrationtest')
-    
-    print(colorize('[INFO]: Collect overall coverage information...', GREEN))
-    Popen(['./unittest/unittest_hutznohmd'], cwd=build_path, stdout=log_file,
-          stderr=log_file).wait()
-    Popen(['./integrationtest/integrationtest_hutznohmd'], cwd=build_path,
-          stdout=log_file, stderr=log_file).wait()
-    run_gcovr('overall')
 
-    log_file.close()
+    print(colorize('[INFO]: Collect overall coverage information...', GREEN))
+    Popen(['./unittest/unittest_hutznohmd'], cwd=build_path,
+          stdout=args.log_file, stderr=args.log_file).wait()
+    Popen(['./integrationtest/integrationtest_hutznohmd'], cwd=build_path,
+          stdout=args.log_file, stderr=args.log_file).wait()
+    run_gcovr('overall')
 
 
 def execute_doc(args):
@@ -328,13 +323,16 @@ if __name__ == "__main__":
             args.library_version = version_file.read().strip()
             version_file.close()
 
+            args.log_file = open(log_file_path, 'w')
             if not os.path.exists(build_path):
                 os.makedirs(build_path)
                 execute_bootstrap(args)
 
             for step in args.step:
                 steps[step].fn(args)
+            args.log_file.close()
 
     except CalledProcessError as e:
         print(colorize('[FAIL]: <' + ' '.join(e.cmd) + '> failed (exit code ' +
                        str(e.returncode) + ').', RED))
+        args.log_file.close()
