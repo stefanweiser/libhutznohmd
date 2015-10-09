@@ -99,18 +99,27 @@ mime mime_handler::parse(const char_t* const data,
     return mime(type, subtype);
 }
 
+bool mime_handler::is_both_unset_or_set(const mime& t) const
+{
+    const mime_type type = t.first;
+    const mime_subtype subtype = t.second;
+
+    bool result;
+    if (((type == mime_type::NONE) && (subtype == mime_subtype::NONE)) ||
+        ((type != mime_type::NONE) && (subtype != mime_subtype::NONE))) {
+        result = true;
+    } else {
+        result = false;
+    }
+    return result;
+}
+
 bool mime_handler::is_mime_valid(const mime& t) const
 {
     const mime_type type = t.first;
     const mime_subtype subtype = t.second;
 
-    bool result = true;
-
-    // Either type and subtype is not unset or both are unset.
-    if (((type == mime_type::NONE) && (subtype != mime_subtype::NONE)) ||
-        ((type != mime_type::NONE) && (subtype == mime_subtype::NONE))) {
-        result = false;
-    }
+    bool result = is_both_unset_or_set(t);
 
     // Of course invalid values are not valid.
     if ((type == mime_type::INVALID) || (subtype == mime_subtype::INVALID)) {

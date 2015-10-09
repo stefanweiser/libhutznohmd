@@ -63,6 +63,10 @@ public:
     mime parse(const char_t* const data, const size_t max_length) const;
 
 private:
+    //! @brief Returns whether both mime type and subtype is unset or both are
+    //! set.
+    bool is_both_unset_or_set(const mime& t) const;
+
     //! @brief Determines, whether a mime type is valid or not.
     //!
     //! Checks whether a type and subtype is consequently none or not. No part
