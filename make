@@ -162,12 +162,6 @@ def execute_package(args):
                 '--exclude=*.user', '.'], cwd=script_path)
 
 
-def execute_rats(args):
-    check_is_bootstrapped()
-
-    check_call(['make', 'rats'], cwd=build_path)
-
-
 def execute_sonar(args):
     os.environ['project_key'] = 'libhutznohmd'
     os.environ['project_name'] = 'libhutznohmd'
@@ -261,8 +255,6 @@ if __name__ == "__main__":
                                   help='installs the targets'),
                 'package': Struct(fn=execute_package,
                                   help='builds packages'),
-                'rats': Struct(fn=execute_rats,
-                               help='searches for security issues'),
                 'sonar': Struct(fn=execute_sonar,
                                 help='uploads sonar results'),
                 'test': Struct(fn=execute_test,
