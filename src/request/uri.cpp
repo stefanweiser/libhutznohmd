@@ -39,6 +39,31 @@ static trie<std::tuple<uri_scheme, uint16_t>> make_scheme_trie()
     return t;
 }
 
+inline bool convert_char(char_t*& data, size_t& head, size_t& tail)
+{
+    bool is_error;
+    uint8_t a = static_cast<uint8_t>(from_hex(data[head + 1]));
+    uint8_t b = static_cast<uint8_t>(from_hex(data[head + 2]));
+    if ((a < 16) && (b < 16)) {
+        data[tail] = static_cast<char_t>(static_cast<uint8_t>((a << 4) + b));
+        head += 3;
+        tail++;
+        is_error = false;
+    } else {
+        tail = 0;
+        is_error = true;
+    }
+    return is_error;
+}
+
+inline void skip_optional_slashes(char_t*& raw, size_t& remaining)
+{
+    if ((remaining >= 2) && ('/' == raw[0]) && ('/' == raw[1])) {
+        remaining -= 2;
+        raw += 2;
+    }
+}
+
 //! Parses maximal remaining characters of data and stops, when one of the
 //! selected characters is discovered.
 template <typename... tn>
@@ -56,17 +81,7 @@ size_t parse_uri_word(char_t*& data, size_t& remaining,
             stop = true;
         } else if ('%' == ch) {
             if ((remaining - head) > 2) {
-                uint8_t a = static_cast<uint8_t>(from_hex(data[head + 1]));
-                uint8_t b = static_cast<uint8_t>(from_hex(data[head + 2]));
-                if ((a < 16) && (b < 16)) {
-                    data[tail] =
-                        static_cast<char_t>(static_cast<uint8_t>((a << 4) + b));
-                    head += 3;
-                    tail++;
-                } else {
-                    tail = 0;
-                    stop = true;
-                }
+                stop = convert_char(data, head, tail);
             } else {
                 tail = 0;
                 stop = true;
@@ -217,10 +232,7 @@ bool uri::parse_1st_pass(char_t*& raw, size_t& remaining, first_pass_data& data,
                 remaining--;
                 raw++;
 
-                if ((remaining >= 2) && ('/' == raw[0]) && ('/' == raw[1])) {
-                    remaining -= 2;
-                    raw += 2;
-                }
+                skip_optional_slashes(raw, remaining);
             } else {
                 length += parse_uri_word(raw, remaining, '/', '?', '#', ' ',
                                          '\t', '\r', '\n');
