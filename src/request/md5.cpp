@@ -16,6 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
+
 #include <utility/common.hpp>
 
 #include "md5.hpp"
@@ -96,6 +98,43 @@ inline uint32_t set4(const uint32_t& a, const uint32_t& b, const uint32_t& c,
     return rotate_left(a + i(b, c, d) + x[k] + t[j], s) + b;
 }
 
+template <const size_t shift1, const size_t shift2, const size_t shift3,
+          const size_t shift4, typename functor>
+void step_fn(functor fn, uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d,
+             const uint32_t* const x, const size_t beginning_index,
+             std::array<size_t, 16> indices)
+{
+    static const size_t index0 = 0;
+    static const size_t index1 = 1;
+    static const size_t index2 = 2;
+    static const size_t index3 = 3;
+
+    for (size_t i = 0; i < 16; i += 4) {
+        a = fn(a, b, c, d, x, indices[i + 0], shift1,
+               beginning_index + i + index0);
+        d = fn(d, a, b, c, x, indices[i + 1], shift2,
+               beginning_index + i + index1);
+        c = fn(c, d, a, b, x, indices[i + 2], shift3,
+               beginning_index + i + index2);
+        b = fn(b, c, d, a, x, indices[i + 3], shift4,
+               beginning_index + i + index3);
+    }
+}
+
+static std::array<size_t, 16> get_indice_array(const size_t seed,
+                                               const size_t inc,
+                                               const size_t mod)
+{
+    std::array<size_t, 16> result;
+    size_t index = seed;
+    for (size_t i = 0; i < result.size(); i++) {
+        result[i] = index;
+        index = (index + inc) % mod;
+    }
+    assert(seed == index);
+    return result;
+}
+
 //! @brief Processes one block.
 //! @param data The data block to process.
 //! @param digest The current digest result.
@@ -108,70 +147,17 @@ void process(const char_t data[block_size], std::array<uint32_t, 4>& digest)
     uint32_t d = digest[3];
     const uint32_t* x = reinterpret_cast<const uint32_t*>(data);
 
-    a = set1(a, b, c, d, x, 0, 7, 0);
-    d = set1(d, a, b, c, x, 1, 12, 1);
-    c = set1(c, d, a, b, x, 2, 17, 2);
-    b = set1(b, c, d, a, x, 3, 22, 3);
-    a = set1(a, b, c, d, x, 4, 7, 4);
-    d = set1(d, a, b, c, x, 5, 12, 5);
-    c = set1(c, d, a, b, x, 6, 17, 6);
-    b = set1(b, c, d, a, x, 7, 22, 7);
-    a = set1(a, b, c, d, x, 8, 7, 8);
-    d = set1(d, a, b, c, x, 9, 12, 9);
-    c = set1(c, d, a, b, x, 10, 17, 10);
-    b = set1(b, c, d, a, x, 11, 22, 11);
-    a = set1(a, b, c, d, x, 12, 7, 12);
-    d = set1(d, a, b, c, x, 13, 12, 13);
-    c = set1(c, d, a, b, x, 14, 17, 14);
-    b = set1(b, c, d, a, x, 15, 22, 15);
-    a = set2(a, b, c, d, x, 1, 5, 16);
-    d = set2(d, a, b, c, x, 6, 9, 17);
-    c = set2(c, d, a, b, x, 11, 14, 18);
-    b = set2(b, c, d, a, x, 0, 20, 19);
-    a = set2(a, b, c, d, x, 5, 5, 20);
-    d = set2(d, a, b, c, x, 10, 9, 21);
-    c = set2(c, d, a, b, x, 15, 14, 22);
-    b = set2(b, c, d, a, x, 4, 20, 23);
-    a = set2(a, b, c, d, x, 9, 5, 24);
-    d = set2(d, a, b, c, x, 14, 9, 25);
-    c = set2(c, d, a, b, x, 3, 14, 26);
-    b = set2(b, c, d, a, x, 8, 20, 27);
-    a = set2(a, b, c, d, x, 13, 5, 28);
-    d = set2(d, a, b, c, x, 2, 9, 29);
-    c = set2(c, d, a, b, x, 7, 14, 30);
-    b = set2(b, c, d, a, x, 12, 20, 31);
-    a = set3(a, b, c, d, x, 5, 4, 32);
-    d = set3(d, a, b, c, x, 8, 11, 33);
-    c = set3(c, d, a, b, x, 11, 16, 34);
-    b = set3(b, c, d, a, x, 14, 23, 35);
-    a = set3(a, b, c, d, x, 1, 4, 36);
-    d = set3(d, a, b, c, x, 4, 11, 37);
-    c = set3(c, d, a, b, x, 7, 16, 38);
-    b = set3(b, c, d, a, x, 10, 23, 39);
-    a = set3(a, b, c, d, x, 13, 4, 40);
-    d = set3(d, a, b, c, x, 0, 11, 41);
-    c = set3(c, d, a, b, x, 3, 16, 42);
-    b = set3(b, c, d, a, x, 6, 23, 43);
-    a = set3(a, b, c, d, x, 9, 4, 44);
-    d = set3(d, a, b, c, x, 12, 11, 45);
-    c = set3(c, d, a, b, x, 15, 16, 46);
-    b = set3(b, c, d, a, x, 2, 23, 47);
-    a = set4(a, b, c, d, x, 0, 6, 48);
-    d = set4(d, a, b, c, x, 7, 10, 49);
-    c = set4(c, d, a, b, x, 14, 15, 50);
-    b = set4(b, c, d, a, x, 5, 21, 51);
-    a = set4(a, b, c, d, x, 12, 6, 52);
-    d = set4(d, a, b, c, x, 3, 10, 53);
-    c = set4(c, d, a, b, x, 10, 15, 54);
-    b = set4(b, c, d, a, x, 1, 21, 55);
-    a = set4(a, b, c, d, x, 8, 6, 56);
-    d = set4(d, a, b, c, x, 15, 10, 57);
-    c = set4(c, d, a, b, x, 6, 15, 58);
-    b = set4(b, c, d, a, x, 13, 21, 59);
-    a = set4(a, b, c, d, x, 4, 6, 60);
-    d = set4(d, a, b, c, x, 11, 10, 61);
-    c = set4(c, d, a, b, x, 2, 15, 62);
-    b = set4(b, c, d, a, x, 9, 21, 63);
+    static const std::array<size_t, 16> indices1 = get_indice_array(0, 1, 16);
+    step_fn<7, 12, 17, 22>(&set1, a, b, c, d, x, 0, indices1);
+
+    static const std::array<size_t, 16> indices2 = get_indice_array(1, 5, 16);
+    step_fn<5, 9, 14, 20>(&set2, a, b, c, d, x, 16, indices2);
+
+    static const std::array<size_t, 16> indices3 = get_indice_array(5, 3, 16);
+    step_fn<4, 11, 16, 23>(&set3, a, b, c, d, x, 32, indices3);
+
+    static const std::array<size_t, 16> indices4 = get_indice_array(0, 7, 16);
+    step_fn<6, 10, 15, 21>(&set4, a, b, c, d, x, 48, indices4);
 
     // Add this to the digest.
     digest[0] += a;
