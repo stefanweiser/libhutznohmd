@@ -161,15 +161,28 @@ def execute_coverage(args):
     execute_build(args)
     os.makedirs(coverage_path)
 
-    check_call(['./unittest/unittest_hutznohmd'], cwd=build_path)
+    log_file = open(build_path + '/build.log', 'w')
+
+    print(colorize('[INFO]: Collect unittest\'s coverage information...',
+                   GREEN))
+    Popen(['./unittest/unittest_hutznohmd'], cwd=build_path, stdout=log_file,
+          stderr=log_file).wait()
     run_gcovr('unittest')
-    check_call(['./integrationtest/integrationtest_hutznohmd'],
-               cwd=build_path)
+    
+    print(colorize('[INFO]: Collect integrationtest\'s coverage' +
+                   ' information...', GREEN))
+    Popen(['./integrationtest/integrationtest_hutznohmd'], cwd=build_path,
+          stdout=log_file, stderr=log_file).wait()
     run_gcovr('integrationtest')
-    check_call(['./unittest/unittest_hutznohmd'], cwd=build_path)
-    check_call(['./integrationtest/integrationtest_hutznohmd'],
-               cwd=build_path)
+    
+    print(colorize('[INFO]: Collect overall coverage information...', GREEN))
+    Popen(['./unittest/unittest_hutznohmd'], cwd=build_path, stdout=log_file,
+          stderr=log_file).wait()
+    Popen(['./integrationtest/integrationtest_hutznohmd'], cwd=build_path,
+          stdout=log_file, stderr=log_file).wait()
     run_gcovr('overall')
+
+    log_file.close()
 
 
 def execute_doc(args):
@@ -228,6 +241,7 @@ def execute_sonar(args):
                  'sonar-runner-dist/2.4/sonar-runner-dist-2.4.jar',
                  sonar_runner_path)
 
+    print(colorize('[INFO]: Download informations onto sonar...', GREEN))
     check_call(['java', '-classpath', sonar_runner_path,
                 '-Drunner.home=build', '-Dproject.home=.',
                 '-Dproject.settings=build/sonar.properties',
