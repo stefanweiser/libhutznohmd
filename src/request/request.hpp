@@ -87,7 +87,7 @@ private:
     //! reached the end of the file. The in/out parameter c is -1 in this case.
     bool parse_header(const mime_handler& handler, int32_t& ch);
 
-    void add_header(const mime_handler& handler, header_key key,
+    void set_header(const mime_handler& handler, header_key key,
                     const char_t* const key_string, const char_t* value_string,
                     size_t value_length);
 

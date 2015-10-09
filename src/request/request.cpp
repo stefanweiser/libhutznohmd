@@ -400,7 +400,7 @@ bool request::parse_header(const mime_handler& handler, int32_t& ch)
             const size_t value_end = lexer_.prev_index();
             lexer_.header_data(value_end)[0] = '\0';
             const size_t value_size = value_end - value_begin;
-            add_header(handler, key_enum, key, value, value_size);
+            set_header(handler, key_enum, key, value, value_size);
             result = true;
             break;
         }
@@ -411,7 +411,7 @@ bool request::parse_header(const mime_handler& handler, int32_t& ch)
     return result;
 }
 
-void request::add_header(const mime_handler& handler, header_key key,
+void request::set_header(const mime_handler& handler, header_key key,
                          const char_t* const key_string,
                          const char_t* value_string, size_t value_length)
 {
