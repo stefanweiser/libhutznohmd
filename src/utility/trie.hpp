@@ -110,9 +110,7 @@ public:
                 // forward and not backward!
                 if (check_range<uint8_t, 'A', 'Z'>(c)) {
                     trie_node*& other = children_[make_lower(c)];
-                    if (child == other) {
-                        other = nullptr;
-                    }
+                    clear_right_side_when_equal(child, other);
                 }
             }
         }
@@ -197,6 +195,14 @@ private:
     static constexpr uint8_t LETTER_CASE_BIT = 0x20U;
     static constexpr uint8_t INVERSE_LETTER_CASE_BIT =
         static_cast<uint8_t>(~LETTER_CASE_BIT);
+
+    void clear_right_side_when_equal(const trie_node* const left,
+                                     trie_node*& right)
+    {
+        if (left == right) {
+            right = nullptr;
+        }
+    }
 
     void add_child_reference(trie_node*& target, trie_node* const child)
     {
