@@ -180,7 +180,7 @@ void process(const char_t data[block_size], std::array<uint32_t, 4>& digest)
 
 } // namespace
 
-std::array<uint8_t, 16> calculate_md5(const std::vector<char_t>& data)
+md5_array calculate_md5(const std::vector<char_t>& data)
 {
     static constexpr size_t bits_per_byte = 8;
     static constexpr size_t size_of_size = sizeof(uint64_t);
@@ -231,7 +231,7 @@ std::array<uint8_t, 16> calculate_md5(const std::vector<char_t>& data)
     process(data_buffer.data(), digest);
 
     // Return result.
-    std::array<uint8_t, 16> result;
+    md5_array result;
     for (size_t i = 0; i < result.size(); ++i) {
         const size_t index = i / digest.size();
         const size_t bits_to_shift = (i % digest.size()) * bits_per_byte;

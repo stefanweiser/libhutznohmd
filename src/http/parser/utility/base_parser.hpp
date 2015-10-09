@@ -25,6 +25,8 @@
 #include <http/parser/utility/push_back_string.hpp>
 #include <http/parser/utility/trie.hpp>
 
+#include <request/md5.hpp>
+
 #include <hutzn.hpp>
 
 namespace hutzn
@@ -74,7 +76,7 @@ public:
     media_type content_type_;
     time_t date_;
     connection_type connection_;
-    std::array<uint8_t, 16> md5_;
+    md5_array md5_;
     bool has_md5_;
 };
 

@@ -80,7 +80,7 @@ bool request::parse()
 
     bool result = request_parser_.valid();
     if ((result) && (request_parser_.has_md5()) && (parameters_.check_md5)) {
-        const std::array<uint8_t, 16>& md5 = request_parser_.md5();
+        const md5_array& md5 = request_parser_.md5();
         result = (md5 == calculate_md5(data_));
     }
     return result;

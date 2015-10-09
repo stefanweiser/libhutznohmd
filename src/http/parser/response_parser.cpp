@@ -147,7 +147,7 @@ bool response_parser::keeps_connection() const
     return common_.connection_ == connection_type::KEEP_ALIVE;
 }
 
-const std::array<uint8_t, 16>& response_parser::md5() const
+const md5_array& response_parser::md5() const
 {
     return common_.md5_;
 }

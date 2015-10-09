@@ -28,11 +28,14 @@
 namespace hutzn
 {
 
+constexpr static size_t md5_size = 16;
+using md5_array = std::array<uint8_t, md5_size>;
+
 //! @brief Calculates the MD5 sum of a given vector of bytes.
 //! @param data Vector of data to parse.
 //! @return Array of 16 bytes, that contains the digest.
 //! @warning This currently works only on little endian architectures.
-std::array<uint8_t, 16> calculate_md5(const std::vector<char_t>& data);
+md5_array calculate_md5(const std::vector<char_t>& data);
 
 } // namespace hutzn
 

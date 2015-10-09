@@ -44,6 +44,8 @@ request_parser::request_parser(const anonymous_int_function& get_functor,
 
 void request_parser::parse()
 {
+    constexpr static size_t tmp_string_size = 32;
+
     if (parser_state::UNFINISHED != common_.state_) {
         return;
     }
@@ -62,7 +64,7 @@ void request_parser::parse()
              value_info{"connect", hutzn::method::CONNECT}}};
 
         static const trie<hutzn::method> t(types, hutzn::method::UNKNOWN);
-        push_back_string<32> tmp;
+        push_back_string<tmp_string_size> tmp;
         method_ = t.parse(character, tmp, common_.lexer_);
     }
 
@@ -93,7 +95,7 @@ void request_parser::parse()
         static const trie<value_type> t(
             types,
             value_type{http::version::HTTP_UNKNOWN, connection_type::ERROR});
-        push_back_string<32> tmp;
+        push_back_string<tmp_string_size> tmp;
         std::tie(common_.version_, common_.connection_) =
             t.parse(character, tmp, common_.lexer_);
     }
@@ -147,7 +149,7 @@ bool request_parser::keeps_connection() const
     return common_.connection_ == connection_type::KEEP_ALIVE;
 }
 
-const std::array<uint8_t, 16>& request_parser::md5() const
+const md5_array& request_parser::md5() const
 {
     return common_.md5_;
 }

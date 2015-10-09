@@ -56,7 +56,7 @@ public:
     const media_type_interface& content_type() const;
     const time_t& date() const;
     bool keeps_connection() const;
-    const std::array<uint8_t, 16>& md5() const;
+    const md5_array& md5() const;
     bool has_md5() const;
     const hutzn::method& method() const;
     const uri_interface& request_uri() const;
