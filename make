@@ -172,13 +172,10 @@ def execute_sonar(args):
 
     rmtree(build_path)
     os.makedirs(build_path)
-    args.target = 'coverage'
-    execute_bootstrap(args)
-    check_call(['make', '-j' + str(cpu_count()), 'coverage'],
-               cwd=build_path)
+    execute_coverage(args)
 
     os.makedirs(build_path + '/reports')
-    
+
     output_file = open(build_path + '/reports/cppcheck.xml', 'w')
     process = Popen(['cppcheck', '--xml', '--xml-version=2', '--quiet',
                      '--language=c++', '--platform=unix64', '--enable=all',
