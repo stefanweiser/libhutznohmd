@@ -63,7 +63,7 @@ bool parse_uri_word(int32_t& character, push_back_string<size>& result,
 } // namespace
 
 uri::uri()
-    : lexer_(nullptr)
+    : lexer_(NULL)
     , valid_(false)
     , scheme_(uri_scheme::UNKNOWN)
     , userinfo_()

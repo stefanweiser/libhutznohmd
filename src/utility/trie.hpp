@@ -100,7 +100,7 @@ public:
             trie_node* child = children_[c];
 
             // Delete only if set.
-            if (child != nullptr) {
+            if (child != NULL) {
                 delete child;
 
                 // Because it could be case sensitive, check whether the
@@ -137,7 +137,7 @@ public:
         } else {
             const trie_node* const child =
                 children_[static_cast<uint8_t>(*curr)];
-            if (child != nullptr) {
+            if (child != NULL) {
                 result = child->find(original, curr + 1, remaining - 1);
                 if (0 == result.used_size()) {
                     result = make_find_result(original, curr);
@@ -200,7 +200,7 @@ private:
                                      trie_node*& right)
     {
         if (left == right) {
-            right = nullptr;
+            right = NULL;
         }
     }
 
@@ -212,7 +212,7 @@ private:
 
     void remove_child_reference(trie_node*& child)
     {
-        child = nullptr;
+        child = NULL;
         used_children_--;
     }
 
@@ -228,7 +228,7 @@ private:
 
     trie_node** get_pendant(const uint8_t c, const bool is_case_insensitive)
     {
-        trie_node** result = nullptr;
+        trie_node** result = NULL;
         if (is_case_insensitive) {
             if (check_range<uint8_t, 'A', 'Z'>(c)) {
                 result = &(children_[make_lower(c)]);
@@ -248,14 +248,14 @@ private:
         const char_t* next = token + 1;
 
         trie_node*& child = children_[c];
-        if (nullptr == child) {
+        if (NULL == child) {
             add_child_reference(child, new trie_node());
         }
 
         bool result = false;
         if (child->insert(next, value, is_case_insensitive)) {
             trie_node** other = get_pendant(c, is_case_insensitive);
-            if ((other != nullptr) && (nullptr == (*other))) {
+            if ((other != NULL) && (NULL == (*other))) {
                 add_child_reference(*other, child);
             }
             result = true;
@@ -270,14 +270,14 @@ private:
 
         bool result = false;
         trie_node*& child = children_[c];
-        if ((child != nullptr) && (child->erase(next, is_case_insensitive))) {
+        if ((child != NULL) && (child->erase(next, is_case_insensitive))) {
 
             if ((0 == child->used_children_) && (!child->has_value_)) {
                 delete child;
                 remove_child_reference(child);
 
                 trie_node** other = get_pendant(c, is_case_insensitive);
-                if ((other != nullptr) && ((*other) != nullptr)) {
+                if ((other != NULL) && ((*other) != NULL)) {
                     remove_child_reference(*other);
                 }
             }
@@ -320,7 +320,7 @@ public:
         , count_(new size_t())
         , root_node_(new detail::trie_node<value_type>())
     {
-        assert(count_ != nullptr);
+        assert(count_ != NULL);
         (*count_) = 1;
     }
 
@@ -331,7 +331,7 @@ public:
         , count_(rhs.count_)
         , root_node_(rhs.root_node_)
     {
-        assert(count_ != nullptr);
+        assert(count_ != NULL);
         (*count_)++;
     }
 
@@ -342,7 +342,7 @@ public:
         is_case_insensitive_ = rhs.is_case_insensitive_;
         count_ = rhs.count_;
         root_node_ = rhs.root_node_;
-        assert(count_ != nullptr);
+        assert(count_ != NULL);
         (*count_)++;
 
         return *this;

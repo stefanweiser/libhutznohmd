@@ -90,7 +90,7 @@ push_back_string<maximum_size>::push_back_string()
     : current_length_(0)
     , dynamic_size_(0)
     , static_buffer_()
-    , dynamic_buffer_(nullptr)
+    , dynamic_buffer_(NULL)
 {
 }
 
@@ -128,7 +128,7 @@ void push_back_string<maximum_size>::append_string(const char_t* s)
 template <size_t maximum_size>
 char_t& push_back_string<maximum_size>::operator[](const size_t& index)
 {
-    if (nullptr == dynamic_buffer_) {
+    if (NULL == dynamic_buffer_) {
         return static_buffer_[index];
     } else {
         return dynamic_buffer_[index];
@@ -138,7 +138,7 @@ char_t& push_back_string<maximum_size>::operator[](const size_t& index)
 template <size_t maximum_size>
 const char_t* push_back_string<maximum_size>::c_str() const
 {
-    if (nullptr == dynamic_buffer_) {
+    if (NULL == dynamic_buffer_) {
         // Terminate the data before returning it.
         static_buffer_[current_length_] = '\0';
         return static_buffer_;
@@ -164,11 +164,11 @@ size_t push_back_string<maximum_size>::size() const
 template <size_t maximum_size>
 void push_back_string<maximum_size>::clear()
 {
-    if (nullptr != dynamic_buffer_) {
+    if (NULL != dynamic_buffer_) {
         // We need to free the buffer, because we will work with the static data
         // again.
         free(dynamic_buffer_);
-        dynamic_buffer_ = nullptr;
+        dynamic_buffer_ = NULL;
         dynamic_size_ = 0;
     }
     current_length_ = 0;
@@ -177,7 +177,7 @@ void push_back_string<maximum_size>::clear()
 template <size_t maximum_size>
 void push_back_string<maximum_size>::need_more_dynamic_memory()
 {
-    if (nullptr == dynamic_buffer_) {
+    if (NULL == dynamic_buffer_) {
         dynamic_size_ = (2 * maximum_size) + 1;
         dynamic_buffer_ = static_cast<char_t*>(malloc(dynamic_size_));
         memcpy(dynamic_buffer_, static_buffer_, maximum_size);
@@ -188,7 +188,7 @@ void push_back_string<maximum_size>::need_more_dynamic_memory()
         // reallocation in case of a failed reallocation.
         char_t* new_buffer =
             static_cast<char_t*>(realloc(dynamic_buffer_, dynamic_size_));
-        if (nullptr == new_buffer) {
+        if (NULL == new_buffer) {
             free(dynamic_buffer_);
         }
         dynamic_buffer_ = new_buffer;

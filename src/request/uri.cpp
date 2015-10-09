@@ -114,7 +114,7 @@ char_t* parse_optional_positional_token(
     char_t*& data, size_t& remaining, char_t& last_char, size_t& result_size,
     const char_t conditional_start_character, const tn... select_chars)
 {
-    char_t* result = nullptr;
+    char_t* result = NULL;
     if ((remaining > 0) && (last_char == conditional_start_character)) {
         remaining--;
         data++;
@@ -134,12 +134,12 @@ char_t* parse_optional_positional_token(
 uri::uri(void)
     : already_called_(false)
     , scheme_(uri_scheme::UNKNOWN)
-    , userinfo_(nullptr)
-    , host_(nullptr)
+    , userinfo_(NULL)
+    , host_(NULL)
     , port_(0)
-    , path_(nullptr)
-    , query_(nullptr)
-    , fragment_(nullptr)
+    , path_(NULL)
+    , query_(NULL)
+    , fragment_(NULL)
 {
 }
 
@@ -162,13 +162,13 @@ bool uri::parse(char_t*& raw, size_t& remaining, bool skip_scheme)
             (!parse_authority(data.authority, data.authority_size))) {
             result = false;
         }
-        if (data.path != nullptr) {
+        if (data.path != NULL) {
             path_ = data.path;
         }
-        if (data.query != nullptr) {
+        if (data.query != NULL) {
             query_ = data.query;
         }
-        if (data.fragment != nullptr) {
+        if (data.fragment != NULL) {
             fragment_ = data.fragment;
         }
     }
@@ -211,15 +211,15 @@ const char_t* uri::fragment(void) const
 }
 
 uri::first_pass_data::first_pass_data(void)
-    : scheme(nullptr)
+    : scheme(NULL)
     , scheme_size(0)
-    , authority(nullptr)
+    , authority(NULL)
     , authority_size(0)
-    , path(nullptr)
+    , path(NULL)
     , path_size(0)
-    , query(nullptr)
+    , query(NULL)
     , query_size(0)
-    , fragment(nullptr)
+    , fragment(NULL)
     , fragment_size(0)
 {
 }
@@ -322,7 +322,7 @@ bool uri::parse_authority(char_t* const authority_ptr, const size_t& size)
     }
     host_ = temp_host;
 
-    const char_t* temp_port = nullptr;
+    const char_t* temp_port = NULL;
     size_t port_size = 0;
     for (size_t i = 0; i < host_size; i++) {
         if (':' == temp_host[i]) {

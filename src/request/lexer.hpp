@@ -63,14 +63,14 @@ public:
     void set_index(const size_t idx);
 
     //! Returns a constant pointer on the header beginning at offset idx. It
-    //! returns a nullptr, when the offset is out of scope.
+    //! returns a NULL, when the offset is out of scope.
     const char_t* header_data(const size_t idx) const;
 
     //! Returns a pointer on the header beginning at offset idx. It returns a
-    //! nullptr, when the offset is out of scope.
+    //! NULL, when the offset is out of scope.
     char_t* header_data(const size_t idx);
 
-    //! Returns a constant pointer on the content and a nullptr, when
+    //! Returns a constant pointer on the content and a NULL, when
     //! fetch_content was not yet successfully called.
     const char_t* content(void) const;
 

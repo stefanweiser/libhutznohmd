@@ -245,7 +245,7 @@ std::tuple<mime, request_handler_callback> demultiplexer::lookup_in_accept_map(
     std::tuple<mime, request_handler_callback> result;
 
     // Loop over the accept types for a matching request handler.
-    void* handle = nullptr;
+    void* handle = NULL;
     mime type;
     while ((!std::get<1>(result)) && request.accept(handle, type)) {
         request_handler_callback callback = accept_map.find(type);

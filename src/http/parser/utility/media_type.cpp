@@ -31,7 +31,7 @@ namespace http
 {
 
 media_type::media_type()
-    : lexer_(nullptr)
+    : lexer_(NULL)
     , type_(media_type_interface::mime_type::CUSTOM)
     , subtype_(media_type_interface::mime_subtype::CUSTOM)
     , custom_type_()
@@ -210,12 +210,13 @@ bool media_type::parse_parameter(int32_t& character)
 
     push_back_string<16> key;
     push_back_string<16> value;
-    static const trie<trie_value> t(types, trie_value{nullptr, -1});
+    static const trie<trie_value> t(types,
+                                    trie_value{NULL, static_cast<size_t>(-1)});
     trie_value v = t.parse(character, key, *lexer_);
     if ('=' == character) {
         character = lexer_->get_non_whitespace();
         parsing_function functor = std::get<0>(v);
-        if (nullptr != functor) {
+        if (NULL != functor) {
             return (this->*functor)(character);
         }
     }

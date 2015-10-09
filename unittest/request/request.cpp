@@ -60,27 +60,27 @@ public:
     void check_request_data(const request& r)
     {
         EXPECT_EQ(http_verb::GET, r.method());
-        EXPECT_STREQ(nullptr, r.path());
-        EXPECT_EQ(nullptr, r.host());
-        EXPECT_EQ(nullptr, r.query(nullptr));
-        EXPECT_EQ(nullptr, r.fragment());
+        EXPECT_STREQ(NULL, r.path());
+        EXPECT_EQ(NULL, r.host());
+        EXPECT_EQ(NULL, r.query(NULL));
+        EXPECT_EQ(NULL, r.fragment());
         EXPECT_EQ(http_version::HTTP_UNKNOWN, r.version());
-        EXPECT_EQ(nullptr, r.header_value(nullptr));
+        EXPECT_EQ(NULL, r.header_value(NULL));
         EXPECT_EQ(false, r.keeps_connection());
         EXPECT_EQ(0, r.date());
-        EXPECT_EQ(nullptr, r.content());
+        EXPECT_EQ(NULL, r.content());
         EXPECT_EQ(0, r.content_length());
         EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
                   r.content_type());
 
-        void* handle = nullptr;
+        void* handle = NULL;
         mime m{mime_type::INVALID, mime_subtype::INVALID};
         EXPECT_EQ(false, r.accept(handle, m));
 
         EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
-        EXPECT_EQ(nullptr, r.from());
-        EXPECT_EQ(nullptr, r.referer());
-        EXPECT_EQ(nullptr, r.user_agent());
+        EXPECT_EQ(NULL, r.from());
+        EXPECT_EQ(NULL, r.referer());
+        EXPECT_EQ(NULL, r.user_agent());
     }
 
 protected:
@@ -104,26 +104,26 @@ TEST_F(request_test, default_request)
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
-    EXPECT_STREQ(nullptr, r.host());
-    EXPECT_STREQ(nullptr, r.query(nullptr));
-    EXPECT_STREQ(nullptr, r.fragment());
+    EXPECT_STREQ(NULL, r.host());
+    EXPECT_STREQ(NULL, r.query(NULL));
+    EXPECT_STREQ(NULL, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_1, r.version());
-    EXPECT_STREQ(nullptr, r.header_value(nullptr));
+    EXPECT_STREQ(NULL, r.header_value(NULL));
     EXPECT_EQ(true, r.keeps_connection());
     EXPECT_EQ(0, r.date());
-    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(NULL, r.content());
     EXPECT_EQ(0, r.content_length());
     EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
               r.content_type());
 
-    void* handle = nullptr;
+    void* handle = NULL;
     mime m{mime_type::INVALID, mime_subtype::INVALID};
     EXPECT_EQ(false, r.accept(handle, m));
 
     EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
-    EXPECT_STREQ(nullptr, r.from());
-    EXPECT_STREQ(nullptr, r.referer());
-    EXPECT_STREQ(nullptr, r.user_agent());
+    EXPECT_STREQ(NULL, r.from());
+    EXPECT_STREQ(NULL, r.referer());
+    EXPECT_STREQ(NULL, r.user_agent());
 }
 
 TEST_F(request_test, request_with_content)
@@ -134,17 +134,17 @@ TEST_F(request_test, request_with_content)
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
-    EXPECT_STREQ(nullptr, r.host());
-    EXPECT_STREQ(nullptr, r.query(nullptr));
-    EXPECT_STREQ(nullptr, r.fragment());
+    EXPECT_STREQ(NULL, r.host());
+    EXPECT_STREQ(NULL, r.query(NULL));
+    EXPECT_STREQ(NULL, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_1, r.version());
-    EXPECT_STREQ(nullptr, r.header_value(nullptr));
+    EXPECT_STREQ(NULL, r.header_value(NULL));
     EXPECT_EQ(true, r.keeps_connection());
     EXPECT_EQ(0, r.date());
 
     // fetch_content() will set the content's result.
     EXPECT_EQ(12, r.content_length());
-    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(NULL, r.content());
     r.fetch_content();
     EXPECT_EQ(12, r.content_length());
     EXPECT_EQ(0, memcmp("Hello World!", r.content(), r.content_length()));
@@ -152,14 +152,14 @@ TEST_F(request_test, request_with_content)
     EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
               r.content_type());
 
-    void* handle = nullptr;
+    void* handle = NULL;
     mime m{mime_type::INVALID, mime_subtype::INVALID};
     EXPECT_EQ(false, r.accept(handle, m));
 
     EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
-    EXPECT_STREQ(nullptr, r.from());
-    EXPECT_STREQ(nullptr, r.referer());
-    EXPECT_STREQ(nullptr, r.user_agent());
+    EXPECT_STREQ(NULL, r.from());
+    EXPECT_STREQ(NULL, r.referer());
+    EXPECT_STREQ(NULL, r.user_agent());
 }
 
 TEST_F(request_test, request_with_content_type)
@@ -172,31 +172,31 @@ TEST_F(request_test, request_with_content_type)
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
-    EXPECT_STREQ(nullptr, r.host());
-    EXPECT_STREQ(nullptr, r.query(nullptr));
-    EXPECT_STREQ(nullptr, r.fragment());
+    EXPECT_STREQ(NULL, r.host());
+    EXPECT_STREQ(NULL, r.query(NULL));
+    EXPECT_STREQ(NULL, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_1, r.version());
-    EXPECT_STREQ(nullptr, r.header_value(nullptr));
+    EXPECT_STREQ(NULL, r.header_value(NULL));
     EXPECT_EQ(true, r.keeps_connection());
     EXPECT_EQ(0, r.date());
 
     // fetch_content() will set the content's result.
     EXPECT_EQ(12, r.content_length());
     EXPECT_EQ(mime(text_type_, plain_subtype_), r.content_type());
-    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(NULL, r.content());
     r.fetch_content();
     EXPECT_EQ(12, r.content_length());
     EXPECT_EQ(mime(text_type_, plain_subtype_), r.content_type());
     EXPECT_EQ(0, memcmp("Hello World!", r.content(), r.content_length()));
 
-    void* handle = nullptr;
+    void* handle = NULL;
     mime m{mime_type::INVALID, mime_subtype::INVALID};
     EXPECT_EQ(false, r.accept(handle, m));
 
     EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
-    EXPECT_STREQ(nullptr, r.from());
-    EXPECT_STREQ(nullptr, r.referer());
-    EXPECT_STREQ(nullptr, r.user_agent());
+    EXPECT_STREQ(NULL, r.from());
+    EXPECT_STREQ(NULL, r.referer());
+    EXPECT_STREQ(NULL, r.user_agent());
 }
 
 TEST_F(request_test, http_1_0_request_without_keep_alive)
@@ -207,26 +207,26 @@ TEST_F(request_test, http_1_0_request_without_keep_alive)
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
-    EXPECT_STREQ(nullptr, r.host());
-    EXPECT_STREQ(nullptr, r.query(nullptr));
-    EXPECT_STREQ(nullptr, r.fragment());
+    EXPECT_STREQ(NULL, r.host());
+    EXPECT_STREQ(NULL, r.query(NULL));
+    EXPECT_STREQ(NULL, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_0, r.version());
-    EXPECT_STREQ(nullptr, r.header_value(nullptr));
+    EXPECT_STREQ(NULL, r.header_value(NULL));
     EXPECT_EQ(false, r.keeps_connection());
     EXPECT_EQ(0, r.date());
-    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(NULL, r.content());
     EXPECT_EQ(0, r.content_length());
     EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
               r.content_type());
 
-    void* handle = nullptr;
+    void* handle = NULL;
     mime m{mime_type::INVALID, mime_subtype::INVALID};
     EXPECT_EQ(false, r.accept(handle, m));
 
     EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
-    EXPECT_STREQ(nullptr, r.from());
-    EXPECT_STREQ(nullptr, r.referer());
-    EXPECT_STREQ(nullptr, r.user_agent());
+    EXPECT_STREQ(NULL, r.from());
+    EXPECT_STREQ(NULL, r.referer());
+    EXPECT_STREQ(NULL, r.user_agent());
 }
 
 TEST_F(request_test, http_1_0_request_with_non_keep_alive)
@@ -237,26 +237,26 @@ TEST_F(request_test, http_1_0_request_with_non_keep_alive)
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
-    EXPECT_STREQ(nullptr, r.host());
-    EXPECT_STREQ(nullptr, r.query(nullptr));
-    EXPECT_STREQ(nullptr, r.fragment());
+    EXPECT_STREQ(NULL, r.host());
+    EXPECT_STREQ(NULL, r.query(NULL));
+    EXPECT_STREQ(NULL, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_0, r.version());
-    EXPECT_STREQ(nullptr, r.header_value(nullptr));
+    EXPECT_STREQ(NULL, r.header_value(NULL));
     EXPECT_EQ(false, r.keeps_connection());
     EXPECT_EQ(0, r.date());
-    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(NULL, r.content());
     EXPECT_EQ(0, r.content_length());
     EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
               r.content_type());
 
-    void* handle = nullptr;
+    void* handle = NULL;
     mime m{mime_type::INVALID, mime_subtype::INVALID};
     EXPECT_EQ(false, r.accept(handle, m));
 
     EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
-    EXPECT_STREQ(nullptr, r.from());
-    EXPECT_STREQ(nullptr, r.referer());
-    EXPECT_STREQ(nullptr, r.user_agent());
+    EXPECT_STREQ(NULL, r.from());
+    EXPECT_STREQ(NULL, r.referer());
+    EXPECT_STREQ(NULL, r.user_agent());
 }
 
 TEST_F(request_test, http_1_0_request_with_keep_alive)
@@ -267,26 +267,26 @@ TEST_F(request_test, http_1_0_request_with_keep_alive)
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
-    EXPECT_STREQ(nullptr, r.host());
-    EXPECT_STREQ(nullptr, r.query(nullptr));
-    EXPECT_STREQ(nullptr, r.fragment());
+    EXPECT_STREQ(NULL, r.host());
+    EXPECT_STREQ(NULL, r.query(NULL));
+    EXPECT_STREQ(NULL, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_0, r.version());
-    EXPECT_STREQ(nullptr, r.header_value(nullptr));
+    EXPECT_STREQ(NULL, r.header_value(NULL));
     EXPECT_EQ(true, r.keeps_connection());
     EXPECT_EQ(0, r.date());
-    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(NULL, r.content());
     EXPECT_EQ(0, r.content_length());
     EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
               r.content_type());
 
-    void* handle = nullptr;
+    void* handle = NULL;
     mime m{mime_type::INVALID, mime_subtype::INVALID};
     EXPECT_EQ(false, r.accept(handle, m));
 
     EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
-    EXPECT_STREQ(nullptr, r.from());
-    EXPECT_STREQ(nullptr, r.referer());
-    EXPECT_STREQ(nullptr, r.user_agent());
+    EXPECT_STREQ(NULL, r.from());
+    EXPECT_STREQ(NULL, r.referer());
+    EXPECT_STREQ(NULL, r.user_agent());
 }
 
 TEST_F(request_test, request_with_date)
@@ -298,26 +298,26 @@ TEST_F(request_test, request_with_date)
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
-    EXPECT_STREQ(nullptr, r.host());
-    EXPECT_STREQ(nullptr, r.query(nullptr));
-    EXPECT_STREQ(nullptr, r.fragment());
+    EXPECT_STREQ(NULL, r.host());
+    EXPECT_STREQ(NULL, r.query(NULL));
+    EXPECT_STREQ(NULL, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_1, r.version());
-    EXPECT_STREQ(nullptr, r.header_value(nullptr));
+    EXPECT_STREQ(NULL, r.header_value(NULL));
     EXPECT_EQ(true, r.keeps_connection());
     EXPECT_EQ(784111777, r.date());
-    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(NULL, r.content());
     EXPECT_EQ(0, r.content_length());
     EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
               r.content_type());
 
-    void* handle = nullptr;
+    void* handle = NULL;
     mime m{mime_type::INVALID, mime_subtype::INVALID};
     EXPECT_EQ(false, r.accept(handle, m));
 
     EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
-    EXPECT_STREQ(nullptr, r.from());
-    EXPECT_STREQ(nullptr, r.referer());
-    EXPECT_STREQ(nullptr, r.user_agent());
+    EXPECT_STREQ(NULL, r.from());
+    EXPECT_STREQ(NULL, r.referer());
+    EXPECT_STREQ(NULL, r.user_agent());
 }
 
 TEST_F(request_test, request_with_from)
@@ -328,26 +328,26 @@ TEST_F(request_test, request_with_from)
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
-    EXPECT_STREQ(nullptr, r.host());
-    EXPECT_STREQ(nullptr, r.query(nullptr));
-    EXPECT_STREQ(nullptr, r.fragment());
+    EXPECT_STREQ(NULL, r.host());
+    EXPECT_STREQ(NULL, r.query(NULL));
+    EXPECT_STREQ(NULL, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_1, r.version());
-    EXPECT_STREQ(nullptr, r.header_value(nullptr));
+    EXPECT_STREQ(NULL, r.header_value(NULL));
     EXPECT_EQ(true, r.keeps_connection());
     EXPECT_EQ(0, r.date());
-    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(NULL, r.content());
     EXPECT_EQ(0, r.content_length());
     EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
               r.content_type());
 
-    void* handle = nullptr;
+    void* handle = NULL;
     mime m{mime_type::INVALID, mime_subtype::INVALID};
     EXPECT_EQ(false, r.accept(handle, m));
 
     EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
     EXPECT_STREQ("info@example.com", r.from());
-    EXPECT_STREQ(nullptr, r.referer());
-    EXPECT_STREQ(nullptr, r.user_agent());
+    EXPECT_STREQ(NULL, r.referer());
+    EXPECT_STREQ(NULL, r.user_agent());
 }
 
 TEST_F(request_test, request_with_referer)
@@ -358,26 +358,26 @@ TEST_F(request_test, request_with_referer)
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
-    EXPECT_STREQ(nullptr, r.host());
-    EXPECT_STREQ(nullptr, r.query(nullptr));
-    EXPECT_STREQ(nullptr, r.fragment());
+    EXPECT_STREQ(NULL, r.host());
+    EXPECT_STREQ(NULL, r.query(NULL));
+    EXPECT_STREQ(NULL, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_1, r.version());
-    EXPECT_STREQ(nullptr, r.header_value(nullptr));
+    EXPECT_STREQ(NULL, r.header_value(NULL));
     EXPECT_EQ(true, r.keeps_connection());
     EXPECT_EQ(0, r.date());
-    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(NULL, r.content());
     EXPECT_EQ(0, r.content_length());
     EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
               r.content_type());
 
-    void* handle = nullptr;
+    void* handle = NULL;
     mime m{mime_type::INVALID, mime_subtype::INVALID};
     EXPECT_EQ(false, r.accept(handle, m));
 
     EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
-    EXPECT_STREQ(nullptr, r.from());
+    EXPECT_STREQ(NULL, r.from());
     EXPECT_STREQ("http://www.google.com/", r.referer());
-    EXPECT_STREQ(nullptr, r.user_agent());
+    EXPECT_STREQ(NULL, r.user_agent());
 }
 
 TEST_F(request_test, request_with_user_agent)
@@ -388,25 +388,25 @@ TEST_F(request_test, request_with_user_agent)
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
-    EXPECT_STREQ(nullptr, r.host());
-    EXPECT_STREQ(nullptr, r.query(nullptr));
-    EXPECT_STREQ(nullptr, r.fragment());
+    EXPECT_STREQ(NULL, r.host());
+    EXPECT_STREQ(NULL, r.query(NULL));
+    EXPECT_STREQ(NULL, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_1, r.version());
-    EXPECT_STREQ(nullptr, r.header_value(nullptr));
+    EXPECT_STREQ(NULL, r.header_value(NULL));
     EXPECT_EQ(true, r.keeps_connection());
     EXPECT_EQ(0, r.date());
-    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(NULL, r.content());
     EXPECT_EQ(0, r.content_length());
     EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
               r.content_type());
 
-    void* handle = nullptr;
+    void* handle = NULL;
     mime m{mime_type::INVALID, mime_subtype::INVALID};
     EXPECT_EQ(false, r.accept(handle, m));
 
     EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
-    EXPECT_STREQ(nullptr, r.from());
-    EXPECT_STREQ(nullptr, r.referer());
+    EXPECT_STREQ(NULL, r.from());
+    EXPECT_STREQ(NULL, r.referer());
     EXPECT_STREQ("libhutznohmd/0.0.1", r.user_agent());
 }
 
@@ -418,26 +418,26 @@ TEST_F(request_test, custom_header)
 
     EXPECT_EQ(http_verb::GET, r.method());
     EXPECT_STREQ("", r.path());
-    EXPECT_STREQ(nullptr, r.host());
-    EXPECT_STREQ(nullptr, r.query(nullptr));
-    EXPECT_STREQ(nullptr, r.fragment());
+    EXPECT_STREQ(NULL, r.host());
+    EXPECT_STREQ(NULL, r.query(NULL));
+    EXPECT_STREQ(NULL, r.fragment());
     EXPECT_EQ(http_version::HTTP_1_1, r.version());
     EXPECT_STREQ("b", r.header_value("a"));
     EXPECT_EQ(true, r.keeps_connection());
     EXPECT_EQ(0, r.date());
-    EXPECT_EQ(nullptr, r.content());
+    EXPECT_EQ(NULL, r.content());
     EXPECT_EQ(0, r.content_length());
     EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
               r.content_type());
 
-    void* handle = nullptr;
+    void* handle = NULL;
     mime m{mime_type::INVALID, mime_subtype::INVALID};
     EXPECT_EQ(false, r.accept(handle, m));
 
     EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
-    EXPECT_STREQ(nullptr, r.from());
-    EXPECT_STREQ(nullptr, r.referer());
-    EXPECT_STREQ(nullptr, r.user_agent());
+    EXPECT_STREQ(NULL, r.from());
+    EXPECT_STREQ(NULL, r.referer());
+    EXPECT_STREQ(NULL, r.user_agent());
 }
 
 TEST_F(request_test, parsing_method_failed_because_no_data)

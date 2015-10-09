@@ -93,7 +93,7 @@ private:
     const char_t* fragment_;
 
     friend class uri_test;
-    friend class uri_test_first_pass_nullptr_Test;
+    friend class uri_test_first_pass_NULL_Test;
 };
 
 } // namespace hutzn

@@ -66,17 +66,17 @@ protected:
         for (size_t i = 0; i < result.size(); i++) {
             char_t* ch = lex.header_data(i);
             const char_t* ch2 = const_cast<const lexer&>(lex).header_data(i);
-            ASSERT_NE(nullptr, ch);
+            ASSERT_TRUE(NULL != ch);
             EXPECT_EQ(result[i], *ch);
             EXPECT_EQ(ch, ch2);
         }
-        EXPECT_EQ(nullptr, lex.header_data(result.size()));
-        EXPECT_EQ(nullptr,
+        EXPECT_EQ(NULL, lex.header_data(result.size()));
+        EXPECT_EQ(NULL,
                   const_cast<const lexer&>(lex).header_data(result.size()));
 
         char_t* data = lex.header_data(0);
         const char_t* data2 = const_cast<const lexer&>(lex).header_data(0);
-        ASSERT_NE(nullptr, data);
+        ASSERT_TRUE(NULL != data);
         ASSERT_EQ(data, data2);
         for (size_t i = 0; i < result.size(); i++) {
             EXPECT_EQ(static_cast<uint8_t>(result[i]), data[i]);
@@ -90,7 +90,7 @@ TEST_F(lexer_test, construction)
     EXPECT_CALL(*c, receive(_, _)).Times(1).WillOnce(Return(false));
 
     lexer l(c);
-    EXPECT_EQ(nullptr, l.header_data(0));
+    EXPECT_EQ(NULL, l.header_data(0));
     EXPECT_EQ(-1, l.get());
     EXPECT_FALSE(l.fetch_header());
 }
@@ -259,12 +259,12 @@ TEST_F(lexer_test, content)
 
     // Initially the content is empty..
     EXPECT_EQ(0, lex.content_length());
-    EXPECT_EQ(nullptr, lex.content());
+    EXPECT_EQ(NULL, lex.content());
 
     // Fetching the header will not effect the content.
     EXPECT_TRUE(lex.fetch_header());
     EXPECT_EQ(0, lex.content_length());
-    EXPECT_EQ(nullptr, lex.content());
+    EXPECT_EQ(NULL, lex.content());
 
     // Content is available after calling fetch_content.
     EXPECT_TRUE(lex.fetch_content(2));
@@ -275,7 +275,7 @@ TEST_F(lexer_test, content)
     // Fetching too much will invalidate the content.
     EXPECT_FALSE(lex.fetch_content(3));
     EXPECT_EQ(0, lex.content_length());
-    EXPECT_EQ(nullptr, lex.content());
+    EXPECT_EQ(NULL, lex.content());
 }
 
 } // namespace hutzn

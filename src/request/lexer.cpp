@@ -152,7 +152,7 @@ const char_t* lexer::header_data(const size_t idx) const
     if (idx < header_.size()) {
         result = &(header_[idx]);
     } else {
-        result = nullptr;
+        result = NULL;
     }
     return result;
 }
@@ -163,7 +163,7 @@ char_t* lexer::header_data(const size_t idx)
     if (idx < header_.size()) {
         result = &(header_[idx]);
     } else {
-        result = nullptr;
+        result = NULL;
     }
     return result;
 }
@@ -174,7 +174,7 @@ const char_t* lexer::content(void) const
     if (fetch_content_succeeded_) {
         result = &(content_[0]);
     } else {
-        result = nullptr;
+        result = NULL;
     }
     return result;
 }

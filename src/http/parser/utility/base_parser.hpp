@@ -86,12 +86,13 @@ bool base_parser::parse_generic_header(
     int32_t& character)
 {
     using trie_value_ = trie_value<parser>;
-    static const trie<trie_value_> t(types, trie_value_{nullptr, -1});
+    static const trie<trie_value_> t(
+        types, trie_value_{NULL, static_cast<size_t>(-1)});
     trie_value_ value = t.parse(character, header_key_, lexer_);
     if (character == ':') {
         character = lexer_.get_non_whitespace();
         parsing_function<parser> functor = std::get<0>(value);
-        if (nullptr != functor) {
+        if (NULL != functor) {
             return (p.*functor)(character);
         }
     }

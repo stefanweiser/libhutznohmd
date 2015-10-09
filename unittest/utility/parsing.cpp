@@ -26,14 +26,14 @@ using namespace testing;
 namespace hutzn
 {
 
-TEST(parsing, skip_whitespace_nullptr)
+TEST(parsing, skip_whitespace_NULL)
 {
-    const char_t* data = nullptr;
+    const char_t* data = NULL;
     size_t remaining = 0;
 
     skip_whitespace(data, remaining);
 
-    EXPECT_STREQ(nullptr, data);
+    EXPECT_STREQ(NULL, data);
     EXPECT_EQ(0, remaining);
 }
 
@@ -109,14 +109,14 @@ TEST(parsing, skip_whitespace_mixed_spaces_and_tabs)
     EXPECT_EQ(str.size() - 4, remaining);
 }
 
-TEST(parsing, skip_one_character_nullptr)
+TEST(parsing, skip_one_character_NULL)
 {
-    const char_t* data = nullptr;
+    const char_t* data = NULL;
     size_t remaining = 0;
 
     skip_one_character(data, remaining);
 
-    EXPECT_STREQ(nullptr, data);
+    EXPECT_STREQ(NULL, data);
     EXPECT_EQ(0, remaining);
 }
 
@@ -144,13 +144,13 @@ TEST(parsing, skip_one_character_nothing)
     EXPECT_EQ(str.size(), remaining);
 }
 
-TEST(parsing, parse_unsigned_interger_nullptr)
+TEST(parsing, parse_unsigned_interger_NULL)
 {
-    const char_t* data = nullptr;
+    const char_t* data = NULL;
     size_t remaining = 0;
 
     EXPECT_EQ(-1, parse_unsigned_integer(data, remaining));
-    EXPECT_STREQ(nullptr, data);
+    EXPECT_STREQ(NULL, data);
     EXPECT_EQ(0, remaining);
 }
 

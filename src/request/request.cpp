@@ -101,13 +101,13 @@ request::request(const connection_pointer& connection)
     , version_(http_version::HTTP_UNKNOWN)
     , content_length_(0)
     , content_type_(mime_type::INVALID, mime_subtype::INVALID)
-    , content_(nullptr)
+    , content_(NULL)
     , is_keep_alive_set_(false)
     , date_(0)
     , expect_(http_expectation::UNKNOWN)
-    , from_(nullptr)
-    , referer_(nullptr)
-    , user_agent_(nullptr)
+    , from_(NULL)
+    , referer_(NULL)
+    , user_agent_(NULL)
     , header_fields_()
     , query_entries_()
 {
@@ -162,7 +162,7 @@ const char_t* request::host(void) const
 
 const char_t* request::query(const char_t* const key) const
 {
-    const char_t* result = nullptr;
+    const char_t* result = NULL;
     auto it = query_entries_.find(key);
     if (it != query_entries_.end()) {
         result = it->second;
@@ -182,7 +182,7 @@ http_version request::version(void) const
 
 const char_t* request::header_value(const char_t* const name) const
 {
-    const char_t* result = nullptr;
+    const char_t* result = NULL;
     auto it = header_fields_.find(name);
     if (it != header_fields_.end()) {
         result = it->second;
@@ -526,10 +526,10 @@ bool request::enforced_null_terminated_less::operator()(
     const char_t* const lhs, const char_t* const rhs) const
 {
     bool result;
-    if (lhs == nullptr) {
-        result = (rhs != nullptr);
+    if (lhs == NULL) {
+        result = (rhs != NULL);
     } else {
-        if (rhs == nullptr) {
+        if (rhs == NULL) {
             result = false;
         } else {
             // Exceptional use of unbound function strcmp (breaks MISRA C++:2008

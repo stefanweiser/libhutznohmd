@@ -834,8 +834,8 @@ public:
 
     //! Returns a pointer to the begin of the content in the buffer. This data
     //! buffer is @b not null-terminated and has the length of the
-    //! content-length header field. If there is no content it returns nullptr.
-    //! Returns also nullptr, when @ref request_interface::fetch_content was not
+    //! content-length header field. If there is no content it returns NULL.
+    //! Returns also NULL, when @ref request_interface::fetch_content was not
     //! called before.
     virtual const void* content(void) const = 0;
 
@@ -849,7 +849,7 @@ public:
 
     //! Gives its user access to a list of MIME types and subtype in the accept
     //! header. To get the first item, the user has to initialize the handle
-    //! with a nullptr. The handle will point to the current item after each
+    //! with a NULL. The handle will point to the current item after each
     //! call. To get the next item just recall it. The function returns false,
     //! if the end of the list is reached and true in any other case. Till the
     //! end of the function is reached, the parameters are getting modified by
@@ -857,7 +857,7 @@ public:
     //! tries to find the best request handler for the request.
     //!
     //! @code{.cpp}
-    //! void* handle = nullptr;
+    //! void* handle = NULL;
     //! mime type;
     //! while (request->accept(handle, type)) {
     //!     // Do some fancy stuff.

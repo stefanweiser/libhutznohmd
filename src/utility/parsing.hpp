@@ -30,7 +30,7 @@ namespace hutzn
 //! Skips whitespace characters by increasing the data pointer until the first
 //! character is neither space, tabs, linefeed nor carriage return. The
 //! size parameter (which actual is the length of the string) is decreased by
-//! the number of increases. Does nothing on an empty string or a nullptr.
+//! the number of increases. Does nothing on an empty string or a NULL.
 inline void skip_whitespace(const char_t*& data, size_t& size)
 {
     static const select_char_map map =
@@ -48,7 +48,7 @@ inline void skip_whitespace(const char_t*& data, size_t& size)
 //!
 //! Skips one character by increasing the data pointer once. The size parameter
 //! (which actual is the length of the string) is decreased one time. Does
-//! nothing on an empty string or on a nullptr.
+//! nothing on an empty string or on a NULL.
 inline void skip_one_character(const char_t*& data, size_t& size)
 {
     // Do only something, when the size is greater zero.
