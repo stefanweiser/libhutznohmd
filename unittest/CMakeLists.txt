@@ -24,7 +24,7 @@ ADD_EXECUTABLE(unittest_hutznohmd ${FILES} ${GMOCK})
 STYLE_FILES(unittest_hutznohmd ${FILES})
 ADD_TEST(unittest "${CMAKE_CURRENT_BINARY_DIR}/unittest_hutznohmd")
 
-COVERAGE_TARGET(coverage unittest_hutznohmd 'unittest/*')
+COVERAGE_TARGET(unittest_coverage unittest_hutznohmd 'unittest/*')
 
 SET_SOURCE_FILES_PROPERTIES(${GMOCK} PROPERTIES COMPILE_FLAGS -w)
 
