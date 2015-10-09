@@ -69,12 +69,15 @@ private:
     const lexer* lexer_;
     bool valid_;
     uri_scheme scheme_;
-    push_back_string<16> userinfo_;
-    push_back_string<32> host_;
+
+    static const size_t tmp_string_size = 16;
+    static const size_t tmp_string2_size = 32;
+    push_back_string<tmp_string_size> userinfo_;
+    push_back_string<tmp_string2_size> host_;
     uint16_t port_;
-    push_back_string<32> path_;
-    push_back_string<32> query_;
-    push_back_string<32> fragment_;
+    push_back_string<tmp_string2_size> path_;
+    push_back_string<tmp_string2_size> query_;
+    push_back_string<tmp_string2_size> fragment_;
 };
 
 } // namespace http

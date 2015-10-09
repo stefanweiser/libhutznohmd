@@ -35,6 +35,10 @@ static const size_t number_of_steps = block_size / processed_width_per_step;
 using digest_type = std::array<uint32_t, number_of_steps>;
 using table_k_type = std::array<uint32_t, block_size>;
 
+static const size_t b_idx_offset = 1;
+static const size_t c_idx_offset = 2;
+static const size_t d_idx_offset = 3;
+
 using set_functor = uint32_t (*)(const uint32_t& a, const uint32_t& b,
                                  const uint32_t& c, const uint32_t& d,
                                  const uint32_t* x, const size_t& k,
@@ -124,9 +128,9 @@ static void step_fn(digest_type& digest, const uint32_t* const x,
         for (size_t j = 0; j < number_of_steps; j++) {
             const size_t idx = (number_of_steps - j) % number_of_steps;
             uint32_t& a = digest[idx];
-            uint32_t& b = digest[(idx + 1) % number_of_steps];
-            uint32_t& c = digest[(idx + 2) % number_of_steps];
-            uint32_t& d = digest[(idx + 3) % number_of_steps];
+            uint32_t& b = digest[(idx + b_idx_offset) % number_of_steps];
+            uint32_t& c = digest[(idx + c_idx_offset) % number_of_steps];
+            uint32_t& d = digest[(idx + d_idx_offset) % number_of_steps];
 
             a = settings.set_fn(a, b, c, d, x, settings.indices[i + j],
                                 beginning_index + i + j, settings.shifts[j]);
@@ -163,9 +167,9 @@ static void process(const char_t data[block_size], digest_type& digest)
 
     // Add this to the digest.
     digest[0] += copy[0];
-    digest[1] += copy[1];
-    digest[2] += copy[2];
-    digest[3] += copy[3];
+    digest[b_idx_offset] += copy[b_idx_offset];
+    digest[c_idx_offset] += copy[c_idx_offset];
+    digest[d_idx_offset] += copy[d_idx_offset];
 }
 
 } // namespace
@@ -187,8 +191,9 @@ md5_array calculate_md5(const std::vector<char_t>& data)
     }
 
     // Copy the rest.
+    static const uint8_t invalid_last_bit = 0x80U;
     std::array<char_t, block_size> data_buffer;
-    uint8_t last_bit = 0x80U;
+    uint8_t last_bit = invalid_last_bit;
     std::copy(data.end() - static_cast<ssize_t>(remaining), data.end(),
               data_buffer.begin());
 

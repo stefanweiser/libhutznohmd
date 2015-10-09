@@ -419,7 +419,7 @@ void request::set_header(const mime_handler& handler, header_key key,
         void (request::*)(const mime_handler&, const char_t*, size_t);
     using header_fn_array =
         std::array<set_header_functor, static_cast<size_t>(header_key::SIZE)>;
-    const static header_fn_array set_header_fns = {
+    static const header_fn_array set_header_fns = {
         {&request::set_connection, &request::set_content_length,
          &request::set_content_type, &request::set_date, &request::set_expect,
          &request::set_from, &request::set_referer, &request::set_user_agent}};

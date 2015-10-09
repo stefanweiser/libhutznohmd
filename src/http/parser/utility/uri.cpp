@@ -16,6 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include <limits>
+
 #include <http/parser/utility/trie.hpp>
 
 #include "uri.hpp"
@@ -50,7 +52,7 @@ bool parse_uri_word(int32_t& character, push_back_string<size>& result,
                 return false;
             }
 
-            result.push_back(static_cast<char_t>((d << 4) + e));
+            result.push_back(static_cast<char_t>((d << NIBBLE_SIZE) + e));
         } else {
             result.push_back(static_cast<char_t>(character));
         }
@@ -235,9 +237,10 @@ bool uri::parse_scheme(int32_t& character)
         {value_info{"http", value_type{http::uri_scheme::HTTP, 80}},
          value_info{"mailto", value_type{http::uri_scheme::MAILTO, 0}}}};
 
+    static const size_t tmp_string_size = 8;
     static const trie<value_type> t(types,
                                     value_type{http::uri_scheme::UNKNOWN, 0});
-    push_back_string<8> tmp;
+    push_back_string<tmp_string_size> tmp;
     std::tie(scheme_, port_) = t.parse(character, tmp, *lexer_);
     return uri_scheme::UNKNOWN != scheme_;
 }
@@ -301,6 +304,8 @@ bool uri::parse_authority_1st_pass(int32_t& character)
 
 bool uri::parse_authority_2nd_pass()
 {
+    static const uint32_t max_factor_for_port_size = 10000;
+
     // Now there are all parts of the authority at the right place, except the
     // port number, if it exists. We will search the host backwards for a
     // number and search the ':' symbol.
@@ -310,17 +315,18 @@ bool uri::parse_authority_2nd_pass()
         const uint8_t c =
             static_cast<uint8_t>(host_[static_cast<size_t>(i)] - '0');
 
-        if ((c < 10) && (factor <= 10000)) {
+        if ((c < DECIMAL_DIGIT_COUNT) && (factor <= max_factor_for_port_size)) {
 
             p += (factor * c);
-            factor *= 10;
+            factor *= DECIMAL_DIGIT_COUNT;
 
         } else if ((':' == host_[static_cast<size_t>(i)]) && (p > 0) &&
-                   (p < 65536)) {
+                   (p < std::numeric_limits<uint16_t>::max())) {
 
             port_ = static_cast<uint16_t>(p);
 
-            push_back_string<32> tmp;
+            static const size_t tmp_string_size = 32;
+            push_back_string<tmp_string_size> tmp;
             host_[static_cast<size_t>(i)] = '\0';
             tmp.append_string(host_.c_str());
             host_.clear();

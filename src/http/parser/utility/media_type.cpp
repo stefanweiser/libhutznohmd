@@ -37,7 +37,7 @@ media_type::media_type()
     , custom_type_()
     , custom_subtype_()
     , parameters_()
-    , quality_(10)
+    , quality_(DECIMAL_DIGIT_COUNT)
 {
 }
 
@@ -119,17 +119,21 @@ uint8_t media_type::quality() const
 
 uint8_t media_type::specification_grade() const
 {
+    static const uint8_t wildcard_type_and_subtype = 0;
+    static const uint8_t wildcard_type = 1;
+    static const uint8_t wildcard_subtype = 2;
+    static const uint8_t no_wildcard = 3;
     if (media_type_interface::mime_type::WILDCARD == type_) {
         if (media_type_interface::mime_subtype::WILDCARD == subtype_) {
-            return 0;
+            return wildcard_type_and_subtype;
         } else {
-            return 1;
+            return wildcard_type;
         }
     } else {
         if (media_type_interface::mime_subtype::WILDCARD == subtype_) {
-            return 2;
+            return wildcard_subtype;
         } else {
-            return 3;
+            return no_wildcard;
         }
     }
 }
@@ -208,8 +212,9 @@ bool media_type::parse_parameter(int32_t& character)
     static const std::vector<value_info> types = {
         {value_info{"q", trie_value{&media_type::parse_quality_parameter, 0}}}};
 
-    push_back_string<16> key;
-    push_back_string<16> value;
+    static const size_t tmp_string_size = 16;
+    push_back_string<tmp_string_size> key;
+    push_back_string<tmp_string_size> value;
     static const trie<trie_value> t(types,
                                     trie_value{NULL, static_cast<size_t>(-1)});
     trie_value v = t.parse(character, key, *lexer_);
@@ -257,11 +262,11 @@ bool media_type::parse_quality_parameter(int32_t& character)
 
     character = lexer_->get();
     const uint8_t lower = static_cast<uint8_t>(character - '0');
-    if (lower > 9) {
+    if (lower >= DECIMAL_DIGIT_COUNT) {
         return false;
     }
 
-    quality_ = static_cast<uint8_t>((upper * 10) + lower);
+    quality_ = static_cast<uint8_t>((upper * DECIMAL_DIGIT_COUNT) + lower);
     character = lexer_->get();
     return true;
 }

@@ -24,6 +24,9 @@
 namespace hutzn
 {
 
+//! Number of decimal digits.
+static const uint8_t DECIMAL_DIGIT_COUNT = 10;
+
 //! Number of bits per byte.
 static const size_t BITS_PER_BYTE = 8;
 
