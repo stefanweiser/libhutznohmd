@@ -147,8 +147,9 @@ def execute_sonar(args):
     os.environ['project_key'] = 'libhutznohmd'
     os.environ['project_name'] = 'libhutznohmd'
     os.environ['project_path'] = script_path
-    os.environ['build_path'] = 'build'
+    os.environ['build_path'] = build_path
     os.environ['coverage_path'] = 'build/coverage'
+    os.environ['reports_path'] = 'build/reports'
     os.environ['version'] = '0.0.1'
     os.environ['include_paths'] = '/usr/include/c++/4.8,' + \
                                   '/usr/include/x86_64-linux-gnu/c++/4.8,' + \
