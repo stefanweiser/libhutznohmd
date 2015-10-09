@@ -16,29 +16,23 @@
 # <http://www.gnu.org/licenses/>.
 
 IF(NOT MINIMAL)
-    FIND_PACKAGE(LCOV 1.9)
+    FIND_PACKAGE(Gcovr 3.2 REQUIRED)
 
-    FUNCTION(COVERAGE_TARGET TARGET TEST EXCLUDE)
-        IF(LCOV_FOUND)
-            SET(OUTPUT "${TEST}_cov")
-
-            ADD_CUSTOM_TARGET(${TARGET}
-              ${LCOV_LCOV_EXECUTABLE} -d . -z
-              COMMAND ${TEST}
-              COMMAND ${LCOV_LCOV_EXECUTABLE} -d . -c -o ${OUTPUT}.info
-              COMMAND ${LCOV_LCOV_EXECUTABLE} -r ${OUTPUT}.info ${EXCLUDE}
-                'gmock/*' '/usr/*' -o ${OUTPUT}.info.cleaned
-              COMMAND ${LCOV_GENHTML_EXECUTABLE} -o ${OUTPUT}
-                ${OUTPUT}.info.cleaned
-              COMMAND ${CMAKE_COMMAND} -E remove ${OUTPUT}.info
-                ${OUTPUT}.info.cleaned
-              WORKING_DIRECTORY ${BUILD_PATH})
-        ELSE()
-            MESSAGE(WARNING "Target ${TARGET} not available," +
-              " because lcov is missing.")
-        ENDIF()
-    ENDFUNCTION()
-ELSE()
-    FUNCTION(COVERAGE_TARGET)
-    ENDFUNCTION()
+    SET(COVERAGE_PATH "${CMAKE_BINARY_DIR}/coverage")
+    FILE(MAKE_DIRECTORY "${COVERAGE_PATH}")
+    ADD_CUSTOM_TARGET(coverage
+      unittest_hutznohmd
+      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --delete --verbose --keep --xml
+        "--output=${COVERAGE_PATH}/unittest.xml" --branches --root
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+      COMMAND integrationtest_hutznohmd
+      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --delete --verbose --keep --xml
+        "--output=${COVERAGE_PATH}/integrationtest.xml" --branches --root
+        ${CMAKE_CURRENT_SOURCE_DIR}
+      COMMAND unittest_hutznohmd
+      COMMAND integrationtest_hutznohmd
+      COMMAND ${GCOVR_GCOVR_EXECUTABLE} --delete --verbose --keep --xml
+        "--output=${COVERAGE_PATH}/overall.xml" --branches --root
+        ${CMAKE_CURRENT_SOURCE_DIR}
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 ENDIF()

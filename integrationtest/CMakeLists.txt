@@ -25,9 +25,6 @@ STYLE_FILES(integrationtest_hutznohmd ${FILES})
 ADD_TEST(integrationtest
          "${CMAKE_CURRENT_BINARY_DIR}/integrationtest_hutznohmd")
 
-COVERAGE_TARGET(integrationtest_coverage integrationtest_hutznohmd
-                'integrationtest/*')
-
 SET_SOURCE_FILES_PROPERTIES(${GMOCK} PROPERTIES COMPILE_FLAGS -w)
 
 TARGET_LINK_LIBRARIES(integrationtest_hutznohmd hutznohmd)
