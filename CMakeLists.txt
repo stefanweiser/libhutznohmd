@@ -35,7 +35,6 @@ INCLUDE(CPPCheck)
 INCLUDE(Documentation)
 INCLUDE(RecursiveSubdirs)
 INCLUDE(Sonar)
-INCLUDE(Valgrind)
 
 INCLUDE(Toolchain)
 

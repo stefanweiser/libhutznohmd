@@ -212,12 +212,6 @@ def execute_update(args):
                 update_single_path(dirpath)
 
 
-def execute_valgrind(args):
-    check_is_bootstrapped()
-
-    check_call(['make', 'valgrind'], cwd=build_path)
-
-
 def execute_all(args):
     execute_clean(args)
     execute_bootstrap(args)
@@ -260,9 +254,7 @@ if __name__ == "__main__":
                 'test': Struct(fn=execute_test,
                                help='executes unit and integration tests'),
                 'update': Struct(fn=execute_update,
-                                 help='generates new file lists'),
-                'valgrind': Struct(fn=execute_valgrind,
-                                   help='searches for memory leaks')
+                                 help='generates new file lists')
             }
 
             args = parse_arguments(steps)
