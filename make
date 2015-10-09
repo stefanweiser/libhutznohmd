@@ -4,13 +4,22 @@ import os
 import sys
 
 # determine path of the script
-script_path = os.path.dirname(os.path.realpath(__file__))
-python_script_path = os.path.join(script_path, 'python')
-build_path = os.path.join(script_path, 'build')
-install_path = os.path.join(script_path, 'install')
+project_path = os.path.dirname(os.path.realpath(__file__))
+python_script_path = os.path.join(project_path, 'python')
+build_path = os.path.join(project_path, 'build')
+install_path = os.path.join(project_path, 'install')
 reports_path = os.path.join(build_path, 'reports')
 coverage_path = os.path.join(build_path, 'coverage')
 log_file_path = os.path.join(build_path, 'build.log')
+unittest_bin = os.path.join(build_path, 'unittest', 'unittest_hutznohmd')
+integrationtest_bin = os.path.join(build_path, 'integrationtest',
+                                   'integrationtest_hutznohmd')
+src_path = os.path.join(project_path, 'src')
+examples_path = os.path.join(project_path, 'examples')
+integrationtest_path = os.path.join(project_path, 'integrationtest')
+unittest_path = os.path.join(project_path, 'unittest')
+sonar_runner_url = 'http://repo1.maven.org/maven2/org/codehaus/sonar/' + \
+    'runner/sonar-runner-dist/2.4/sonar-runner-dist-2.4.jar'
 
 # add the python subdirectory to the search path
 sys.path.insert(0, python_script_path)
@@ -18,11 +27,12 @@ sys.path.insert(0, python_script_path)
 from argparse import ArgumentParser
 from multiprocessing import cpu_count
 from shutil import rmtree
-from subprocess import CalledProcessError, check_call, Popen
+from subprocess import CalledProcessError, check_call
 from sys import version, version_info
 from termcolor import BOLD, colorize, GREEN, RED
 from evalfile import eval_file
 from httpget import http_get
+from proclogger import log_process
 import compiler
 
 
@@ -79,7 +89,7 @@ def check_is_bootstrapped():
 
 def execute_bootstrap(args):
     check_call(['cmake',
-                script_path,
+                project_path,
                 '-DCMAKE_INSTALL_PREFIX=' + install_path,
                 '-DCMAKE_BUILD_TYPE=' + args.target,
                 '-DMINIMAL=' + str(args.minimal),
@@ -99,42 +109,34 @@ def execute_check(args):
     os.makedirs(reports_path)
 
     print(colorize('[INFO]: Compile all...', GREEN))
-    process = Popen(['make', '-j' + str(cpu_count()), 'all'], cwd=build_path,
-                    stdout=args.log_file, stderr=args.log_file)
-    process.wait()
+    log_process(['make', '-j' + str(cpu_count()), 'all'], build_path,
+                args.log_file, args.log_file)
 
     print(colorize('[INFO]: Run valgrind...', GREEN))
-    process = Popen(['valgrind', '--leak-check=full', '--xml=yes',
-                     '--xml-file=' + reports_path + '/valgrind.xml',
-                     build_path + '/unittest/unittest_hutznohmd'],
-                    cwd=build_path, stdout=args.log_file, stderr=args.log_file)
-    process.wait()
+    log_process(['valgrind', '--leak-check=full', '--xml=yes', '--xml-file=' +
+                 os.path.join(reports_path, 'valgrind.xml'), unittest_bin],
+                build_path, args.log_file, args.log_file)
 
     print(colorize('[INFO]: Run unittest...', GREEN))
-    process = Popen([build_path + '/unittest/unittest_hutznohmd',
-                     '--gtest_output=xml:' + reports_path + '/unittest.xml'],
-                    cwd=build_path, stdout=args.log_file, stderr=args.log_file)
-    process.wait()
+    log_process([unittest_bin, '--gtest_output=xml:' +
+                 os.path.join(reports_path, 'unittest.xml')], build_path,
+                args.log_file, args.log_file)
 
     print(colorize('[INFO]: Run cppcheck...', GREEN))
-    output_file = open(reports_path + '/cppcheck.xml', 'w')
-    process = Popen(['cppcheck', '--xml', '--xml-version=2', '--quiet',
-                     '--language=c++', '--platform=unix64', '--enable=all',
-                     '--std=c++11', '--force', '-I', script_path + '/src',
-                     script_path + '/src'], cwd=build_path,
-                    stdout=args.log_file, stderr=output_file)
-    process.wait()
-    output_file.close()
+    cppcheck_report_file = open(os.path.join(reports_path, 'cppcheck.xml'),
+                                'w')
+    log_process(['cppcheck', '--xml', '--xml-version=2', '--quiet', '--force',
+                 '--language=c++', '--platform=unix64', '--enable=all',
+                 '--std=c++11', '-I', src_path, src_path], build_path,
+                args.log_file, cppcheck_report_file)
+    cppcheck_report_file.close()
 
     print(colorize('[INFO]: Run rats...', GREEN))
-    output_file = open(reports_path + '/rats.xml', 'w')
-    process = Popen(['rats', '--xml', '--resultsonly', '-w', '3',
-                     script_path + '/examples',
-                     script_path + '/integrationtest', script_path + '/src',
-                     script_path + '/unittest'], cwd=build_path,
-                    stdout=output_file, stderr=args.log_file)
-    process.wait()
-    output_file.close()
+    rats_report_file = open(os.path.join(reports_path, 'rats.xml'), 'w')
+    log_process(['rats', '--xml', '--resultsonly', '-w', '3', examples_path,
+                 integrationtest_path, src_path, unittest_path], build_path,
+                rats_report_file, args.log_file)
+    rats_report_file.close()
 
     print(colorize('[INFO]: All report files were written to ' + reports_path +
                    '.', GREEN))
@@ -147,11 +149,12 @@ def execute_clean(args):
 def run_gcovr(output_filename_base):
     filename_base = os.path.join(coverage_path, output_filename_base)
     check_call(['gcovr', '--branches', '--xml', '--output=' + filename_base +
-                '.xml', '--root', script_path], cwd=build_path)
+                '.xml', '--root', project_path], cwd=build_path)
     check_call(['gcovr', '--branches', '--html', '--output=' + filename_base +
-                '.html', '--root', script_path], cwd=build_path)
+                '.html', '--root', project_path], cwd=build_path)
     check_call(['gcovr', '--delete', '--branches', '--output=' +
-                filename_base + '.txt', '--root', script_path], cwd=build_path)
+                filename_base + '.txt', '--root', project_path],
+               cwd=build_path)
 
 
 def execute_coverage(args):
@@ -162,21 +165,19 @@ def execute_coverage(args):
 
     print(colorize('[INFO]: Collect unittest\'s coverage information...',
                    GREEN))
-    Popen(['./unittest/unittest_hutznohmd'], cwd=build_path,
-          stdout=args.log_file, stderr=args.log_file).wait()
+    log_process([unittest_bin], build_path, args.log_file, args.log_file)
     run_gcovr('unittest')
 
     print(colorize('[INFO]: Collect integrationtest\'s coverage' +
                    ' information...', GREEN))
-    Popen(['./integrationtest/integrationtest_hutznohmd'], cwd=build_path,
-          stdout=args.log_file, stderr=args.log_file).wait()
+    log_process([integrationtest_bin], build_path, args.log_file,
+                args.log_file)
     run_gcovr('integrationtest')
 
     print(colorize('[INFO]: Collect overall coverage information...', GREEN))
-    Popen(['./unittest/unittest_hutznohmd'], cwd=build_path,
-          stdout=args.log_file, stderr=args.log_file).wait()
-    Popen(['./integrationtest/integrationtest_hutznohmd'], cwd=build_path,
-          stdout=args.log_file, stderr=args.log_file).wait()
+    log_process([unittest_bin], build_path, args.log_file, args.log_file)
+    log_process([integrationtest_bin], build_path, args.log_file,
+                args.log_file)
     run_gcovr('overall')
 
 
@@ -198,22 +199,23 @@ def execute_package(args):
     tar_name = 'libhutznohmd-' + args.library_version + '.tar.gz'
     src_tar_name = 'libhutznohmd_src-' + args.library_version + '.tar.gz'
 
-    check_call(['tar', 'cf', os.path.join(build_path, tar_name),
+    check_call(['tar', 'cfpz', os.path.join(build_path, tar_name),
                 '--owner=root', '--group=root', '.'], cwd=install_path)
-    check_call(['tar', 'cf', os.path.join(build_path, src_tar_name),
-                '--owner=root', '--group=root', '--exclude=./.git',
-                '--exclude=./.gitignore', '--exclude=./build',
-                '--exclude=./install', '--exclude=./python/__pycache__',
-                '--exclude=*.user', '.'], cwd=script_path)
+    check_call(['tar', 'cfpz', os.path.join(build_path, src_tar_name),
+                '--owner=root', '--group=root', '--exclude=.git',
+                '--exclude=.gitignore', '--exclude=build',
+                '--exclude=install', '--exclude=' +
+                os.path.join('python', '__pycache__'), '--exclude=*.user',
+                '.'], cwd=project_path)
 
 
 def execute_sonar(args):
     os.environ['project_key'] = 'libhutznohmd'
     os.environ['project_name'] = 'libhutznohmd'
-    os.environ['project_path'] = script_path
+    os.environ['project_path'] = project_path
     os.environ['build_path'] = build_path
-    os.environ['coverage_path'] = 'build/coverage'
-    os.environ['reports_path'] = 'build/reports'
+    os.environ['coverage_path'] = os.path.join('build', 'coverage')
+    os.environ['reports_path'] = os.path.join('build', 'reports')
     os.environ['version'] = '0.0.1'
     os.environ['include_paths'] = \
         ','.join(compiler.get_cxx11_release_include_list())
@@ -225,22 +227,22 @@ def execute_sonar(args):
     execute_check(args)
 
     print(colorize('[INFO]: Generate sonar configuration...', GREEN))
-    compiler.write_cxx11_release_defines(build_path + '/defines.h')
-    eval_file(script_path + '/sonar-cxx.template',
-              build_path + '/sonar.properties')
+    compiler.write_cxx11_release_defines(os.path.join(build_path,
+                                                      'defines.h'))
+    sonar_property_file = os.path.join('build', 'sonar.properties')
+    eval_file(os.path.join(project_path, 'sonar-cxx.template'),
+              sonar_property_file)
 
     print(colorize('[INFO]: Download sonar-runner...', GREEN))
-    sonar_runner_path = build_path + '/sonar-runner.jar'
+    sonar_runner_path = os.path.join(build_path, 'sonar-runner.jar')
     if not os.path.exists(sonar_runner_path):
-        http_get('http://repo1.maven.org/maven2/org/codehaus/sonar/runner/' +
-                 'sonar-runner-dist/2.4/sonar-runner-dist-2.4.jar',
-                 sonar_runner_path)
+        http_get(sonar_runner_url, sonar_runner_path)
 
     print(colorize('[INFO]: Download informations onto sonar...', GREEN))
     check_call(['java', '-classpath', sonar_runner_path,
                 '-Drunner.home=build', '-Dproject.home=.',
-                '-Dproject.settings=build/sonar.properties',
-                'org.sonar.runner.Main'], cwd=script_path)
+                '-Dproject.settings=' + sonar_property_file,
+                'org.sonar.runner.Main'], cwd=project_path)
 
 
 def execute_test(args):
@@ -266,7 +268,7 @@ def update_single_path(rootpath):
 
 
 def execute_update(args):
-    for dirpath, dirnames, files in os.walk(script_path):
+    for dirpath, dirnames, files in os.walk(project_path):
         for file in files:
             if file == 'files.txt':
                 update_single_path(dirpath)
@@ -319,15 +321,15 @@ if __name__ == "__main__":
 
             args = parse_arguments(steps)
 
-            version_file = open(os.path.join(script_path, 'version'), 'r')
+            version_file = open(os.path.join(project_path, 'version'), 'r')
             args.library_version = version_file.read().strip()
             version_file.close()
 
-            args.log_file = open(log_file_path, 'w')
             if not os.path.exists(build_path):
                 os.makedirs(build_path)
                 execute_bootstrap(args)
 
+            args.log_file = open(log_file_path, 'w')
             for step in args.step:
                 steps[step].fn(args)
             args.log_file.close()
