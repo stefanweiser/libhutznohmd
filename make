@@ -3,6 +3,9 @@
 import os
 import sys
 
+# change directory into project path
+os.chdir(os.path.dirname(__file__))
+
 # determine path of the script
 project_path = os.path.dirname(os.path.realpath(__file__))
 python_script_path = os.path.join(project_path, 'python')
