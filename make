@@ -15,14 +15,13 @@ sys.path.insert(0, python_script_path)
 
 from argparse import ArgumentParser
 from multiprocessing import cpu_count
-import re
 from shutil import rmtree
-from subprocess import CalledProcessError, check_call, PIPE, DEVNULL, Popen
+from subprocess import CalledProcessError, check_call, Popen
 from sys import version, version_info
 from termcolor import BOLD, colorize, GREEN, RED
 from evalfile import eval_file
-from compiler import get_cxx11_release_include_list, write_cxx11_release_defines
 from httpget import http_get
+import compiler
 
 
 class Struct:
@@ -105,15 +104,15 @@ def execute_check(args):
 
     print(colorize('[INFO]: Run valgrind...', GREEN))
     process = Popen(['valgrind', '--leak-check=full', '--xml=yes',
-                '--xml-file=' + reports_path + '/valgrind.xml',
-                build_path + '/unittest/unittest_hutznohmd'],
-               cwd=build_path, stdout=log_file, stderr=log_file)
+                     '--xml-file=' + reports_path + '/valgrind.xml',
+                     build_path + '/unittest/unittest_hutznohmd'],
+                    cwd=build_path, stdout=log_file, stderr=log_file)
     process.wait()
 
     print(colorize('[INFO]: Run unittest...', GREEN))
     process = Popen([build_path + '/unittest/unittest_hutznohmd',
-                '--gtest_output=xml:' + reports_path + '/unittest.xml'],
-               cwd=build_path, stdout=log_file, stderr=log_file)
+                     '--gtest_output=xml:' + reports_path + '/unittest.xml'],
+                    cwd=build_path, stdout=log_file, stderr=log_file)
     process.wait()
 
     print(colorize('[INFO]: Run cppcheck...', GREEN))
@@ -136,7 +135,7 @@ def execute_check(args):
     process.wait()
     output_file.close()
     log_file.close()
-    
+
     print(colorize('[INFO]: All report files were written to ' + reports_path +
                    '.', GREEN))
 
@@ -187,23 +186,27 @@ def execute_sonar(args):
     os.environ['coverage_path'] = 'build/coverage'
     os.environ['reports_path'] = 'build/reports'
     os.environ['version'] = '0.0.1'
-    os.environ['include_paths'] = ','.join(get_cxx11_release_include_list())
+    os.environ['include_paths'] = \
+        ','.join(compiler.get_cxx11_release_include_list())
 
-    write_cxx11_release_defines(build_path + '/defines.h');
+    print(colorize('[INFO]: Generate sonar configuration...', GREEN))
+    compiler.write_cxx11_release_defines(build_path + '/defines.h')
     eval_file(script_path + '/sonar-cxx.template',
               build_path + '/sonar.properties')
-    
+
     rmtree(build_path)
     os.makedirs(build_path)
+    print(colorize('[INFO]: Calculate coverage information...', GREEN))
     execute_coverage(args)
     execute_check(args)
 
+    print(colorize('[INFO]: Download sonar-runner...', GREEN))
     sonar_runner_path = build_path + '/sonar-runner.jar'
     if not os.path.exists(sonar_runner_path):
         http_get('http://repo1.maven.org/maven2/org/codehaus/sonar/runner/' +
                  'sonar-runner-dist/2.4/sonar-runner-dist-2.4.jar',
                  sonar_runner_path)
-    
+
     check_call(['java', '-classpath', sonar_runner_path,
                 '-Drunner.home=build', '-Dproject.home=.',
                 '-Dproject.settings=build/sonar.properties',
@@ -217,7 +220,7 @@ def execute_test(args):
 
 
 def update_single_path(rootpath):
-    found_files=[]
+    found_files = []
 
     for dirpath, dirnames, files in os.walk(rootpath):
         for file in files:
