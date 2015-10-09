@@ -20,9 +20,10 @@
 #define LIBHUTZNOHMD_HTTP_PARSER_UTILITY_TIMESTAMP_HPP
 
 #include <cstddef>
-#include <ctime>
 
 #include <http/parser/utility/lexer.hpp>
+
+#include <utility/date_calculation.hpp>
 
 namespace hutzn
 {

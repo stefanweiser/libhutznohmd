@@ -52,6 +52,10 @@ using int32_t = std::int32_t;
 //! Signed 64-bit integer type.
 using int64_t = std::int64_t;
 
+//! Type, that stores a timestamp, which is relative to 1 January 1970 at
+//! 00:00:00 UTC. Could be converted into ctime's time_t typedef.
+using epoch_time_t = int64_t;
+
 //! Declares a variable as unused. Needed by variables, those single purpose is
 //! to be used in an assertion.
 #define UNUSED(x) ((void)x)

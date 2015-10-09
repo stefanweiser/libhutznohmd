@@ -19,13 +19,26 @@
 #ifndef LIBHUTZNOHMD_UTILITY_DATE_CALCULATION_HPP
 #define LIBHUTZNOHMD_UTILITY_DATE_CALCULATION_HPP
 
-#include <ctime>
+#include <libhutznohmd/types.hpp>
 
 namespace hutzn
 {
 
-time_t seconds_since_epoch(const time_t second_of_day, const time_t day,
-                           const time_t month, const time_t year);
+//! @brief Calculates an epoch timestamp.
+//!
+//! Given the number of seconds elapsed at a day and the date of that day, the
+//! number of seconds elapsed since epoch time (00:00:00 UTC on 1 January 1970)
+//! will be returned. Returns -1, when at least one parameter is not valid.
+//! @param[in] second_of_day The second at a day. Must be in range of
+//!                          [0 .. 86399].
+//! @param[in] day           Day of the month. The correct range depends on the
+//!                          month and year, but at least in [1..31].
+//! @param[in] month         Month of the year. Must stay in the range of
+//!                          [1..12].
+//! @param[in] year          Year, which must be greater than or equal to 1970.
+epoch_time_t seconds_since_epoch(const uint32_t second_of_day,
+                                 const uint8_t day, const uint8_t month,
+                                 const uint32_t year);
 
 } // namespace hutzn
 

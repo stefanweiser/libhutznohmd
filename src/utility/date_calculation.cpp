@@ -100,8 +100,9 @@ bool is_valid_epoch_date(const time_t day, const time_t month,
 
 } // namespace
 
-time_t seconds_since_epoch(const time_t second_of_day, const time_t day,
-                           const time_t month, const time_t year)
+epoch_time_t seconds_since_epoch(const uint32_t second_of_day,
+                                 const uint8_t day, const uint8_t month,
+                                 const uint32_t year)
 {
     if (!is_valid_epoch_date(day, month, year)) {
         return -1;

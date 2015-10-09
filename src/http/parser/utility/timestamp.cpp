@@ -18,7 +18,6 @@
 
 #include <http/parser/utility/trie.hpp>
 #include <utility/common.hpp>
-#include <utility/date_calculation.hpp>
 
 #include "timestamp.hpp"
 
@@ -112,7 +111,9 @@ time_t parse_rfc1123_date_time(int32_t& character, const lexer& l)
         return -1;
     }
 
-    return seconds_since_epoch(second_of_day, day, month, year);
+    return seconds_since_epoch(
+        static_cast<uint32_t>(second_of_day), static_cast<uint8_t>(day),
+        static_cast<uint8_t>(month), static_cast<uint32_t>(year));
 }
 
 time_t parse_rfc850_date_time(int32_t& character, const lexer& l)
@@ -148,7 +149,9 @@ time_t parse_rfc850_date_time(int32_t& character, const lexer& l)
         return -1;
     }
 
-    return seconds_since_epoch(second_of_day, day, month, year);
+    return seconds_since_epoch(
+        static_cast<uint32_t>(second_of_day), static_cast<uint8_t>(day),
+        static_cast<uint8_t>(month), static_cast<uint32_t>(year));
 }
 
 time_t parse_asctime_date_time(int32_t& character, const lexer& l)
@@ -169,7 +172,9 @@ time_t parse_asctime_date_time(int32_t& character, const lexer& l)
         character = l.get_non_whitespace();
     }
 
-    return seconds_since_epoch(second_of_day, day, month, year);
+    return seconds_since_epoch(
+        static_cast<uint32_t>(second_of_day), static_cast<uint8_t>(day),
+        static_cast<uint8_t>(month), static_cast<uint32_t>(year));
 }
 
 std::tuple<int8_t, bool> parse_weekday(int32_t& character, const lexer& l)
