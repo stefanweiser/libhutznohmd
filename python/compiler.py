@@ -25,7 +25,7 @@ def get_cxx11_release_include_list():
 
 def write_cxx11_release_defines(filename):
     output_file = open(filename, 'w')
-    process = Popen(['g++', '-std=c++11', '-DNDEBUG', '-dM', '-E', '-xc',
+    process = Popen(['g++', '-std=c++11', '-DNDEBUG', '-dM', '-E', '-x', 'c++',
                      devnull], stdout=output_file)
     process.wait()
     output_file.close()
