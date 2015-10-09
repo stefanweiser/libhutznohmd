@@ -86,7 +86,7 @@ def check_is_bootstrapped():
 
 def execute_bootstrap(args):
     check_call(['cmake',
-                project_path,
+                os.path.dirname(build_path),
                 '-DCMAKE_INSTALL_PREFIX=' + install_path,
                 '-DCMAKE_BUILD_TYPE=' + args.target,
                 '-DMINIMAL=' + str(args.minimal),
@@ -198,14 +198,15 @@ def execute_package(args):
     tar_name = 'libhutznohmd-' + args.library_version + '.tar.gz'
     src_tar_name = 'libhutznohmd_src-' + args.library_version + '.tar.gz'
 
-    check_call(['tar', 'cfpz', os.path.join(build_path, tar_name),
-                '--owner=root', '--group=root', '.'], cwd=install_path)
-    check_call(['tar', 'cfpz', os.path.join(build_path, src_tar_name),
+    check_call(['tar', '--create', '--gzip', '--preserve-permissions',
+                '--owner=root', '--group=root', '--directory', install_path,
+                '--file', tar_name, '.'], cwd=build_path)
+    check_call(['tar', '--create', '--gzip', '--preserve-permissions',
                 '--owner=root', '--group=root', '--exclude=.git',
-                '--exclude=.gitignore', '--exclude=build',
-                '--exclude=install', '--exclude=' +
-                os.path.join('python', '__pycache__'), '--exclude=*.user',
-                '.'], cwd=project_path)
+                '--exclude=.gitignore', '--exclude=build', '--exclude=install',
+                '--exclude=' + os.path.join('python', '__pycache__'),
+                '--exclude=*.user', '--directory', project_path, '--file',
+                src_tar_name, '.'], cwd=build_path)
 
 
 def execute_sonar(args):
