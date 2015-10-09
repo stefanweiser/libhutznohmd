@@ -33,7 +33,7 @@ inline char_t to_lower(const char_t c)
 {
     char_t result;
     if ((c >= 'A') && (c <= 'Z')) {
-        static constexpr uint8_t UPPER_LOWER_CASE_OFFSET = 0x60U;
+        static const uint8_t UPPER_LOWER_CASE_OFFSET = 0x60U;
         result = (c | UPPER_LOWER_CASE_OFFSET);
     } else {
         result = c;

@@ -628,8 +628,7 @@ enum class http_verb : uint8_t {
 //! "speaking" status code in the response in that case:
 //!
 //! @code{.cpp}
-//! constexpr http_status_code xy =
-//!     static_cast<http_status_code>(111);
+//! const http_status_code xy = static_cast<http_status_code>(111);
 //! @endcode
 enum class http_status_code : uint16_t {
     //! Since HTTP/1.1

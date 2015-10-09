@@ -33,7 +33,7 @@ class mime_data
 public:
     // There are always two special values: INVALID and NONE. Therefore indexing
     // starts with 2.
-    static constexpr arithmetic_type special_value_count = 2;
+    static const arithmetic_type special_value_count = 2;
 
     static_assert(sizeof(value_type) == sizeof(arithmetic_type),
                   "Value and arithmetic type is not of the same size.");

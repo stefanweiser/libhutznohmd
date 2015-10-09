@@ -18,10 +18,16 @@
 
 #include <array>
 
+#include <utility/common.hpp>
+
 #include "base64.hpp"
 
 namespace hutzn
 {
+
+static const size_t evaluation_chunk_size = 3;
+static const size_t sextets_per_evaluation_chunk = 4;
+static const size_t sextets_size = 6;
 
 std::string encode_base64(const std::vector<uint8_t>& data)
 {
@@ -32,20 +38,23 @@ std::string encode_base64(const std::vector<uint8_t>& data)
 
     std::string result;
 
+    static const size_t hexade_bitmask = 0x3FU;
+
     const uint8_t* p = data.data();
     size_t remaining = data.size();
     uint32_t bit_backlog = 0;
     uint8_t bytes_in_backlog = 0;
     while (remaining > 0) {
-        bit_backlog = (bit_backlog << 8) | (*p);
+        bit_backlog = (bit_backlog << BITS_PER_BYTE) | (*p);
         bytes_in_backlog++;
         p++;
         remaining--;
 
-        if (3 == bytes_in_backlog) {
-            for (size_t i = 0; i < 4; i++) {
+        if (evaluation_chunk_size == bytes_in_backlog) {
+            for (size_t i = 0; i < sextets_per_evaluation_chunk; i++) {
                 const size_t bits_to_shift = 6 * (3 - i);
-                const uint8_t token = (bit_backlog >> bits_to_shift) & 0x3FU;
+                const uint8_t token =
+                    (bit_backlog >> bits_to_shift) & hexade_bitmask;
                 result.push_back(base64_encoder_map[token]);
             }
             bytes_in_backlog = 0;
@@ -54,15 +63,22 @@ std::string encode_base64(const std::vector<uint8_t>& data)
 
     if (bytes_in_backlog != 0) {
         const uint8_t original_bytes_in_backlog = bytes_in_backlog;
-        while (bytes_in_backlog != 3) {
-            bit_backlog = bit_backlog << 8;
+        while (bytes_in_backlog != evaluation_chunk_size) {
+            bit_backlog = bit_backlog << BITS_PER_BYTE;
             bytes_in_backlog++;
         }
 
-        result.push_back(base64_encoder_map[(bit_backlog >> 18) & 0x3FU]);
-        result.push_back(base64_encoder_map[(bit_backlog >> 12) & 0x3FU]);
-        if (2 == original_bytes_in_backlog) {
-            result.push_back(base64_encoder_map[(bit_backlog >> 6) & 0x3FU]);
+        static const size_t second_hexade = sextets_size;
+        static const size_t third_hexade = second_hexade + sextets_size;
+        static const size_t fourth_hexade = third_hexade + sextets_size;
+
+        result.push_back(base64_encoder_map[(bit_backlog >> fourth_hexade) &
+                                            hexade_bitmask]);
+        result.push_back(
+            base64_encoder_map[(bit_backlog >> third_hexade) & hexade_bitmask]);
+        if ((evaluation_chunk_size - 1) == original_bytes_in_backlog) {
+            result.push_back(base64_encoder_map[(bit_backlog >> second_hexade) &
+                                                hexade_bitmask]);
         } else {
             result.push_back('=');
         }
@@ -74,7 +90,7 @@ std::string encode_base64(const std::vector<uint8_t>& data)
 
 std::vector<uint8_t> decode_base64(const std::string& encoded_string)
 {
-    static const std::array<int8_t, 256> base64_decoder_map = {
+    static const std::array<int8_t, 1 << BITS_PER_BYTE> base64_decoder_map = {
         {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
          -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
          -1, -1, -1, -1, -1, -1, -1, 62, -1, 62, -1, 63, 52, 53, 54, 55, 56, 57,
@@ -93,6 +109,10 @@ std::vector<uint8_t> decode_base64(const std::string& encoded_string)
 
     std::vector<uint8_t> result;
 
+    static const size_t second_byte = BITS_PER_BYTE;
+    static const size_t third_byte = second_byte + BITS_PER_BYTE;
+    static const size_t byte_bitmask = 0xFFU;
+
     uint32_t bit_backlog = 0;
     uint8_t sextets_in_backlog = 0;
     for (const int8_t& b : encoded_string) {
@@ -100,15 +120,15 @@ std::vector<uint8_t> decode_base64(const std::string& encoded_string)
         const int8_t token = base64_decoder_map[ub];
         if (token >= 0) {
             const uint8_t utoken = static_cast<const uint8_t>(token);
-            bit_backlog = (bit_backlog << 6) | utoken;
+            bit_backlog = (bit_backlog << sextets_size) | utoken;
             sextets_in_backlog++;
         }
         // Invalid tokens will be discarded.
 
-        if (4 == sextets_in_backlog) {
-            result.push_back((bit_backlog >> 16) & 0xFFU);
-            result.push_back((bit_backlog >> 8) & 0xFFU);
-            result.push_back(bit_backlog & 0xFFU);
+        if (sextets_per_evaluation_chunk == sextets_in_backlog) {
+            result.push_back((bit_backlog >> third_byte) & byte_bitmask);
+            result.push_back((bit_backlog >> second_byte) & byte_bitmask);
+            result.push_back(bit_backlog & byte_bitmask);
             sextets_in_backlog = 0;
         }
     }
@@ -119,14 +139,14 @@ std::vector<uint8_t> decode_base64(const std::string& encoded_string)
         }
 
         const uint8_t original_sextets_in_backlog = sextets_in_backlog;
-        while (sextets_in_backlog < 4) {
-            bit_backlog = (bit_backlog << 6) | 0;
+        while (sextets_in_backlog < sextets_per_evaluation_chunk) {
+            bit_backlog = (bit_backlog << sextets_size) | 0;
             sextets_in_backlog++;
         }
 
-        result.push_back((bit_backlog >> 16) & 0xFFU);
-        if (original_sextets_in_backlog == 3) {
-            result.push_back((bit_backlog >> 8) & 0xFFU);
+        result.push_back((bit_backlog >> third_byte) & byte_bitmask);
+        if (original_sextets_in_backlog == evaluation_chunk_size) {
+            result.push_back((bit_backlog >> second_byte) & byte_bitmask);
         }
     }
 

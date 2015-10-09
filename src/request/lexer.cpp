@@ -41,7 +41,7 @@ bool lexer::fetch_header(void)
     // The last character is assumed to be 0 if no data was already processed.
     char_t last = '\0';
 
-    constexpr static size_t chunk_size = 4000;
+    static const size_t chunk_size = 4000;
 
     // Loop will break, when one of the end states are reached. This will also
     // guard calling the method twice or more.

@@ -16,6 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include <utility/common.hpp>
+
 #include "md5.hpp"
 
 namespace hutzn
@@ -24,11 +26,11 @@ namespace hutzn
 namespace
 {
 
-static constexpr size_t block_size = 64;
+static const size_t block_size = 64;
 
 inline uint32_t rotate_left(const uint32_t& x, const uint8_t bits)
 {
-    return (x << bits) | (x >> (32 - bits));
+    return (x << bits) | (x >> ((sizeof(x) * BITS_PER_BYTE) - bits));
 }
 
 inline uint32_t f(const uint32_t& x, const uint32_t& y, const uint32_t& z)
@@ -182,9 +184,8 @@ void process(const char_t data[block_size], std::array<uint32_t, 4>& digest)
 
 md5_array calculate_md5(const std::vector<char_t>& data)
 {
-    static constexpr size_t bits_per_byte = 8;
-    static constexpr size_t size_of_size = sizeof(uint64_t);
-    static constexpr size_t max_size_minus_size = block_size - size_of_size;
+    static const size_t size_of_size = sizeof(uint64_t);
+    static const size_t max_size_minus_size = block_size - size_of_size;
 
     std::array<uint32_t, 4> digest{
         {0x67452301U, 0xEFCDAB89U, 0x98BADCFEU, 0x10325476U}};
@@ -220,11 +221,11 @@ md5_array calculate_md5(const std::vector<char_t>& data)
     data_buffer[remaining] = static_cast<char_t>(last_bit);
 
     // Fill up the number of bits.
-    const uint64_t processed_bits = data.size() * bits_per_byte;
+    const uint64_t processed_bits = data.size() * BITS_PER_BYTE;
     for (size_t i = 0; i < size_of_size; ++i) {
         const size_t index = max_size_minus_size + i;
         data_buffer[index] =
-            static_cast<char_t>(processed_bits >> (i * bits_per_byte));
+            static_cast<char_t>(processed_bits >> (i * BITS_PER_BYTE));
     }
 
     // Process last block.
@@ -234,7 +235,7 @@ md5_array calculate_md5(const std::vector<char_t>& data)
     md5_array result;
     for (size_t i = 0; i < result.size(); ++i) {
         const size_t index = i / digest.size();
-        const size_t bits_to_shift = (i % digest.size()) * bits_per_byte;
+        const size_t bits_to_shift = (i % digest.size()) * BITS_PER_BYTE;
         result[i] = static_cast<uint8_t>(digest[index] >> bits_to_shift);
     }
     return std::move(result);

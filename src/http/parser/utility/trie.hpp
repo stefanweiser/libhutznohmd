@@ -59,7 +59,7 @@ private:
     const bool has_value_;
     const std::string name_;
     const value_type value_;
-    std::array<std::unique_ptr<trie>, 256> children_;
+    std::array<std::unique_ptr<trie>, NUMBER_OF_VALUES_PER_BYTE> children_;
 };
 
 template <typename value_type>

@@ -52,7 +52,8 @@ uint16_t lex_status_code(int32_t& result, const lexer& l)
     return static_cast<uint16_t>(code);
 }
 
-bool lex_reason_phrase(int32_t& character, push_back_string<100>& phrase,
+bool lex_reason_phrase(int32_t& character,
+                       push_back_string<reason_phrase_size>& phrase,
                        const lexer& l)
 {
     do {
@@ -82,7 +83,8 @@ void response_parser::parse()
              value_info{"http/1.1", http::version::HTTP_1_1}}};
 
         static const trie<http::version> t(types, http::version::HTTP_UNKNOWN);
-        push_back_string<32> tmp;
+        static const size_t tmp_string_size = 32;
+        push_back_string<tmp_string_size> tmp;
         common_.version_ = t.parse(result, tmp, common_.lexer_);
     }
 

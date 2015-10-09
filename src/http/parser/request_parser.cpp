@@ -44,7 +44,7 @@ request_parser::request_parser(const anonymous_int_function& get_functor,
 
 void request_parser::parse()
 {
-    constexpr static size_t tmp_string_size = 32;
+    static const size_t tmp_string_size = 32;
 
     if (parser_state::UNFINISHED != common_.state_) {
         return;
@@ -243,7 +243,8 @@ bool request_parser::parse_host(int32_t& character)
 
     // This URI is a HTTP URI.
     if (0 == host.port()) {
-        host.set_port(80);
+        static const uint16_t http_port = 80;
+        host.set_port(http_port);
     }
 
     // Simply overwrite the scheme and the authority of the request URI.

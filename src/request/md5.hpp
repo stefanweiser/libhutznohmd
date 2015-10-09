@@ -28,7 +28,7 @@
 namespace hutzn
 {
 
-constexpr static size_t md5_size = 16;
+static const size_t md5_size = 16;
 using md5_array = std::array<uint8_t, md5_size>;
 
 //! @brief Calculates the MD5 sum of a given vector of bytes.

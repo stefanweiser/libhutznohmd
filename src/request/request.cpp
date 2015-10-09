@@ -436,8 +436,8 @@ void request::set_header(const mime_handler& handler, header_key key,
 void request::set_connection(const mime_handler&, const char_t* value_string,
                              size_t value_length)
 {
-    static constexpr char_t keep_alive_str[] = "keep-alive";
-    static constexpr size_t keep_alive_size = sizeof(keep_alive_str);
+    static const char_t keep_alive_str[] = "keep-alive";
+    static const size_t keep_alive_size = sizeof(keep_alive_str);
     static_assert(keep_alive_size > 0,
                   "Size of string keep-alive must be greater than 0.");
     if ((keep_alive_size <= (value_length + 1)) &&
@@ -471,8 +471,8 @@ void request::set_date(const mime_handler&, const char_t* value_string,
 void request::set_expect(const mime_handler&, const char_t* value_string,
                          size_t)
 {
-    static constexpr char_t continue_str[] = "100-continue";
-    static constexpr size_t continue_size = sizeof(continue_str);
+    static const char_t continue_str[] = "100-continue";
+    static const size_t continue_size = sizeof(continue_str);
     static_assert(continue_size > 0,
                   "Size of string 100-continue must be greater than 0.");
     if (0 == ::strncasecmp(value_string, continue_str, continue_size)) {

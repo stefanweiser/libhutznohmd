@@ -33,6 +33,8 @@ namespace hutzn
 namespace http
 {
 
+static const size_t reason_phrase_size = 100;
+
 class response_parser
 {
 public:
@@ -69,7 +71,7 @@ private:
 
     base_parser common_;
     uint16_t status_code_;
-    push_back_string<100> reason_phrase_;
+    push_back_string<reason_phrase_size> reason_phrase_;
 };
 
 } // namespace http
