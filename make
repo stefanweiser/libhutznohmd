@@ -92,6 +92,38 @@ def execute_build(args):
     check_call(['make', '-j' + str(cpu_count())], cwd=build_path)
 
 
+def execute_check(args):
+    check_is_bootstrapped()
+
+    os.makedirs(build_path + '/reports')
+    check_call(['make', '-j' + str(cpu_count())], cwd=build_path)
+
+    check_call(['valgrind', '--leak-check=full', '--xml=yes',
+                '--xml-file=' + build_path + '/reports/valgrind.xml',
+                build_path + '/unittest/unittest_hutznohmd'],
+               cwd=build_path)
+
+    check_call([build_path + '/unittest/unittest_hutznohmd',
+                '--gtest_output=xml:./reports/unittest.xml'], cwd=build_path)
+
+    output_file = open(build_path + '/reports/cppcheck.xml', 'w')
+    process = Popen(['cppcheck', '--xml', '--xml-version=2', '--quiet',
+                     '--language=c++', '--platform=unix64', '--enable=all',
+                     '--std=c++11', '--force', '-I', script_path + '/src',
+                     script_path + '/src'], cwd=build_path, stderr=output_file)
+    process.wait()
+    output_file.close()
+
+    output_file = open(build_path + '/reports/rats.xml', 'w')
+    process = Popen(['rats', '--xml', '--resultsonly', '-w', '3',
+                     script_path + '/examples',
+                     script_path + '/integrationtest', script_path + '/src',
+                     script_path + '/unittest'], cwd=build_path,
+                    stdout=output_file)
+    process.wait()
+    output_file.close()
+
+
 def execute_clean(args):
     check_call(['make', 'clean'], cwd=build_path)
 
@@ -150,35 +182,8 @@ def execute_sonar(args):
     os.makedirs(build_path)
     execute_coverage(args)
 
-    os.makedirs(build_path + '/reports')
-
-    output_file = open(build_path + '/reports/cppcheck.xml', 'w')
-    process = Popen(['cppcheck', '--xml', '--xml-version=2', '--quiet',
-                     '--language=c++', '--platform=unix64', '--enable=all',
-                     '--std=c++11', '--force', '-I', script_path + '/src',
-                     script_path + '/src'], cwd=build_path, stderr=output_file)
-    process.wait()
-    output_file.close()
-
-    output_file = open(build_path + '/reports/rats.xml', 'w')
-    process = Popen(['rats', '--xml', '--resultsonly', '-w', '3',
-                     script_path + '/examples',
-                     script_path + '/integrationtest', script_path + '/src',
-                     script_path + '/unittest'], cwd=build_path,
-                    stdout=output_file)
-    process.wait()
-    output_file.close()
-
-    check_call(['valgrind', '--leak-check=full', '--xml=yes',
-                '--xml-file=' + build_path + '/reports/valgrind.xml',
-                build_path + '/unittest/unittest_hutznohmd'],
-               cwd=build_path)
-
-    check_call([build_path + '/unittest/unittest_hutznohmd',
-                '--gtest_output=xml:./reports/unittest.xml'], cwd=build_path)
-
+    execute_check(args)
     write_cxx11_release_defines(build_path + '/defines.h');
-
     eval_file(script_path + '/sonar-cxx.template',
               build_path + '/sonar.properties')
     check_call(['make', 'sonar'], cwd=build_path)
@@ -244,6 +249,8 @@ if __name__ == "__main__":
                                     help='bootstraps the build'),
                 'build': Struct(fn=execute_build,
                                 help='compiles the targets'),
+                'check': Struct(fn=execute_check,
+                                help='checks code for problems'),
                 'clean': Struct(fn=execute_clean,
                                 help='removes all built output'),
                 'coverage': Struct(fn=execute_coverage,
