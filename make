@@ -12,8 +12,9 @@ sys.path.insert(0, python_script_path)
 
 from argparse import ArgumentParser
 from multiprocessing import cpu_count
+import re
 from shutil import rmtree
-from subprocess import CalledProcessError, check_call, PIPE, Popen
+from subprocess import CalledProcessError, check_call, PIPE, DEVNULL, Popen
 from sys import version, version_info
 from termcolor import colorize, RED
 from evalfile import eval_file
@@ -22,6 +23,25 @@ from evalfile import eval_file
 class Struct:
     def __init__(self, **args):
         self.__dict__.update(args)
+
+
+def get_include_list():
+    process = Popen(['g++', '-std=c++11', '-DNDEBUG', '-E', '-x', 'c++',
+                     os.devnull, '-v'], cwd=build_path, stdout=DEVNULL,
+                    stderr=PIPE)
+    out = process.communicate()[1].decode('ascii')
+    pathGroups = re.match('.*#include \"\.\.\.\" search starts here:(.*)' +
+                          '#include <\.\.\.> search starts here:(.*)' +
+                          'End of search list\..*', out, re.DOTALL)
+
+    result = list()
+    for paths in (pathGroups.group(1), pathGroups.group(2)):
+        for path in paths.split():
+            if os.path.exists(path):
+                result.append(path.strip())
+
+    return result
+
 
 
 def parse_arguments(steps):
@@ -142,8 +162,6 @@ def execute_rats(args):
 
 
 def execute_sonar(args):
-    check_is_bootstrapped()
-
     os.environ['project_key'] = 'libhutznohmd'
     os.environ['project_name'] = 'libhutznohmd'
     os.environ['project_path'] = script_path
@@ -151,22 +169,7 @@ def execute_sonar(args):
     os.environ['coverage_path'] = 'build/coverage'
     os.environ['reports_path'] = 'build/reports'
     os.environ['version'] = '0.0.1'
-    os.environ['include_paths'] = '/usr/include/c++/4.8,' + \
-                                  '/usr/include/x86_64-linux-gnu/c++/4.8,' + \
-                                  '/usr/include/c++/4.8/backward,' + \
-                                  '/usr/lib/gcc/x86_64-linux-gnu/4.8/include,' + \
-\
-                                  '/usr/include/c++/4.8.3,' + \
-                                  '/usr/include/c++/4.8.3/x86_64-redhat-linux,' + \
-                                  '/usr/include/c++/4.8.3/backward,' + \
-                                  '/usr/lib/gcc/x86_64-redhat-linux/4.8.3/include,' + \
-\
-                                  '/usr/local/include,' + \
-\
-                                  '/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed,' + \
-                                  '/usr/include/x86_64-linux-gnu,' + \
-\
-                                  '/usr/include'
+    os.environ['include_paths'] = ','.join(get_include_list())
 
     rmtree(build_path)
     os.makedirs(build_path)
@@ -204,8 +207,8 @@ def execute_sonar(args):
                 '--gtest_output=xml:./reports/unittest.xml'], cwd=build_path)
 
     output_file = open(build_path + '/defines.h', 'w')
-    process = Popen(['g++', '-DNDEBUG', '-dM', '-E', '-xc', os.devnull],
-                    cwd=build_path, stdout=output_file)
+    process = Popen(['g++', '-std=c++11', '-DNDEBUG', '-dM', '-E', '-xc',
+                     os.devnull], cwd=build_path, stdout=output_file)
     process.wait()
     output_file.close()
 
