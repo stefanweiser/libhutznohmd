@@ -115,12 +115,6 @@ def execute_install(args):
     check_call(['make', 'install'], cwd=build_path)
 
 
-def execute_lizard(args):
-    check_is_bootstrapped()
-
-    check_call(['make', 'lizard'], cwd=build_path)
-
-
 def execute_package(args):
     check_is_bootstrapped()
 
@@ -258,8 +252,6 @@ if __name__ == "__main__":
                               help='compiles documentation'),
                 'install': Struct(fn=execute_install,
                                   help='installs the targets'),
-                'lizard': Struct(fn=execute_lizard,
-                                 help='checks for high cyclic complexity'),
                 'package': Struct(fn=execute_package,
                                   help='builds packages'),
                 'rats': Struct(fn=execute_rats,
