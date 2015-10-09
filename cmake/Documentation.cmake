@@ -31,8 +31,10 @@ IF(NOT MINIMAL)
         ENDIF()
 
         ADD_CUSTOM_TARGET(doc
-                          "${Doxygen_DOXYGEN_EXECUTABLE}" "${PROJECT_PATH}/Doxyfile"
-                          WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}" VERBATIM)
+                          "${Doxygen_DOXYGEN_EXECUTABLE}"
+                          "${PROJECT_SOURCE_DIR}/Doxyfile"
+                          WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+                          VERBATIM)
     ELSE()
         MESSAGE(WARNING
                 "Target doc not available, because java, wget or doxygen is missing.")
