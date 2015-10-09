@@ -15,31 +15,21 @@
 # along with the libhutznohmd project; if not, see
 # <http://www.gnu.org/licenses/>.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-PROJECT(libhutznohmd)
+SETUP_COMPILER_FLAGS()
+DISABLE_GMOCK_DEPENDENT_WARNINGS()
 
-IF(NOT UNIX)
-    MESSAGE(FATAL_ERROR "This project supports unixoid systems only.")
-ENDIF()
+GET_SOURCE_FILES("files.txt" "${CMAKE_CURRENT_SOURCE_DIR}" FILES)
+GET_SOURCE_FILES("${GMOCK_PATH}/files.txt" "${GMOCK_PATH}" GMOCK)
+ADD_EXECUTABLE(integrationtest_hutznohmd ${FILES} ${GMOCK})
+STYLE_FILES(integrationtest_hutznohmd ${FILES})
+ADD_TEST(integrationtest
+         "${CMAKE_CURRENT_BINARY_DIR}/integrationtest_hutznohmd")
 
-GET_FILENAME_COMPONENT(PROJECT_PATH "${CMAKE_CURRENT_SOURCE_DIR}" REALPATH)
-GET_FILENAME_COMPONENT(BUILD_PATH "${CMAKE_BINARY_DIR}" REALPATH)
-GET_FILENAME_COMPONENT(GMOCK_PATH "${PROJECT_PATH}/gmock" REALPATH)
+SET_SOURCE_FILES_PROPERTIES(${GMOCK} PROPERTIES COMPILE_FLAGS -w)
 
-SET(CMAKE_MODULE_PATH "${PROJECT_PATH}/cmake" "${PROJECT_PATH}/cmake/packages"
-                      ${CMAKE_MODULE_PATH})
+TARGET_LINK_LIBRARIES(integrationtest_hutznohmd hutznohmd)
+INCLUDE_DIRECTORIES("${PROJECT_PATH}/src/lib")
+INCLUDE_DIRECTORIES("${PROJECT_PATH}/src/integrationtest")
+INCLUDE_DIRECTORIES(SYSTEM "${PROJECT_PATH}/gmock")
 
-IF(NOT MINIMAL)
-    FIND_PACKAGE(CPPCheck 1.60 REQUIRED)
-    FIND_PACKAGE(Gcovr 3.2 REQUIRED)
-ENDIF()
-
-INCLUDE(ClangFormat)
-INCLUDE(Documentation)
-INCLUDE(RecursiveSubdirs)
-
-INCLUDE(Toolchain)
-
-ENABLE_TESTING()
-
-RECURSIVE_SUBDIRS(src)
+INSTALL(TARGETS integrationtest_hutznohmd DESTINATION bin)

@@ -22,6 +22,6 @@ ADD_EXECUTABLE(example_socket ${FILES})
 STYLE_FILES(example_socket ${FILES})
 
 TARGET_LINK_LIBRARIES(example_socket hutznohmd)
-INCLUDE_DIRECTORIES("${PROJECT_PATH}/src")
+INCLUDE_DIRECTORIES("${PROJECT_PATH}/src/lib")
 
 INSTALL(TARGETS example_socket DESTINATION bin)

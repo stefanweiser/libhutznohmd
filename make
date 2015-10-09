@@ -11,13 +11,10 @@ install_path = os.path.join(project_path, 'install')
 reports_path = os.path.join(build_path, 'reports')
 coverage_path = os.path.join(build_path, 'coverage')
 log_file_path = os.path.join(build_path, 'build.log')
-unittest_bin = os.path.join(build_path, 'unittest', 'unittest_hutznohmd')
-integrationtest_bin = os.path.join(build_path, 'integrationtest',
+unittest_bin = os.path.join(build_path, 'src', 'unittest',
+                            'unittest_hutznohmd')
+integrationtest_bin = os.path.join(build_path, 'src', 'integrationtest',
                                    'integrationtest_hutznohmd')
-src_path = os.path.join(project_path, 'src')
-examples_path = os.path.join(project_path, 'examples')
-integrationtest_path = os.path.join(project_path, 'integrationtest')
-unittest_path = os.path.join(project_path, 'unittest')
 sonar_runner_url = 'http://repo1.maven.org/maven2/org/codehaus/sonar/' + \
     'runner/sonar-runner-dist/2.4/sonar-runner-dist-2.4.jar'
 
@@ -122,20 +119,22 @@ def execute_check(args):
                  os.path.join(reports_path, 'unittest.xml')], build_path,
                 args.log_file, args.log_file)
 
+    src_path = os.path.join(project_path, 'src')
+    lib_path = os.path.join(src_path, 'lib')
+
     print(colorize('[INFO]: Run cppcheck...', GREEN))
     cppcheck_report_file = open(os.path.join(reports_path, 'cppcheck.xml'),
                                 'w')
     log_process(['cppcheck', '--xml', '--xml-version=2', '--quiet', '--force',
                  '--language=c++', '--platform=unix64', '--enable=all',
-                 '--std=c++11', '-I', src_path, src_path], build_path,
+                 '--std=c++11', '-I', lib_path, lib_path], build_path,
                 args.log_file, cppcheck_report_file)
     cppcheck_report_file.close()
 
     print(colorize('[INFO]: Run rats...', GREEN))
     rats_report_file = open(os.path.join(reports_path, 'rats.xml'), 'w')
-    log_process(['rats', '--xml', '--resultsonly', '-w', '3', examples_path,
-                 integrationtest_path, src_path, unittest_path], build_path,
-                rats_report_file, args.log_file)
+    log_process(['rats', '--xml', '--resultsonly', '-w', '3', src_path],
+                build_path, rats_report_file, args.log_file)
     rats_report_file.close()
 
     print(colorize('[INFO]: All report files were written to ' + reports_path +
@@ -268,7 +267,7 @@ def update_single_path(rootpath):
 
 
 def execute_update(args):
-    for dirpath, dirnames, files in os.walk(project_path):
+    for dirpath, dirnames, files in os.walk(os.path.join(project_path, 'src')):
         for file in files:
             if file == 'files.txt':
                 update_single_path(dirpath)

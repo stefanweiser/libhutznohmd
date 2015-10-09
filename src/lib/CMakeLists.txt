@@ -18,10 +18,18 @@
 SETUP_COMPILER_FLAGS()
 
 GET_SOURCE_FILES("files.txt" "${CMAKE_CURRENT_SOURCE_DIR}" FILES)
-ADD_EXECUTABLE(example_performance ${FILES})
-STYLE_FILES(example_performance ${FILES})
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/version.cpp.in"
+               "${CMAKE_BINARY_DIR}/version.cpp")
+ADD_LIBRARY(hutznohmd SHARED ${FILES} "${CMAKE_BINARY_DIR}/version.cpp")
+STYLE_FILES(hutznohmd ${FILES})
+SET_TARGET_PROPERTIES(hutznohmd PROPERTIES VERSION "${LIBRARY_VERSION}")
 
-TARGET_LINK_LIBRARIES(example_performance hutznohmd)
-INCLUDE_DIRECTORIES("${PROJECT_PATH}/src")
+INCLUDE_DIRECTORIES("${CMAKE_BINARY_DIR}")
+INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}")
 
-INSTALL(TARGETS example_performance DESTINATION bin)
+INSTALL(TARGETS hutznohmd DESTINATION lib)
+INSTALL(FILES hutzn.hpp DESTINATION include)
+INSTALL(FILES libhutznohmd/demux.hpp DESTINATION include/libhutznohmd)
+INSTALL(FILES libhutznohmd/request.hpp DESTINATION include/libhutznohmd)
+INSTALL(FILES libhutznohmd/sockets.hpp DESTINATION include/libhutznohmd)
+INSTALL(FILES libhutznohmd/types.hpp DESTINATION include/libhutznohmd)

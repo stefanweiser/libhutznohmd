@@ -4,8 +4,8 @@ sonar.projectVersion=${version}
 sonar.language=c++
 sonar.sourceEncoding=UTF-8
 
-sonar.sources=${project_path}/src
-sonar.cxx.includeDirectories=${include_paths},${project_path}/src
+sonar.sources=${project_path}/src/lib
+sonar.cxx.includeDirectories=${include_paths},${project_path}/src/lib
 sonar.cxx.forceIncludes=${build_path}/defines.h
 
 sonar.cxx.cppcheck.reportPath=${reports_path}/cppcheck.xml

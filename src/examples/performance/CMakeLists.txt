@@ -18,10 +18,10 @@
 SETUP_COMPILER_FLAGS()
 
 GET_SOURCE_FILES("files.txt" "${CMAKE_CURRENT_SOURCE_DIR}" FILES)
-ADD_EXECUTABLE(example_http ${FILES})
-STYLE_FILES(example_http ${FILES})
+ADD_EXECUTABLE(example_performance ${FILES})
+STYLE_FILES(example_performance ${FILES})
 
-TARGET_LINK_LIBRARIES(example_http hutznohmd)
-INCLUDE_DIRECTORIES("${PROJECT_PATH}/src")
+TARGET_LINK_LIBRARIES(example_performance hutznohmd)
+INCLUDE_DIRECTORIES("${PROJECT_PATH}/src/lib")
 
-INSTALL(TARGETS example_http DESTINATION bin)
+INSTALL(TARGETS example_performance DESTINATION bin)
