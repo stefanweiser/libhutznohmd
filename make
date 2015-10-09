@@ -146,7 +146,7 @@ def execute_sonar(args):
     os.environ['project_key'] = 'libhutznohmd'
     os.environ['project_name'] = 'libhutznohmd'
     os.environ['project_path'] = script_path
-    os.environ['build_path'] = build_path
+    os.environ['build_path'] = 'build'
     os.environ['version'] = '0.0.1'
     os.environ['include_paths'] = '/usr/include/c++/4.8,' + \
                                   '/usr/include/x86_64-linux-gnu/c++/4.8,' + \
@@ -168,9 +168,25 @@ def execute_sonar(args):
     rmtree(build_path)
     os.makedirs(build_path)
 
-    execute_coverage(args)
+    args.target = 'coverage'
+    execute_bootstrap(args)
+
+    check_call(['make', '-j' + str(cpu_count()), 'unittest_coverage'],
+               cwd=build_path)
     check_call(['gcovr', '--verbose', '--keep', '--xml', '--output=' +
-                build_path + '/coverage_gcovr.xml', '-r', script_path,
+                build_path + '/unittest_coverage_gcovr.xml', '--branches', '--root', script_path,
+                script_path])
+
+    check_call(['make', '-j' + str(cpu_count()), 'integrationtest_coverage'],
+               cwd=build_path)
+    check_call(['gcovr', '--verbose', '--keep', '--xml', '--output=' +
+                build_path + '/integrationtest_coverage_gcovr.xml', '--branches', '--root', script_path,
+                script_path])
+
+    check_call(['make', '-j' + str(cpu_count()), 'coverage'],
+               cwd=build_path)
+    check_call(['gcovr', '--verbose', '--keep', '--xml', '--output=' +
+                build_path + '/overall_coverage_gcovr.xml', '--branches', '--root', script_path,
                 script_path])
 
     output_file = open(build_path + '/cppcheck_report.xml', 'w')
