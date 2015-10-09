@@ -175,7 +175,9 @@ def execute_sonar(args):
                 'OUTPUT_TYPE=--xml', 'OUTPUT_ENDING=.xml'],
                cwd=build_path)
 
-    output_file = open(build_path + '/cppcheck_report.xml', 'w')
+    os.makedirs(build_path + '/reports')
+    
+    output_file = open(build_path + '/reports/cppcheck.xml', 'w')
     process = Popen(['cppcheck', '--xml', '--xml-version=2', '--quiet',
                      '--language=c++', '--platform=unix64', '--enable=all',
                      '--std=c++11', '--force', '-I', script_path + '/src',
@@ -183,7 +185,7 @@ def execute_sonar(args):
     process.wait()
     output_file.close()
 
-    output_file = open(build_path + '/rats_report.xml', 'w')
+    output_file = open(build_path + '/reports/rats.xml', 'w')
     process = Popen(['rats', '--xml', '--resultsonly', '-w', '3',
                      script_path + '/examples',
                      script_path + '/integrationtest', script_path + '/src',
@@ -193,12 +195,12 @@ def execute_sonar(args):
     output_file.close()
 
     check_call(['valgrind', '--leak-check=full', '--xml=yes',
-                '--xml-file=' + build_path + '/valgrind_report.xml',
+                '--xml-file=' + build_path + '/reports/valgrind.xml',
                 build_path + '/unittest/unittest_hutznohmd'],
                cwd=build_path)
 
     check_call([build_path + '/unittest/unittest_hutznohmd',
-                '--gtest_output=xml:./unit_test_report.xml'], cwd=build_path)
+                '--gtest_output=xml:./reports/unittest.xml'], cwd=build_path)
 
     output_file = open(build_path + '/defines.h', 'w')
     process = Popen(['g++', '-DNDEBUG', '-dM', '-E', '-xc', os.devnull],

@@ -8,12 +8,12 @@ sonar.sources=${project_path}/src
 sonar.cxx.includeDirectories=${include_paths},${project_path}/src
 sonar.cxx.forceIncludes=${build_path}/defines.h
 
-sonar.cxx.cppcheck.reportPath=${build_path}/cppcheck_report.xml
-sonar.cxx.rats.reportPath=${build_path}/rats_report.xml
-sonar.cxx.valgrind.reportPath=${build_path}/valgrind_report.xml
+sonar.cxx.cppcheck.reportPath=${build_path}/reports/cppcheck.xml
+sonar.cxx.rats.reportPath=${build_path}/reports/rats.xml
+sonar.cxx.valgrind.reportPath=${build_path}/reports/valgrind.xml
 
 sonar.cxx.coverage.reportPath=${coverage_path}/unittest.xml
 sonar.cxx.coverage.itReportPath=${coverage_path}/integrationtest.xml
 sonar.cxx.coverage.overallReportPath=${coverage_path}/overall.xml
 
-sonar.cxx.xunit.reportPath=${build_path}/unit_test_report.xml
+sonar.cxx.xunit.reportPath=${build_path}/reports/unittest.xml
