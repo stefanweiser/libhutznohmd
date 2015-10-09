@@ -9,6 +9,7 @@ python_script_path = os.path.join(script_path, 'python')
 build_path = os.path.join(script_path, 'build')
 install_path = os.path.join(script_path, 'install')
 reports_path = os.path.join(build_path, 'reports')
+coverage_path = os.path.join(build_path, 'coverage')
 
 # add the python subdirectory to the search path
 sys.path.insert(0, python_script_path)
@@ -88,7 +89,7 @@ def execute_bootstrap(args):
 def execute_build(args):
     check_is_bootstrapped()
 
-    check_call(['make', '-j' + str(cpu_count())], cwd=build_path)
+    check_call(['make', '-j' + str(cpu_count()), 'all'], cwd=build_path)
 
 
 def execute_check(args):
@@ -144,11 +145,31 @@ def execute_clean(args):
     check_call(['make', 'clean'], cwd=build_path)
 
 
+def run_gcovr(output_filename_base):
+    filename_base = os.path.join(coverage_path, output_filename_base)
+    check_call(['gcovr', '--branches', '--xml', '--output=' + filename_base +
+                '.xml', '--root', script_path], cwd=build_path)
+    check_call(['gcovr', '--branches', '--html', '--output=' + filename_base +
+                '.html', '--root', script_path], cwd=build_path)
+    check_call(['gcovr', '--delete', '--branches', '--output=' + filename_base +
+                '.txt', '--root', script_path], cwd=build_path)
+
+
 def execute_coverage(args):
     args.target = 'coverage'
     execute_bootstrap(args)
-    check_call(['make', '-j' + str(cpu_count()), 'coverage'],
+    execute_build(args)
+    os.makedirs(coverage_path)
+
+    check_call(['./unittest/unittest_hutznohmd'], cwd=build_path)
+    run_gcovr('unittest')
+    check_call(['./integrationtest/integrationtest_hutznohmd'],
                cwd=build_path)
+    run_gcovr('integrationtest')
+    check_call(['./unittest/unittest_hutznohmd'], cwd=build_path)
+    check_call(['./integrationtest/integrationtest_hutznohmd'],
+               cwd=build_path)
+    run_gcovr('overall')
 
 
 def execute_doc(args):
@@ -189,16 +210,16 @@ def execute_sonar(args):
     os.environ['include_paths'] = \
         ','.join(compiler.get_cxx11_release_include_list())
 
-    print(colorize('[INFO]: Generate sonar configuration...', GREEN))
-    compiler.write_cxx11_release_defines(build_path + '/defines.h')
-    eval_file(script_path + '/sonar-cxx.template',
-              build_path + '/sonar.properties')
-
     rmtree(build_path)
     os.makedirs(build_path)
     print(colorize('[INFO]: Calculate coverage information...', GREEN))
     execute_coverage(args)
     execute_check(args)
+
+    print(colorize('[INFO]: Generate sonar configuration...', GREEN))
+    compiler.write_cxx11_release_defines(build_path + '/defines.h')
+    eval_file(script_path + '/sonar-cxx.template',
+              build_path + '/sonar.properties')
 
     print(colorize('[INFO]: Download sonar-runner...', GREEN))
     sonar_runner_path = build_path + '/sonar-runner.jar'
