@@ -6,6 +6,9 @@ import sys
 # determine path of the script
 script_path = os.path.dirname(os.path.realpath(__file__))
 python_script_path = os.path.join(script_path, 'python')
+build_path = os.path.join(script_path, 'build')
+install_path = os.path.join(script_path, 'install')
+reports_path = os.path.join(build_path, 'reports')
 
 # add the python subdirectory to the search path
 sys.path.insert(0, python_script_path)
@@ -16,9 +19,10 @@ import re
 from shutil import rmtree
 from subprocess import CalledProcessError, check_call, PIPE, DEVNULL, Popen
 from sys import version, version_info
-from termcolor import colorize, RED
+from termcolor import BOLD, colorize, GREEN, RED
 from evalfile import eval_file
 from compiler import get_cxx11_release_include_list, write_cxx11_release_defines
+from httpget import http_get
 
 
 class Struct:
@@ -62,13 +66,9 @@ def parse_arguments(steps):
     return parser.parse_args()
 
 
-build_path = os.path.join(script_path, 'build')
-install_path = os.path.join(script_path, 'install')
-
-
 class IsNotBootstrappedError(Exception):
     def __str__(self):
-        return colorize('[FAIL]: Project is not bootstrapped.', RED)
+        return colorize('[FAIL]: Project is not bootstrapped.', RED, BOLD)
 
 
 def check_is_bootstrapped():
@@ -95,33 +95,50 @@ def execute_build(args):
 def execute_check(args):
     check_is_bootstrapped()
 
-    os.makedirs(build_path + '/reports')
-    check_call(['make', '-j' + str(cpu_count())], cwd=build_path)
+    os.makedirs(reports_path)
 
-    check_call(['valgrind', '--leak-check=full', '--xml=yes',
-                '--xml-file=' + build_path + '/reports/valgrind.xml',
+    print(colorize('[INFO]: Compile all...', GREEN))
+    log_file = open(build_path + '/build.log', 'w')
+    process = Popen(['make', '-j' + str(cpu_count()), 'all'], cwd=build_path,
+                    stdout=log_file, stderr=log_file)
+    process.wait()
+
+    print(colorize('[INFO]: Run valgrind...', GREEN))
+    process = Popen(['valgrind', '--leak-check=full', '--xml=yes',
+                '--xml-file=' + reports_path + '/valgrind.xml',
                 build_path + '/unittest/unittest_hutznohmd'],
-               cwd=build_path)
+               cwd=build_path, stdout=log_file, stderr=log_file)
+    process.wait()
 
-    check_call([build_path + '/unittest/unittest_hutznohmd',
-                '--gtest_output=xml:./reports/unittest.xml'], cwd=build_path)
+    print(colorize('[INFO]: Run unittest...', GREEN))
+    process = Popen([build_path + '/unittest/unittest_hutznohmd',
+                '--gtest_output=xml:' + reports_path + '/unittest.xml'],
+               cwd=build_path, stdout=log_file, stderr=log_file)
+    process.wait()
 
-    output_file = open(build_path + '/reports/cppcheck.xml', 'w')
+    print(colorize('[INFO]: Run cppcheck...', GREEN))
+    output_file = open(reports_path + '/cppcheck.xml', 'w')
     process = Popen(['cppcheck', '--xml', '--xml-version=2', '--quiet',
                      '--language=c++', '--platform=unix64', '--enable=all',
                      '--std=c++11', '--force', '-I', script_path + '/src',
-                     script_path + '/src'], cwd=build_path, stderr=output_file)
+                     script_path + '/src'], cwd=build_path, stdout=log_file,
+                    stderr=output_file)
     process.wait()
     output_file.close()
 
-    output_file = open(build_path + '/reports/rats.xml', 'w')
+    print(colorize('[INFO]: Run rats...', GREEN))
+    output_file = open(reports_path + '/rats.xml', 'w')
     process = Popen(['rats', '--xml', '--resultsonly', '-w', '3',
                      script_path + '/examples',
                      script_path + '/integrationtest', script_path + '/src',
                      script_path + '/unittest'], cwd=build_path,
-                    stdout=output_file)
+                    stdout=output_file, stderr=log_file)
     process.wait()
     output_file.close()
+    log_file.close()
+    
+    print(colorize('[INFO]: All report files were written to ' + reports_path +
+                   '.', GREEN))
 
 
 def execute_clean(args):
@@ -172,15 +189,25 @@ def execute_sonar(args):
     os.environ['version'] = '0.0.1'
     os.environ['include_paths'] = ','.join(get_cxx11_release_include_list())
 
-    rmtree(build_path)
-    os.makedirs(build_path)
-    execute_coverage(args)
-
-    execute_check(args)
     write_cxx11_release_defines(build_path + '/defines.h');
     eval_file(script_path + '/sonar-cxx.template',
               build_path + '/sonar.properties')
-    check_call(['make', 'sonar'], cwd=build_path)
+    
+    rmtree(build_path)
+    os.makedirs(build_path)
+    execute_coverage(args)
+    execute_check(args)
+
+    sonar_runner_path = build_path + '/sonar-runner.jar'
+    if not os.path.exists(sonar_runner_path):
+        http_get('http://repo1.maven.org/maven2/org/codehaus/sonar/runner/' +
+                 'sonar-runner-dist/2.4/sonar-runner-dist-2.4.jar',
+                 sonar_runner_path)
+    
+    check_call(['java', '-classpath', sonar_runner_path,
+                '-Drunner.home=build', '-Dproject.home=.',
+                '-Dproject.settings=build/sonar.properties',
+                'org.sonar.runner.Main'], cwd=script_path)
 
 
 def execute_test(args):
