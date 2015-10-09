@@ -419,52 +419,35 @@ void request::add_header(const mime_handler& handler, header_key key,
 
     switch (key) {
     case header_key::CONNECTION:
-        static constexpr char_t keep_alive_str[] = "keep-alive";
-        static constexpr size_t keep_alive_size = sizeof(keep_alive_str);
-        static_assert(keep_alive_size > 0,
-                      "Size of string keep-alive must be greater than 0.");
-        if (0 == ::strncasecmp(value_string, keep_alive_str, keep_alive_size)) {
-            is_keep_alive_set_ = true;
-        }
+        set_connection(handler, value_string, value_length);
         break;
 
-    case header_key::CONTENT_LENGTH: {
-        const int32_t length =
-            parse_unsigned_integer(value_string, value_length);
-        if (length >= 0) {
-            content_length_ = static_cast<size_t>(length);
-        }
+    case header_key::CONTENT_LENGTH:
+        set_content_length(handler, value_string, value_length);
         break;
-    }
 
     case header_key::CONTENT_TYPE:
-        content_type_ = handler.parse(value_string, value_length);
+        set_content_type(handler, value_string, value_length);
         break;
 
     case header_key::DATE:
-        date_ = parse_timestamp(value_string, value_length);
+        set_date(handler, value_string, value_length);
         break;
 
     case header_key::EXPECT:
-        static constexpr char_t continue_str[] = "100-continue";
-        static constexpr size_t continue_size = sizeof(continue_str);
-        static_assert(continue_size > 0,
-                      "Size of string 100-continue must be greater than 0.");
-        if (0 == ::strncasecmp(value_string, continue_str, continue_size)) {
-            expect_ = http_expectation::CONTINUE;
-        }
+        set_expect(handler, value_string, value_length);
         break;
 
     case header_key::FROM:
-        from_ = value_string;
+        set_from(handler, value_string, value_length);
         break;
 
     case header_key::REFERER:
-        referer_ = value_string;
+        set_referer(handler, value_string, value_length);
         break;
 
     case header_key::USER_AGENT:
-        user_agent_ = value_string;
+        set_user_agent(handler, value_string, value_length);
         break;
 
     case header_key::CUSTOM:
@@ -472,6 +455,70 @@ void request::add_header(const mime_handler& handler, header_key key,
         header_fields_[key_string] = value_string;
         break;
     }
+}
+
+void request::set_connection(const mime_handler&, const char_t* value_string,
+                             size_t value_length)
+{
+    static constexpr char_t keep_alive_str[] = "keep-alive";
+    static constexpr size_t keep_alive_size = sizeof(keep_alive_str);
+    static_assert(keep_alive_size > 0,
+                  "Size of string keep-alive must be greater than 0.");
+    if ((keep_alive_size <= (value_length + 1)) &&
+        (0 == ::strncasecmp(value_string, keep_alive_str, keep_alive_size))) {
+        is_keep_alive_set_ = true;
+    }
+}
+
+void request::set_content_length(const mime_handler&,
+                                 const char_t* value_string,
+                                 size_t value_length)
+{
+    const int32_t length = parse_unsigned_integer(value_string, value_length);
+    if (length >= 0) {
+        content_length_ = static_cast<size_t>(length);
+    }
+}
+
+void request::set_content_type(const mime_handler& handler,
+                               const char_t* value_string, size_t value_length)
+{
+    content_type_ = handler.parse(value_string, value_length);
+}
+
+void request::set_date(const mime_handler&, const char_t* value_string,
+                       size_t value_length)
+{
+    date_ = parse_timestamp(value_string, value_length);
+}
+
+void request::set_expect(const mime_handler&, const char_t* value_string,
+                         size_t)
+{
+    static constexpr char_t continue_str[] = "100-continue";
+    static constexpr size_t continue_size = sizeof(continue_str);
+    static_assert(continue_size > 0,
+                  "Size of string 100-continue must be greater than 0.");
+    if (0 == ::strncasecmp(value_string, continue_str, continue_size)) {
+        expect_ = http_expectation::CONTINUE;
+    }
+}
+
+void request::set_from(const mime_handler&, const char_t* value_string, size_t)
+{
+    from_ = value_string;
+}
+
+void request::set_referer(const mime_handler&, const char_t* value_string,
+                          size_t)
+{
+    referer_ = value_string;
+}
+
+void request::set_user_agent(const mime_handler&, const char_t* value_string,
+                             size_t)
+{
+    user_agent_ = value_string;
 }
 
 bool request::is_whitespace(const int32_t ch)
