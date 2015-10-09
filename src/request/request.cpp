@@ -415,45 +415,21 @@ void request::add_header(const mime_handler& handler, header_key key,
                          const char_t* const key_string,
                          const char_t* value_string, size_t value_length)
 {
+    using set_header_functor =
+        void (request::*)(const mime_handler&, const char_t*, size_t);
+    using header_fn_array =
+        std::array<set_header_functor, static_cast<size_t>(header_key::SIZE)>;
+    const static header_fn_array set_header_fns = {
+        {&request::set_connection, &request::set_content_length,
+         &request::set_content_type, &request::set_date, &request::set_expect,
+         &request::set_from, &request::set_referer, &request::set_user_agent}};
     skip_whitespace(value_string, value_length);
 
-    switch (key) {
-    case header_key::CONNECTION:
-        set_connection(handler, value_string, value_length);
-        break;
-
-    case header_key::CONTENT_LENGTH:
-        set_content_length(handler, value_string, value_length);
-        break;
-
-    case header_key::CONTENT_TYPE:
-        set_content_type(handler, value_string, value_length);
-        break;
-
-    case header_key::DATE:
-        set_date(handler, value_string, value_length);
-        break;
-
-    case header_key::EXPECT:
-        set_expect(handler, value_string, value_length);
-        break;
-
-    case header_key::FROM:
-        set_from(handler, value_string, value_length);
-        break;
-
-    case header_key::REFERER:
-        set_referer(handler, value_string, value_length);
-        break;
-
-    case header_key::USER_AGENT:
-        set_user_agent(handler, value_string, value_length);
-        break;
-
-    case header_key::CUSTOM:
-    default:
+    if ((key > header_key::CUSTOM) && (key < header_key::SIZE)) {
+        const set_header_functor fn = set_header_fns[static_cast<size_t>(key)];
+        (this->*fn)(handler, value_string, value_length);
+    } else {
         header_fields_[key_string] = value_string;
-        break;
     }
 }
 

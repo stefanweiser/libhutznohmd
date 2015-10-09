@@ -30,8 +30,8 @@
 namespace hutzn
 {
 
-enum class header_key : uint8_t {
-    CUSTOM = 0,
+enum class header_key : int8_t {
+    CUSTOM = -1,
     CONNECTION,
     CONTENT_LENGTH,
     CONTENT_TYPE,
@@ -39,7 +39,8 @@ enum class header_key : uint8_t {
     EXPECT,
     FROM,
     REFERER,
-    USER_AGENT
+    USER_AGENT,
+    SIZE
 };
 
 class request : public request_interface
