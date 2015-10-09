@@ -18,30 +18,12 @@ from subprocess import CalledProcessError, check_call, PIPE, DEVNULL, Popen
 from sys import version, version_info
 from termcolor import colorize, RED
 from evalfile import eval_file
+from compiler import get_cxx11_release_include_list, write_cxx11_release_defines
 
 
 class Struct:
     def __init__(self, **args):
         self.__dict__.update(args)
-
-
-def get_include_list():
-    process = Popen(['g++', '-std=c++11', '-DNDEBUG', '-E', '-x', 'c++',
-                     os.devnull, '-v'], cwd=build_path, stdout=DEVNULL,
-                    stderr=PIPE)
-    out = process.communicate()[1].decode('ascii')
-    pathGroups = re.match('.*#include \"\.\.\.\" search starts here:(.*)' +
-                          '#include <\.\.\.> search starts here:(.*)' +
-                          'End of search list\..*', out, re.DOTALL)
-
-    result = list()
-    for paths in (pathGroups.group(1), pathGroups.group(2)):
-        for path in paths.split():
-            if os.path.exists(path):
-                result.append(path.strip())
-
-    return result
-
 
 
 def parse_arguments(steps):
@@ -168,7 +150,7 @@ def execute_sonar(args):
     os.environ['coverage_path'] = 'build/coverage'
     os.environ['reports_path'] = 'build/reports'
     os.environ['version'] = '0.0.1'
-    os.environ['include_paths'] = ','.join(get_include_list())
+    os.environ['include_paths'] = ','.join(get_cxx11_release_include_list())
 
     rmtree(build_path)
     os.makedirs(build_path)
@@ -201,11 +183,7 @@ def execute_sonar(args):
     check_call([build_path + '/unittest/unittest_hutznohmd',
                 '--gtest_output=xml:./reports/unittest.xml'], cwd=build_path)
 
-    output_file = open(build_path + '/defines.h', 'w')
-    process = Popen(['g++', '-std=c++11', '-DNDEBUG', '-dM', '-E', '-xc',
-                     os.devnull], cwd=build_path, stdout=output_file)
-    process.wait()
-    output_file.close()
+    write_cxx11_release_defines(build_path + '/defines.h');
 
     eval_file(script_path + '/sonar-cxx.template',
               build_path + '/sonar.properties')
