@@ -34,7 +34,6 @@ INCLUDE(Coverage)
 INCLUDE(CPPCheck)
 INCLUDE(Documentation)
 INCLUDE(RecursiveSubdirs)
-INCLUDE(Sonar)
 
 INCLUDE(Toolchain)
 
