@@ -198,8 +198,8 @@ def execute_sonar(args):
                 '--gtest_output=xml:./unit_test_report.xml'], cwd=build_path)
 
     output_file = open(build_path + '/defines.h', 'w')
-    process = Popen(['g++', '-dM', '-E', '-xc', os.devnull], cwd=build_path,
-                    stdout=output_file)
+    process = Popen(['g++', '-DNDEBUG', '-dM', '-E', '-xc', os.devnull],
+                    cwd=build_path, stdout=output_file)
     process.wait()
     output_file.close()
 
