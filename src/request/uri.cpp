@@ -33,20 +33,28 @@ namespace
 static trie<std::tuple<uri_scheme, uint16_t>> make_scheme_trie()
 {
     using value_type = std::tuple<uri_scheme, uint16_t>;
+    static const value_type http_value{uri_scheme::HTTP, 80};
+    static const value_type https_value{uri_scheme::HTTPS, 443};
+
     trie<value_type> t{true};
-    t.insert("http", value_type(uri_scheme::HTTP, 80));
-    t.insert("https", value_type(uri_scheme::HTTPS, 443));
+    t.insert("http", http_value);
+    t.insert("https", https_value);
     return t;
 }
 
 inline bool convert_char(char_t*& data, size_t& head, size_t& tail)
 {
+    static const uint8_t hex_digit_count = 16;
+
     bool is_error;
-    uint8_t a = static_cast<uint8_t>(from_hex(data[head + 1]));
-    uint8_t b = static_cast<uint8_t>(from_hex(data[head + 2]));
-    if ((a < 16) && (b < 16)) {
-        data[tail] = static_cast<char_t>(static_cast<uint8_t>((a << 4) + b));
-        head += 3;
+    head++;
+    uint8_t a = static_cast<uint8_t>(from_hex(data[head]));
+    head++;
+    uint8_t b = static_cast<uint8_t>(from_hex(data[head]));
+    if ((a < hex_digit_count) && (b < hex_digit_count)) {
+        data[tail] =
+            static_cast<char_t>(static_cast<uint8_t>((a << NIBBLE_SIZE) + b));
+        head++;
         tail++;
         is_error = false;
     } else {
@@ -58,9 +66,11 @@ inline bool convert_char(char_t*& data, size_t& head, size_t& tail)
 
 inline void skip_optional_slashes(char_t*& raw, size_t& remaining)
 {
-    if ((remaining >= 2) && ('/' == raw[0]) && ('/' == raw[1])) {
-        remaining -= 2;
-        raw += 2;
+    static const uint8_t optional_slash_size = 2;
+    if ((remaining >= optional_slash_size) && ('/' == raw[0]) &&
+        ('/' == raw[1])) {
+        remaining -= optional_slash_size;
+        raw += optional_slash_size;
     }
 }
 
@@ -80,7 +90,8 @@ size_t parse_uri_word(char_t*& data, size_t& remaining,
         if ((map[static_cast<uint8_t>(ch)]) || (head >= remaining)) {
             stop = true;
         } else if ('%' == ch) {
-            if ((remaining - head) > 2) {
+            static const uint8_t char_encoding_size = 3;
+            if ((remaining - head) >= char_encoding_size) {
                 stop = convert_char(data, head, tail);
             } else {
                 tail = 0;
@@ -324,7 +335,9 @@ bool uri::parse_authority(char_t* const authority_ptr, const size_t& size)
 
     if (port_size > 0) {
         int32_t port_number = parse_unsigned_integer(temp_port, port_size);
-        if ((port_size == 0) && (port_number > 0) && (port_number <= 65536)) {
+        if ((port_size == 0) &&
+            (port_number > std::numeric_limits<uint16_t>::min()) &&
+            (port_number <= std::numeric_limits<uint16_t>::max())) {
             port_ = static_cast<uint16_t>(port_number);
         } else {
             result = false;

@@ -32,6 +32,12 @@ namespace hutzn
 namespace
 {
 
+static const int32_t hours_per_day = 24;
+static const int32_t minutes_per_hour = 60;
+static const int32_t seconds_per_minute = 60;
+static const int32_t begin_of_19_hundrets = 1900;
+static const int32_t end_of_19_hundrets = 1999;
+
 using weekday_value_type = std::tuple<int8_t, bool>;
 static trie<weekday_value_type> get_weekday_trie(size_t& max_size)
 {
@@ -84,27 +90,27 @@ static trie<int32_t> get_month_trie(size_t& max_size)
     return result;
 }
 
-} // namespace
-
 int32_t parse_time(const char_t*& data, size_t& remaining)
 {
     int32_t hour = parse_unsigned_integer(data, remaining);
-    if ((!check_range<int32_t, 0, 23>(hour)) || ((*data) != ':')) {
+    if ((!check_range<int32_t, 0, hours_per_day - 1>(hour)) ||
+        ((*data) != ':')) {
         return -1;
     }
     skip_one_character(data, remaining);
     skip_whitespace(data, remaining);
     int32_t minute = parse_unsigned_integer(data, remaining);
-    if ((!check_range<int32_t, 0, 59>(minute)) || ((*data) != ':')) {
+    if ((!check_range<int32_t, 0, minutes_per_hour - 1>(minute)) ||
+        ((*data) != ':')) {
         return -1;
     }
     skip_one_character(data, remaining);
     skip_whitespace(data, remaining);
     int32_t second = parse_unsigned_integer(data, remaining);
-    if (!check_range<int32_t, 0, 59>(second)) {
+    if (!check_range<int32_t, 0, seconds_per_minute - 1>(second)) {
         return -1;
     }
-    return (60 * ((60 * hour) + minute)) + second;
+    return (seconds_per_minute * ((minutes_per_hour * hour) + minute)) + second;
 }
 
 int32_t parse_month(const char_t*& data, size_t& remaining)
@@ -181,8 +187,9 @@ time_t parse_rfc850_date_time(const char_t*& data, size_t& remaining)
     data++;
     remaining--;
 
-    const int32_t year = 1900 + parse_unsigned_integer(data, remaining);
-    if (!check_range<int32_t, 1900, 1999>(year)) {
+    const int32_t year =
+        begin_of_19_hundrets + parse_unsigned_integer(data, remaining);
+    if (!check_range<int32_t, begin_of_19_hundrets, end_of_19_hundrets>(year)) {
         return -1;
     }
 
@@ -235,6 +242,8 @@ weekday_value_type parse_weekday(const char_t*& data, size_t& remaining)
     remaining -= result.used_size();
     return result.value();
 }
+
+} // namespace
 
 time_t parse_timestamp(const char_t* const data, const size_t length)
 {

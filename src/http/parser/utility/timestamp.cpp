@@ -28,23 +28,35 @@ namespace hutzn
 namespace http
 {
 
+namespace
+{
+
+static const int32_t hours_per_day = 24;
+static const int32_t minutes_per_hour = 60;
+static const int32_t seconds_per_minute = 60;
+static const int32_t begin_of_19_hundrets = 1900;
+static const int32_t end_of_19_hundrets = 1999;
+static const size_t tmp_string_size = 32;
+
 int32_t parse_time(int32_t& character, const lexer& l)
 {
     int32_t hour = l.get_unsigned_integer(character);
-    if ((!check_range<int32_t, 0, 23>(hour)) || (character != ':')) {
+    if ((!check_range<int32_t, 0, hours_per_day - 1>(hour)) ||
+        (character != ':')) {
         return -1;
     }
     character = l.get_non_whitespace();
     int32_t minute = l.get_unsigned_integer(character);
-    if ((!check_range<int32_t, 0, 59>(minute)) || (character != ':')) {
+    if ((!check_range<int32_t, 0, minutes_per_hour - 1>(minute)) ||
+        (character != ':')) {
         return -1;
     }
     character = l.get_non_whitespace();
     int32_t second = l.get_unsigned_integer(character);
-    if (!check_range<int32_t, 0, 59>(second)) {
+    if (!check_range<int32_t, 0, seconds_per_minute - 1>(second)) {
         return -1;
     }
-    return (60 * ((60 * hour) + minute)) + second;
+    return (seconds_per_minute * ((minutes_per_hour * hour) + minute)) + second;
 }
 
 int32_t parse_month(int32_t& character, const lexer& l)
@@ -57,7 +69,7 @@ int32_t parse_month(int32_t& character, const lexer& l)
          value_info{"oct", 10}, value_info{"nov", 11}, value_info{"dec", 12}}};
 
     static const trie<int32_t> t(types, -1);
-    push_back_string<32> tmp;
+    push_back_string<tmp_string_size> tmp;
     return t.parse(character, tmp, l);
 }
 
@@ -67,7 +79,7 @@ bool parse_gmt(int32_t& character, const lexer& l)
     static const std::vector<value_info> types = {{value_info{"gmt", true}}};
 
     static const trie<bool> t(types, false);
-    push_back_string<32> tmp;
+    push_back_string<tmp_string_size> tmp;
     return t.parse(character, tmp, l);
 }
 
@@ -122,8 +134,9 @@ time_t parse_rfc850_date_time(int32_t& character, const lexer& l)
         return -1;
     }
     character = l.get();
-    const int32_t year = 1900 + l.get_unsigned_integer(character);
-    if (!check_range<int32_t, 1900, 1999>(year)) {
+    const int32_t year =
+        begin_of_19_hundrets + l.get_unsigned_integer(character);
+    if (!check_range<int32_t, begin_of_19_hundrets, end_of_19_hundrets>(year)) {
         return -1;
     }
 
@@ -181,9 +194,11 @@ std::tuple<int8_t, bool> parse_weekday(int32_t& character, const lexer& l)
          value_info{"saturday", value_type{6, true}}}};
 
     static const trie<value_type> t(types, value_type{-1, false});
-    push_back_string<32> tmp;
+    push_back_string<tmp_string_size> tmp;
     return t.parse(character, tmp, l);
 }
+
+} // namespace
 
 time_t parse_timestamp(int32_t& character, const lexer& l)
 {

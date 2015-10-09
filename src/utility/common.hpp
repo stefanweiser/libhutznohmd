@@ -27,6 +27,9 @@ namespace hutzn
 //! Number of bits per byte.
 static const size_t BITS_PER_BYTE = 8;
 
+//! Number of bits per nibble.
+static const size_t NIBBLE_SIZE = 4;
+
 //! Contains the number of values, that can be represented by one byte.
 static const size_t NUMBER_OF_VALUES_PER_BYTE =
     1 << (BITS_PER_BYTE * sizeof(uint8_t));

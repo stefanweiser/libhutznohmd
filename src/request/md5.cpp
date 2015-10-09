@@ -69,7 +69,7 @@ inline const table_k_type make_table_k()
     table_k_type result;
     for (size_t i = 0; i < block_size; i++) {
         result[i] = static_cast<uint32_t>(
-            std::floor(std::abs(std::sin(i + 1.0L)) * power));
+            std::floor(std::abs(std::sin(i + 1)) * power));
     }
     return result;
 }

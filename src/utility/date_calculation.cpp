@@ -23,17 +23,27 @@
 namespace hutzn
 {
 
+namespace
+{
+
+static const time_t years_between_leapyears = 4;
+static const time_t epoch_start_year = 1970;
+static const time_t usual_days_per_year = 365;
+static const time_t seconds_per_day = 86400;
+
 time_t day_of_the_year(const time_t day, const time_t month, const time_t year)
 {
     time_t result = day;
+    static const int32_t base_days = 306;
     if (month < 3) {
-        result += (306 * month - 301) / 10;
+        result += (base_days * month - 301) / 10;
     } else {
-        result += (306 * month - 913) / 10;
-        if ((year % 4) == 0) {
-            result += 60;
+        result += (base_days * month - 913) / 10;
+        static const int32_t normal_rest_days = 60;
+        if ((year % years_between_leapyears) == 0) {
+            result += normal_rest_days;
         } else {
-            result += 59;
+            result += normal_rest_days - 1;
         }
     }
     return result;
@@ -41,27 +51,35 @@ time_t day_of_the_year(const time_t day, const time_t month, const time_t year)
 
 bool is_valid_day(const time_t day, const time_t month, const time_t year)
 {
+    static const time_t long_month = 31;
+    static const time_t normal_month = 30;
+    static const time_t short_month = 28;
+    static const time_t short_month_in_leapyear = 29;
+
     if (day < 1) {
         return false;
     }
 
-    if (month > 7) {
-        if ((month % 2) == 0) {
-            return day <= 31;
+    static const time_t juli = 7;
+    static const time_t even_month_modulo = 2;
+    if (month > juli) {
+        if ((month % even_month_modulo) == 0) {
+            return day <= long_month;
         } else {
-            return day <= 30;
+            return day <= normal_month;
         }
     } else {
-        if (month == 2) {
-            if ((year % 4) == 0) {
-                return day <= 29;
+        static const time_t february = 2;
+        if (month == february) {
+            if ((year % years_between_leapyears) == 0) {
+                return day <= short_month_in_leapyear;
             } else {
-                return day <= 28;
+                return day <= short_month;
             }
-        } else if ((month % 2) == 0) {
-            return day <= 30;
+        } else if ((month % even_month_modulo) == 0) {
+            return day <= normal_month;
         } else {
-            return day <= 31;
+            return day <= long_month;
         }
     }
 }
@@ -69,12 +87,18 @@ bool is_valid_day(const time_t day, const time_t month, const time_t year)
 bool is_valid_epoch_date(const time_t day, const time_t month,
                          const time_t year)
 {
-    if ((year < 1970) || (!check_range<time_t, 1, 12>(month)) ||
+    static const time_t first_month = 1;
+    static const time_t last_month = 12;
+
+    if ((year < epoch_start_year) ||
+        (!check_range<time_t, first_month, last_month>(month)) ||
         (!is_valid_day(day, month, year))) {
         return false;
     }
     return true;
 }
+
+} // namespace
 
 time_t seconds_since_epoch(const time_t second_of_day, const time_t day,
                            const time_t month, const time_t year)
@@ -84,9 +108,12 @@ time_t seconds_since_epoch(const time_t second_of_day, const time_t day,
     }
 
     const time_t second_of_year =
-        second_of_day + ((day_of_the_year(day, month, year) - 1) * 86400);
+        second_of_day +
+        ((day_of_the_year(day, month, year) - 1) * seconds_per_day);
     const time_t year_seconds_since_epoch =
-        ((year - 1970) * 86400 * 365) + (((year - (1972 - 3)) / 4) * 86400);
+        ((year - epoch_start_year) * seconds_per_day * usual_days_per_year) +
+        (((year - (epoch_start_year - 1)) / years_between_leapyears) *
+         seconds_per_day);
 
     return year_seconds_since_epoch + second_of_year;
 }
