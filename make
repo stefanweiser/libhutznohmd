@@ -252,9 +252,10 @@ def execute_sonar(args):
         http_get(sonar_runner_url, sonar_runner_path)
 
     print(colorize('[INFO]: Download informations onto sonar...', GREEN))
-    check_call(['java', '-classpath', sonar_runner_path, '-Drunner.home=.',
-                '-Dproject.home=..', '-Dproject.settings=sonar.properties',
-                'org.sonar.runner.Main'], cwd=build_path)
+    check_call(['java', '-classpath', sonar_runner_path, '-Drunner.home=build',
+                '-Dproject.home=.', '-Dproject.settings=' +
+                sonar_property_file, 'org.sonar.runner.Main'],
+               cwd=project_path)
     args.log_file.close()
 
 
