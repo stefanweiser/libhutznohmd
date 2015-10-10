@@ -148,39 +148,45 @@ def execute_clean(args):
     check_call(['make', 'clean'], cwd=build_path)
 
 
-def run_gcovr(output_filename_base):
+def run_gcovr(output_filename_base, log_file):
     filename_base = os.path.join(coverage_path, output_filename_base)
-    check_call(['gcovr', '--branches', '--xml', '--output=' + filename_base +
-                '.xml', '--root', project_path], cwd=build_path)
-    check_call(['gcovr', '--branches', '--html', '--output=' + filename_base +
-                '.html', '--root', project_path], cwd=build_path)
-    check_call(['gcovr', '--delete', '--branches', '--output=' +
-                filename_base + '.txt', '--root', project_path],
-               cwd=build_path)
+    log_process(['gcovr', '--branches', '--xml', '--output=' + filename_base +
+                 '.xml', '--root', project_path, '--verbose'], build_path,
+                log_file, log_file)
+    log_process(['gcovr', '--branches', '--html', '--output=' + filename_base +
+                 '.html', '--root', project_path, '--verbose'], build_path,
+                log_file, log_file)
+    log_process(['gcovr', '--delete', '--branches', '--output=' +
+                 filename_base + '.txt', '--root', project_path, '--verbose'],
+                build_path, log_file, log_file)
 
 
 def execute_coverage(args):
     args.target = 'coverage'
     execute_bootstrap(args)
     execute_build(args)
+    if os.path.exists(coverage_path):
+        rmtree(coverage_path)
     os.makedirs(coverage_path)
 
+    args.log_file = open(log_file_path, 'w')
     print(colorize('[INFO]: Collect unittest\'s coverage information...',
                    GREEN))
     log_process([unittest_bin], build_path, args.log_file, args.log_file)
-    run_gcovr('unittest')
+    run_gcovr('unittest', args.log_file)
 
     print(colorize('[INFO]: Collect integrationtest\'s coverage' +
                    ' information...', GREEN))
     log_process([integrationtest_bin], build_path, args.log_file,
                 args.log_file)
-    run_gcovr('integrationtest')
+    run_gcovr('integrationtest', args.log_file)
 
     print(colorize('[INFO]: Collect overall coverage information...', GREEN))
     log_process([unittest_bin], build_path, args.log_file, args.log_file)
     log_process([integrationtest_bin], build_path, args.log_file,
                 args.log_file)
-    run_gcovr('overall')
+    run_gcovr('overall', args.log_file)
+    args.log_file.close()
 
 
 def execute_doc(args):
@@ -223,10 +229,14 @@ def execute_sonar(args):
     os.environ['include_paths'] = \
         ','.join(compiler.get_cxx11_release_include_list())
 
-    rmtree(build_path)
+    if os.path.exists(build_path):
+        rmtree(build_path)
     os.makedirs(build_path)
+
     print(colorize('[INFO]: Calculate coverage information...', GREEN))
     execute_coverage(args)
+
+    args.log_file = open(log_file_path, 'w')
     execute_check(args)
 
     print(colorize('[INFO]: Generate sonar configuration...', GREEN))
@@ -245,6 +255,7 @@ def execute_sonar(args):
     check_call(['java', '-classpath', sonar_runner_path, '-Drunner.home=.',
                 '-Dproject.home=..', '-Dproject.settings=sonar.properties',
                 'org.sonar.runner.Main'], cwd=build_path)
+    args.log_file.close()
 
 
 def execute_test(args):
@@ -331,10 +342,9 @@ if __name__ == "__main__":
                 os.makedirs(build_path)
                 execute_bootstrap(args)
 
-            args.log_file = open(log_file_path, 'w')
+            print(colorize('[INFO]: Writing log to ' + log_file_path, GREEN))
             for step in args.step:
                 steps[step].fn(args)
-            args.log_file.close()
 
     except CalledProcessError as e:
         print(colorize('[FAIL]: <' + ' '.join(e.cmd) + '> failed (exit code ' +
