@@ -2,24 +2,15 @@
 
 from os import devnull
 from os.path import exists
-from re import DOTALL, match
+from re import compile, MULTILINE
 from subprocess import DEVNULL, PIPE, Popen
-
 
 def get_cxx11_release_include_list():
     process = Popen(['g++', '-std=c++11', '-DNDEBUG', '-E', '-x', 'c++',
                      devnull, '-v'], stdout=DEVNULL, stderr=PIPE)
-    output = process.communicate()[1].decode('ascii')
-    pathGroups = match('.*#include \"\.\.\.\" search starts here:(.*)' +
-                       '#include <\.\.\.> search starts here:(.*)' +
-                       'End of search list\..*', output, DOTALL)
-
-    result = list()
-    for paths in (pathGroups.group(1), pathGroups.group(2)):
-        for path in paths.split():
-            if exists(path):
-                result.append(path.strip())
-
+    output = process.communicate()[1].decode('utf8')
+    result = compile(r'^ (.*)$', MULTILINE).findall(output)
+    result.pop(0)
     return result
 
 
