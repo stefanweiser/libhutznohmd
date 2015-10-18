@@ -21,19 +21,8 @@ import logger
 # change directory into project path
 os.chdir(os.path.dirname(__file__))
 
-# determine path of the script
-project_path = os.path.dirname(os.path.realpath(__file__))
-build_path = os.path.join(project_path, 'build')
-install_path = os.path.join(project_path, 'install')
-reports_path = os.path.join(build_path, 'reports')
-coverage_path = os.path.join(build_path, 'coverage')
-log_file_path = os.path.join(build_path, 'build.log')
-unittest_bin = os.path.join(build_path, 'src', 'unittest',
-                            'unittest_hutznohmd')
-integrationtest_bin = os.path.join(build_path, 'src', 'integrationtest',
-                                   'integrationtest_hutznohmd')
-sonar_runner_url = 'http://repo1.maven.org/maven2/org/codehaus/sonar/' + \
-    'runner/sonar-runner-dist/2.4/sonar-runner-dist-2.4.jar'
+# determine paths
+path = paths.Paths(os.path.dirname(os.path.realpath(__file__)))
 
 
 class Struct:
@@ -79,44 +68,44 @@ def parse_arguments(steps):
 
 def execute_bootstrap(args):
     check_call(['cmake',
-                os.path.dirname(build_path),
-                '-DCMAKE_INSTALL_PREFIX=' + install_path,
+                os.path.dirname(path.build),
+                '-DCMAKE_INSTALL_PREFIX=' + path.install,
                 '-DCMAKE_BUILD_TYPE=' + args.target,
                 '-DMINIMAL=' + str(args.minimal),
                 '-DLIBRARY_VERSION=' + args.library_version],
-               cwd=build_path)
+               cwd=path.build)
 
 
 def execute_build(args):
-    check_call(['make', '-j' + str(cpu_count()), 'all'], cwd=build_path)
+    check_call(['make', '-j' + str(cpu_count()), 'all'], cwd=path.build)
 
 
 def execute_check(args):
-    paths.renew_folder(reports_path)
+    paths.renew_folder(path.reports)
 
     args.log_obj.info('Compile all...')
     args.log_obj.execute(['make', '-j' + str(cpu_count()), 'all'])
 
     args.log_obj.info('Run valgrind...')
     args.log_obj.execute(['valgrind', '--leak-check=full', '--xml=yes',
-                          '--xml-file=' + os.path.join(reports_path,
+                          '--xml-file=' + os.path.join(path.reports,
                                                        'valgrind.xml'),
-                          unittest_bin])
+                          path.unittest_bin])
 
     args.log_obj.info('Run unittest...')
-    args.log_obj.execute([unittest_bin, '--gtest_output=xml:' +
-                          os.path.join(reports_path, 'unittest.xml')])
+    args.log_obj.execute([path.unittest_bin, '--gtest_output=xml:' +
+                          os.path.join(path.reports, 'unittest.xml')])
 
-    src_path = os.path.join(project_path, 'src')
+    src_path = os.path.join(path.project, 'src')
     integrationtest_path = os.path.join(src_path, 'integrationtest')
     lib_path = os.path.join(src_path, 'lib')
     unittest_path = os.path.join(src_path, 'unittest')
-    gmock_path = os.path.join(project_path, 'gmock')
+    gmock_path = os.path.join(path.project, 'gmock')
 
     # Running cppcheck with all the code, to improve 'unused function'
     # warnings.
     args.log_obj.info('Run cppcheck...')
-    cppcheck_report_filename = os.path.join(reports_path, 'cppcheck.xml')
+    cppcheck_report_filename = os.path.join(path.reports, 'cppcheck.xml')
     cppcheck_report_file = open(cppcheck_report_filename, 'w')
     args.log_obj.execute(['cppcheck', '--xml', '--xml-version=2', '--force',
                           '--language=c++', '--platform=unix64',
@@ -144,48 +133,48 @@ def execute_check(args):
         for error in errors:
             location = error.find('location')
             file = location.attrib['file']
-            if file.startswith(os.path.join(project_path, 'build')) or \
-               file.startswith(os.path.join(project_path, 'gmock')) or \
-               file.startswith(os.path.join(project_path, 'src/examples')) or \
-               file.startswith(os.path.join(project_path,
+            if file.startswith(os.path.join(path.project, 'build')) or \
+               file.startswith(os.path.join(path.project, 'gmock')) or \
+               file.startswith(os.path.join(path.project, 'src/examples')) or \
+               file.startswith(os.path.join(path.project,
                                             'src/integrationtest')) or \
-               file.startswith(os.path.join(project_path, 'src/unittest')):
+               file.startswith(os.path.join(path.project, 'src/unittest')):
                 errors_node.remove(error)
         tree.write(cppcheck_report_filename)
 
     args.log_obj.info('Run rats...')
-    rats_report_file = open(os.path.join(reports_path, 'rats.xml'), 'w+')
+    rats_report_file = open(os.path.join(path.reports, 'rats.xml'), 'w+')
     args.log_obj.execute(['rats', '--xml', '--resultsonly', '-w', '3',
                           src_path], rats_report_file, logger.STDOUT)
     rats_report_file.close()
 
     args.log_obj.info('Run vera++...')
     vera_cmd_line = ['vera++', '--checkstyle-report',
-                     os.path.join(reports_path, 'vera++.xml')]
+                     os.path.join(path.reports, 'vera++.xml')]
     for dirpath, dirnames, files in os.walk(lib_path):
         for file in files:
             if file.endswith('.cpp') or file.endswith('.hpp'):
                 vera_cmd_line.append(os.path.join(dirpath, file))
     args.log_obj.execute(vera_cmd_line)
 
-    args.log_obj.info('Run All report files were written to ' + reports_path +
+    args.log_obj.info('Run All report files were written to ' + path.reports +
                       '.')
 
 
 def execute_clean(args):
-    check_call(['make', 'clean'], cwd=build_path)
+    check_call(['make', 'clean'], cwd=path.build)
 
 
 def run_gcovr(output_filename_base, log_obj):
-    filename_base = os.path.join(coverage_path, output_filename_base)
+    filename_base = os.path.join(path.coverage, output_filename_base)
     log_obj.execute(['gcovr', '--branches', '--xml', '--output=' +
-                     filename_base + '.xml', '--root', project_path,
+                     filename_base + '.xml', '--root', path.project,
                      '--verbose'])
     log_obj.execute(['gcovr', '--branches', '--html', '--output=' +
-                     filename_base + '.html', '--root', project_path,
+                     filename_base + '.html', '--root', path.project,
                      '--verbose'])
     log_obj.execute(['gcovr', '--delete', '--branches', '--output=' +
-                     filename_base + '.txt', '--root', project_path,
+                     filename_base + '.txt', '--root', path.project,
                      '--verbose'])
 
     # Remove unwanted coverage data from xml output.
@@ -209,27 +198,27 @@ def execute_coverage(args):
     execute_bootstrap(args)
     execute_build(args)
 
-    paths.renew_folder(coverage_path)
+    paths.renew_folder(path.coverage)
     args.log_obj.info('Collect unittest\'s coverage information...')
-    args.log_obj.execute([unittest_bin])
+    args.log_obj.execute([path.unittest_bin])
     run_gcovr('unittest', args.log_obj)
 
     args.log_obj.info('Collect integrationtest\'s coverage information...')
-    args.log_obj.execute([integrationtest_bin])
+    args.log_obj.execute([path.integrationtest_bin])
     run_gcovr('integrationtest', args.log_obj)
 
     args.log_obj.info('Collect overall coverage information...')
-    args.log_obj.execute([unittest_bin])
-    args.log_obj.execute([integrationtest_bin])
+    args.log_obj.execute([path.unittest_bin])
+    args.log_obj.execute([path.integrationtest_bin])
     run_gcovr('overall', args.log_obj)
 
 
 def execute_doc(args):
-    check_call(['make', 'doc'], cwd=build_path)
+    check_call(['make', 'doc'], cwd=path.build)
 
 
 def execute_install(args):
-    check_call(['make', 'install'], cwd=build_path)
+    check_call(['make', 'install'], cwd=path.build)
 
 
 def execute_package(args):
@@ -237,54 +226,54 @@ def execute_package(args):
     src_tar_name = 'libhutznohmd_src-' + args.library_version + '.tar.gz'
 
     check_call(['tar', '--create', '--gzip', '--preserve-permissions',
-                '--owner=root', '--group=root', '--directory', install_path,
-                '--file', tar_name, '.'], cwd=build_path)
+                '--owner=root', '--group=root', '--directory', path.install,
+                '--file', tar_name, '.'], cwd=path.build)
     check_call(['tar', '--create', '--gzip', '--preserve-permissions',
                 '--owner=root', '--group=root', '--exclude=.git',
                 '--exclude=.gitignore', '--exclude=build', '--exclude=install',
                 '--exclude=' + os.path.join('python', '__pycache__'),
-                '--exclude=*.user', '--directory', project_path, '--file',
-                src_tar_name, '.'], cwd=build_path)
+                '--exclude=*.user', '--directory', path.project, '--file',
+                src_tar_name, '.'], cwd=path.build)
 
 
 def execute_sonar(args):
     os.environ['project_key'] = 'libhutznohmd'
     os.environ['project_name'] = 'libhutznohmd'
-    os.environ['project_path'] = project_path
-    os.environ['build_path'] = build_path
+    os.environ['project_path'] = path.project
+    os.environ['build_path'] = path.build
     os.environ['coverage_path'] = os.path.join('build', 'coverage')
     os.environ['reports_path'] = os.path.join('build', 'reports')
     os.environ['version'] = '0.0.1'
     os.environ['include_paths'] = \
         ','.join(compiler.get_cxx11_release_include_list())
 
-    paths.renew_folder(build_path)
+    paths.renew_folder(path.build)
     args.log_obj.info('Calculate coverage information...')
     execute_coverage(args)
 
     execute_check(args)
 
     args.log_obj.info('Generate sonar configuration...')
-    compiler.write_cxx11_release_defines(os.path.join(build_path,
+    compiler.write_cxx11_release_defines(os.path.join(path.build,
                                                       'defines.h'))
     sonar_property_file = os.path.join('build', 'sonar.properties')
-    eval_file(os.path.join(project_path, 'sonar-cxx.template'),
+    eval_file(os.path.join(path.project, 'sonar-cxx.template'),
               sonar_property_file)
 
     args.log_obj.info('Download sonar-runner...')
-    sonar_runner_path = os.path.join(build_path, 'sonar-runner.jar')
+    sonar_runner_path = os.path.join(path.build, 'sonar-runner.jar')
     if not os.path.exists(sonar_runner_path):
-        http_get(sonar_runner_url, sonar_runner_path)
+        http_get(path.sonar_runner_url, sonar_runner_path)
 
     args.log_obj.info('Download informations onto sonar...')
     check_call(['java', '-classpath', sonar_runner_path, '-Drunner.home=build',
                 '-Dproject.home=.', '-Dproject.settings=' +
                 sonar_property_file, 'org.sonar.runner.Main'],
-               cwd=project_path)
+               cwd=path.project)
 
 
 def execute_test(args):
-    check_call(['make', 'test'], cwd=build_path)
+    check_call(['make', 'test'], cwd=path.build)
 
 
 def update_single_path(rootpath):
@@ -304,7 +293,7 @@ def update_single_path(rootpath):
 
 
 def execute_update(args):
-    for dirpath, dirnames, files in os.walk(os.path.join(project_path, 'src')):
+    for dirpath, dirnames, files in os.walk(os.path.join(path.project, 'src')):
         for file in files:
             if file == 'files.txt':
                 update_single_path(dirpath)
@@ -321,8 +310,8 @@ def execute_all(args):
 
 
 if __name__ == "__main__":
-    if not os.path.exists(build_path):
-        os.makedirs(build_path)
+    if not os.path.exists(path.build):
+        os.makedirs(path.build)
 
     steps = {
         'all': Struct(fn=execute_all,
@@ -353,13 +342,13 @@ if __name__ == "__main__":
 
     args = parse_arguments(steps)
 
-    version_file = open(os.path.join(project_path, 'version'), 'r')
+    version_file = open(os.path.join(path.project, 'version'), 'r')
     args.library_version = version_file.read().strip()
     version_file.close()
 
     execute_bootstrap(args)
 
-    with logger.Logger(log_file_path, build_path) as log_obj:
+    with logger.Logger('build.log', path.build) as log_obj:
         if sys.version_info < (3, 2):
             log_obj.fail('At least python 3.2 expected, but found:\npython ' +
                          sys.version)
