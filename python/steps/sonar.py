@@ -21,7 +21,8 @@ class SonarStep(object):
         os.environ['project_key'] = 'libhutznohmd'
         os.environ['project_name'] = 'libhutznohmd'
         os.environ['project_path'] = path.project
-        os.environ['build_path'] = path.cmake
+        os.environ['build_path'] = path.build
+        os.environ['cmake_path'] = path.cmake
         os.environ['coverage_path'] = os.path.join('build', 'coverage')
         os.environ['reports_path'] = os.path.join('build', 'reports')
         os.environ['version'] = '0.0.1'

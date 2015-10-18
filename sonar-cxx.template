@@ -11,7 +11,7 @@ sonar.sourceEncoding=UTF-8
 
 sonar.sources=src/lib
 sonar.cxx.includeDirectories=${include_paths},${project_path}/src/lib
-sonar.cxx.forceIncludes=${build_path}/defines.h
+sonar.cxx.forceIncludes=${cmake_path}/defines.h
 
 sonar.cxx.cppcheck.reportPath=${reports_path}/cppcheck.xml
 sonar.cxx.rats.reportPath=${reports_path}/rats.xml
