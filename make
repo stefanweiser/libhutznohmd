@@ -19,6 +19,7 @@ from checkstep import CheckStep
 from cleanstep import CleanStep
 from coveragestep import CoverageStep
 from documentationstep import DocumentationStep
+from packagestep import PackageStep
 
 
 buildstep = BuildStep()
@@ -26,6 +27,7 @@ checkstep = CheckStep()
 cleanstep = CleanStep()
 coveragestep = CoverageStep()
 documentationstep = DocumentationStep()
+packagestep = PackageStep()
 
 # change directory into project path
 os.chdir(os.path.dirname(__file__))
@@ -96,18 +98,7 @@ def execute_doc(args):
 
 
 def execute_package(args):
-    tar_name = 'libhutznohmd-' + args.library_version + '.tar.gz'
-    src_tar_name = 'libhutznohmd_src-' + args.library_version + '.tar.gz'
-
-    check_call(['tar', '--create', '--gzip', '--preserve-permissions',
-                '--owner=root', '--group=root', '--directory', path.install,
-                '--file', tar_name, '.'], cwd=path.build)
-    check_call(['tar', '--create', '--gzip', '--preserve-permissions',
-                '--owner=root', '--group=root', '--exclude=.git',
-                '--exclude=.gitignore', '--exclude=build', '--exclude=install',
-                '--exclude=' + os.path.join('python', '__pycache__'),
-                '--exclude=*.user', '--directory', path.project, '--file',
-                src_tar_name, '.'], cwd=path.build)
+    packagestep.execute(args, path)
 
 
 def execute_sonar(args):
@@ -193,9 +184,10 @@ if __name__ == "__main__":
         cleanstep.name(): Struct(fn=execute_clean, help=cleanstep.help()),
         coveragestep.name(): Struct(fn=execute_coverage,
                                     help=coveragestep.help()),
-        'package': Struct(fn=execute_package, help='builds packages'),
         documentationstep.name(): Struct(fn=execute_doc,
                                          help=documentationstep.help()),
+        packagestep.name(): Struct(fn=execute_package,
+                                   help=packagestep.help()),
         'sonar': Struct(fn=execute_sonar, help='uploads sonar results'),
         'test': Struct(fn=execute_test,
                        help='executes unit and integration tests'),
