@@ -26,7 +26,6 @@ sys.path.insert(0, python_script_path)
 
 from argparse import ArgumentParser
 from multiprocessing import cpu_count
-from shutil import rmtree
 from subprocess import CalledProcessError, check_call
 from sys import version, version_info
 from termcolor import BOLD, colorize, GREEN, RED
@@ -35,6 +34,7 @@ from evalfile import eval_file
 from httpget import http_get
 from proclogger import log_process
 import compiler
+import paths
 
 
 class Struct:
@@ -107,8 +107,7 @@ def execute_build(args):
 def execute_check(args):
     check_is_bootstrapped()
 
-    if not os.path.exists(reports_path):
-        os.makedirs(reports_path)
+    paths.renew_folder(reports_path)
     args.log_file = open(log_file_path, 'a')
 
     print(colorize('[INFO]: Compile all...', GREEN))
@@ -225,10 +224,8 @@ def execute_coverage(args):
     args.target = 'coverage'
     execute_bootstrap(args)
     execute_build(args)
-    if os.path.exists(coverage_path):
-        rmtree(coverage_path)
-    os.makedirs(coverage_path)
 
+    paths.renew_folder(coverage_path)
     args.log_file = open(log_file_path, 'a')
     print(colorize('[INFO]: Collect unittest\'s coverage information...',
                    GREEN))
@@ -289,10 +286,7 @@ def execute_sonar(args):
     os.environ['include_paths'] = \
         ','.join(compiler.get_cxx11_release_include_list())
 
-    if os.path.exists(build_path):
-        rmtree(build_path)
-    os.makedirs(build_path)
-
+    paths.renew_folder(build_path)
     print(colorize('[INFO]: Calculate coverage information...', GREEN))
     execute_coverage(args)
 
@@ -399,12 +393,11 @@ if __name__ == "__main__":
             args.library_version = version_file.read().strip()
             version_file.close()
 
-            if os.path.exists(log_file_path):
-                os.remove(log_file_path)
-
             if not os.path.exists(build_path):
                 os.makedirs(build_path)
-                execute_bootstrap(args)
+
+            paths.renew_file(log_file_path)
+            execute_bootstrap(args)
 
             print(colorize('[INFO]: Writing log to ' + log_file_path, GREEN))
             for step in args.step:
