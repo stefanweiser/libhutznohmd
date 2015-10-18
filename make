@@ -9,9 +9,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)),
 
 from argparse import ArgumentParser
 from subprocess import CalledProcessError, check_call
-from evalfile import eval_file
-from httpget import http_get
-import compiler
 import paths
 import logger
 from buildstep import BuildStep
@@ -20,6 +17,7 @@ from cleanstep import CleanStep
 from coveragestep import CoverageStep
 from documentationstep import DocumentationStep
 from packagestep import PackageStep
+from sonarstep import SonarStep
 from teststep import TestStep
 from updatestep import UpdateStep
 
@@ -30,6 +28,7 @@ cleanstep = CleanStep()
 coveragestep = CoverageStep()
 documentationstep = DocumentationStep()
 packagestep = PackageStep()
+sonarstep = SonarStep()
 teststep = TestStep()
 updatestep = UpdateStep()
 
@@ -106,39 +105,7 @@ def execute_package(args):
 
 
 def execute_sonar(args):
-    os.environ['project_key'] = 'libhutznohmd'
-    os.environ['project_name'] = 'libhutznohmd'
-    os.environ['project_path'] = path.project
-    os.environ['build_path'] = path.build
-    os.environ['coverage_path'] = os.path.join('build', 'coverage')
-    os.environ['reports_path'] = os.path.join('build', 'reports')
-    os.environ['version'] = '0.0.1'
-    os.environ['include_paths'] = \
-        ','.join(compiler.get_cxx11_release_include_list())
-
-    paths.renew_folder(path.build)
-    args.log_obj.info('Calculate coverage information...')
-    execute_coverage(args)
-
-    execute_check(args)
-
-    args.log_obj.info('Generate sonar configuration...')
-    compiler.write_cxx11_release_defines(os.path.join(path.build,
-                                                      'defines.h'))
-    sonar_property_file = os.path.join('build', 'sonar.properties')
-    eval_file(os.path.join(path.project, 'sonar-cxx.template'),
-              sonar_property_file)
-
-    args.log_obj.info('Download sonar-runner...')
-    sonar_runner_path = os.path.join(path.build, 'sonar-runner.jar')
-    if not os.path.exists(sonar_runner_path):
-        http_get(path.sonar_runner_url, sonar_runner_path)
-
-    args.log_obj.info('Download informations onto sonar...')
-    check_call(['java', '-classpath', sonar_runner_path, '-Drunner.home=build',
-                '-Dproject.home=.', '-Dproject.settings=' +
-                sonar_property_file, 'org.sonar.runner.Main'],
-               cwd=path.project)
+    sonarstep.execute(args, path)
 
 
 def execute_test(args):
@@ -173,7 +140,7 @@ if __name__ == "__main__":
                                          help=documentationstep.help()),
         packagestep.name(): Struct(fn=execute_package,
                                    help=packagestep.help()),
-        'sonar': Struct(fn=execute_sonar, help='uploads sonar results'),
+        sonarstep.name(): Struct(fn=execute_sonar, help=sonarstep.help()),
         teststep.name(): Struct(fn=execute_test, help=teststep.help()),
         updatestep.name(): Struct(fn=execute_update, help=updatestep.help())
     }
