@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import multiprocessing
 import os
 import paths
 import steps.build

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import logger
-import multiprocessing
 import os
 import paths
 import steps.build
