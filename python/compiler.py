@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 from os import devnull
-from os.path import exists
 from re import compile, MULTILINE
 from subprocess import DEVNULL, PIPE, Popen
+
 
 def get_cxx11_release_include_list():
     process = Popen(['g++', '-std=c++11', '-DNDEBUG', '-E', '-x', 'c++',
