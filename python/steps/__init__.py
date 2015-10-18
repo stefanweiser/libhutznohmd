@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-import steps.all
-import steps.build
-import steps.check
-import steps.clean
-import steps.coverage
-import steps.doc
-import steps.package
-import steps.sonar
-import steps.test
-import steps.update
+import steps.all # flake8: noqa
+import steps.build # flake8: noqa
+import steps.check # flake8: noqa
+import steps.clean # flake8: noqa
+import steps.coverage # flake8: noqa
+import steps.doc # flake8: noqa
+import steps.package # flake8: noqa
+import steps.sonar # flake8: noqa
+import steps.test # flake8: noqa
+import steps.update # flake8: noqa
