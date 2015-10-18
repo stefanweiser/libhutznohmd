@@ -11,26 +11,18 @@ from argparse import ArgumentParser
 from subprocess import CalledProcessError, check_call
 import paths
 import logger
-from buildstep import BuildStep
-from checkstep import CheckStep
-from cleanstep import CleanStep
-from coveragestep import CoverageStep
-from documentationstep import DocumentationStep
-from packagestep import PackageStep
-from sonarstep import SonarStep
-from teststep import TestStep
-from updatestep import UpdateStep
 
+import allstep
+import buildstep
+import checkstep
+import cleanstep
+import coveragestep
+import documentationstep
+import packagestep
+import sonarstep
+import teststep
+import updatestep
 
-buildstep = BuildStep()
-checkstep = CheckStep()
-cleanstep = CleanStep()
-coveragestep = CoverageStep()
-documentationstep = DocumentationStep()
-packagestep = PackageStep()
-sonarstep = SonarStep()
-teststep = TestStep()
-updatestep = UpdateStep()
 
 # change directory into project path
 os.chdir(os.path.dirname(__file__))
@@ -72,78 +64,23 @@ def parse_arguments(steps):
     step_group = parser.add_argument_group(
         'build steps')
 
-    for key in sorted(steps):
-        step_group.add_argument(key,
+    for step in steps:
+        step_group.add_argument(step.name(),
                                 action='store_true',
-                                help=steps[key].help)
+                                help=step.help())
 
     return parser.parse_args()
-
-
-def execute_build(args):
-    buildstep.execute(args, path)
-
-
-def execute_check(args):
-    checkstep.execute(args, path)
-
-
-def execute_clean(args):
-    cleanstep.execute(args, path)
-
-
-def execute_coverage(args):
-    coveragestep.execute(args, path)
-
-
-def execute_doc(args):
-    documentationstep.execute(args, path)
-
-
-def execute_package(args):
-    packagestep.execute(args, path)
-
-
-def execute_sonar(args):
-    sonarstep.execute(args, path)
-
-
-def execute_test(args):
-    teststep.execute(args, path)
-
-
-def execute_update(args):
-    updatestep.execute(args, path)
-
-
-def execute_all(args):
-    execute_clean(args)
-    execute_update(args)
-    execute_build(args)
-    execute_test(args)
-    execute_package(args)
 
 
 if __name__ == "__main__":
     if not os.path.exists(path.build):
         os.makedirs(path.build)
 
-    steps = {
-        'all': Struct(fn=execute_all,
-                      help='builds all steps to make a package'),
-        buildstep.name(): Struct(fn=execute_build, help=buildstep.help()),
-        checkstep.name(): Struct(fn=execute_check, help=checkstep.help()),
-        cleanstep.name(): Struct(fn=execute_clean, help=cleanstep.help()),
-        coveragestep.name(): Struct(fn=execute_coverage,
-                                    help=coveragestep.help()),
-        documentationstep.name(): Struct(fn=execute_doc,
-                                         help=documentationstep.help()),
-        packagestep.name(): Struct(fn=execute_package,
-                                   help=packagestep.help()),
-        sonarstep.name(): Struct(fn=execute_sonar, help=sonarstep.help()),
-        teststep.name(): Struct(fn=execute_test, help=teststep.help()),
-        updatestep.name(): Struct(fn=execute_update, help=updatestep.help())
-    }
+    steps = (allstep.AllStep(), buildstep.BuildStep(), checkstep.CheckStep(),
+             cleanstep.CleanStep(), coveragestep.CoverageStep(),
+             documentationstep.DocumentationStep(), packagestep.PackageStep(),
+             sonarstep.SonarStep(), teststep.TestStep(),
+             updatestep.UpdateStep())
 
     args = parse_arguments(steps)
 
@@ -166,8 +103,9 @@ if __name__ == "__main__":
         else:
             try:
                 args.log_obj = log_obj
+                step_dict = dict([(x.name(), x) for x in steps])
                 for step in args.step:
-                    steps[step].fn(args)
+                    step_dict[step].execute(args, path)
 
             except CalledProcessError as e:
                 log_obj.fail('<' + ' '.join(e.cmd) + '> failed (exit code ' +
