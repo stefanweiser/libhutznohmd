@@ -16,7 +16,10 @@ from httpget import http_get
 import compiler
 import paths
 import logger
+from cleanstep import CleanStep
 
+
+cleanstep = CleanStep();
 
 # change directory into project path
 os.chdir(os.path.dirname(__file__))
@@ -162,7 +165,7 @@ def execute_check(args):
 
 
 def execute_clean(args):
-    check_call(['make', 'clean'], cwd=path.build)
+    cleanstep.execute(args, path)
 
 
 def run_gcovr(output_filename_base, log_obj):
@@ -322,8 +325,8 @@ if __name__ == "__main__":
                         help='compiles the targets'),
         'check': Struct(fn=execute_check,
                         help='checks code for problems'),
-        'clean': Struct(fn=execute_clean,
-                        help='removes all built output'),
+        cleanstep.name(): Struct(fn=execute_clean,
+                        help=cleanstep.help()),
         'coverage': Struct(fn=execute_coverage,
                            help='generates lcov output'),
         'doc': Struct(fn=execute_doc,
