@@ -54,4 +54,4 @@ class SonarStep(object):
         return 'sonar'
 
     def help(self):
-        return 'u   pdates data on sonarqube server'
+        return 'updates data on sonarqube server'
