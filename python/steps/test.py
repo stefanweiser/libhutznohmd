@@ -17,8 +17,10 @@ class TestStep(object):
         args.log_obj.info('Run integrationtest...')
         args.log_obj.execute([path.integrationtest_bin])
 
-    def name(self):
+    @staticmethod
+    def name():
         return 'test'
 
-    def help(self):
+    @staticmethod
+    def help():
         return 'executes unit and integration tests'

@@ -6,7 +6,8 @@ import os
 class UpdateStep(object):
     ''' Updates source file lists. '''
 
-    def execute(self, args, path):
+    @staticmethod
+    def execute(args, path):
         def update_single_path(rootpath):
             found_files = []
 
@@ -30,8 +31,10 @@ class UpdateStep(object):
                 if file == 'files.txt':
                     update_single_path(dirpath)
 
-    def name(self):
+    @staticmethod
+    def name():
         return 'update'
 
-    def help(self):
+    @staticmethod
+    def help():
         return 'generates new file lists'

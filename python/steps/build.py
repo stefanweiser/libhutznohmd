@@ -20,8 +20,10 @@ class BuildStep(object):
         args.log_obj.execute(['make', '-j' + str(multiprocessing.cpu_count()),
                               'install'], working_dir=path.cmake)
 
-    def name(self):
+    @staticmethod
+    def name():
         return 'build'
 
-    def help(self):
+    @staticmethod
+    def help():
         return 'compiles the target and installs it to the install path'

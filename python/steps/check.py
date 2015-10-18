@@ -95,8 +95,10 @@ class CheckStep(object):
         args.log_obj.info('Run All report files were written to ' +
                           path.reports + '.')
 
-    def name(self):
+    @staticmethod
+    def name():
         return 'check'
 
-    def help(self):
+    @staticmethod
+    def help():
         return 'generates reports of all checking tools'

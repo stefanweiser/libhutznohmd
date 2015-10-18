@@ -60,8 +60,10 @@ class CoverageStep(object):
         args.log_obj.execute([path.integrationtest_bin])
         run_gcovr('overall', args.log_obj)
 
-    def name(self):
+    @staticmethod
+    def name():
         return 'coverage'
 
-    def help(self):
+    @staticmethod
+    def help():
         return 'generates reports of all checking tools'

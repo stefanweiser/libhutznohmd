@@ -7,7 +7,8 @@ import os
 class DocStep(object):
     ''' Generates the project's doxygen documentation. '''
 
-    def execute(self, args, path):
+    @staticmethod
+    def execute(args, path):
         plantuml_path = os.path.join(path.download, 'plantuml.jar')
         if not os.path.exists(plantuml_path):
             args.log_obj.info('Download plantuml...')
@@ -18,8 +19,10 @@ class DocStep(object):
         args.log_obj.execute(['doxygen', os.path.join(path.project,
                                                       'Doxyfile')])
 
-    def name(self):
+    @staticmethod
+    def name():
         return 'doc'
 
-    def help(self):
+    @staticmethod
+    def help():
         return 'generates documentation'

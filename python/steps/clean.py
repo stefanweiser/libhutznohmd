@@ -7,13 +7,16 @@ import shutil
 class CleanStep(object):
     ''' Cleans the content of the build path. '''
 
-    def execute(self, args, path):
+    @staticmethod
+    def execute(args, path):
         args.log_obj.info('Clean project...')
         if os.path.exists(path.cmake):
             shutil.rmtree(path.cmake)
 
-    def name(self):
+    @staticmethod
+    def name():
         return 'clean'
 
-    def help(self):
+    @staticmethod
+    def help():
         return 'removes all built output'

@@ -6,7 +6,8 @@ import os
 class BootstrapStep(object):
     ''' Bootstraps the cmake target. '''
 
-    def execute(self, args, path):
+    @staticmethod
+    def execute(args, path):
         args.log_obj.info('Bootstrap project for target ' + args.target +
                           '...')
         os.makedirs(path.cmake, exist_ok=True)
@@ -17,12 +18,14 @@ class BootstrapStep(object):
                               '-DLIBRARY_VERSION=' + args.library_version],
                              working_dir=path.cmake)
 
-    def name(self):
+    @staticmethod
+    def name():
         # not intended to be used directly
         assert(False)
         return ''
 
-    def help(self):
+    @staticmethod
+    def help():
         # not intended to be used directly
         assert(False)
         return ''

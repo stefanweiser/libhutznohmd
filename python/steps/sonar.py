@@ -54,8 +54,10 @@ class SonarStep(object):
                                '-Dproject.settings=' + sonar_property_file,
                                'org.sonar.runner.Main'], cwd=path.project)
 
-    def name(self):
+    @staticmethod
+    def name():
         return 'sonar'
 
-    def help(self):
+    @staticmethod
+    def help():
         return 'updates data on sonarqube server'

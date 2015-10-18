@@ -33,8 +33,10 @@ class PackageStep(object):
                               '--exclude=*.user', '--directory', path.project,
                               '--file', src_tar_name, '.'])
 
-    def name(self):
+    @staticmethod
+    def name():
         return 'package'
 
-    def help(self):
+    @staticmethod
+    def help():
         return 'builds packages'
