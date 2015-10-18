@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 
+import subprocess
 import termcolor
+import sys
+
+
+NONE, STDOUT, STDERR = range(3)
 
 
 class Logger(object):
@@ -39,3 +44,19 @@ class Logger(object):
         print(termcolor.colorize('[FAIL]: ' + str, termcolor.RED,
                                  termcolor.BOLD))
         self.logfile_handle.write('[FAIL]: ' + str + '\n')
+
+    def execute(self, cmd, out_file=sys.stdout, sink=NONE):
+        """ Executes a command in the current path and writes the output to the
+            log file. """
+        if sink is STDOUT:
+            stdout_file = out_file
+        else:
+            stdout_file = self.logfile_handle
+
+        if sink is STDERR:
+            stderr_file = out_file
+        else:
+            stderr_file = self.logfile_handle
+
+        process = subprocess.Popen(cmd, stdout=stdout_file, stderr=stderr_file)
+        process.wait()
