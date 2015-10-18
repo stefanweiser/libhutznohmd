@@ -1,41 +1,33 @@
 #!/usr/bin/env python3
 
+# include system modules
+import argparse
 import os
+import subprocess
 import sys
 
 # add the python subdirectory to the search path
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                 'python'))
 
-import argparse
+# include own modules
 import logger
 import paths
 import steps
-import subprocess
-
-
-# change directory into project path
-os.chdir(os.path.dirname(__file__))
-
-# determine paths
-path = paths.Paths(os.path.dirname(os.path.realpath(__file__)))
-
-
-class Struct:
-    def __init__(self, **args):
-        self.__dict__.update(args)
 
 
 def parse_arguments(steps):
+    ''' parses the arguments and returns a structure with those '''
     parser = argparse.ArgumentParser()
-    parser.add_argument('step', nargs='+')
-
+    
+    # possible to just create a package with reduced toolset
     parser.add_argument('-m',
                         '--minimal',
                         dest='minimal',
                         action='store_true',
                         help='builds a minimal dependency toolchain')
 
+    # defines targets, which is either debug or release
     mutual_target_group = parser.add_mutually_exclusive_group()
     mutual_target_group.add_argument('-d',
                                      '--debug',
@@ -51,25 +43,21 @@ def parse_arguments(steps):
                                      const='release',
                                      help='use release options for the build')
 
-    step_group = parser.add_argument_group('build steps')
+    # defines several "make steps"
+    parser.add_argument('step', nargs='+')
 
+    # add step argument for each
+    step_group = parser.add_argument_group('build steps')
     for step in steps:
         step_group.add_argument(step.name(),
                                 action='store_true',
                                 help=step.help())
 
-    args = parser.parse_args()
-
-    version_file = open(os.path.join(path.project, 'version'), 'r')
-    args.library_version = version_file.read().strip()
-    version_file.close()
-
-    return args
+    # parse command line arguments and return resulting structure
+    return parser.parse_args()
 
 
-def main(log_obj):
-    os.makedirs(path.build, exist_ok=True)
-
+def main(path, log_obj):
     step_list = (steps.all.AllStep(), steps.build.BuildStep(),
                  steps.check.CheckStep(), steps.clean.CleanStep(),
                  steps.coverage.CoverageStep(), steps.doc.DocStep(),
@@ -78,6 +66,10 @@ def main(log_obj):
 
     args = parse_arguments(step_list)
     args.log_obj = log_obj
+
+    version_file = open(os.path.join(path.project, 'version'), 'r')
+    args.library_version = version_file.read().strip()
+    version_file.close()
 
     args.log_obj.info('Bootstrap project...')
     args.log_obj.execute(['cmake', os.path.join(path.build, '..', '..'),
@@ -92,14 +84,23 @@ def main(log_obj):
             step_dict[step].execute(args, path)
 
     except subprocess.CalledProcessError as e:
-        log_obj.fail('<' + ' '.join(e.cmd) + '> failed (exit code ' +
-                     str(e.returncode) + ').')
+        args.log_obj.fail('<' + ' '.join(e.cmd) + '> failed (exit code ' +
+                          str(e.returncode) + ').')
 
 
 if __name__ == "__main__":
+    # first of all generate a structure with all necessary paths
+    path = paths.Paths(os.path.dirname(os.path.realpath(__file__)))
+    
+    # change into project path
+    os.chdir(os.path.dirname(__file__))
+    
+    # create build path if not exist
+    os.makedirs(path.build, exist_ok=True)
+
     with logger.Logger('build.log', path.build) as log_obj:
         if sys.version_info < (3, 2):
             log_obj.fail('At least python 3.2 expected, but found:\npython ' +
                          sys.version)
         else:
-            main(log_obj)
+            main(path, log_obj)
