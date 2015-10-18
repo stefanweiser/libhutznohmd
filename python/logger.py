@@ -11,9 +11,10 @@ NONE, STDOUT, STDERR, BOTH = range(4)
 class Logger(object):
     """ Provides functions to print out data to log file. """
 
-    def __init__(self, logfile_path):
+    def __init__(self, logfile_path, working_dir):
         """ Sets the path to the log file, but actually does not open it. """
         self.logfile_path = logfile_path
+        self.working_dir = working_dir
         print(termcolor.colorize('[INFO]: Write log to ' + self.logfile_path,
                                  termcolor.GREEN))
 
@@ -58,5 +59,6 @@ class Logger(object):
         else:
             stderr_file = self.logfile_handle
 
-        process = subprocess.Popen(cmd, stdout=stdout_file, stderr=stderr_file)
+        process = subprocess.Popen(cmd, cwd=self.working_dir,
+                                   stdout=stdout_file, stderr=stderr_file)
         process.wait()
