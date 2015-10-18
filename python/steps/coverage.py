@@ -3,13 +3,20 @@
 import multiprocessing
 import os
 import paths
+import steps.build
 import xml.etree.ElementTree
 
 
 class CoverageStep(object):
     """ Generates reports of all checking tools. """
 
+    def __init__(self):
+        self.buildstep = steps.build.BuildStep()
+
     def execute(self, args, path):
+        args.target = 'coverage'
+        self.buildstep.execute(args, path)
+
         def run_gcovr(output_filename_base, log_obj):
             filename_base = os.path.join(path.coverage, output_filename_base)
             log_obj.execute(['gcovr', '--branches', '--xml', '--output=' +
@@ -39,15 +46,6 @@ class CoverageStep(object):
                 tree.write(filename_base + '.xml')
 
         args.log_obj.info('Generate coverage information...')
-        args.log_obj.info('Bootstrap coverage target...')
-        args.log_obj.execute(['cmake', os.path.join(path.cmake, '..', '..'),
-                              '-DCMAKE_INSTALL_PREFIX=' + path.install,
-                              '-DCMAKE_BUILD_TYPE=coverage',
-                              '-DMINIMAL=' + str(args.minimal),
-                              '-DLIBRARY_VERSION=' + args.library_version])
-        args.log_obj.info('Build project...')
-        args.log_obj.execute(['make', '-j' + str(multiprocessing.cpu_count()),
-                              'install'])
 
         paths.renew_folder(path.coverage)
         args.log_obj.info('Collect unittest\'s coverage information...')

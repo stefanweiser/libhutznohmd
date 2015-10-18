@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+
+import os
+
+
+class BootstrapStep(object):
+    """ Bootstraps the cmake target. """
+
+    def execute(self, args, path):
+        args.log_obj.info('Bootstrap project for target ' + args.target +
+                          '...')
+        args.log_obj.execute(['cmake', os.path.join(path.cmake, '..', '..'),
+                              '-DCMAKE_INSTALL_PREFIX=' + path.install,
+                              '-DCMAKE_BUILD_TYPE=' + args.target,
+                              '-DMINIMAL=' + str(args.minimal),
+                              '-DLIBRARY_VERSION=' + args.library_version])
+
+    def name(self):
+        # not intended to be used directly
+        assert(False)
+        return ''
+
+    def help(self):
+        # not intended to be used directly
+        assert(False)
+        return ''

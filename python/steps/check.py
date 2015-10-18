@@ -4,18 +4,20 @@ import logger
 import multiprocessing
 import os
 import paths
+import steps.build
 import xml.etree.ElementTree
 
 
 class CheckStep(object):
     """ Generates reports of all checking tools. """
 
-    def execute(self, args, path):
-        paths.renew_folder(path.reports)
+    def __init__(self):
+        self.buildstep = steps.build.BuildStep()
 
-        args.log_obj.info('Compile all...')
-        args.log_obj.execute(['make', '-j' + str(multiprocessing.cpu_count()),
-                              'install'])
+    def execute(self, args, path):
+        self.buildstep.execute(args, path)
+
+        paths.renew_folder(path.reports)
 
         args.log_obj.info('Run valgrind...')
         args.log_obj.execute(['valgrind', '--leak-check=full', '--xml=yes',

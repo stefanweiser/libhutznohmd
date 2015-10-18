@@ -71,13 +71,6 @@ def main(path, log_obj):
     args.library_version = version_file.read().strip()
     version_file.close()
 
-    args.log_obj.info('Bootstrap project...')
-    args.log_obj.execute(['cmake', os.path.join(path.cmake, '..', '..'),
-                          '-DCMAKE_INSTALL_PREFIX=' + path.install,
-                          '-DCMAKE_BUILD_TYPE=' + args.target,
-                          '-DMINIMAL=' + str(args.minimal),
-                          '-DLIBRARY_VERSION=' + args.library_version])
-
     try:
         step_dict = dict([(x.name(), x) for x in step_list])
         for step in args.step:
@@ -98,10 +91,13 @@ if __name__ == "__main__":
     # create build path if not exist
     os.makedirs(path.cmake, exist_ok=True)
 
+    # create a logger
     with logger.Logger(os.path.join(path.build, 'build.log'),
                        path.cmake) as log_obj:
+        # the script requires at least python 3.2
         if sys.version_info < (3, 2):
             log_obj.fail('At least python 3.2 expected, but found:\npython ' +
                          sys.version)
         else:
+            # call the real main
             main(path, log_obj)
