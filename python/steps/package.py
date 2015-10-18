@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 
 import os
+import steps.test
 
 
 class PackageStep(object):
     """ Generates packages for source and binaries. """
 
+    def __init__(self):
+        self.teststep = steps.test.TestStep()
+
     def execute(self, args, path):
+        self.teststep.execute(args, path)
+
         args.log_obj.info('Build packages...')
 
         tar_name = 'libhutznohmd-' + args.library_version + '.tar.gz'
