@@ -12,8 +12,9 @@ class TestStep(object):
     def execute(self, args, path):
         self.buildstep.execute(args, path)
 
-        args.log_obj.info('Run tests...')
+        args.log_obj.info('Run unittest...')
         args.log_obj.execute([path.unittest_bin])
+        args.log_obj.info('Run integrationtest...')
         args.log_obj.execute([path.integrationtest_bin])
 
     def name(self):
