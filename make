@@ -18,6 +18,7 @@ import steps
 
 def parse_arguments(steps):
     ''' parses the arguments and returns a structure with those '''
+
     parser = argparse.ArgumentParser()
 
     # possible to just create a package with reduced toolset
@@ -58,21 +59,30 @@ def parse_arguments(steps):
 
 
 def main(path, log_obj):
+    # collect available steps in a list
     step_list = (steps.build.BuildStep(), steps.check.CheckStep(),
                  steps.clean.CleanStep(), steps.coverage.CoverageStep(),
                  steps.doc.DocStep(), steps.package.PackageStep(),
                  steps.sonar.SonarStep(), steps.test.TestStep(),
                  steps.update.UpdateStep())
 
+    # parse command line arguments
     args = parse_arguments(step_list)
+
+    # add logger object to make them available to the steps
     args.log_obj = log_obj
 
+    # read current library version from file and add to arguments
     version_file = open(os.path.join(path.project, 'version'), 'r')
     args.library_version = version_file.read().strip()
     version_file.close()
 
+    # to show a usable error message, when a command will fail
     try:
+        # transform the step list into a dictionary with the step's name as key
         step_dict = dict([(x.name(), x) for x in step_list])
+
+        # iterate through the given steps and run everything
         for step in args.step:
             step_dict[step].execute(args, path)
 
