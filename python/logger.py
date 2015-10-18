@@ -12,10 +12,10 @@ NONE, STDOUT, STDERR, BOTH = range(4)
 class Logger(object):
     """ Provides functions to print out data to log file. """
 
-    def __init__(self, logfile_path, working_dir):
+    def __init__(self, logfile_path):
         """ Sets the path to the log file, but actually does not open it. """
+        working_dir = os.path.dirname(logfile_path)
         assert(os.path.exists(working_dir))
-        assert(os.path.exists(os.path.dirname(logfile_path)))
 
         self.logfile_path = logfile_path
         self.working_dir = working_dir
