@@ -27,7 +27,6 @@ sys.path.insert(0, python_script_path)
 from argparse import ArgumentParser
 from multiprocessing import cpu_count
 from subprocess import CalledProcessError, check_call
-from sys import version, version_info
 from termcolor import BOLD, colorize, RED
 from xml.etree.ElementTree import ElementTree
 from evalfile import eval_file
@@ -78,16 +77,6 @@ def parse_arguments(steps):
     return parser.parse_args()
 
 
-class IsNotBootstrappedError(Exception):
-    def __str__(self):
-        return colorize('[FAIL]: Project is not bootstrapped.', RED, BOLD)
-
-
-def check_is_bootstrapped():
-    if not os.path.exists(build_path):
-        raise IsNotBootstrappedError()
-
-
 def execute_bootstrap(args):
     check_call(['cmake',
                 os.path.dirname(build_path),
@@ -99,14 +88,10 @@ def execute_bootstrap(args):
 
 
 def execute_build(args):
-    check_is_bootstrapped()
-
     check_call(['make', '-j' + str(cpu_count()), 'all'], cwd=build_path)
 
 
 def execute_check(args):
-    check_is_bootstrapped()
-
     paths.renew_folder(reports_path)
 
     args.log_obj.info('Compile all...')
@@ -240,20 +225,14 @@ def execute_coverage(args):
 
 
 def execute_doc(args):
-    check_is_bootstrapped()
-
     check_call(['make', 'doc'], cwd=build_path)
 
 
 def execute_install(args):
-    check_is_bootstrapped()
-
     check_call(['make', 'install'], cwd=build_path)
 
 
 def execute_package(args):
-    check_is_bootstrapped()
-
     tar_name = 'libhutznohmd-' + args.library_version + '.tar.gz'
     src_tar_name = 'libhutznohmd_src-' + args.library_version + '.tar.gz'
 
@@ -305,8 +284,6 @@ def execute_sonar(args):
 
 
 def execute_test(args):
-    check_is_bootstrapped()
-
     check_call(['make', 'test'], cwd=build_path)
 
 
@@ -344,54 +321,54 @@ def execute_all(args):
 
 
 if __name__ == "__main__":
-    try:
-        if version_info < (3, 2):
-            print(colorize('[FAIL]: At least python 3.2 expected,' +
-                           ' but found:\n' + 'python ' + version, RED))
+    if not os.path.exists(build_path):
+        os.makedirs(build_path)
+
+    steps = {
+        'all': Struct(fn=execute_all,
+                    help='builds all steps to make a package'),
+        'bootstrap': Struct(fn=execute_bootstrap,
+                            help='bootstraps the build'),
+        'build': Struct(fn=execute_build,
+                        help='compiles the targets'),
+        'check': Struct(fn=execute_check,
+                        help='checks code for problems'),
+        'clean': Struct(fn=execute_clean,
+                        help='removes all built output'),
+        'coverage': Struct(fn=execute_coverage,
+                        help='generates lcov output'),
+        'doc': Struct(fn=execute_doc,
+                    help='compiles documentation'),
+        'install': Struct(fn=execute_install,
+                        help='installs the targets'),
+        'package': Struct(fn=execute_package,
+                        help='builds packages'),
+        'sonar': Struct(fn=execute_sonar,
+                        help='uploads sonar results'),
+        'test': Struct(fn=execute_test,
+                    help='executes unit and integration tests'),
+        'update': Struct(fn=execute_update,
+                        help='generates new file lists')
+    }
+
+    args = parse_arguments(steps)
+
+    version_file = open(os.path.join(project_path, 'version'), 'r')
+    args.library_version = version_file.read().strip()
+    version_file.close()
+
+    execute_bootstrap(args)
+
+    with logger.Logger(log_file_path, build_path) as log_obj:
+        if sys.version_info < (3, 2):
+            log_obj.fail('At least python 3.2 expected, but found:\npython ' +
+                         sys.version)
         else:
-            steps = {
-                'all': Struct(fn=execute_all,
-                              help='builds all steps to make a package'),
-                'bootstrap': Struct(fn=execute_bootstrap,
-                                    help='bootstraps the build'),
-                'build': Struct(fn=execute_build,
-                                help='compiles the targets'),
-                'check': Struct(fn=execute_check,
-                                help='checks code for problems'),
-                'clean': Struct(fn=execute_clean,
-                                help='removes all built output'),
-                'coverage': Struct(fn=execute_coverage,
-                                   help='generates lcov output'),
-                'doc': Struct(fn=execute_doc,
-                              help='compiles documentation'),
-                'install': Struct(fn=execute_install,
-                                  help='installs the targets'),
-                'package': Struct(fn=execute_package,
-                                  help='builds packages'),
-                'sonar': Struct(fn=execute_sonar,
-                                help='uploads sonar results'),
-                'test': Struct(fn=execute_test,
-                               help='executes unit and integration tests'),
-                'update': Struct(fn=execute_update,
-                                 help='generates new file lists')
-            }
-
-            args = parse_arguments(steps)
-
-            version_file = open(os.path.join(project_path, 'version'), 'r')
-            args.library_version = version_file.read().strip()
-            version_file.close()
-
-            if not os.path.exists(build_path):
-                os.makedirs(build_path)
-
-            execute_bootstrap(args)
-
-            with logger.Logger(log_file_path, build_path) as log_obj:
+            try:
                 args.log_obj = log_obj
                 for step in args.step:
                     steps[step].fn(args)
 
-    except CalledProcessError as e:
-        print(colorize('[FAIL]: <' + ' '.join(e.cmd) + '> failed (exit code ' +
-                       str(e.returncode) + ').', RED))
+            except CalledProcessError as e:
+                log_obj.fail('<' + ' '.join(e.cmd) + '> failed (exit code ' +
+                            str(e.returncode) + ').')
