@@ -108,7 +108,7 @@ def execute_check(args):
 
     if not os.path.exists(reports_path):
         os.makedirs(reports_path)
-    args.log_file = open(log_file_path, 'w')
+    args.log_file = open(log_file_path, 'a')
 
     print(colorize('[INFO]: Compile all...', GREEN))
     log_process(['make', '-j' + str(cpu_count()), 'all'], build_path,
@@ -184,7 +184,7 @@ def execute_coverage(args):
         rmtree(coverage_path)
     os.makedirs(coverage_path)
 
-    args.log_file = open(log_file_path, 'w')
+    args.log_file = open(log_file_path, 'a')
     print(colorize('[INFO]: Collect unittest\'s coverage information...',
                    GREEN))
     log_process([unittest_bin], build_path, args.log_file, args.log_file)
@@ -253,7 +253,7 @@ def execute_sonar(args):
 
     execute_check(args)
 
-    args.log_file = open(log_file_path, 'w')
+    args.log_file = open(log_file_path, 'a')
     print(colorize('[INFO]: Generate sonar configuration...', GREEN))
     compiler.write_cxx11_release_defines(os.path.join(build_path,
                                                       'defines.h'))
@@ -353,6 +353,9 @@ if __name__ == "__main__":
             version_file = open(os.path.join(project_path, 'version'), 'r')
             args.library_version = version_file.read().strip()
             version_file.close()
+
+            if os.path.exists(log_file_path):
+                os.remove(log_file_path)
 
             if not os.path.exists(build_path):
                 os.makedirs(build_path)
