@@ -27,7 +27,7 @@ Documentation
 For a complete doxygen documentation (including concepts), you can generate
 it with:
 
-    $ ./make bootstrap doc
+    $ ./make doc
 
 Then look at:
 
