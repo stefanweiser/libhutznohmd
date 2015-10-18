@@ -34,7 +34,7 @@ class Logger(object):
 
     def info(self, str):
         """ Prints a message as info to the log file and the console. """
-        print(termcolor.colorize('[INFO]: ' + str, termcolor.GREEN))
+        print(termcolor.colorize('> ' + str, termcolor.GREEN))
         self.logfile_handle.write('[INFO]: ' + str + '\n')
 
     def warning(self, str):
