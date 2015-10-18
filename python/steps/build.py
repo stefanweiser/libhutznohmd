@@ -14,7 +14,7 @@ class BuildStep(object):
 
     def execute(self, args, path):
         self.bootstrapstep.execute(args, path)
-        self.update.execute(args, path)
+        self.updatestep.execute(args, path)
 
         args.log_obj.info('Build project...')
         args.log_obj.execute(['make', '-j' + str(multiprocessing.cpu_count()),
