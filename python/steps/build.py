@@ -15,7 +15,7 @@ class BuildStep(object):
 
         args.log_obj.info('Build project...')
         args.log_obj.execute(['make', '-j' + str(multiprocessing.cpu_count()),
-                              'install'])
+                              'install'], working_dir=path.cmake)
 
     def name(self):
         return 'build'

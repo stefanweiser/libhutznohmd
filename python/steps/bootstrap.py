@@ -14,7 +14,8 @@ class BootstrapStep(object):
                               '-DCMAKE_INSTALL_PREFIX=' + path.install,
                               '-DCMAKE_BUILD_TYPE=' + args.target,
                               '-DMINIMAL=' + str(args.minimal),
-                              '-DLIBRARY_VERSION=' + args.library_version])
+                              '-DLIBRARY_VERSION=' + args.library_version],
+                             working_dir=path.cmake)
 
     def name(self):
         # not intended to be used directly

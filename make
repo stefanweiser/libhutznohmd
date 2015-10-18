@@ -93,7 +93,7 @@ if __name__ == "__main__":
 
     # create a logger
     with logger.Logger(os.path.join(path.build, 'build.log'),
-                       path.cmake) as log_obj:
+                       path.build) as log_obj:
         # the script requires at least python 3.2
         if sys.version_info < (3, 2):
             log_obj.fail('At least python 3.2 expected, but found:\npython ' +

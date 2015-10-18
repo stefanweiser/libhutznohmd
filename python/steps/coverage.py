@@ -21,13 +21,13 @@ class CoverageStep(object):
             filename_base = os.path.join(path.coverage, output_filename_base)
             log_obj.execute(['gcovr', '--branches', '--xml', '--output=' +
                              filename_base + '.xml', '--root', path.project,
-                             '--verbose'])
+                             '--verbose'], working_dir=path.cmake)
             log_obj.execute(['gcovr', '--branches', '--html', '--output=' +
                              filename_base + '.html', '--root', path.project,
-                             '--verbose'])
+                             '--verbose'], working_dir=path.cmake)
             log_obj.execute(['gcovr', '--delete', '--branches', '--output=' +
                              filename_base + '.txt', '--root', path.project,
-                             '--verbose'])
+                             '--verbose'], working_dir=path.cmake)
 
             # Remove unwanted coverage data from xml output.
             tree = xml.etree.ElementTree.ElementTree()
