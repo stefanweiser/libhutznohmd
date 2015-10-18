@@ -30,6 +30,8 @@ class SonarStep(object):
             ','.join(compiler.get_include_list(['-std=c++11', '-DNDEBUG']))
 
         paths.renew_folder(path.cmake)
+        paths.renew_folder(path.reports)
+        paths.renew_folder(path.coverage)
         self.coveragestep.execute(args, path)
         self.checkstep.execute(args, path)
 
