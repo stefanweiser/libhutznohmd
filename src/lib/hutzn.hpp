@@ -311,14 +311,14 @@ these principles, but keep them in mind and improve the code.
 @section sec_tools Tools
 
 Generally:
-- @b git >= 1.7.9
 - @b cmake >= 2.8
+- @b git >= 1.7.9
+- @b python >= 3.2
 
 For building:
-- @b g++ >= 4.8
 - @b clang >= 3.5
-- @b cppcheck >= 1.60
 - @b clang-format >= 3.5
+- @b g++ >= 4.8
 
 Recommended for developing:
 - @b qtcreator >= 2.8
@@ -331,14 +331,15 @@ For documentation:
 
 For coverage:
 - @b gcov >= 4.8
-- @b lcov >= 1.9
-
-For valgrind:
-- @b valgrind >= 3.7
+- @b gcovr >= 3.2
 
 For metrics:
-- @b [lizard >= 1.8.4] (https://pypi.python.org/pypi/lizard)
-- @b [rats >= 2.4] (https://code.google.com/p/rough-auditing-tool-for-security/)
+- @b cppcheck >= 1.70
+- @b [rats >= 2.4](https://code.google.com/p/rough-auditing-tool-for-security/)
+- @b sonar >= 5.0
+- @b valgrind >= 3.7
+- @b vera++ >= 1.2
+- A network connection to download sonar-runner in a recent version.
 
 For packaging:
 - @b tar >= 1.26
@@ -354,7 +355,7 @@ printed out by:
 $ ./make --help
 @endcode
 
-Normally making @c all in both targets (@c --debug and @c --release) or making
+Normally making @c build in both targets (@c --debug and @c --release) or making
 @c coverage is of interest.
 
 @subsection subsec_deploying Deploying
@@ -363,7 +364,7 @@ Deploying a version is done by incrementing the version number in the file @c
 version and making a package:
 
 @code
-$ ./make --release --minimal build package
+$ ./make --release --minimal package
 @endcode
 
 The packages will be left in the @c build subdirectory. They ought to be
