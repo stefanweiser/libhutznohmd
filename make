@@ -28,13 +28,13 @@ from argparse import ArgumentParser
 from multiprocessing import cpu_count
 from subprocess import CalledProcessError, check_call
 from sys import version, version_info
-from termcolor import BOLD, colorize, GREEN, RED
+from termcolor import BOLD, colorize, RED
 from xml.etree.ElementTree import ElementTree
 from evalfile import eval_file
 from httpget import http_get
-from proclogger import log_process
 import compiler
 import paths
+import logger
 
 
 class Struct:
@@ -108,21 +108,19 @@ def execute_check(args):
     check_is_bootstrapped()
 
     paths.renew_folder(reports_path)
-    args.log_file = open(log_file_path, 'a')
 
-    print(colorize('[INFO]: Compile all...', GREEN))
-    log_process(['make', '-j' + str(cpu_count()), 'all'], build_path,
-                args.log_file, args.log_file)
+    args.log_obj.info('Compile all...')
+    args.log_obj.execute(['make', '-j' + str(cpu_count()), 'all'])
 
-    print(colorize('[INFO]: Run valgrind...', GREEN))
-    log_process(['valgrind', '--leak-check=full', '--xml=yes', '--xml-file=' +
-                 os.path.join(reports_path, 'valgrind.xml'), unittest_bin],
-                build_path, args.log_file, args.log_file)
+    args.log_obj.info('Run valgrind...')
+    args.log_obj.execute(['valgrind', '--leak-check=full', '--xml=yes',
+                          '--xml-file=' + os.path.join(reports_path,
+                                                       'valgrind.xml'),
+                          unittest_bin])
 
-    print(colorize('[INFO]: Run unittest...', GREEN))
-    log_process([unittest_bin, '--gtest_output=xml:' +
-                 os.path.join(reports_path, 'unittest.xml')], build_path,
-                args.log_file, args.log_file)
+    args.log_obj.info('Run unittest...')
+    args.log_obj.execute([unittest_bin, '--gtest_output=xml:' +
+                          os.path.join(reports_path, 'unittest.xml')])
 
     src_path = os.path.join(project_path, 'src')
     integrationtest_path = os.path.join(src_path, 'integrationtest')
@@ -132,22 +130,24 @@ def execute_check(args):
 
     # Running cppcheck with all the code, to improve 'unused function'
     # warnings.
-    print(colorize('[INFO]: Run cppcheck...', GREEN))
+    args.log_obj.info('Run cppcheck...')
     cppcheck_report_filename = os.path.join(reports_path, 'cppcheck.xml')
     cppcheck_report_file = open(cppcheck_report_filename, 'w')
-    log_process(['cppcheck', '--xml', '--xml-version=2', '--force',
-                 '--language=c++', '--platform=unix64', '--enable=all',
-                 '--suppress=missingIncludeSystem', '--std=c++11', '-DNDEBUG',
-                 '-UBOOST_HAS_TR1_TUPLE', '-UGTEST_CREATE_SHARED_LIBRARY',
-                 '-UGTEST_LINKED_AS_SHARED_LIBRARY',
-                 '-UGTEST_HAS_STRING_PIECE_', '-U_AIX', '-U_CPPRTTI',
-                 '-U_MSC_VER', '-U__SYMBIAN32__', '-U_WIN32_WCE',
-                 '-U__APPLE__', '-U__BORLANDC__', '-U__CYGWIN__', '-U__GNUC__',
-                 '-U__HP_aCC', '-U__IBMCPP__', '-U__INTEL_COMPILER',
-                 '-U__SUNPRO_CC', '-U__SVR4', '-U__clang__', '-U__hpux',
-                 '-U_LIBC', '-U__ANDROID__', '-I', lib_path, '-I', gmock_path,
-                 '-I', unittest_path, '-I', integrationtest_path, src_path],
-                build_path, args.log_file, cppcheck_report_file)
+    args.log_obj.execute(['cppcheck', '--xml', '--xml-version=2', '--force',
+                          '--language=c++', '--platform=unix64',
+                          '--enable=all', '--suppress=missingIncludeSystem',
+                          '--std=c++11', '-DNDEBUG', '-UBOOST_HAS_TR1_TUPLE',
+                          '-UGTEST_CREATE_SHARED_LIBRARY',
+                          '-UGTEST_LINKED_AS_SHARED_LIBRARY',
+                          '-UGTEST_HAS_STRING_PIECE_', '-U_AIX', '-U_CPPRTTI',
+                          '-U_MSC_VER', '-U__SYMBIAN32__', '-U_WIN32_WCE',
+                          '-U__APPLE__', '-U__BORLANDC__', '-U__CYGWIN__',
+                          '-U__GNUC__', '-U__HP_aCC', '-U__IBMCPP__',
+                          '-U__INTEL_COMPILER', '-U__SUNPRO_CC', '-U__SVR4',
+                          '-U__clang__', '-U__hpux', '-U_LIBC',
+                          '-U__ANDROID__', '-I', lib_path, '-I', gmock_path,
+                          '-I', unittest_path, '-I', integrationtest_path,
+                          src_path], cppcheck_report_file, logger.STDERR)
     cppcheck_report_file.close()
 
     # Remove unwanted coverage data from xml output.
@@ -168,41 +168,40 @@ def execute_check(args):
                 errors_node.remove(error)
         tree.write(cppcheck_report_filename)
 
-    print(colorize('[INFO]: Run rats...', GREEN))
-    rats_report_file = open(os.path.join(reports_path, 'rats.xml'), 'w')
-    log_process(['rats', '--xml', '--resultsonly', '-w', '3', src_path],
-                build_path, rats_report_file, args.log_file)
+    args.log_obj.info('Run rats...')
+    rats_report_file = open(os.path.join(reports_path, 'rats.xml'), 'w+')
+    args.log_obj.execute(['rats', '--xml', '--resultsonly', '-w', '3',
+                          src_path], rats_report_file, logger.STDOUT)
     rats_report_file.close()
 
-    print(colorize('[INFO]: Run vera++...', GREEN))
+    args.log_obj.info('Run vera++...')
     vera_cmd_line = ['vera++', '--checkstyle-report',
                      os.path.join(reports_path, 'vera++.xml')]
     for dirpath, dirnames, files in os.walk(lib_path):
         for file in files:
             if file.endswith('.cpp') or file.endswith('.hpp'):
                 vera_cmd_line.append(os.path.join(dirpath, file))
-    log_process(vera_cmd_line, build_path, args.log_file, args.log_file)
+    args.log_obj.execute(vera_cmd_line)
 
-    args.log_file.close()
-    print(colorize('[INFO]: All report files were written to ' + reports_path +
-                   '.', GREEN))
+    args.log_obj.info('Run All report files were written to ' + reports_path +
+                      '.')
 
 
 def execute_clean(args):
     check_call(['make', 'clean'], cwd=build_path)
 
 
-def run_gcovr(output_filename_base, log_file):
+def run_gcovr(output_filename_base, log_obj):
     filename_base = os.path.join(coverage_path, output_filename_base)
-    log_process(['gcovr', '--branches', '--xml', '--output=' + filename_base +
-                 '.xml', '--root', project_path, '--verbose'], build_path,
-                log_file, log_file)
-    log_process(['gcovr', '--branches', '--html', '--output=' + filename_base +
-                 '.html', '--root', project_path, '--verbose'], build_path,
-                log_file, log_file)
-    log_process(['gcovr', '--delete', '--branches', '--output=' +
-                 filename_base + '.txt', '--root', project_path, '--verbose'],
-                build_path, log_file, log_file)
+    log_obj.execute(['gcovr', '--branches', '--xml', '--output=' +
+                     filename_base + '.xml', '--root', project_path,
+                     '--verbose'])
+    log_obj.execute(['gcovr', '--branches', '--html', '--output=' +
+                     filename_base + '.html', '--root', project_path,
+                     '--verbose'])
+    log_obj.execute(['gcovr', '--delete', '--branches', '--output=' +
+                     filename_base + '.txt', '--root', project_path,
+                     '--verbose'])
 
     # Remove unwanted coverage data from xml output.
     tree = ElementTree()
@@ -226,24 +225,18 @@ def execute_coverage(args):
     execute_build(args)
 
     paths.renew_folder(coverage_path)
-    args.log_file = open(log_file_path, 'a')
-    print(colorize('[INFO]: Collect unittest\'s coverage information...',
-                   GREEN))
-    log_process([unittest_bin], build_path, args.log_file, args.log_file)
-    run_gcovr('unittest', args.log_file)
+    args.log_obj.info('Collect unittest\'s coverage information...')
+    args.log_obj.execute([unittest_bin])
+    run_gcovr('unittest', args.log_obj)
 
-    print(colorize('[INFO]: Collect integrationtest\'s coverage' +
-                   ' information...', GREEN))
-    log_process([integrationtest_bin], build_path, args.log_file,
-                args.log_file)
-    run_gcovr('integrationtest', args.log_file)
+    args.log_obj.info('Collect integrationtest\'s coverage information...')
+    args.log_obj.execute([integrationtest_bin])
+    run_gcovr('integrationtest', args.log_obj)
 
-    print(colorize('[INFO]: Collect overall coverage information...', GREEN))
-    log_process([unittest_bin], build_path, args.log_file, args.log_file)
-    log_process([integrationtest_bin], build_path, args.log_file,
-                args.log_file)
-    run_gcovr('overall', args.log_file)
-    args.log_file.close()
+    args.log_obj.info('Collect overall coverage information...')
+    args.log_obj.execute([unittest_bin])
+    args.log_obj.execute([integrationtest_bin])
+    run_gcovr('overall', args.log_obj)
 
 
 def execute_doc(args):
@@ -287,30 +280,28 @@ def execute_sonar(args):
         ','.join(compiler.get_cxx11_release_include_list())
 
     paths.renew_folder(build_path)
-    print(colorize('[INFO]: Calculate coverage information...', GREEN))
+    args.log_obj.info('Calculate coverage information...')
     execute_coverage(args)
 
     execute_check(args)
 
-    args.log_file = open(log_file_path, 'a')
-    print(colorize('[INFO]: Generate sonar configuration...', GREEN))
+    args.log_obj.info('Generate sonar configuration...')
     compiler.write_cxx11_release_defines(os.path.join(build_path,
                                                       'defines.h'))
     sonar_property_file = os.path.join('build', 'sonar.properties')
     eval_file(os.path.join(project_path, 'sonar-cxx.template'),
               sonar_property_file)
 
-    print(colorize('[INFO]: Download sonar-runner...', GREEN))
+    args.log_obj.info('Download sonar-runner...')
     sonar_runner_path = os.path.join(build_path, 'sonar-runner.jar')
     if not os.path.exists(sonar_runner_path):
         http_get(sonar_runner_url, sonar_runner_path)
 
-    print(colorize('[INFO]: Download informations onto sonar...', GREEN))
+    args.log_obj.info('Download informations onto sonar...')
     check_call(['java', '-classpath', sonar_runner_path, '-Drunner.home=build',
                 '-Dproject.home=.', '-Dproject.settings=' +
                 sonar_property_file, 'org.sonar.runner.Main'],
                cwd=project_path)
-    args.log_file.close()
 
 
 def execute_test(args):
@@ -394,14 +385,13 @@ if __name__ == "__main__":
             if not os.path.exists(build_path):
                 os.makedirs(build_path)
 
-            paths.renew_file(log_file_path)
             execute_bootstrap(args)
 
-            print(colorize('[INFO]: Writing log to ' + log_file_path, GREEN))
-            for step in args.step:
-                steps[step].fn(args)
+            with logger.Logger(log_file_path, build_path) as log_obj:
+                args.log_obj = log_obj
+                for step in args.step:
+                    steps[step].fn(args)
 
     except CalledProcessError as e:
         print(colorize('[FAIL]: <' + ' '.join(e.cmd) + '> failed (exit code ' +
                        str(e.returncode) + ').', RED))
-        args.log_file.close()
