@@ -3,12 +3,26 @@
 import os
 import sys
 
+# add the python subdirectory to the search path
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                'python'))
+
+from argparse import ArgumentParser
+from multiprocessing import cpu_count
+from subprocess import CalledProcessError, check_call
+from xml.etree.ElementTree import ElementTree
+from evalfile import eval_file
+from httpget import http_get
+import compiler
+import paths
+import logger
+
+
 # change directory into project path
 os.chdir(os.path.dirname(__file__))
 
 # determine path of the script
 project_path = os.path.dirname(os.path.realpath(__file__))
-python_script_path = os.path.join(project_path, 'python')
 build_path = os.path.join(project_path, 'build')
 install_path = os.path.join(project_path, 'install')
 reports_path = os.path.join(build_path, 'reports')
@@ -20,19 +34,6 @@ integrationtest_bin = os.path.join(build_path, 'src', 'integrationtest',
                                    'integrationtest_hutznohmd')
 sonar_runner_url = 'http://repo1.maven.org/maven2/org/codehaus/sonar/' + \
     'runner/sonar-runner-dist/2.4/sonar-runner-dist-2.4.jar'
-
-# add the python subdirectory to the search path
-sys.path.insert(0, python_script_path)
-
-from argparse import ArgumentParser
-from multiprocessing import cpu_count
-from subprocess import CalledProcessError, check_call
-from xml.etree.ElementTree import ElementTree
-from evalfile import eval_file
-from httpget import http_get
-import compiler
-import paths
-import logger
 
 
 class Struct:
