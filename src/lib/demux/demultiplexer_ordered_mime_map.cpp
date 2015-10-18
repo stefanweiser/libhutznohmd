@@ -57,7 +57,14 @@ bool demultiplexer_ordered_mime_map::erase(const mime& type)
     auto it = map_.find(type);
     bool result;
     if ((it != map_.end()) && (0 == it->second.usage_counter)) {
-        std::remove(vector_.begin(), vector_.end(), type);
+        auto it2 = vector_.begin();
+        while (it2 != vector_.end()) {
+            if (type == (*it2)) {
+                vector_.erase(it2);
+            } else {
+                ++it2;
+            }
+        }
         map_.erase(it);
         result = true;
     } else {
