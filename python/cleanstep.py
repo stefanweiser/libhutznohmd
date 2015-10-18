@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-class CleanStep:
+class CleanStep(object):
     """ Cleans the content of the build path. """
 
     def execute(self, args, path):

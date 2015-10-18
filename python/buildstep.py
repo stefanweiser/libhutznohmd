@@ -3,7 +3,7 @@
 import multiprocessing
 
 
-class BuildStep:
+class BuildStep(object):
     """ Builds the software. """
 
     def execute(self, args, path):

@@ -3,7 +3,7 @@
 import os
 
 
-class PackageStep:
+class PackageStep(object):
     """ Generates packages for source and binaries. """
 
     def execute(self, args, path):
@@ -13,17 +13,17 @@ class PackageStep:
         src_tar_name = 'libhutznohmd_src-' + args.library_version + '.tar.gz'
 
         args.log_obj.execute(['tar', '--create', '--gzip', '--owner=root',
-                            '--group=root', '--preserve-permissions',
-                            '--directory', path.install, '--file', tar_name,
-                            '.'])
+                              '--group=root', '--preserve-permissions',
+                              '--directory', path.install, '--file', tar_name,
+                              '.'])
         args.log_obj.execute(['tar', '--create', '--gzip', '--owner=root',
-                            '--group=root', '--preserve-permissions',
-                            '--exclude=.git', '--exclude=.gitignore',
-                            '--exclude=build', '--exclude=install',
-                            '--exclude=' + os.path.join('python',
-                                                        '__pycache__'),
-                            '--exclude=*.user', '--directory', path.project,
-                            '--file', src_tar_name, '.'])
+                              '--group=root', '--preserve-permissions',
+                              '--exclude=.git', '--exclude=.gitignore',
+                              '--exclude=build', '--exclude=install',
+                              '--exclude=' + os.path.join('python',
+                                                          '__pycache__'),
+                              '--exclude=*.user', '--directory', path.project,
+                              '--file', src_tar_name, '.'])
 
     def name(self):
         return 'package'

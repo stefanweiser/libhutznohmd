@@ -3,7 +3,7 @@
 import os
 
 
-class UpdateStep:
+class UpdateStep(object):
     """ Updates source file lists. """
 
     def execute(self, args, path):
@@ -13,7 +13,7 @@ class UpdateStep:
             for dirpath, dirnames, files in os.walk(rootpath):
                 for file in files:
                     if file.endswith(".cpp") or file.endswith(".cc") or \
-                    file.endswith(".hpp") or file.endswith(".h"):
+                       file.endswith(".hpp") or file.endswith(".h"):
                         filepath = os.path.relpath(os.path.join(dirpath, file),
                                                    rootpath)
                         found_files.append(filepath)

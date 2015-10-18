@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-class DocumentationStep:
+class DocumentationStep(object):
     """ Generates the project's doxygen documentation. """
 
     def execute(self, args, path):

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-class TestStep:
+class TestStep(object):
     """ Runs unit and integration tests. """
 
     def execute(self, args, path):

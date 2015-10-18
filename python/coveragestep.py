@@ -6,7 +6,7 @@ import paths
 import xml.etree.ElementTree
 
 
-class CoverageStep:
+class CoverageStep(object):
     """ Generates reports of all checking tools. """
 
     def execute(self, args, path):
@@ -38,6 +38,7 @@ class CoverageStep:
                         packages_node.remove(package)
                 tree.write(filename_base + '.xml')
 
+        args.log_obj.info('Generate coverage information...')
         args.log_obj.info('Bootstrap coverage target...')
         args.log_obj.execute(['cmake', os.path.dirname(path.build),
                               '-DCMAKE_INSTALL_PREFIX=' + path.install,

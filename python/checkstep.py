@@ -7,7 +7,7 @@ import paths
 import xml.etree.ElementTree
 
 
-class CheckStep:
+class CheckStep(object):
     """ Generates reports of all checking tools. """
 
     def execute(self, args, path):
