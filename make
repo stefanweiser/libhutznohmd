@@ -69,7 +69,7 @@ def parse_arguments(steps):
     return parser.parse_args()
 
 
-def execute_bootstrap(args):
+def bootstrap(args):
     check_call(['cmake',
                 os.path.dirname(path.build),
                 '-DCMAKE_INSTALL_PREFIX=' + path.install,
@@ -198,7 +198,7 @@ def run_gcovr(output_filename_base, log_obj):
 
 def execute_coverage(args):
     args.target = 'coverage'
-    execute_bootstrap(args)
+    bootstrap(args)
     execute_build(args)
 
     paths.renew_folder(path.coverage)
@@ -304,7 +304,6 @@ def execute_update(args):
 
 def execute_all(args):
     execute_clean(args)
-    execute_bootstrap(args)
     execute_update(args)
     execute_build(args)
     execute_test(args)
@@ -319,8 +318,6 @@ if __name__ == "__main__":
     steps = {
         'all': Struct(fn=execute_all,
                       help='builds all steps to make a package'),
-        'bootstrap': Struct(fn=execute_bootstrap,
-                            help='bootstraps the build'),
         'build': Struct(fn=execute_build,
                         help='compiles the targets'),
         'check': Struct(fn=execute_check,
@@ -349,7 +346,7 @@ if __name__ == "__main__":
     args.library_version = version_file.read().strip()
     version_file.close()
 
-    execute_bootstrap(args)
+    bootstrap(args)
 
     with logger.Logger('build.log', path.build) as log_obj:
         if sys.version_info < (3, 2):
