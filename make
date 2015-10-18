@@ -18,12 +18,14 @@ from buildstep import BuildStep
 from checkstep import CheckStep
 from cleanstep import CleanStep
 from coveragestep import CoverageStep
+from documentationstep import DocumentationStep
 
 
 buildstep = BuildStep()
 checkstep = CheckStep()
 cleanstep = CleanStep()
 coveragestep = CoverageStep()
+documentationstep = DocumentationStep()
 
 # change directory into project path
 os.chdir(os.path.dirname(__file__))
@@ -90,7 +92,7 @@ def execute_coverage(args):
 
 
 def execute_doc(args):
-    check_call(['make', 'doc'], cwd=path.build)
+    documentationstep.execute(args, path)
 
 
 def execute_package(args):
@@ -191,8 +193,9 @@ if __name__ == "__main__":
         cleanstep.name(): Struct(fn=execute_clean, help=cleanstep.help()),
         coveragestep.name(): Struct(fn=execute_coverage,
                                     help=coveragestep.help()),
-        'doc': Struct(fn=execute_doc, help='compiles documentation'),
         'package': Struct(fn=execute_package, help='builds packages'),
+        documentationstep.name(): Struct(fn=execute_doc,
+                                         help=documentationstep.help()),
         'sonar': Struct(fn=execute_sonar, help='uploads sonar results'),
         'test': Struct(fn=execute_test,
                        help='executes unit and integration tests'),
