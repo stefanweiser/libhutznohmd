@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import steps.all # flake8: noqa
 import steps.bootstrap # flake8: noqa
 import steps.build # flake8: noqa
 import steps.check # flake8: noqa

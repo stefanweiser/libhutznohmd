@@ -58,11 +58,11 @@ def parse_arguments(steps):
 
 
 def main(path, log_obj):
-    step_list = (steps.all.AllStep(), steps.build.BuildStep(),
-                 steps.check.CheckStep(), steps.clean.CleanStep(),
-                 steps.coverage.CoverageStep(), steps.doc.DocStep(),
-                 steps.package.PackageStep(), steps.sonar.SonarStep(),
-                 steps.test.TestStep(), steps.update.UpdateStep())
+    step_list = (steps.build.BuildStep(), steps.check.CheckStep(),
+                 steps.clean.CleanStep(), steps.coverage.CoverageStep(),
+                 steps.doc.DocStep(), steps.package.PackageStep(),
+                 steps.sonar.SonarStep(), steps.test.TestStep(),
+                 steps.update.UpdateStep())
 
     args = parse_arguments(step_list)
     args.log_obj = log_obj
