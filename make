@@ -20,6 +20,7 @@ from cleanstep import CleanStep
 from coveragestep import CoverageStep
 from documentationstep import DocumentationStep
 from packagestep import PackageStep
+from updatestep import UpdateStep
 
 
 buildstep = BuildStep()
@@ -28,6 +29,7 @@ cleanstep = CleanStep()
 coveragestep = CoverageStep()
 documentationstep = DocumentationStep()
 packagestep = PackageStep()
+updatestep = UpdateStep()
 
 # change directory into project path
 os.chdir(os.path.dirname(__file__))
@@ -141,27 +143,8 @@ def execute_test(args):
     check_call(['make', 'test'], cwd=path.build)
 
 
-def update_single_path(rootpath):
-    found_files = []
-
-    for dirpath, dirnames, files in os.walk(rootpath):
-        for file in files:
-            if file.endswith(".cpp") or file.endswith(".cc") or \
-               file.endswith(".hpp") or file.endswith(".h"):
-                found_files.append(os.path.relpath(os.path.join(dirpath, file),
-                                                   rootpath))
-
-    found_files.sort()
-
-    files_txt = open(os.path.join(rootpath, 'files.txt'), 'w')
-    files_txt.write('\n'. join(found_files))
-
-
 def execute_update(args):
-    for dirpath, dirnames, files in os.walk(os.path.join(path.project, 'src')):
-        for file in files:
-            if file == 'files.txt':
-                update_single_path(dirpath)
+    updatestep.execute(args, path)
 
 
 def execute_all(args):
@@ -191,7 +174,7 @@ if __name__ == "__main__":
         'sonar': Struct(fn=execute_sonar, help='uploads sonar results'),
         'test': Struct(fn=execute_test,
                        help='executes unit and integration tests'),
-        'update': Struct(fn=execute_update, help='generates new file lists')
+        updatestep.name(): Struct(fn=execute_update, help=updatestep.help())
     }
 
     args = parse_arguments(steps)
