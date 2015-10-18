@@ -6,7 +6,8 @@ class TestStep(object):
 
     def execute(self, args, path):
         args.log_obj.info('Run tests...')
-        args.log_obj.execute(['make', 'test'], working_dir=path.cmake)
+        args.log_obj.execute([path.unittest_bin])
+        args.log_obj.execute([path.integrationtest_bin])
 
     def name(self):
         return 'test'

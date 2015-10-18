@@ -23,8 +23,6 @@ GET_SOURCE_FILES("${PROJECT_SOURCE_DIR}/gmock/files.txt"
                  "${PROJECT_SOURCE_DIR}/gmock" GMOCK)
 ADD_EXECUTABLE(integrationtest_hutznohmd ${FILES} ${GMOCK})
 STYLE_FILES(integrationtest_hutznohmd ${FILES})
-ADD_TEST(integrationtest
-         "${CMAKE_CURRENT_BINARY_DIR}/integrationtest_hutznohmd")
 
 SET_SOURCE_FILES_PROPERTIES(${GMOCK} PROPERTIES COMPILE_FLAGS -w)
 

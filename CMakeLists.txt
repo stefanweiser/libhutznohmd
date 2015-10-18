@@ -35,9 +35,6 @@ ENDIF()
 
 INCLUDE(ClangFormat)
 INCLUDE(RecursiveSubdirs)
-
 INCLUDE(Toolchain)
-
-ENABLE_TESTING()
 
 RECURSIVE_SUBDIRS(src)
