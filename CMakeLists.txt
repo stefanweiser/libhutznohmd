@@ -27,12 +27,13 @@ SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake"
                       ${CMAKE_MODULE_PATH})
 
 IF(NOT MINIMAL)
+    FIND_PACKAGE(Doxygen 1.8.8)
+    FIND_PACKAGE(Java 1.7 COMPONENTS Runtime)
     FIND_PACKAGE(CPPCheck 1.70 REQUIRED)
     FIND_PACKAGE(Gcovr 3.2 REQUIRED)
 ENDIF()
 
 INCLUDE(ClangFormat)
-INCLUDE(Documentation)
 INCLUDE(RecursiveSubdirs)
 
 INCLUDE(Toolchain)

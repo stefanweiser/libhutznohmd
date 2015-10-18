@@ -15,7 +15,8 @@ class DocStep(object):
             httpget.http_get(path.plantuml_url, plantuml_path)
 
         args.log_obj.info('Generate documentation...')
-        args.log_obj.execute(['make', 'doc'])
+        args.log_obj.execute(['doxygen', os.path.join(path.project,
+                                                      'Doxyfile')])
 
     def name(self):
         return 'doc'
