@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 
-import cleanstep
-import buildstep
-import packagestep
-import teststep
-import updatestep
+import steps.clean
+import steps.build
+import steps.package
+import steps.test
+import steps.update
 
 
 class AllStep(object):
     """ Runs all steps to generate deployment packages. """
 
     def __init__(self):
-        self.cleanstep = cleanstep.CleanStep()
-        self.buildstep = buildstep.BuildStep()
-        self.packagestep = packagestep.PackageStep()
-        self.teststep = teststep.TestStep()
-        self.updatestep = updatestep.UpdateStep()
+        self.cleanstep = steps.clean.CleanStep()
+        self.buildstep = steps.build.BuildStep()
+        self.packagestep = steps.package.PackageStep()
+        self.teststep = steps.test.TestStep()
+        self.updatestep = steps.update.UpdateStep()
 
     def execute(self, args, path):
         self.cleanstep.execute(args, path)

@@ -7,21 +7,11 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                 'python'))
 
-from argparse import ArgumentParser
-from subprocess import CalledProcessError, check_call
-import paths
+import argparse
 import logger
-
-import allstep
-import buildstep
-import checkstep
-import cleanstep
-import coveragestep
-import documentationstep
-import packagestep
-import sonarstep
-import teststep
-import updatestep
+import paths
+import steps
+import subprocess
 
 
 # change directory into project path
@@ -37,7 +27,7 @@ class Struct:
 
 
 def parse_arguments(steps):
-    parser = ArgumentParser()
+    parser = argparse.ArgumentParser()
     parser.add_argument('step', nargs='+')
 
     parser.add_argument('-m',
@@ -80,29 +70,28 @@ def parse_arguments(steps):
 def main(log_obj):
     os.makedirs(path.build, exist_ok=True)
 
-    steps = (allstep.AllStep(), buildstep.BuildStep(), checkstep.CheckStep(),
-             cleanstep.CleanStep(), coveragestep.CoverageStep(),
-             documentationstep.DocumentationStep(), packagestep.PackageStep(),
-             sonarstep.SonarStep(), teststep.TestStep(),
-             updatestep.UpdateStep())
+    step_list = (steps.all.AllStep(), steps.build.BuildStep(),
+                 steps.check.CheckStep(), steps.clean.CleanStep(),
+                 steps.coverage.CoverageStep(), steps.doc.DocStep(),
+                 steps.package.PackageStep(), steps.sonar.SonarStep(),
+                 steps.test.TestStep(), steps.update.UpdateStep())
 
-    args = parse_arguments(steps)
+    args = parse_arguments(step_list)
     args.log_obj = log_obj
 
-    check_call(['cmake',
-                os.path.dirname(path.build),
-                '-DCMAKE_INSTALL_PREFIX=' + path.install,
-                '-DCMAKE_BUILD_TYPE=' + args.target,
-                '-DMINIMAL=' + str(args.minimal),
-                '-DLIBRARY_VERSION=' + args.library_version],
-               cwd=path.build)
+    subprocess.check_call(['cmake', os.path.dirname(path.build),
+                           '-DCMAKE_INSTALL_PREFIX=' + path.install,
+                           '-DCMAKE_BUILD_TYPE=' + args.target,
+                           '-DMINIMAL=' + str(args.minimal),
+                           '-DLIBRARY_VERSION=' + args.library_version],
+                          cwd=path.build)
 
     try:
-        step_dict = dict([(x.name(), x) for x in steps])
+        step_dict = dict([(x.name(), x) for x in step_list])
         for step in args.step:
             step_dict[step].execute(args, path)
 
-    except CalledProcessError as e:
+    except subprocess.CalledProcessError as e:
         log_obj.fail('<' + ' '.join(e.cmd) + '> failed (exit code ' +
                      str(e.returncode) + ').')
 

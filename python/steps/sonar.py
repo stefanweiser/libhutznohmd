@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
 import evalfile
-import checkstep
 import compiler
-import coveragestep
 import httpget
 import os
 import paths
+import steps.check
+import steps.coverage
 import subprocess
 
 
@@ -14,8 +14,8 @@ class SonarStep(object):
     """ Updates sonarqube data. """
 
     def __init__(self):
-        self.checkstep = checkstep.CheckStep()
-        self.coveragestep = coveragestep.CoverageStep()
+        self.checkstep = steps.check.CheckStep()
+        self.coveragestep = steps.coverage.CoverageStep()
 
     def execute(self, args, path):
         os.environ['project_key'] = 'libhutznohmd'

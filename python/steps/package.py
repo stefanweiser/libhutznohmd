@@ -22,6 +22,8 @@ class PackageStep(object):
                               '--exclude=build', '--exclude=install',
                               '--exclude=' + os.path.join('python',
                                                           '__pycache__'),
+                              '--exclude=' + os.path.join('python', 'steps',
+                                                          '__pycache__'),
                               '--exclude=*.user', '--directory', path.project,
                               '--file', src_tar_name, '.'])
 
