@@ -48,9 +48,12 @@ class Logger(object):
                                  termcolor.BOLD))
         self.logfile_handle.write('[FAIL]: ' + str + '\n')
 
-    def execute(self, cmd, out_file=sys.stdout, sink=NONE):
+    def execute(self, cmd, out_file=sys.stdout, sink=NONE, working_dir=None):
         """ Executes a command in the current path and writes the output to the
             log file. """
+        if working_dir is None:
+            working_dir = self.working_dir
+
         if sink is STDOUT or sink is BOTH:
             stdout_file = out_file
         else:
@@ -61,6 +64,6 @@ class Logger(object):
         else:
             stderr_file = self.logfile_handle
 
-        process = subprocess.Popen(cmd, cwd=self.working_dir,
-                                   stdout=stdout_file, stderr=stderr_file)
+        process = subprocess.Popen(cmd, cwd=working_dir, stdout=stdout_file,
+                                   stderr=stderr_file)
         process.wait()
