@@ -27,8 +27,8 @@ if __name__ == "__main__":
     with logger.Logger(os.path.join(path.build, 'build.log')) as log_obj:
         # the script requires at least python 3.2
         if sys.version_info < (3, 2):
-            log_obj.fail('At least python 3.2 expected, but found:\npython ' +
-                         sys.version)
+            log_obj.failure('At least python 3.2 expected, but found:\n' +
+                            'python ' + sys.version)
         else:
             # call the real main
             main.main(path, log_obj)
