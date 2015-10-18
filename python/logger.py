@@ -3,8 +3,9 @@
 import termcolor
 
 
-class Logger:
-    """ Sets the path to the log file, but actually does not open it. """
+class Logger(object):
+    """ Provides functions to print out data to log file. """
+
     def __init__(self, logfile_path):
         self.logfile_path = logfile_path
         print(termcolor.colorize('[INFO]: Write log to ' + self.logfile_path,
