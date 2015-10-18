@@ -8,9 +8,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                 'python'))
 
 from argparse import ArgumentParser
-from multiprocessing import cpu_count
 from subprocess import CalledProcessError, check_call
-from xml.etree.ElementTree import ElementTree
 from evalfile import eval_file
 from httpget import http_get
 import compiler
@@ -19,11 +17,13 @@ import logger
 from buildstep import BuildStep
 from checkstep import CheckStep
 from cleanstep import CleanStep
+from coveragestep import CoverageStep
 
 
 buildstep = BuildStep()
 checkstep = CheckStep()
 cleanstep = CleanStep()
+coveragestep = CoverageStep()
 
 # change directory into project path
 os.chdir(os.path.dirname(__file__))
@@ -73,16 +73,6 @@ def parse_arguments(steps):
     return parser.parse_args()
 
 
-def bootstrap(args):
-    check_call(['cmake',
-                os.path.dirname(path.build),
-                '-DCMAKE_INSTALL_PREFIX=' + path.install,
-                '-DCMAKE_BUILD_TYPE=' + args.target,
-                '-DMINIMAL=' + str(args.minimal),
-                '-DLIBRARY_VERSION=' + args.library_version],
-               cwd=path.build)
-
-
 def execute_build(args):
     buildstep.execute(args, path)
 
@@ -95,52 +85,8 @@ def execute_clean(args):
     cleanstep.execute(args, path)
 
 
-def run_gcovr(output_filename_base, log_obj):
-    filename_base = os.path.join(path.coverage, output_filename_base)
-    log_obj.execute(['gcovr', '--branches', '--xml', '--output=' +
-                     filename_base + '.xml', '--root', path.project,
-                     '--verbose'])
-    log_obj.execute(['gcovr', '--branches', '--html', '--output=' +
-                     filename_base + '.html', '--root', path.project,
-                     '--verbose'])
-    log_obj.execute(['gcovr', '--delete', '--branches', '--output=' +
-                     filename_base + '.txt', '--root', path.project,
-                     '--verbose'])
-
-    # Remove unwanted coverage data from xml output.
-    tree = ElementTree()
-    tree.parse(filename_base + '.xml')
-    packages_node = tree.find('.//packages')
-    if packages_node is not None:
-        packages = packages_node.findall('package')
-        for package in packages:
-            if package.attrib['name'].startswith('build') or \
-               package.attrib['name'].startswith('gmock') or \
-               package.attrib['name'].startswith('src.examples') or \
-               package.attrib['name'].startswith('src.integrationtest') or \
-               package.attrib['name'].startswith('src.unittest'):
-                packages_node.remove(package)
-        tree.write(filename_base + '.xml')
-
-
 def execute_coverage(args):
-    args.target = 'coverage'
-    bootstrap(args)
-    execute_build(args)
-
-    paths.renew_folder(path.coverage)
-    args.log_obj.info('Collect unittest\'s coverage information...')
-    args.log_obj.execute([path.unittest_bin])
-    run_gcovr('unittest', args.log_obj)
-
-    args.log_obj.info('Collect integrationtest\'s coverage information...')
-    args.log_obj.execute([path.integrationtest_bin])
-    run_gcovr('integrationtest', args.log_obj)
-
-    args.log_obj.info('Collect overall coverage information...')
-    args.log_obj.execute([path.unittest_bin])
-    args.log_obj.execute([path.integrationtest_bin])
-    run_gcovr('overall', args.log_obj)
+    coveragestep.execute(args, path)
 
 
 def execute_doc(args):
@@ -240,11 +186,11 @@ if __name__ == "__main__":
     steps = {
         'all': Struct(fn=execute_all,
                       help='builds all steps to make a package'),
-        'coverage': Struct(fn=execute_coverage,
-                           help='generates lcov output'),
         buildstep.name(): Struct(fn=execute_build, help=buildstep.help()),
         checkstep.name(): Struct(fn=execute_check, help=checkstep.help()),
         cleanstep.name(): Struct(fn=execute_clean, help=cleanstep.help()),
+        coveragestep.name(): Struct(fn=execute_coverage,
+                                    help=coveragestep.help()),
         'doc': Struct(fn=execute_doc, help='compiles documentation'),
         'package': Struct(fn=execute_package, help='builds packages'),
         'sonar': Struct(fn=execute_sonar, help='uploads sonar results'),
@@ -259,7 +205,13 @@ if __name__ == "__main__":
     args.library_version = version_file.read().strip()
     version_file.close()
 
-    bootstrap(args)
+    check_call(['cmake',
+                os.path.dirname(path.build),
+                '-DCMAKE_INSTALL_PREFIX=' + path.install,
+                '-DCMAKE_BUILD_TYPE=' + args.target,
+                '-DMINIMAL=' + str(args.minimal),
+                '-DLIBRARY_VERSION=' + args.library_version],
+               cwd=path.build)
 
     with logger.Logger('build.log', path.build) as log_obj:
         if sys.version_info < (3, 2):
