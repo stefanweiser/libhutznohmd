@@ -30,6 +30,7 @@ from shutil import rmtree
 from subprocess import CalledProcessError, check_call
 from sys import version, version_info
 from termcolor import BOLD, colorize, GREEN, RED
+from xml.etree.ElementTree import ElementTree
 from evalfile import eval_file
 from httpget import http_get
 from proclogger import log_process
@@ -187,6 +188,19 @@ def run_gcovr(output_filename_base, log_file):
                  filename_base + '.txt', '--root', project_path, '--verbose'],
                 build_path, log_file, log_file)
 
+    # Remove unwanted coverage data from xml output.
+    tree = ElementTree()
+    tree.parse(filename_base + '.xml')
+    packages_node = tree.find('.//packages')
+    packages = packages_node.findall('.//package')
+    for package in packages:
+        if package.attrib['name'].startswith('build') or \
+            package.attrib['name'].startswith('gmock') or \
+            package.attrib['name'].startswith('src.examples') or \
+            package.attrib['name'].startswith('src.integrationtest') or \
+            package.attrib['name'].startswith('src.unittest'):
+            packages_node.remove(package)
+    tree.write(filename_base + '.xml')
 
 def execute_coverage(args):
     args.target = 'coverage'
