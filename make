@@ -61,20 +61,24 @@ def parse_arguments(steps):
                                      const='release',
                                      help='use release options for the build')
 
-    step_group = parser.add_argument_group(
-        'build steps')
+    step_group = parser.add_argument_group('build steps')
 
     for step in steps:
         step_group.add_argument(step.name(),
                                 action='store_true',
                                 help=step.help())
 
-    return parser.parse_args()
+    args = parser.parse_args()
+
+    version_file = open(os.path.join(path.project, 'version'), 'r')
+    args.library_version = version_file.read().strip()
+    version_file.close()
+
+    return args
 
 
-if __name__ == "__main__":
-    if not os.path.exists(path.build):
-        os.makedirs(path.build)
+def main(log_obj):
+    os.makedirs(path.build, exist_ok=True)
 
     steps = (allstep.AllStep(), buildstep.BuildStep(), checkstep.CheckStep(),
              cleanstep.CleanStep(), coveragestep.CoverageStep(),
@@ -83,10 +87,7 @@ if __name__ == "__main__":
              updatestep.UpdateStep())
 
     args = parse_arguments(steps)
-
-    version_file = open(os.path.join(path.project, 'version'), 'r')
-    args.library_version = version_file.read().strip()
-    version_file.close()
+    args.log_obj = log_obj
 
     check_call(['cmake',
                 os.path.dirname(path.build),
@@ -96,17 +97,20 @@ if __name__ == "__main__":
                 '-DLIBRARY_VERSION=' + args.library_version],
                cwd=path.build)
 
+    try:
+        step_dict = dict([(x.name(), x) for x in steps])
+        for step in args.step:
+            step_dict[step].execute(args, path)
+
+    except CalledProcessError as e:
+        log_obj.fail('<' + ' '.join(e.cmd) + '> failed (exit code ' +
+                     str(e.returncode) + ').')
+
+
+if __name__ == "__main__":
     with logger.Logger('build.log', path.build) as log_obj:
         if sys.version_info < (3, 2):
             log_obj.fail('At least python 3.2 expected, but found:\npython ' +
                          sys.version)
         else:
-            try:
-                args.log_obj = log_obj
-                step_dict = dict([(x.name(), x) for x in steps])
-                for step in args.step:
-                    step_dict[step].execute(args, path)
-
-            except CalledProcessError as e:
-                log_obj.fail('<' + ' '.join(e.cmd) + '> failed (exit code ' +
-                             str(e.returncode) + ').')
+            main(log_obj)
