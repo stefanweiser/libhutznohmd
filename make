@@ -142,7 +142,7 @@ def execute_check(args):
                  '-UBOOST_HAS_TR1_TUPLE', '-UGTEST_CREATE_SHARED_LIBRARY',
                  '-UGTEST_LINKED_AS_SHARED_LIBRARY',
                  '-UGTEST_HAS_STRING_PIECE_', '-U_AIX', '-U_CPPRTTI',
-                 '-U _MSC_VER', '-U__SYMBIAN32__', '-U_WIN32_WCE',
+                 '-U_MSC_VER', '-U__SYMBIAN32__', '-U_WIN32_WCE',
                  '-U__APPLE__', '-U__BORLANDC__', '-U__CYGWIN__', '-U__GNUC__',
                  '-U__HP_aCC', '-U__IBMCPP__', '-U__INTEL_COMPILER',
                  '-U__SUNPRO_CC', '-U__SVR4', '-U__clang__', '-U__hpux',
