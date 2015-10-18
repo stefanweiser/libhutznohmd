@@ -239,11 +239,9 @@ Library.
 @endverbatim
 
 
-
 @page page_getting_started Getting Started
 
 @todo [DOC] fill examples
-
 
 
 @page page_about_hutznohmd What on earth is a Hutznohmd?
@@ -281,7 +279,6 @@ The word hutzen (a german weak verb) is a bit complicated, because it is not
 used as verb anymore and nowadays all existing sources seem to conflict each
 other. In the dialect of the Ore Mountains (as in Vogtland and Franconia) it was
 used to say: "to meet people by strolling to them".
-
 
 
 @page page_development Development
@@ -371,7 +368,6 @@ $ ./make --release --minimal build package
 
 The packages will be left in the @c build subdirectory. They ought to be
 released. Create a tag on the git repository afterwards.
-
 
 
 @page page_concept Concept
@@ -472,7 +468,6 @@ this is not enforced. The user is able to write own components to replace those
 of the library as long as they fulfill the interface's expectations.
 
 
-
 @page page_gurantees Gurantees of the implementation
 
 The implementation gurantees some properties, that get discussed here.
@@ -518,7 +513,6 @@ rh --> cc: "stop server"
 The control code calls the request processor to handle a request. The request
 handler is getting called by the request processor, which wants to stop the
 server. Stopping the server will wait till all request handlers have finished.
-
 
 
 @page page_lifetime Lifetime
@@ -602,7 +596,6 @@ called or the connection object is released by leaving its scope. This will also
 close the connection. As defined for TCP/IP connections, the connection's ports
 will then stay open for a "lingering time" to catch stray packets. These states
 are called @c TIME_WAIT and @c CLOSE_WAIT.
-
 
 
 @page page_roadmap Roadmap

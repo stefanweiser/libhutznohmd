@@ -34,9 +34,7 @@ NOTE: This definitions are getting used in later versions.
 -# @subpage page_conditional
 
 
-
 @page page_basic_http_support Basic HTTP support
-
 
 
 @page page_encoding Encoding
@@ -71,7 +69,6 @@ NOTE: This definitions are getting used in later versions.
 <td><pre>Accept-Language: en-US</pre></td>
 
 
-
 @page page_auth Authentification / Authorization
 
 @section sec_auth_request Request-Specific
@@ -87,7 +84,6 @@ NOTE: This definitions are getting used in later versions.
 
 <td>TBD</td>
 <td><pre>WWW-Authenticate: Basic</pre></td>
-
 
 
 @page page_caching Caching
@@ -122,7 +118,6 @@ NOTE: This definitions are getting used in later versions.
 <td><pre>Pragma: no-cache</pre></td>
 
 
-
 @page page_cookies Cookies
 
 @section sec_cookies_request Request-Specific
@@ -138,7 +133,6 @@ NOTE: This definitions are getting used in later versions.
 
 <td>TBD</td>
 <td><pre>Set-Cookie: id=123</pre></td>
-
 
 
 @page page_byte_serving Byte-Serving
@@ -161,7 +155,6 @@ NOTE: This definitions are getting used in later versions.
 
 <td>TBD</td>
 <td><pre>Content-Range: 0-2048/4096</pre></td>
-
 
 
 @page page_conditional Conditional Requests
