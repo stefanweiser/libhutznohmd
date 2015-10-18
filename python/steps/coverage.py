@@ -40,7 +40,7 @@ class CoverageStep(object):
 
         args.log_obj.info('Generate coverage information...')
         args.log_obj.info('Bootstrap coverage target...')
-        args.log_obj.execute(['cmake', os.path.join(path.build, '..', '..'),
+        args.log_obj.execute(['cmake', os.path.join(path.cmake, '..', '..'),
                               '-DCMAKE_INSTALL_PREFIX=' + path.install,
                               '-DCMAKE_BUILD_TYPE=coverage',
                               '-DMINIMAL=' + str(args.minimal),

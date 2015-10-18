@@ -16,13 +16,14 @@ class Paths(object):
     def __init__(self, project_path):
         """ Initializes all paths """
         self.project = project_path
-        self.build = os.path.join(self.project, 'build', 'build')
-        self.install = os.path.join(self.project, 'build', 'install')
-        self.reports = os.path.join(self.project, 'build', 'reports')
-        self.coverage = os.path.join(self.project, 'build', 'coverage')
-        self.unittest_bin = os.path.join(self.build, 'src', 'unittest',
+        self.build = os.path.join(self.project, 'build')
+        self.cmake = os.path.join(self.build, 'cmake')
+        self.install = os.path.join(self.build, 'install')
+        self.reports = os.path.join(self.build, 'reports')
+        self.coverage = os.path.join(self.build, 'coverage')
+        self.unittest_bin = os.path.join(self.cmake, 'src', 'unittest',
                                          'unittest_hutznohmd')
-        self.integrationtest_bin = os.path.join(self.build, 'src',
+        self.integrationtest_bin = os.path.join(self.cmake, 'src',
                                                 'integrationtest',
                                                 'integrationtest_hutznohmd')
         self.sonar_runner_url = 'http://repo1.maven.org/maven2/org/' + \

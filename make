@@ -19,7 +19,7 @@ import steps
 def parse_arguments(steps):
     ''' parses the arguments and returns a structure with those '''
     parser = argparse.ArgumentParser()
-    
+
     # possible to just create a package with reduced toolset
     parser.add_argument('-m',
                         '--minimal',
@@ -72,7 +72,7 @@ def main(path, log_obj):
     version_file.close()
 
     args.log_obj.info('Bootstrap project...')
-    args.log_obj.execute(['cmake', os.path.join(path.build, '..', '..'),
+    args.log_obj.execute(['cmake', os.path.join(path.cmake, '..', '..'),
                           '-DCMAKE_INSTALL_PREFIX=' + path.install,
                           '-DCMAKE_BUILD_TYPE=' + args.target,
                           '-DMINIMAL=' + str(args.minimal),
@@ -91,14 +91,15 @@ def main(path, log_obj):
 if __name__ == "__main__":
     # first of all generate a structure with all necessary paths
     path = paths.Paths(os.path.dirname(os.path.realpath(__file__)))
-    
+
     # change into project path
     os.chdir(os.path.dirname(__file__))
-    
-    # create build path if not exist
-    os.makedirs(path.build, exist_ok=True)
 
-    with logger.Logger('build.log', path.build) as log_obj:
+    # create build path if not exist
+    os.makedirs(path.cmake, exist_ok=True)
+
+    with logger.Logger(os.path.join(path.build, 'build.log'),
+                       path.cmake) as log_obj:
         if sys.version_info < (3, 2):
             log_obj.fail('At least python 3.2 expected, but found:\npython ' +
                          sys.version)

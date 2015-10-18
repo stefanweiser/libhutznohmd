@@ -21,26 +21,26 @@ class SonarStep(object):
         os.environ['project_key'] = 'libhutznohmd'
         os.environ['project_name'] = 'libhutznohmd'
         os.environ['project_path'] = path.project
-        os.environ['build_path'] = path.build
+        os.environ['build_path'] = path.cmake
         os.environ['coverage_path'] = os.path.join('build', 'coverage')
         os.environ['reports_path'] = os.path.join('build', 'reports')
         os.environ['version'] = '0.0.1'
         os.environ['include_paths'] = \
             ','.join(compiler.get_cxx11_release_include_list())
 
-        paths.renew_folder(path.build)
+        paths.renew_folder(path.cmake)
         self.coveragestep.execute(args, path)
         self.checkstep.execute(args, path)
 
         args.log_obj.info('Generate sonar configuration...')
-        compiler.write_cxx11_release_defines(os.path.join(path.build,
+        compiler.write_cxx11_release_defines(os.path.join(path.cmake,
                                                           'defines.h'))
         sonar_property_file = os.path.join('build', 'sonar.properties')
         evalfile.eval_file(os.path.join(path.project, 'sonar-cxx.template'),
                            sonar_property_file)
 
         args.log_obj.info('Download sonar-runner...')
-        sonar_runner_path = os.path.join(path.build, 'sonar-runner.jar')
+        sonar_runner_path = os.path.join(path.cmake, 'sonar-runner.jar')
         if not os.path.exists(sonar_runner_path):
             httpget.http_get(path.sonar_runner_url, sonar_runner_path)
 
