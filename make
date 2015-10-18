@@ -27,7 +27,6 @@ sys.path.insert(0, python_script_path)
 from argparse import ArgumentParser
 from multiprocessing import cpu_count
 from subprocess import CalledProcessError, check_call
-from termcolor import BOLD, colorize, RED
 from xml.etree.ElementTree import ElementTree
 from evalfile import eval_file
 from httpget import http_get
@@ -326,7 +325,7 @@ if __name__ == "__main__":
 
     steps = {
         'all': Struct(fn=execute_all,
-                    help='builds all steps to make a package'),
+                      help='builds all steps to make a package'),
         'bootstrap': Struct(fn=execute_bootstrap,
                             help='bootstraps the build'),
         'build': Struct(fn=execute_build,
@@ -336,19 +335,19 @@ if __name__ == "__main__":
         'clean': Struct(fn=execute_clean,
                         help='removes all built output'),
         'coverage': Struct(fn=execute_coverage,
-                        help='generates lcov output'),
+                           help='generates lcov output'),
         'doc': Struct(fn=execute_doc,
-                    help='compiles documentation'),
+                      help='compiles documentation'),
         'install': Struct(fn=execute_install,
-                        help='installs the targets'),
+                          help='installs the targets'),
         'package': Struct(fn=execute_package,
-                        help='builds packages'),
+                          help='builds packages'),
         'sonar': Struct(fn=execute_sonar,
                         help='uploads sonar results'),
         'test': Struct(fn=execute_test,
-                    help='executes unit and integration tests'),
+                       help='executes unit and integration tests'),
         'update': Struct(fn=execute_update,
-                        help='generates new file lists')
+                         help='generates new file lists')
     }
 
     args = parse_arguments(steps)
@@ -371,4 +370,4 @@ if __name__ == "__main__":
 
             except CalledProcessError as e:
                 log_obj.fail('<' + ' '.join(e.cmd) + '> failed (exit code ' +
-                            str(e.returncode) + ').')
+                             str(e.returncode) + ').')

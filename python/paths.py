@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from os import makedirs, remove
+from os import makedirs
 from os.path import exists
 from shutil import rmtree
 
