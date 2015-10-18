@@ -127,12 +127,14 @@ def execute_check(args):
     src_path = os.path.join(project_path, 'src')
     lib_path = os.path.join(src_path, 'lib')
 
+    # Running cppcheck with all the code, to improve 'unused function'
+    # warnings.
     print(colorize('[INFO]: Run cppcheck...', GREEN))
     cppcheck_report_file = open(os.path.join(reports_path, 'cppcheck.xml'),
                                 'w')
     log_process(['cppcheck', '--xml', '--xml-version=2', '--quiet', '--force',
                  '--language=c++', '--platform=unix64', '--enable=all',
-                 '--std=c++11', '-I', lib_path, lib_path], build_path,
+                 '--std=c++11', '-I', lib_path, src_path], build_path,
                 args.log_file, cppcheck_report_file)
     cppcheck_report_file.close()
 
