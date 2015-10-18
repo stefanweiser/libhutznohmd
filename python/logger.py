@@ -5,7 +5,7 @@ import termcolor
 import sys
 
 
-NONE, STDOUT, STDERR = range(3)
+NONE, STDOUT, STDERR, BOTH = range(4)
 
 
 class Logger(object):
@@ -48,12 +48,12 @@ class Logger(object):
     def execute(self, cmd, out_file=sys.stdout, sink=NONE):
         """ Executes a command in the current path and writes the output to the
             log file. """
-        if sink is STDOUT:
+        if sink is STDOUT or sink is BOTH:
             stdout_file = out_file
         else:
             stdout_file = self.logfile_handle
 
-        if sink is STDERR:
+        if sink is STDERR or sink is BOTH:
             stderr_file = out_file
         else:
             stderr_file = self.logfile_handle
