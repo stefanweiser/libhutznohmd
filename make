@@ -20,6 +20,7 @@ from cleanstep import CleanStep
 from coveragestep import CoverageStep
 from documentationstep import DocumentationStep
 from packagestep import PackageStep
+from teststep import TestStep
 from updatestep import UpdateStep
 
 
@@ -29,6 +30,7 @@ cleanstep = CleanStep()
 coveragestep = CoverageStep()
 documentationstep = DocumentationStep()
 packagestep = PackageStep()
+teststep = TestStep()
 updatestep = UpdateStep()
 
 # change directory into project path
@@ -140,7 +142,7 @@ def execute_sonar(args):
 
 
 def execute_test(args):
-    check_call(['make', 'test'], cwd=path.build)
+    teststep.execute(args, path)
 
 
 def execute_update(args):
@@ -172,8 +174,7 @@ if __name__ == "__main__":
         packagestep.name(): Struct(fn=execute_package,
                                    help=packagestep.help()),
         'sonar': Struct(fn=execute_sonar, help='uploads sonar results'),
-        'test': Struct(fn=execute_test,
-                       help='executes unit and integration tests'),
+        teststep.name(): Struct(fn=execute_test, help=teststep.help()),
         updatestep.name(): Struct(fn=execute_update, help=updatestep.help())
     }
 
