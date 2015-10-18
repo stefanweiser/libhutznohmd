@@ -69,10 +69,10 @@ fixture::fixture(const std::string& str)
 time_t fixture::parse()
 {
     string_index_pair p(str_, 0);
-    lexer l(anonymous_int_function(&get_char, &p),
-            anonymous_int_function(&peek_char, &p));
-    int32_t result = l.get();
-    return parse_timestamp(result, l);
+    lexer lex(anonymous_int_function(&get_char, &p),
+              anonymous_int_function(&peek_char, &p));
+    int32_t result = lex.get();
+    return parse_timestamp(result, lex);
 }
 
 } // namespace

@@ -68,9 +68,9 @@ media_type& media_type::operator=(const media_type& rhs)
     return *this;
 }
 
-bool media_type::parse(const lexer& l, int32_t& character)
+bool media_type::parse(const lexer& lex, int32_t& character)
 {
-    lexer_ = &l;
+    lexer_ = &lex;
 
     parse_type(character);
     if ('/' != character) {

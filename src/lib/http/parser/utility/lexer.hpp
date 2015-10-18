@@ -60,12 +60,12 @@ private:
 template <size_t size, typename continue_function>
 void parse_word(int32_t& character, push_back_string<size>& result,
                 const continue_function& continue_condition_functor,
-                const lexer& l)
+                const lexer& lex)
 {
     while ((character >= 0) &&
            (continue_condition_functor(static_cast<uint8_t>(character)))) {
         result.push_back(static_cast<char_t>(character));
-        character = l.get();
+        character = lex.get();
     }
 }
 
@@ -75,7 +75,7 @@ void parse_word(int32_t& character, push_back_string<size>& result,
 //! occurred.
 template <size_t size>
 bool parse_quoted_string(int32_t& character, push_back_string<size>& result,
-                         const lexer& l)
+                         const lexer& lex)
 {
     // First character must be a quote character.
     if (character != '"') {
@@ -83,7 +83,7 @@ bool parse_quoted_string(int32_t& character, push_back_string<size>& result,
     }
 
     // Go on to the first character.
-    character = l.get();
+    character = lex.get();
 
     // Fill the result string till a valid end is detected. This could be
     // 1. the end of the stream or
@@ -91,7 +91,7 @@ bool parse_quoted_string(int32_t& character, push_back_string<size>& result,
     while ((character >= 0) && (is_valid_quoted_string_character(
                                    static_cast<uint8_t>(character)))) {
         result.push_back(static_cast<char_t>(character));
-        character = l.get();
+        character = lex.get();
     }
 
     // Last character must be a quote character.
@@ -100,7 +100,7 @@ bool parse_quoted_string(int32_t& character, push_back_string<size>& result,
     }
 
     // Go on one character.
-    character = l.get();
+    character = lex.get();
     return true;
 }
 
@@ -108,7 +108,7 @@ bool parse_quoted_string(int32_t& character, push_back_string<size>& result,
 //! found.
 //! @return True if the comment was successfully parsed and false if an error
 //! occurred.
-bool parse_comment(int32_t& character, const lexer& l);
+bool parse_comment(int32_t& character, const lexer& lex);
 
 } // namespace http
 

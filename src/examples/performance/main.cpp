@@ -65,11 +65,11 @@ void test_trie_parse(const std::string& token)
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
     for (size_t i = 0; i < 1000000; i++) {
         string_index_pair p(token, 0);
-        hutzn::http::lexer l(anonymous_int_function(&get_char, &p),
-                             anonymous_int_function(&peek_char, &p));
-        int32_t character = l.get();
+        hutzn::http::lexer lex(anonymous_int_function(&get_char, &p),
+                               anonymous_int_function(&peek_char, &p));
+        int32_t character = lex.get();
         hutzn::http::push_back_string<4> fail_safe_result;
-        test_trie.parse(character, fail_safe_result, l);
+        test_trie.parse(character, fail_safe_result, lex);
     }
     std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
     auto diff =
@@ -110,19 +110,19 @@ void test_http_date_parser(const std::string& date_string)
         // This initializes all static variables, that else would sophisticate
         // the results.
         string_index_pair p(date_string, 0);
-        hutzn::http::lexer l(anonymous_int_function(&get_char, &p),
-                             anonymous_int_function(&peek_char, &p));
-        int32_t result = l.get();
-        parse_timestamp(result, l);
+        hutzn::http::lexer lex(anonymous_int_function(&get_char, &p),
+                               anonymous_int_function(&peek_char, &p));
+        int32_t result = lex.get();
+        parse_timestamp(result, lex);
     }
 
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
     for (size_t i = 0; i < 1000; i++) {
         string_index_pair p(date_string, 0);
-        hutzn::http::lexer l(anonymous_int_function(&get_char, &p),
-                             anonymous_int_function(&peek_char, &p));
-        int32_t result = l.get();
-        parse_timestamp(result, l);
+        hutzn::http::lexer lex(anonymous_int_function(&get_char, &p),
+                               anonymous_int_function(&peek_char, &p));
+        int32_t result = lex.get();
+        parse_timestamp(result, lex);
     }
     std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
     auto diff =
@@ -154,21 +154,21 @@ void test_http_uri_parser(const std::string& uri)
         // This initializes all static variables, that else would sophisticate
         // the results.
         string_index_pair p(uri, 0);
-        hutzn::http::lexer l(anonymous_int_function(&get_char, &p),
-                             anonymous_int_function(&peek_char, &p));
-        int32_t result = l.get();
+        hutzn::http::lexer lex(anonymous_int_function(&get_char, &p),
+                               anonymous_int_function(&peek_char, &p));
+        int32_t result = lex.get();
         hutzn::http::uri u;
-        u.parse(l, result, false);
+        u.parse(lex, result, false);
     }
 
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
     for (size_t i = 0; i < 1000000; i++) {
         string_index_pair p(uri, 0);
-        hutzn::http::lexer l(anonymous_int_function(&get_char, &p),
-                             anonymous_int_function(&peek_char, &p));
-        int32_t result = l.get();
+        hutzn::http::lexer lex(anonymous_int_function(&get_char, &p),
+                               anonymous_int_function(&peek_char, &p));
+        int32_t result = lex.get();
         hutzn::http::uri u;
-        u.parse(l, result, false);
+        u.parse(lex, result, false);
     }
     std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
     auto diff =

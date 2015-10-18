@@ -71,11 +71,11 @@ fixture::fixture(const std::string& str)
 media_type fixture::parse(const bool expect_sucess)
 {
     string_index_pair p(str_, 0);
-    lexer l(anonymous_int_function(&get_char, &p),
-            anonymous_int_function(&peek_char, &p));
+    lexer lex(anonymous_int_function(&get_char, &p),
+              anonymous_int_function(&peek_char, &p));
     media_type m;
-    int32_t result = l.get();
-    EXPECT_EQ(expect_sucess, m.parse(l, result));
+    int32_t result = lex.get();
+    EXPECT_EQ(expect_sucess, m.parse(lex, result));
     return m;
 }
 

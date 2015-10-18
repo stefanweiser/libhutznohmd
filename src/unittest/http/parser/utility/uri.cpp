@@ -71,11 +71,11 @@ fixture::fixture(const std::string& str)
 std::unique_ptr<uri> fixture::parse(const bool expect_sucess)
 {
     string_index_pair p(str_, 0);
-    lexer l(anonymous_int_function(&get_char, &p),
-            anonymous_int_function(&peek_char, &p));
+    lexer lex(anonymous_int_function(&get_char, &p),
+              anonymous_int_function(&peek_char, &p));
     std::unique_ptr<uri> m = std::unique_ptr<uri>(new uri());
-    int32_t result = l.get();
-    EXPECT_EQ(expect_sucess, m->parse(l, result, false));
+    int32_t result = lex.get();
+    EXPECT_EQ(expect_sucess, m->parse(lex, result, false));
     return m;
 }
 

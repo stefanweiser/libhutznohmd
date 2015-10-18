@@ -43,9 +43,9 @@ response_parser::response_parser(const anonymous_int_function& get_functor,
 namespace
 {
 
-uint16_t lex_status_code(int32_t& result, const lexer& l)
+uint16_t lex_status_code(int32_t& result, const lexer& lex)
 {
-    int32_t code = l.get_unsigned_integer(result);
+    int32_t code = lex.get_unsigned_integer(result);
     if (code <= 0) {
         return 0;
     }
@@ -54,7 +54,7 @@ uint16_t lex_status_code(int32_t& result, const lexer& l)
 
 bool lex_reason_phrase(int32_t& character,
                        push_back_string<reason_phrase_size>& phrase,
-                       const lexer& l)
+                       const lexer& lex)
 {
     do {
         if ((character < 0) || ((character != ' ') && (character != '\t') &&
@@ -62,7 +62,7 @@ bool lex_reason_phrase(int32_t& character,
             return false;
         }
         phrase.push_back(static_cast<char_t>(character));
-        character = l.get();
+        character = lex.get();
     } while (character != '\n');
     return true;
 }

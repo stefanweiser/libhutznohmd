@@ -35,13 +35,13 @@ namespace
 template <size_t size, typename continue_function>
 bool parse_uri_word(int32_t& character, push_back_string<size>& result,
                     const continue_function& continue_condition_functor,
-                    const lexer& l)
+                    const lexer& lex)
 {
     while ((character >= 0) &&
            (continue_condition_functor(static_cast<uint8_t>(character)))) {
         if ('%' == character) {
-            int32_t a = l.get();
-            int32_t b = l.get();
+            int32_t a = lex.get();
+            int32_t b = lex.get();
             if ((a == -1) || (b == -1)) {
                 return false;
             }
@@ -56,7 +56,7 @@ bool parse_uri_word(int32_t& character, push_back_string<size>& result,
         } else {
             result.push_back(static_cast<char_t>(character));
         }
-        character = l.get();
+        character = lex.get();
     }
 
     return true;
@@ -77,13 +77,13 @@ uri::uri()
 {
 }
 
-bool uri::parse(const lexer& l, int32_t& character, const bool skip_scheme)
+bool uri::parse(const lexer& lex, int32_t& character, const bool skip_scheme)
 {
     if (valid_) {
         return true;
     }
 
-    lexer_ = &l;
+    lexer_ = &lex;
 
     if (!parse_scheme_and_authority(character, skip_scheme)) {
         return false;

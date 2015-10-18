@@ -37,28 +37,28 @@ static const int32_t begin_of_19_hundrets = 1900;
 static const int32_t end_of_19_hundrets = 1999;
 static const size_t tmp_string_size = 32;
 
-int32_t parse_time(int32_t& character, const lexer& l)
+int32_t parse_time(int32_t& character, const lexer& lex)
 {
-    int32_t hour = l.get_unsigned_integer(character);
+    int32_t hour = lex.get_unsigned_integer(character);
     if ((!check_range<int32_t, 0, hours_per_day - 1>(hour)) ||
         (character != ':')) {
         return -1;
     }
-    character = l.get_non_whitespace();
-    int32_t minute = l.get_unsigned_integer(character);
+    character = lex.get_non_whitespace();
+    int32_t minute = lex.get_unsigned_integer(character);
     if ((!check_range<int32_t, 0, minutes_per_hour - 1>(minute)) ||
         (character != ':')) {
         return -1;
     }
-    character = l.get_non_whitespace();
-    int32_t second = l.get_unsigned_integer(character);
+    character = lex.get_non_whitespace();
+    int32_t second = lex.get_unsigned_integer(character);
     if (!check_range<int32_t, 0, seconds_per_minute - 1>(second)) {
         return -1;
     }
     return (seconds_per_minute * ((minutes_per_hour * hour) + minute)) + second;
 }
 
-int32_t parse_month(int32_t& character, const lexer& l)
+int32_t parse_month(int32_t& character, const lexer& lex)
 {
     using value_info = trie<int32_t>::value_info;
     static const std::vector<value_info> types = {
@@ -69,45 +69,45 @@ int32_t parse_month(int32_t& character, const lexer& l)
 
     static const trie<int32_t> t(types, -1);
     push_back_string<tmp_string_size> tmp;
-    return t.parse(character, tmp, l);
+    return t.parse(character, tmp, lex);
 }
 
-bool parse_gmt(int32_t& character, const lexer& l)
+bool parse_gmt(int32_t& character, const lexer& lex)
 {
     using value_info = trie<bool>::value_info;
     static const std::vector<value_info> types = {{value_info{"gmt", true}}};
 
     static const trie<bool> t(types, false);
     push_back_string<tmp_string_size> tmp;
-    return t.parse(character, tmp, l);
+    return t.parse(character, tmp, lex);
 }
 
-void parse_optional_whitespace(int32_t& character, const lexer& l)
+void parse_optional_whitespace(int32_t& character, const lexer& lex)
 {
     if ((character == ' ') || (character == '\n')) {
-        character = l.get_non_whitespace();
+        character = lex.get_non_whitespace();
     }
 }
 
-time_t parse_rfc1123_date_time(int32_t& character, const lexer& l)
+time_t parse_rfc1123_date_time(int32_t& character, const lexer& lex)
 {
-    character = l.get_non_whitespace();
-    const int32_t day = l.get_unsigned_integer(character);
+    character = lex.get_non_whitespace();
+    const int32_t day = lex.get_unsigned_integer(character);
 
-    parse_optional_whitespace(character, l);
-    const int32_t month = parse_month(character, l);
+    parse_optional_whitespace(character, lex);
+    const int32_t month = parse_month(character, lex);
 
-    parse_optional_whitespace(character, l);
-    const int32_t year = l.get_unsigned_integer(character);
+    parse_optional_whitespace(character, lex);
+    const int32_t year = lex.get_unsigned_integer(character);
 
-    parse_optional_whitespace(character, l);
-    const int32_t second_of_day = parse_time(character, l);
+    parse_optional_whitespace(character, lex);
+    const int32_t second_of_day = parse_time(character, lex);
     if (second_of_day < 0) {
         return -1;
     }
 
-    parse_optional_whitespace(character, l);
-    if (!parse_gmt(character, l)) {
+    parse_optional_whitespace(character, lex);
+    if (!parse_gmt(character, lex)) {
         return -1;
     }
 
@@ -116,36 +116,36 @@ time_t parse_rfc1123_date_time(int32_t& character, const lexer& l)
         static_cast<uint8_t>(month), static_cast<uint32_t>(year));
 }
 
-time_t parse_rfc850_date_time(int32_t& character, const lexer& l)
+time_t parse_rfc850_date_time(int32_t& character, const lexer& lex)
 {
-    parse_optional_whitespace(character, l);
+    parse_optional_whitespace(character, lex);
     if (character != ',') {
         return -1;
     }
-    character = l.get_non_whitespace();
-    const int32_t day = l.get_unsigned_integer(character);
+    character = lex.get_non_whitespace();
+    const int32_t day = lex.get_unsigned_integer(character);
 
     if (character != '-') {
         return -1;
     }
-    character = l.get();
-    const int32_t month = parse_month(character, l);
+    character = lex.get();
+    const int32_t month = parse_month(character, lex);
 
     if (character != '-') {
         return -1;
     }
-    character = l.get();
+    character = lex.get();
     const int32_t year =
-        begin_of_19_hundrets + l.get_unsigned_integer(character);
+        begin_of_19_hundrets + lex.get_unsigned_integer(character);
     if (!check_range<int32_t, begin_of_19_hundrets, end_of_19_hundrets>(year)) {
         return -1;
     }
 
-    parse_optional_whitespace(character, l);
-    const int32_t second_of_day = parse_time(character, l);
+    parse_optional_whitespace(character, lex);
+    const int32_t second_of_day = parse_time(character, lex);
 
-    parse_optional_whitespace(character, l);
-    if (!parse_gmt(character, l)) {
+    parse_optional_whitespace(character, lex);
+    if (!parse_gmt(character, lex)) {
         return -1;
     }
 
@@ -154,22 +154,22 @@ time_t parse_rfc850_date_time(int32_t& character, const lexer& l)
         static_cast<uint8_t>(month), static_cast<uint32_t>(year));
 }
 
-time_t parse_asctime_date_time(int32_t& character, const lexer& l)
+time_t parse_asctime_date_time(int32_t& character, const lexer& lex)
 {
-    parse_optional_whitespace(character, l);
-    const int32_t month = parse_month(character, l);
+    parse_optional_whitespace(character, lex);
+    const int32_t month = parse_month(character, lex);
 
-    character = l.get_non_whitespace();
-    const int32_t day = l.get_unsigned_integer(character);
+    character = lex.get_non_whitespace();
+    const int32_t day = lex.get_unsigned_integer(character);
 
-    character = l.get_non_whitespace();
-    const int32_t second_of_day = parse_time(character, l);
+    character = lex.get_non_whitespace();
+    const int32_t second_of_day = parse_time(character, lex);
 
-    character = l.get_non_whitespace();
-    const int32_t year = l.get_unsigned_integer(character);
+    character = lex.get_non_whitespace();
+    const int32_t year = lex.get_unsigned_integer(character);
 
     if (character == ' ') {
-        character = l.get_non_whitespace();
+        character = lex.get_non_whitespace();
     }
 
     return seconds_since_epoch(
@@ -177,7 +177,7 @@ time_t parse_asctime_date_time(int32_t& character, const lexer& l)
         static_cast<uint8_t>(month), static_cast<uint32_t>(year));
 }
 
-std::tuple<int8_t, bool> parse_weekday(int32_t& character, const lexer& l)
+std::tuple<int8_t, bool> parse_weekday(int32_t& character, const lexer& lex)
 {
     using value_type = std::tuple<int8_t, bool>;
     using value_info = trie<value_type>::value_info;
@@ -200,22 +200,22 @@ std::tuple<int8_t, bool> parse_weekday(int32_t& character, const lexer& l)
 
     static const trie<value_type> t(types, value_type{-1, false});
     push_back_string<tmp_string_size> tmp;
-    return t.parse(character, tmp, l);
+    return t.parse(character, tmp, lex);
 }
 
 } // namespace
 
-time_t parse_timestamp(int32_t& character, const lexer& l)
+time_t parse_timestamp(int32_t& character, const lexer& lex)
 {
     int32_t weekday = -1;
     int32_t is_long_format = false;
-    std::tie(weekday, is_long_format) = parse_weekday(character, l);
+    std::tie(weekday, is_long_format) = parse_weekday(character, lex);
     if (is_long_format) {
-        return parse_rfc850_date_time(character, l);
+        return parse_rfc850_date_time(character, lex);
     } else if ((character == ' ') || (character == '\t')) {
-        return parse_asctime_date_time(character, l);
+        return parse_asctime_date_time(character, lex);
     } else {
-        return parse_rfc1123_date_time(character, l);
+        return parse_rfc1123_date_time(character, lex);
     }
 }
 

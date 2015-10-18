@@ -127,8 +127,8 @@ bool connection::send(const char_t* data, const size_t& size)
 
 bool connection::set_lingering_timeout(const int32_t& timeout)
 {
-    linger l{1, timeout};
-    return setsockopt(socket_, SOL_SOCKET, SO_LINGER, &l, sizeof(l)) == 0;
+    linger lex{1, timeout};
+    return setsockopt(socket_, SOL_SOCKET, SO_LINGER, &lex, sizeof(lex)) == 0;
 }
 
 bool connection::connect(void)

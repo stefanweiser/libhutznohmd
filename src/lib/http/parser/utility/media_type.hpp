@@ -48,7 +48,7 @@ public:
     media_type& operator=(const media_type& rhs);
 
     //! ...
-    bool parse(const lexer& l, int32_t& character);
+    bool parse(const lexer& lex, int32_t& character);
 
     //! ...
     media_type_interface::mime_type type() const override;

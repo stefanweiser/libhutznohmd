@@ -74,11 +74,11 @@ size_t fixture::parse(const std::vector<trie<size_t>::value_info>& values,
                       push_back_string<size>& fail_safe_result)
 {
     string_index_pair p(str_, 0);
-    lexer l(anonymous_int_function(&get_char, &p),
-            anonymous_int_function(&peek_char, &p));
+    lexer lex(anonymous_int_function(&get_char, &p),
+              anonymous_int_function(&peek_char, &p));
     trie<size_t> test_trie(values, 0);
-    int32_t character = l.get();
-    return test_trie.parse(character, fail_safe_result, l);
+    int32_t character = lex.get();
+    return test_trie.parse(character, fail_safe_result, lex);
 }
 
 } // namespace

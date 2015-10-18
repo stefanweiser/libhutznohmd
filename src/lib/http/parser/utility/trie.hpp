@@ -52,7 +52,7 @@ public:
     //! ...
     value_type parse(int32_t& character,
                      push_back_string<size>& fail_safe_result,
-                     const lexer& l) const;
+                     const lexer& lex) const;
 
 private:
     explicit trie(const std::vector<value_info>& values,
@@ -79,7 +79,7 @@ template <size_t size>
 //! ...
 value_type trie<value_type>::parse(int32_t& character,
                                    push_back_string<size>& fail_safe_result,
-                                   const lexer& l) const
+                                   const lexer& lex) const
 {
     const std::unique_ptr<trie>& child =
         children_[static_cast<uint8_t>(character)];
@@ -90,8 +90,8 @@ value_type trie<value_type>::parse(int32_t& character,
         return value_;
     }
 
-    character = l.get();
-    return child->parse(character, fail_safe_result, l);
+    character = lex.get();
+    return child->parse(character, fail_safe_result, lex);
 }
 
 //! ...

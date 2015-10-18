@@ -89,10 +89,10 @@ TEST_F(lexer_test, construction)
     connection_mock_pointer c = std::make_shared<connection_interface_mock>();
     EXPECT_CALL(*c, receive(_, _)).Times(1).WillOnce(Return(false));
 
-    lexer l(c);
-    EXPECT_EQ(NULL, l.header_data(0));
-    EXPECT_EQ(-1, l.get());
-    EXPECT_FALSE(l.fetch_header());
+    lexer lex(c);
+    EXPECT_EQ(NULL, lex.header_data(0));
+    EXPECT_EQ(-1, lex.get());
+    EXPECT_FALSE(lex.fetch_header());
 }
 
 TEST_F(lexer_test, call_receive_successfully_once)

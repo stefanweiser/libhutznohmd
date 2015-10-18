@@ -89,7 +89,7 @@ int32_t lexer::get_unsigned_integer(int32_t& character) const
     return result;
 }
 
-bool parse_comment(int32_t& character, const lexer& l)
+bool parse_comment(int32_t& character, const lexer& lex)
 {
     // First character must be an opening parenthesis.
     if (character != '(') {
@@ -97,7 +97,7 @@ bool parse_comment(int32_t& character, const lexer& l)
     }
 
     // Go on to the first character.
-    character = l.get();
+    character = lex.get();
 
     // Comments support nesting, so we have to check for that.
     size_t nesting_depth = 1;
@@ -110,11 +110,11 @@ bool parse_comment(int32_t& character, const lexer& l)
         } else if (')' == character) {
             nesting_depth--;
             if (0 == nesting_depth) {
-                character = l.get();
+                character = lex.get();
                 return true;
             }
         }
-        character = l.get();
+        character = lex.get();
     }
 
     // Is only reached in case of the end of the stream.

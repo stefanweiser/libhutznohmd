@@ -32,7 +32,7 @@ namespace http
 {
 
 //! ...
-time_t parse_timestamp(int32_t& character, const lexer& l);
+time_t parse_timestamp(int32_t& character, const lexer& lex);
 
 } // namespace http
 

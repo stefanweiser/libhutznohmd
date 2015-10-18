@@ -42,7 +42,7 @@ public:
     uri& operator=(const uri& rhs) = delete;
 
     //! ...
-    bool parse(const lexer& l, int32_t& character, const bool skip_scheme);
+    bool parse(const lexer& lex, int32_t& character, const bool skip_scheme);
 
     //! ...
     void set_scheme(const uri_scheme& new_scheme);
