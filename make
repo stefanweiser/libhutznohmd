@@ -125,7 +125,10 @@ def execute_check(args):
                 args.log_file, args.log_file)
 
     src_path = os.path.join(project_path, 'src')
+    integrationtest_path = os.path.join(src_path, 'integrationtest')
     lib_path = os.path.join(src_path, 'lib')
+    unittest_path = os.path.join(src_path, 'unittest')
+    gmock_path = os.path.join(project_path, 'gmock')
 
     # Running cppcheck with all the code, to improve 'unused function'
     # warnings.
@@ -134,8 +137,17 @@ def execute_check(args):
                                 'w')
     log_process(['cppcheck', '--xml', '--xml-version=2', '--quiet', '--force',
                  '--language=c++', '--platform=unix64', '--enable=all',
-                 '--std=c++11', '-I', lib_path, src_path], build_path,
-                args.log_file, cppcheck_report_file)
+                 '--suppress=missingIncludeSystem', '--std=c++11', '-DNDEBUG',
+                 '-UBOOST_HAS_TR1_TUPLE', '-UGTEST_CREATE_SHARED_LIBRARY',
+                 '-UGTEST_LINKED_AS_SHARED_LIBRARY',
+                 '-UGTEST_HAS_STRING_PIECE_', '-U_AIX', '-U_CPPRTTI',
+                 '-U _MSC_VER', '-U__SYMBIAN32__', '-U_WIN32_WCE',
+                 '-U__APPLE__', '-U__BORLANDC__', '-U__CYGWIN__', '-U__GNUC__',
+                 '-U__HP_aCC', '-U__IBMCPP__', '-U__INTEL_COMPILER',
+                 '-U__SUNPRO_CC', '-U__SVR4', '-U__clang__', '-U__hpux',
+                 '-U_LIBC', '-U__ANDROID__', '-I', lib_path, '-I', gmock_path,
+                 '-I', unittest_path, '-I', integrationtest_path, src_path],
+                build_path, args.log_file, cppcheck_report_file)
     cppcheck_report_file.close()
 
     print(colorize('[INFO]: Run rats...', GREEN))
