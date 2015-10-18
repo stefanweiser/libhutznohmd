@@ -134,9 +134,9 @@ def execute_check(args):
     # Running cppcheck with all the code, to improve 'unused function'
     # warnings.
     print(colorize('[INFO]: Run cppcheck...', GREEN))
-    cppcheck_report_file = open(os.path.join(reports_path, 'cppcheck.xml'),
-                                'w')
-    log_process(['cppcheck', '--xml', '--xml-version=2', '--quiet', '--force',
+    cppcheck_report_filename = os.path.join(reports_path, 'cppcheck.xml')
+    cppcheck_report_file = open(cppcheck_report_filename, 'w')
+    log_process(['cppcheck', '--xml', '--xml-version=2', '--force',
                  '--language=c++', '--platform=unix64', '--enable=all',
                  '--suppress=missingIncludeSystem', '--std=c++11', '-DNDEBUG',
                  '-UBOOST_HAS_TR1_TUPLE', '-UGTEST_CREATE_SHARED_LIBRARY',
@@ -151,6 +151,24 @@ def execute_check(args):
                 build_path, args.log_file, cppcheck_report_file)
     cppcheck_report_file.close()
 
+    # Remove unwanted coverage data from xml output.
+    tree = ElementTree()
+    tree.parse(cppcheck_report_filename)
+    errors_node = tree.find('.//errors')
+    if errors_node is not None:
+        errors = errors_node.findall('error')
+        for error in errors:
+            location = error.find('location')
+            file = location.attrib['file']
+            if file.startswith(os.path.join(project_path, 'build')) or \
+               file.startswith(os.path.join(project_path, 'gmock')) or \
+               file.startswith(os.path.join(project_path, 'src/examples')) or \
+               file.startswith(os.path.join(project_path,
+                                            'src/integrationtest')) or \
+               file.startswith(os.path.join(project_path, 'src/unittest')):
+                errors_node.remove(error)
+        tree.write(cppcheck_report_filename)
+
     print(colorize('[INFO]: Run rats...', GREEN))
     rats_report_file = open(os.path.join(reports_path, 'rats.xml'), 'w')
     log_process(['rats', '--xml', '--resultsonly', '-w', '3', src_path],
@@ -160,11 +178,10 @@ def execute_check(args):
     print(colorize('[INFO]: Run vera++...', GREEN))
     vera_cmd_line = ['vera++', '--checkstyle-report',
                      os.path.join(reports_path, 'vera++.xml')]
-    for dirpath, dirnames, files in os.walk(os.path.join(project_path, 'src',
-                                                         'lib')):
+    for dirpath, dirnames, files in os.walk(lib_path):
         for file in files:
             if file.endswith('.cpp') or file.endswith('.hpp'):
-                vera_cmd_line.append(os.path.join(dirpath, file));
+                vera_cmd_line.append(os.path.join(dirpath, file))
     log_process(vera_cmd_line, build_path, args.log_file, args.log_file)
 
     args.log_file.close()
@@ -192,15 +209,17 @@ def run_gcovr(output_filename_base, log_file):
     tree = ElementTree()
     tree.parse(filename_base + '.xml')
     packages_node = tree.find('.//packages')
-    packages = packages_node.findall('.//package')
-    for package in packages:
-        if package.attrib['name'].startswith('build') or \
-            package.attrib['name'].startswith('gmock') or \
-            package.attrib['name'].startswith('src.examples') or \
-            package.attrib['name'].startswith('src.integrationtest') or \
-            package.attrib['name'].startswith('src.unittest'):
-            packages_node.remove(package)
-    tree.write(filename_base + '.xml')
+    if packages_node is not None:
+        packages = packages_node.findall('package')
+        for package in packages:
+            if package.attrib['name'].startswith('build') or \
+               package.attrib['name'].startswith('gmock') or \
+               package.attrib['name'].startswith('src.examples') or \
+               package.attrib['name'].startswith('src.integrationtest') or \
+               package.attrib['name'].startswith('src.unittest'):
+                packages_node.remove(package)
+        tree.write(filename_base + '.xml')
+
 
 def execute_coverage(args):
     args.target = 'coverage'
