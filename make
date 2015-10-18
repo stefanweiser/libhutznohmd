@@ -106,7 +106,9 @@ def execute_build(args):
 def execute_check(args):
     check_is_bootstrapped()
 
-    os.makedirs(reports_path)
+    if not os.path.exists(reports_path):
+        os.makedirs(reports_path)
+    args.log_file = open(log_file_path, 'w')
 
     print(colorize('[INFO]: Compile all...', GREEN))
     log_process(['make', '-j' + str(cpu_count()), 'all'], build_path,
@@ -140,6 +142,7 @@ def execute_check(args):
                 build_path, rats_report_file, args.log_file)
     rats_report_file.close()
 
+    args.log_file.close()
     print(colorize('[INFO]: All report files were written to ' + reports_path +
                    '.', GREEN))
 
@@ -236,9 +239,9 @@ def execute_sonar(args):
     print(colorize('[INFO]: Calculate coverage information...', GREEN))
     execute_coverage(args)
 
-    args.log_file = open(log_file_path, 'w')
     execute_check(args)
 
+    args.log_file = open(log_file_path, 'w')
     print(colorize('[INFO]: Generate sonar configuration...', GREEN))
     compiler.write_cxx11_release_defines(os.path.join(build_path,
                                                       'defines.h'))
