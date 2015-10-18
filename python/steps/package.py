@@ -5,7 +5,7 @@ import steps.test
 
 
 class PackageStep(object):
-    """ Generates packages for source and binaries. """
+    ''' Generates packages for source and binaries. '''
 
     def __init__(self):
         self.teststep = steps.test.TestStep()

@@ -11,7 +11,7 @@ import subprocess
 
 
 class SonarStep(object):
-    """ Updates sonarqube data. """
+    ''' Updates sonarqube data. '''
 
     def __init__(self):
         self.checkstep = steps.check.CheckStep()

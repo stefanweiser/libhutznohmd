@@ -5,7 +5,7 @@ import shutil
 
 
 class CleanStep(object):
-    """ Cleans the content of the build path. """
+    ''' Cleans the content of the build path. '''
 
     def execute(self, args, path):
         args.log_obj.info('Clean project...')

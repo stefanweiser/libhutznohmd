@@ -6,7 +6,7 @@ import steps.update
 
 
 class BuildStep(object):
-    """ Builds the software. """
+    ''' Builds the software. '''
 
     def __init__(self):
         self.bootstrapstep = steps.bootstrap.BootstrapStep()

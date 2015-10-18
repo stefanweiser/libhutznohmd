@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 
-from sys import stdout
+import sys
 
 NORMAL, BOLD = range(2)
 BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range(8)
 
 
-def has_colours(stream):
+def has_colors(stream):
+    ''' checks if a stream has support to color the output '''
+
     if not hasattr(stream, 'isatty'):
         return False
     if not stream.isatty():
@@ -17,12 +19,15 @@ def has_colours(stream):
         return curses.tigetnum('colors') > 2
     except:
         return False
-has_colours = has_colours(stdout)
+
+
+has_colors = has_colors(sys.stdout)
 
 
 def colorize(text, color=WHITE, boldness=NORMAL):
-        if has_colours:
-            return '\x1b[{};{}m'.format(boldness, (30 + color)) + text + \
-                   '\x1b[0m'
-        else:
-            return text
+    ''' colorizes a string '''
+
+    if has_colors:
+        return '\x1b[{};{}m'.format(boldness, (30 + color)) + text + '\x1b[0m'
+    else:
+        return text

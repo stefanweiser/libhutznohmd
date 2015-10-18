@@ -7,7 +7,7 @@ import xml.etree.ElementTree
 
 
 class CoverageStep(object):
-    """ Generates reports of all checking tools. """
+    ''' Generates reports of all checking tools. '''
 
     def __init__(self):
         self.buildstep = steps.build.BuildStep()

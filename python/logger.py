@@ -10,10 +10,10 @@ NONE, STDOUT, STDERR, BOTH = range(4)
 
 
 class Logger(object):
-    """ Provides functions to print out data to log file. """
+    ''' provides functions to print out data to log file '''
 
     def __init__(self, logfile_path):
-        """ Sets the path to the log file, but actually does not open it. """
+        ''' sets the path to the log file, but actually does not open it '''
         working_dir = os.path.dirname(logfile_path)
         assert(os.path.exists(working_dir))
 
@@ -23,47 +23,52 @@ class Logger(object):
                                  termcolor.GREEN))
 
     def __enter__(self):
-        """ Opens the log file. """
+        ''' opens the log file '''
         linewise = 1
         self.logfile_handle = open(self.logfile_path, 'w+', linewise)
         return self
 
     def __exit__(self, *ignored):
-        """ Closes the log file. """
+        ''' closes the log file '''
         self.logfile_handle.close()
 
     def info(self, str):
-        """ Prints a message as info to the log file and the console. """
+        ''' prints a message as info to the log file and the console '''
         print(termcolor.colorize('> ' + str, termcolor.GREEN))
         self.logfile_handle.write('[INFO]: ' + str + '\n')
 
     def warning(self, str):
-        """ Prints a message as warning to the log file and the console. """
+        ''' prints a message as warning to the log file and the console '''
         print(termcolor.colorize('[WARN]: ' + str, termcolor.RED))
         self.logfile_handle.write('[WARN]: ' + str + '\n')
 
     def failure(self, str):
-        """ Prints a message as failure to the log file and the console. """
+        ''' prints a message as failure to the log file and the console '''
         print(termcolor.colorize('[FAIL]: ' + str, termcolor.RED,
                                  termcolor.BOLD))
         self.logfile_handle.write('[FAIL]: ' + str + '\n')
 
     def execute(self, cmd, out_file=sys.stdout, sink=NONE, working_dir=None):
-        """ Executes a command in the current path and writes the output to the
-            log file. """
+        ''' executes a command in the current path and writes the output to the
+            log file '''
+
+        # default is directory of log file
         if working_dir is None:
             working_dir = self.working_dir
 
+        # stdout gets redirected into file
         if sink is STDOUT or sink is BOTH:
             stdout_file = out_file
         else:
             stdout_file = self.logfile_handle
 
+        # stderr gets redirected into file
         if sink is STDERR or sink is BOTH:
             stderr_file = out_file
         else:
             stderr_file = self.logfile_handle
 
+        # run the command and wait till its end
         process = subprocess.Popen(cmd, cwd=working_dir, stdout=stdout_file,
                                    stderr=stderr_file)
         process.wait()

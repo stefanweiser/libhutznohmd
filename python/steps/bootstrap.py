@@ -4,7 +4,7 @@ import os
 
 
 class BootstrapStep(object):
-    """ Bootstraps the cmake target. """
+    ''' Bootstraps the cmake target. '''
 
     def execute(self, args, path):
         args.log_obj.info('Bootstrap project for target ' + args.target +

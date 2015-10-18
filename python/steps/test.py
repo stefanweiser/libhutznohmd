@@ -4,7 +4,7 @@ import steps.build
 
 
 class TestStep(object):
-    """ Runs unit and integration tests. """
+    ''' Runs unit and integration tests. '''
 
     def __init__(self):
         self.buildstep = steps.build.BuildStep()

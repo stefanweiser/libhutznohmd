@@ -4,7 +4,7 @@ import os
 
 
 class UpdateStep(object):
-    """ Updates source file lists. """
+    ''' Updates source file lists. '''
 
     def execute(self, args, path):
         def update_single_path(rootpath):

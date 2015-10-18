@@ -5,7 +5,7 @@ import os
 
 
 class DocStep(object):
-    """ Generates the project's doxygen documentation. """
+    ''' Generates the project's doxygen documentation. '''
 
     def execute(self, args, path):
         plantuml_path = os.path.join(path.download, 'plantuml.jar')

@@ -5,16 +5,19 @@ import shutil
 
 
 def renew_folder(path):
+    ''' will clear all contents of a path, by deleting and recreating it '''
+
     if os.path.exists(path):
         shutil.rmtree(path)
     os.makedirs(path)
 
 
 class Paths(object):
-    """ Provides all necessary paths. """
+    ''' provides all necessary paths '''
 
     def __init__(self, project_path):
-        """ Initializes all paths """
+        ''' initializes all paths '''
+
         self.project = project_path
         self.build = os.path.join(self.project, 'build')
         self.cmake = os.path.join(self.build, 'cmake')
