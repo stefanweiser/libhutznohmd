@@ -9,7 +9,7 @@ sonar.working.directory=${build_path}/sonar
 sonar.language=c++
 sonar.sourceEncoding=UTF-8
 
-sonar.sources=${project_path}/src/lib
+sonar.sources=src/lib
 sonar.cxx.includeDirectories=${include_paths},${project_path}/src/lib
 sonar.cxx.forceIncludes=${build_path}/defines.h
 
