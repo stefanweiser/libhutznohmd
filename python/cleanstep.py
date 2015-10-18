@@ -2,7 +2,7 @@
 
 
 class CleanStep:
-    """ Cleans the content of the build path """
+    """ Cleans the content of the build path. """
 
     def execute(self, args, paths):
         args.log_obj.info('Clean project...')

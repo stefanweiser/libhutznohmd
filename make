@@ -17,8 +17,10 @@ import compiler
 import paths
 import logger
 from cleanstep import CleanStep
+from buildstep import BuildStep
 
 
+buildstep = BuildStep();
 cleanstep = CleanStep();
 
 # change directory into project path
@@ -80,7 +82,7 @@ def bootstrap(args):
 
 
 def execute_build(args):
-    check_call(['make', '-j' + str(cpu_count()), 'all'], cwd=path.build)
+    buildstep.execute(args, path)
 
 
 def execute_check(args):
@@ -318,8 +320,8 @@ if __name__ == "__main__":
     steps = {
         'all': Struct(fn=execute_all,
                       help='builds all steps to make a package'),
-        'build': Struct(fn=execute_build,
-                        help='compiles the targets'),
+        buildstep.name(): Struct(fn=execute_build,
+                        help=buildstep.help()),
         'check': Struct(fn=execute_check,
                         help='checks code for problems'),
         cleanstep.name(): Struct(fn=execute_clean,
