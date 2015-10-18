@@ -89,7 +89,7 @@ if __name__ == "__main__":
     os.chdir(os.path.dirname(__file__))
 
     # create build path if not exist
-    os.makedirs(path.cmake, exist_ok=True)
+    os.makedirs(path.build, exist_ok=True)
 
     # create a logger
     with logger.Logger(os.path.join(path.build, 'build.log'),

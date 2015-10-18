@@ -9,6 +9,7 @@ class BootstrapStep(object):
     def execute(self, args, path):
         args.log_obj.info('Bootstrap project for target ' + args.target +
                           '...')
+        os.makedirs(path.cmake, exist_ok=True)
         args.log_obj.execute(['cmake', os.path.join(path.cmake, '..', '..'),
                               '-DCMAKE_INSTALL_PREFIX=' + path.install,
                               '-DCMAKE_BUILD_TYPE=' + args.target,
