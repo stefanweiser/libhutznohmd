@@ -356,9 +356,7 @@ if __name__ == "__main__":
     try:
         if version_info < (3, 2):
             print(colorize('[FAIL]: At least python 3.2 expected,' +
-                           ' but found:\n',
-                           RED))
-            print(colorize('python ' + version, RED))
+                           ' but found:\n' + 'python ' + version, RED))
         else:
             steps = {
                 'all': Struct(fn=execute_all,
