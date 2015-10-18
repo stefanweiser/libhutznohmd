@@ -1,11 +1,31 @@
 #!/usr/bin/env python3
 
-from os import makedirs
-from os.path import exists
-from shutil import rmtree
+import os
+import shutil
 
 
 def renew_folder(path):
-    if exists(path):
-        rmtree(path)
-    makedirs(path)
+    if os.path.exists(path):
+        shutil.rmtree(path)
+    os.makedirs(path)
+
+
+class Paths(object):
+    """ Provides all necessary paths. """
+
+    def __init__(self, project_path):
+        """ Initializes all paths """
+        self.project = project_path
+        self.build = os.path.join(self.project, 'build')
+        self.install = os.path.join(self.project, 'install')
+        self.reports = os.path.join(self.build, 'reports')
+        self.coverage = os.path.join(self.build, 'coverage')
+        self.log_file = os.path.join(self.build, 'build.log')
+        self.unittest_bin = os.path.join(self.build, 'src', 'unittest',
+                                         'unittest_hutznohmd')
+        self.integrationtest_bin = os.path.join(self.build, 'src',
+                                                'integrationtest',
+                                                'integrationtest_hutznohmd')
+        self.sonar_runner_url = 'http://repo1.maven.org/maven2/org/' + \
+            'codehaus/sonar/runner/sonar-runner-dist/2.4/' + \
+            'sonar-runner-dist-2.4.jar'
