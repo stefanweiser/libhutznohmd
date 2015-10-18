@@ -15,7 +15,9 @@ class Logger(object):
     def __enter__(self):
         """ Opens the log file. """
         print(termcolor.colorize('[INFO]: Open log file.', termcolor.GREEN))
-        self.logfile_handle = open(self.logfile_path, 'w')
+        linewise = 1
+        self.logfile_handle = open(self.logfile_path, 'w+', linewise)
+        return self
 
     def __exit__(self, *ignored):
         """ Closes the log file. """
