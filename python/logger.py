@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
+import os
 import subprocess
-import termcolor
 import sys
+import termcolor
 
 
 NONE, STDOUT, STDERR, BOTH = range(4)
@@ -13,6 +14,9 @@ class Logger(object):
 
     def __init__(self, logfile_path, working_dir):
         """ Sets the path to the log file, but actually does not open it. """
+        assert(os.path.exists(os.path.dirname(logfile_path)))
+        assert(os.path.exists(working_dir))
+
         self.logfile_path = logfile_path
         self.working_dir = working_dir
         print(termcolor.colorize('[INFO]: Write log to ' + self.logfile_path,
