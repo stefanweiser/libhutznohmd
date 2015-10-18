@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 
-from multiprocessing import cpu_count
+import multiprocessing
 
 
 class BuildStep:
     """ Builds the software. """
 
-    def execute(self, args, paths):
+    def execute(self, args, path):
         args.log_obj.info('Build project...')
-        args.log_obj.execute(['make', '-j' + str(cpu_count()), 'install'])
+        args.log_obj.execute(['make', '-j' + str(multiprocessing.cpu_count()),
+                              'install'])
 
     def name(self):
         return 'build'
