@@ -222,10 +222,6 @@ def execute_doc(args):
     check_call(['make', 'doc'], cwd=path.build)
 
 
-def execute_install(args):
-    check_call(['make', 'install'], cwd=path.build)
-
-
 def execute_package(args):
     tar_name = 'libhutznohmd-' + args.library_version + '.tar.gz'
     src_tar_name = 'libhutznohmd_src-' + args.library_version + '.tar.gz'
@@ -309,7 +305,6 @@ def execute_all(args):
     execute_update(args)
     execute_build(args)
     execute_test(args)
-    execute_install(args)
     execute_package(args)
 
 
@@ -330,8 +325,6 @@ if __name__ == "__main__":
                            help='generates lcov output'),
         'doc': Struct(fn=execute_doc,
                       help='compiles documentation'),
-        'install': Struct(fn=execute_install,
-                          help='installs the targets'),
         'package': Struct(fn=execute_package,
                           help='builds packages'),
         'sonar': Struct(fn=execute_sonar,
