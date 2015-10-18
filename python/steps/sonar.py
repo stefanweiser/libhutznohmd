@@ -39,12 +39,13 @@ class SonarStep(object):
         evalfile.eval_file(os.path.join(path.project, 'sonar-cxx.template'),
                            sonar_property_file)
 
-        args.log_obj.info('Download sonar-runner...')
-        sonar_runner_path = os.path.join(path.cmake, 'sonar-runner.jar')
+        sonar_runner_path = os.path.join(path.download, 'sonar-runner.jar')
         if not os.path.exists(sonar_runner_path):
+            args.log_obj.info('Download sonar-runner...')
+            os.makedirs(path.download, exist_ok=True)
             httpget.http_get(path.sonar_runner_url, sonar_runner_path)
 
-        args.log_obj.info('Download informations onto sonar...')
+        args.log_obj.info('Upload informations onto sonar...')
         subprocess.check_call(['java', '-classpath', sonar_runner_path,
                                '-Drunner.home=build', '-Dproject.home=.',
                                '-Dproject.settings=' + sonar_property_file,

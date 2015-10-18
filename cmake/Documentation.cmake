@@ -18,18 +18,8 @@
 IF(NOT MINIMAL)
     FIND_PACKAGE(Doxygen 1.8.8)
     FIND_PACKAGE(Java 1.7 COMPONENTS Runtime)
-    FIND_PACKAGE(Wget 1.13)
 
-    IF(Java_Runtime_FOUND AND DOXYGEN_FOUND AND WGET_FOUND)
-        SET(PLANTUML_JAR "${CMAKE_CURRENT_BINARY_DIR}/plantuml.jar")
-        IF(NOT EXISTS "${PLANTUML_JAR}")
-            MESSAGE(STATUS "Downloading PlantUML")
-            EXECUTE_PROCESS(COMMAND "${WGET_EXECUTABLE}"
-                            "http://sourceforge.net/projects/plantuml/files/plantuml.jar/download"
-                            "-O" "${PLANTUML_JAR}" OUTPUT_QUIET ERROR_QUIET)
-            MESSAGE(STATUS "Downloading PlantUML - done")
-        ENDIF()
-
+    IF(Java_Runtime_FOUND AND DOXYGEN_FOUND)
         ADD_CUSTOM_TARGET(doc
                           "${Doxygen_DOXYGEN_EXECUTABLE}"
                           "${PROJECT_SOURCE_DIR}/Doxyfile"
