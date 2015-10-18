@@ -1,22 +1,36 @@
 #!/usr/bin/env python3
 
-from os import devnull
-from re import compile, MULTILINE
-from subprocess import DEVNULL, PIPE, Popen
+import os
+import re
+import subprocess
 
 
-def get_cxx11_release_include_list():
-    process = Popen(['g++', '-std=c++11', '-DNDEBUG', '-E', '-x', 'c++',
-                     devnull, '-v'], stdout=DEVNULL, stderr=PIPE)
+def get_include_list(additional_arguments):
+    ''' returns a list of include paths of g++ '''
+
+    process = subprocess.Popen(['g++'] + additional_arguments +
+                               ['-E', '-x', 'c++', os.devnull, '-v'],
+                               stdout=subprocess.DEVNULL,
+                               stderr=subprocess.PIPE)
+
+    # retrieving output
     output = process.communicate()[1].decode('utf8')
-    result = compile(r'^ (.*)$', MULTILINE).findall(output)
+
+    # find all lines starting with a space and skip the first one
+    result = re.compile(r'^ (.*)$', re.MULTILINE).findall(output)
     result.pop(0)
+
+    # this is the default include list of g++
     return result
 
 
-def write_cxx11_release_defines(filename):
+def write_defines(filename, additional_arguments):
+    ''' writes all g++'s standard defines into a file '''
+
+    # write them directly into file
     output_file = open(filename, 'w')
-    process = Popen(['g++', '-std=c++11', '-DNDEBUG', '-dM', '-E', '-x', 'c++',
-                     devnull], stdout=output_file)
+    process = subprocess.Popen(['g++'] + additional_arguments +
+                               ['-dM', '-E', '-x', 'c++', os.devnull],
+                               stdout=output_file)
     process.wait()
     output_file.close()

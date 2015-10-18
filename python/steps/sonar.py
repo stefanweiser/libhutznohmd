@@ -27,15 +27,15 @@ class SonarStep(object):
         os.environ['reports_path'] = os.path.join('build', 'reports')
         os.environ['version'] = '0.0.1'
         os.environ['include_paths'] = \
-            ','.join(compiler.get_cxx11_release_include_list())
+            ','.join(compiler.get_include_list(['-std=c++11', '-DNDEBUG']))
 
         paths.renew_folder(path.cmake)
         self.coveragestep.execute(args, path)
         self.checkstep.execute(args, path)
 
         args.log_obj.info('Generate sonar configuration...')
-        compiler.write_cxx11_release_defines(os.path.join(path.cmake,
-                                                          'defines.h'))
+        compiler.write_defines(os.path.join(path.cmake, 'defines.h'),
+                               ['-std=c++11', '-DNDEBUG'])
         sonar_property_file = os.path.join('build', 'sonar.properties')
         evalfile.eval_file(os.path.join(path.project, 'sonar-cxx.template'),
                            sonar_property_file)
