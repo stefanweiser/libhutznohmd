@@ -79,12 +79,12 @@ def main(log_obj):
     args = parse_arguments(step_list)
     args.log_obj = log_obj
 
-    subprocess.check_call(['cmake', os.path.dirname(path.build),
-                           '-DCMAKE_INSTALL_PREFIX=' + path.install,
-                           '-DCMAKE_BUILD_TYPE=' + args.target,
-                           '-DMINIMAL=' + str(args.minimal),
-                           '-DLIBRARY_VERSION=' + args.library_version],
-                          cwd=path.build)
+    args.log_obj.info('Bootstrap project...')
+    args.log_obj.execute(['cmake', os.path.join(path.build, '..', '..'),
+                          '-DCMAKE_INSTALL_PREFIX=' + path.install,
+                          '-DCMAKE_BUILD_TYPE=' + args.target,
+                          '-DMINIMAL=' + str(args.minimal),
+                          '-DLIBRARY_VERSION=' + args.library_version])
 
     try:
         step_dict = dict([(x.name(), x) for x in step_list])

@@ -16,11 +16,10 @@ class Paths(object):
     def __init__(self, project_path):
         """ Initializes all paths """
         self.project = project_path
-        self.build = os.path.join(self.project, 'build')
-        self.install = os.path.join(self.project, 'install')
-        self.reports = os.path.join(self.build, 'reports')
-        self.coverage = os.path.join(self.build, 'coverage')
-        self.log_file = os.path.join(self.build, 'build.log')
+        self.build = os.path.join(self.project, 'build', 'build')
+        self.install = os.path.join(self.project, 'build', 'install')
+        self.reports = os.path.join(self.project, 'build', 'reports')
+        self.coverage = os.path.join(self.project, 'build', 'coverage')
         self.unittest_bin = os.path.join(self.build, 'src', 'unittest',
                                          'unittest_hutznohmd')
         self.integrationtest_bin = os.path.join(self.build, 'src',
