@@ -142,6 +142,16 @@ def execute_check(args):
                 build_path, rats_report_file, args.log_file)
     rats_report_file.close()
 
+    print(colorize('[INFO]: Run vera++...', GREEN))
+    vera_cmd_line = ['vera++', '--checkstyle-report',
+                     os.path.join(reports_path, 'vera++.xml')]
+    for dirpath, dirnames, files in os.walk(os.path.join(project_path, 'src',
+                                                         'lib')):
+        for file in files:
+            if file.endswith('.cpp') or file.endswith('.hpp'):
+                vera_cmd_line.append(os.path.join(dirpath, file));
+    log_process(vera_cmd_line, build_path, args.log_file, args.log_file)
+
     args.log_file.close()
     print(colorize('[INFO]: All report files were written to ' + reports_path +
                    '.', GREEN))
