@@ -28,11 +28,13 @@ class CoverageStep(object):
                              filename_base + '.txt', '--root', path.project,
                              '--verbose'], working_dir=path.cmake)
 
-            # Remove unwanted coverage data from xml output.
+            # Remove unwanted coverage data from xml output and remove module
+            # path from paths.
             tree = xml.etree.ElementTree.ElementTree()
             tree.parse(filename_base + '.xml')
             packages_node = tree.find('.//packages')
             if packages_node is not None:
+                source_path = os.path.join(path.project, 'src')
                 packages = packages_node.findall('package')
                 for package in packages:
                     name = package.attrib['name']
@@ -42,6 +44,14 @@ class CoverageStep(object):
                        name.startswith('src.integrationtest') or \
                        name.startswith('src.unittest'):
                         packages_node.remove(package)
+                    else:
+                        classes = package.findall('.//class')
+                        for cl in classes:
+                            filename = os.path.join(path.project,
+                                                    cl.attrib['filename'])
+                            filename = os.path.realpath(filename)
+                            filename = os.path.relpath(filename, source_path)
+                            cl.attrib['filename'] = filename
                 tree.write(filename_base + '.xml')
 
         args.log_obj.info('Generate coverage information...')
