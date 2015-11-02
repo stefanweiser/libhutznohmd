@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
+''' contains the bootstrap step '''
+
 import os
 
 
 class BootstrapStep(object):
-    ''' Bootstraps the cmake target. '''
+    ''' bootstraps the cmake target '''
 
     @staticmethod
     def execute(args, path):
@@ -21,11 +23,11 @@ class BootstrapStep(object):
     @staticmethod
     def name():
         # not intended to be used directly
-        assert(False)
+        assert False
         return ''
 
     @staticmethod
     def help():
         # not intended to be used directly
-        assert(False)
+        assert False
         return ''

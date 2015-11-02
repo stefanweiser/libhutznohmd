@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 
+''' contains the program's main '''
+
 import argparse
 import os
 import subprocess
 import steps
 
 
-def parse_arguments(steps):
+def parse_arguments(configured_steps):
     ''' parses the arguments and returns a structure with those '''
 
     parser = argparse.ArgumentParser()
@@ -39,7 +41,7 @@ def parse_arguments(steps):
 
     # add step argument for each
     step_group = parser.add_argument_group('build steps')
-    for step in steps:
+    for step in configured_steps:
         step_group.add_argument(step.name(),
                                 action='store_true',
                                 help=step.help())
@@ -49,6 +51,8 @@ def parse_arguments(steps):
 
 
 def main(path, log_obj):
+    ''' program's main function '''
+
     # collect available steps in a list
     step_list = (steps.build.BuildStep(), steps.check.CheckStep(),
                  steps.clean.CleanStep(), steps.coverage.CoverageStep(),

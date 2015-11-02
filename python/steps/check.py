@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+''' contains the check step '''
+
 import logger
 import os
 import paths
@@ -8,7 +10,7 @@ import xml.etree.ElementTree
 
 
 class CheckStep(object):
-    ''' Generates reports of all checking tools. '''
+    ''' generates reports of all checking tools '''
 
     def __init__(self):
         self.buildstep = steps.build.BuildStep()
@@ -22,11 +24,11 @@ class CheckStep(object):
         args.log_obj.execute(['valgrind', '--leak-check=full', '--xml=yes',
                               '--xml-file=' + os.path.join(path.reports,
                                                            'valgrind.xml'),
-                             path.unittest_bin])
+                              path.unittest_bin])
 
         args.log_obj.info('Run unittest...')
         args.log_obj.execute([path.unittest_bin, '--gtest_output=xml:' +
-                             os.path.join(path.reports, 'unittest.xml')])
+                              os.path.join(path.reports, 'unittest.xml')])
 
         src_path = os.path.join(path.project, 'src')
         integrationtest_path = os.path.join(src_path, 'integrationtest')
@@ -34,8 +36,8 @@ class CheckStep(object):
         unittest_path = os.path.join(src_path, 'unittest')
         gmock_path = os.path.join(path.project, 'gmock')
 
-        # Running cppcheck with all the code, to improve 'unused function'
-        # warnings.
+        # running cppcheck with all the code, to improve 'unused function'
+        # warnings
         args.log_obj.info('Run cppcheck...')
         cppcheck_report_filename = os.path.join(path.reports, 'cppcheck.xml')
         cppcheck_report_file = open(cppcheck_report_filename, 'w')
@@ -58,7 +60,7 @@ class CheckStep(object):
                              cppcheck_report_file, logger.STDERR)
         cppcheck_report_file.close()
 
-        # Remove unwanted coverage data from xml output.
+        # remove unwanted coverage data from xml output
         tree = xml.etree.ElementTree.ElementTree()
         tree.parse(cppcheck_report_filename)
         errors_node = tree.find('.//errors')
@@ -66,14 +68,14 @@ class CheckStep(object):
             errors = errors_node.findall('error')
             for error in errors:
                 location = error.find('location')
-                file = location.attrib['file']
-                if file.startswith(os.path.join(path.project, 'build')) or \
-                   file.startswith(os.path.join(path.project, 'gmock')) or \
-                   file.startswith(os.path.join(path.project,
+                attr = location.attrib['file']
+                if attr.startswith(os.path.join(path.project, 'build')) or \
+                   attr.startswith(os.path.join(path.project, 'gmock')) or \
+                   attr.startswith(os.path.join(path.project,
                                                 'src/examples')) or \
-                   file.startswith(os.path.join(path.project,
+                   attr.startswith(os.path.join(path.project,
                                                 'src/integrationtest')) or \
-                   file.startswith(os.path.join(path.project, 'src/unittest')):
+                   attr.startswith(os.path.join(path.project, 'src/unittest')):
                     errors_node.remove(error)
             tree.write(cppcheck_report_filename)
 
@@ -86,10 +88,10 @@ class CheckStep(object):
         args.log_obj.info('Run vera++...')
         vera_cmd_line = ['vera++', '--checkstyle-report',
                          os.path.join(path.reports, 'vera++.xml')]
-        for dirpath, dirnames, files in os.walk(lib_path):
-            for file in files:
-                if file.endswith('.cpp') or file.endswith('.hpp'):
-                    vera_cmd_line.append(os.path.join(dirpath, file))
+        for dirpath, _, files in os.walk(lib_path):
+            for f in files:
+                if f.endswith('.cpp') or f.endswith('.hpp'):
+                    vera_cmd_line.append(os.path.join(dirpath, f))
         args.log_obj.execute(vera_cmd_line)
 
         args.log_obj.info('Run All report files were written to ' +

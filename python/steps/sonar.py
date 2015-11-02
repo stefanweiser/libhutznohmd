@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+''' contains the sonar step '''
+
 import evalfile
 import compiler
 import httpget
@@ -11,7 +13,7 @@ import subprocess
 
 
 class SonarStep(object):
-    ''' Updates sonarqube data. '''
+    ''' updates sonarqube data '''
 
     def __init__(self):
         self.checkstep = steps.check.CheckStep()

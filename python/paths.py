@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+''' path related functionality '''
+
 import os
 import shutil
 

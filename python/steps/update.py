@@ -1,21 +1,25 @@
 #!/usr/bin/env python3
 
+''' contains the update step '''
+
 import os
 
 
 class UpdateStep(object):
-    ''' Updates source file lists. '''
+    ''' updates source file lists '''
 
     @staticmethod
     def execute(args, path):
         def update_single_path(rootpath):
+            ''' updates file list of a single file '''
+
             found_files = []
 
-            for dirpath, dirnames, files in os.walk(rootpath):
-                for file in files:
-                    if file.endswith(".cpp") or file.endswith(".cc") or \
-                       file.endswith(".hpp") or file.endswith(".h"):
-                        filepath = os.path.relpath(os.path.join(dirpath, file),
+            for dirpath, _, files in os.walk(rootpath):
+                for f in files:
+                    if f.endswith(".cpp") or f.endswith(".cc") or \
+                       f.endswith(".hpp") or f.endswith(".h"):
+                        filepath = os.path.relpath(os.path.join(dirpath, f),
                                                    rootpath)
                         found_files.append(filepath)
 
@@ -25,10 +29,9 @@ class UpdateStep(object):
             files_txt.write('\n'. join(found_files))
 
         args.log_obj.info('Update source file lists...')
-        for dirpath, dirnames, files in os.walk(os.path.join(path.project,
-                                                             'src')):
-            for file in files:
-                if file == 'files.txt':
+        for dirpath, _, files in os.walk(os.path.join(path.project, 'src')):
+            for f in files:
+                if f == 'files.txt':
                     update_single_path(dirpath)
 
     @staticmethod

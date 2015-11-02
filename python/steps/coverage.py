@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+''' contains the coverage step '''
+
 import os
 import paths
 import steps.build
@@ -7,7 +9,7 @@ import xml.etree.ElementTree
 
 
 class CoverageStep(object):
-    ''' Generates reports of all checking tools. '''
+    ''' generates reports of all checking tools '''
 
     def __init__(self):
         self.buildstep = steps.build.BuildStep()
@@ -17,6 +19,8 @@ class CoverageStep(object):
         self.buildstep.execute(args, path)
 
         def run_gcovr(output_filename_base, log_obj):
+            ''' runs gcovr and fixes the xml output '''
+
             filename_base = os.path.join(path.coverage, output_filename_base)
             log_obj.execute(['gcovr', '--branches', '--xml', '--output=' +
                              filename_base + '.xml', '--root', path.project,
@@ -28,8 +32,18 @@ class CoverageStep(object):
                              filename_base + '.txt', '--root', path.project,
                              '--verbose'], working_dir=path.cmake)
 
-            # Remove unwanted coverage data from xml output and remove module
-            # path from paths.
+            def update_filename(classes):
+                ''' updates the filename of all classes '''
+
+                for cl in classes:
+                    filename = os.path.join(path.project,
+                                            cl.attrib['filename'])
+                    filename = os.path.realpath(filename)
+                    filename = os.path.relpath(filename, source_path)
+                    cl.attrib['filename'] = filename
+
+            # remove unwanted coverage data from xml output and remove module
+            # path from paths
             tree = xml.etree.ElementTree.ElementTree()
             tree.parse(filename_base + '.xml')
             packages_node = tree.find('.//packages')
@@ -45,13 +59,7 @@ class CoverageStep(object):
                        name.startswith('src.unittest'):
                         packages_node.remove(package)
                     else:
-                        classes = package.findall('.//class')
-                        for cl in classes:
-                            filename = os.path.join(path.project,
-                                                    cl.attrib['filename'])
-                            filename = os.path.realpath(filename)
-                            filename = os.path.relpath(filename, source_path)
-                            cl.attrib['filename'] = filename
+                        update_filename(package.findall('.//class'))
                 tree.write(filename_base + '.xml')
 
         args.log_obj.info('Generate coverage information...')

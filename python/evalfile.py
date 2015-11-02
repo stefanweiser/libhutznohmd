@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+''' evaluates a file using all environment variables '''
+
 import os
 import re
 
@@ -14,12 +16,12 @@ def eval_line(line):
         go_on = False
 
         # a replacement string is e.g. ${PWD}
-        m = re.match('[^$]*\${([_a-zA-Z][_a-zA-Z0-9]*)}.*', result)
+        m = re.match('[^$]*\\${([_a-zA-Z][_a-zA-Z0-9]*)}.*', result)
         if m is not None:
             for g in m.groups():
                 # replace this string, which itself could contain a replacement
                 # string, that gets replaced in the next iteration
-                result = re.sub('(\${' + g + '})', os.getenv(g, ''), result)
+                result = re.sub('(\\${' + g + '})', os.getenv(g, ''), result)
                 go_on = True
 
     # return the completely "replaced" string

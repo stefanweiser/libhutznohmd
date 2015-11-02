@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 
+''' contains the build step '''
+
 import multiprocessing
 import steps.bootstrap
 import steps.update
 
 
 class BuildStep(object):
-    ''' Builds the software. '''
+    ''' builds the software '''
 
     def __init__(self):
         self.bootstrapstep = steps.bootstrap.BootstrapStep()

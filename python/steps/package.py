@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
+''' contains the package step '''
+
 import os
 import steps.test
 
 
 class PackageStep(object):
-    ''' Generates packages for source and binaries. '''
+    ''' generates packages for source and binaries '''
 
     def __init__(self):
         self.teststep = steps.test.TestStep()

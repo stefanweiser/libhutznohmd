@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
+''' contains the doc step '''
+
 import httpget
 import os
 
 
 class DocStep(object):
-    ''' Generates the project's doxygen documentation. '''
+    ''' generates the project's doxygen documentation '''
 
     @staticmethod
     def execute(args, path):

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+''' contains compiler related functions '''
+
 import os
 import re
 import subprocess

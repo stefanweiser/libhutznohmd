@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
+''' contains the test step '''
+
 import steps.build
 
 
 class TestStep(object):
-    ''' Runs unit and integration tests. '''
+    ''' runs unit and integration tests '''
 
     def __init__(self):
         self.buildstep = steps.build.BuildStep()

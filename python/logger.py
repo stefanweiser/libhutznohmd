@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+''' contains a logger '''
+
 import os
 import subprocess
 import sys
@@ -15,8 +17,9 @@ class Logger(object):
     def __init__(self, logfile_path):
         ''' sets the path to the log file, but actually does not open it '''
         working_dir = os.path.dirname(logfile_path)
-        assert(os.path.exists(working_dir))
+        assert os.path.exists(working_dir)
 
+        self.logfile_handle = None
         self.logfile_path = logfile_path
         self.working_dir = working_dir
         print(termcolor.colorize('[INFO]: Write log to ' + self.logfile_path,
@@ -32,21 +35,21 @@ class Logger(object):
         ''' closes the log file '''
         self.logfile_handle.close()
 
-    def info(self, str):
+    def info(self, msg):
         ''' prints a message as info to the log file and the console '''
-        print(termcolor.colorize('> ' + str, termcolor.GREEN))
-        self.logfile_handle.write('[INFO]: ' + str + '\n')
+        print(termcolor.colorize('> ' + msg, termcolor.GREEN))
+        self.logfile_handle.write('[INFO]: ' + msg + '\n')
 
-    def warning(self, str):
+    def warning(self, msg):
         ''' prints a message as warning to the log file and the console '''
-        print(termcolor.colorize('[WARN]: ' + str, termcolor.RED))
-        self.logfile_handle.write('[WARN]: ' + str + '\n')
+        print(termcolor.colorize('[WARN]: ' + msg, termcolor.RED))
+        self.logfile_handle.write('[WARN]: ' + msg + '\n')
 
-    def failure(self, str):
+    def failure(self, msg):
         ''' prints a message as failure to the log file and the console '''
-        print(termcolor.colorize('[FAIL]: ' + str, termcolor.RED,
+        print(termcolor.colorize('[FAIL]: ' + msg, termcolor.RED,
                                  termcolor.BOLD))
-        self.logfile_handle.write('[FAIL]: ' + str + '\n')
+        self.logfile_handle.write('[FAIL]: ' + msg + '\n')
 
     def execute(self, cmd, out_file=sys.stdout, sink=NONE, working_dir=None):
         ''' executes a command in the current path and writes the output to the

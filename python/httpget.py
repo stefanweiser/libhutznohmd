@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-import urllib.error
-import urllib.request
+''' performs HTTP requests '''
+
+import urllib
 
 
 def http_get(url, filename, attempts=3):
@@ -11,7 +12,7 @@ def http_get(url, filename, attempts=3):
     while attempts > 0:
         try:
             content = urllib.request.urlopen(url, timeout=3).read()
-            f = open(filename, 'b+w')
+            f = open(filename, 'w+b')
             f.write(content)
             f.close()
             attempts = 0

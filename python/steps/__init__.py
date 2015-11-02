@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+''' includes all of the directory '''
+
 import steps.bootstrap # flake8: noqa
 import steps.build # flake8: noqa
 import steps.check # flake8: noqa

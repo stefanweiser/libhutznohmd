@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
+''' contains the clean step '''
+
 import os
 import shutil
 
 
 class CleanStep(object):
-    ''' Cleans the content of the build path. '''
+    ''' cleans the content of the build path '''
 
     @staticmethod
     def execute(args, path):
