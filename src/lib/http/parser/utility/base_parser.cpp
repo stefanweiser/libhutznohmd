@@ -59,7 +59,8 @@ bool base_parser::parse_connection(int32_t& character)
          value_info{"persist", connection_type::KEEP_ALIVE}}};
 
     static const trie<connection_type> t(types, connection_type::ERROR);
-    push_back_string<32> tmp;
+    static const size_t tmp_string_size = 32;
+    push_back_string<tmp_string_size> tmp;
     connection_type connection = t.parse(character, tmp, lexer_);
     if (connection != connection_type::ERROR) {
         connection_ = connection;
@@ -99,8 +100,9 @@ bool base_parser::parse_content_md5(int32_t& character)
     }
 
     std::vector<uint8_t> temp = decode_base64(s);
-    if (temp.size() == 16) {
-        for (size_t i = 0; i < 16; i++) {
+    static const size_t md5_octet_count = 16;
+    if (temp.size() == md5_octet_count) {
+        for (size_t i = 0; i < md5_octet_count; i++) {
             md5_[i] = temp[i];
         }
         has_md5_ = true;

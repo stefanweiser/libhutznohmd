@@ -78,11 +78,14 @@ private:
 
     bool parse_quality_parameter(int32_t& character);
 
+    static const size_t custom_type_size_ = 32;
+    static const size_t custom_subtype_size_ = 64;
+
     const lexer* lexer_;
     media_type_interface::mime_type type_;
     media_type_interface::mime_subtype subtype_;
-    push_back_string<32> custom_type_;
-    push_back_string<64> custom_subtype_;
+    push_back_string<custom_type_size_> custom_type_;
+    push_back_string<custom_subtype_size_> custom_subtype_;
     std::map<std::string, std::string> parameters_;
 
     uint8_t quality_;

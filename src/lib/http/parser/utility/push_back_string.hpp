@@ -188,7 +188,7 @@ template <size_t maximum_size>
 void push_back_string<maximum_size>::need_more_dynamic_memory()
 {
     if (NULL == dynamic_buffer_) {
-        dynamic_size_ = (2 * maximum_size) + 1;
+        dynamic_size_ = (maximum_size + maximum_size) + 1;
         dynamic_buffer_ = static_cast<char_t*>(malloc(dynamic_size_));
         memcpy(dynamic_buffer_, static_buffer_, maximum_size);
     } else {

@@ -55,9 +55,23 @@ public:
                      const lexer& lex) const;
 
 private:
+    static const uint8_t LETTER_CASE_BIT = 0x20U;
+    static const uint8_t INVERSE_LETTER_CASE_BIT =
+        static_cast<uint8_t>(~LETTER_CASE_BIT);
+
     explicit trie(const std::vector<value_info>& values,
                   const std::string& name, const size_t& index,
                   const value_type& default_value);
+
+    static uint8_t make_lower(const uint8_t c)
+    {
+        return c | LETTER_CASE_BIT;
+    }
+
+    static uint8_t make_upper(const uint8_t c)
+    {
+        return c & INVERSE_LETTER_CASE_BIT;
+    }
 
     const bool has_value_;
     const std::string name_;
@@ -148,12 +162,12 @@ trie<value_type>::trie(const std::vector<value_info>& values,
 
             // The trie parsing is case insensitive.
             if (check_range<uint8_t, 'a', 'z'>(c)) {
-                children_[c & 0xDFU] = std::unique_ptr<trie>(new trie(
-                    next_values, name_ + static_cast<char_t>(c & 0xDFU),
+                children_[make_upper(c)] = std::unique_ptr<trie>(new trie(
+                    next_values, name_ + static_cast<char_t>(make_upper(c)),
                     index + 1, default_value));
             } else if (check_range<uint8_t, 'A', 'Z'>(c)) {
-                children_[c | 0x20U] = std::unique_ptr<trie>(new trie(
-                    next_values, name_ + static_cast<char_t>(c | 0x20U),
+                children_[make_lower(c)] = std::unique_ptr<trie>(new trie(
+                    next_values, name_ + static_cast<char_t>(make_lower(c)),
                     index + 1, default_value));
             }
         }

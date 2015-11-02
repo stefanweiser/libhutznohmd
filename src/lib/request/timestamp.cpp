@@ -37,6 +37,7 @@ static const int32_t minutes_per_hour = 60;
 static const int32_t seconds_per_minute = 60;
 static const int32_t begin_of_19_hundrets = 1900;
 static const int32_t end_of_19_hundrets = 1999;
+static const size_t trie_string_max_length = 16;
 
 using weekday_value_type = std::tuple<int8_t, bool>;
 static trie<weekday_value_type> get_weekday_trie(size_t& max_size)
@@ -63,7 +64,8 @@ static trie<weekday_value_type> get_weekday_trie(size_t& max_size)
     for (const std::pair<const char_t* const, weekday_value_type>& pair :
          weekdays) {
         result.insert(pair.first, pair.second);
-        max_size = std::max(max_size, ::strnlen(pair.first, 16));
+        max_size =
+            std::max(max_size, ::strnlen(pair.first, trie_string_max_length));
     }
 
     return result;
@@ -84,7 +86,8 @@ static trie<int32_t> get_month_trie(size_t& max_size)
         std::make_pair("nov", 11), std::make_pair("dec", 12)};
     for (const std::pair<const char_t* const, int32_t>& pair : months) {
         result.insert(pair.first, pair.second);
-        max_size = std::max(max_size, ::strnlen(pair.first, 16));
+        max_size =
+            std::max(max_size, ::strnlen(pair.first, trie_string_max_length));
     }
 
     return result;
@@ -126,8 +129,11 @@ int32_t parse_month(const char_t*& data, size_t& remaining)
 
 bool parse_gmt(const char_t*& data, size_t& remaining)
 {
+    static const size_t max_gmt_length_ = 3;
+
     bool result;
-    if ((remaining >= 3) && (0 == ::strncasecmp(data, "gmt", 3))) {
+    if ((remaining >= max_gmt_length_) &&
+        (0 == ::strncasecmp(data, "gmt", max_gmt_length_))) {
         result = true;
     } else {
         result = false;
