@@ -2,7 +2,8 @@
 
 ''' performs HTTP requests '''
 
-import urllib
+import urllib.request
+import urllib.error
 
 
 def http_get(url, filename, attempts=3):
