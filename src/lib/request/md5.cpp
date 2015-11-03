@@ -16,12 +16,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "md5.hpp"
+
 #include <cassert>
 #include <cmath>
 
-#include <utility/common.hpp>
-
-#include "md5.hpp"
+#include "utility/common.hpp"
 
 namespace hutzn
 {

@@ -19,8 +19,8 @@
 #ifndef LIBHUTZNOHMD_UTILITY_PARSING_HPP
 #define LIBHUTZNOHMD_UTILITY_PARSING_HPP
 
-#include <libhutznohmd/types.hpp>
-#include <utility/select_char_map.hpp>
+#include "libhutznohmd/types.hpp"
+#include "utility/select_char_map.hpp"
 
 namespace hutzn
 {

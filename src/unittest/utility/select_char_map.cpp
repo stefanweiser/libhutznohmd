@@ -19,7 +19,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <utility/select_char_map.hpp>
+#include "utility/select_char_map.hpp"
 
 using namespace testing;
 

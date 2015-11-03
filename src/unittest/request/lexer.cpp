@@ -19,9 +19,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <libhutznohmd/mock_sockets.hpp>
-
-#include <request/lexer.hpp>
+#include "libhutznohmd/mock_sockets.hpp"
+#include "request/lexer.hpp"
 
 using namespace testing;
 

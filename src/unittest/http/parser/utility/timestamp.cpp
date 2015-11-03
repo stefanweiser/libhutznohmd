@@ -19,7 +19,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <http/parser/utility/timestamp.hpp>
+#include "http/parser/utility/timestamp.hpp"
 
 using namespace testing;
 

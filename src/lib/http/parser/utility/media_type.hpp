@@ -23,10 +23,9 @@
 #include <cstring>
 #include <map>
 
-#include <http/parser/utility/lexer.hpp>
-#include <http/parser/utility/push_back_string.hpp>
-
-#include <hutzn.hpp>
+#include "http/parser/utility/lexer.hpp"
+#include "http/parser/utility/push_back_string.hpp"
+#include "hutzn.hpp"
 
 namespace hutzn
 {

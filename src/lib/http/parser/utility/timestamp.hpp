@@ -21,9 +21,8 @@
 
 #include <cstddef>
 
-#include <http/parser/utility/lexer.hpp>
-
-#include <utility/date_calculation.hpp>
+#include "http/parser/utility/lexer.hpp"
+#include "utility/date_calculation.hpp"
 
 namespace hutzn
 {

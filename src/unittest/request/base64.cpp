@@ -19,9 +19,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <request/base64.hpp>
-
-#include <hutzn.hpp>
+#include "hutzn.hpp"
+#include "request/base64.hpp"
 
 using namespace testing;
 

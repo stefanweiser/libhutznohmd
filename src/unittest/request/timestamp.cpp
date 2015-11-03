@@ -19,7 +19,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <request/timestamp.hpp>
+#include "request/timestamp.hpp"
 
 using namespace testing;
 

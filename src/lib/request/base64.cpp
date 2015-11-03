@@ -16,11 +16,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "base64.hpp"
+
 #include <array>
 
-#include <utility/common.hpp>
-
-#include "base64.hpp"
+#include "utility/common.hpp"
 
 namespace hutzn
 {

@@ -19,7 +19,7 @@
 #ifndef LIBHUTZNOHMD_UTILITY_DATE_CALCULATION_HPP
 #define LIBHUTZNOHMD_UTILITY_DATE_CALCULATION_HPP
 
-#include <libhutznohmd/types.hpp>
+#include "libhutznohmd/types.hpp"
 
 namespace hutzn
 {

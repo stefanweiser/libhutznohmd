@@ -19,10 +19,9 @@
 #include <fstream>
 #include <iostream>
 
-#include <libhutznohmd/types.hpp>
-
-#include <hutzn.hpp>
-#include <http/request.hpp>
+#include "http/request.hpp"
+#include "hutzn.hpp"
+#include "libhutznohmd/types.hpp"
 
 class connection : public hutzn::connection_interface
 {

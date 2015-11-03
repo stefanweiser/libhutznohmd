@@ -19,11 +19,11 @@
 #ifndef LIBHUTZNOHMD_HTTP_PARSER_RESPONSE_PARSER_HPP
 #define LIBHUTZNOHMD_HTTP_PARSER_RESPONSE_PARSER_HPP
 
-#include <http/parser/utility/anonymous_int_function.hpp>
-#include <http/parser/utility/base_parser.hpp>
-#include <http/parser/utility/lexer.hpp>
-#include <http/parser/utility/media_type.hpp>
-#include <http/parser/utility/push_back_string.hpp>
+#include "http/parser/utility/anonymous_int_function.hpp"
+#include "http/parser/utility/base_parser.hpp"
+#include "http/parser/utility/lexer.hpp"
+#include "http/parser/utility/media_type.hpp"
+#include "http/parser/utility/push_back_string.hpp"
 
 #include <hutzn.hpp>
 

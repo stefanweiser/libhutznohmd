@@ -16,13 +16,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "media_type.hpp"
+
 #include <array>
 
-#include <utility/character_validation.hpp>
-
-#include <http/parser/utility/trie.hpp>
-
-#include "media_type.hpp"
+#include "http/parser/utility/trie.hpp"
+#include "utility/character_validation.hpp"
 
 namespace hutzn
 {

@@ -19,7 +19,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <utility/common.hpp>
+#include "utility/common.hpp"
 
 using namespace testing;
 

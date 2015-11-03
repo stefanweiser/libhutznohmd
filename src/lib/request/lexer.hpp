@@ -19,7 +19,7 @@
 #ifndef LIBHUTZNOHMD_REQUEST_LEXER_HPP
 #define LIBHUTZNOHMD_REQUEST_LEXER_HPP
 
-#include <libhutznohmd/request.hpp>
+#include "libhutznohmd/request.hpp"
 
 namespace hutzn
 {

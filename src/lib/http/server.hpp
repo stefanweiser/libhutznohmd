@@ -24,9 +24,8 @@
 #include <set>
 #include <thread>
 
-#include <socket/listener.hpp>
-
-#include <hutzn.hpp>
+#include "hutzn.hpp"
+#include "socket/listener.hpp"
 
 namespace hutzn
 {

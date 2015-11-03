@@ -21,9 +21,8 @@
 
 #include <memory>
 
-#include <libhutznohmd/demux.hpp>
-
-#include <demux/disconnect_interface.hpp>
+#include "demux/disconnect_interface.hpp"
+#include "libhutznohmd/demux.hpp"
 
 namespace hutzn
 {

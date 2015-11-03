@@ -21,7 +21,7 @@
 
 #include <gmock/gmock.h>
 
-#include <hutzn.hpp>
+#include "hutzn.hpp"
 
 namespace hutzn
 {

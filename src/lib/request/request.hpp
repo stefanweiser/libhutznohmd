@@ -21,11 +21,10 @@
 
 #include <map>
 
-#include <libhutznohmd/request.hpp>
-
-#include <request/lexer.hpp>
-#include <request/mime_handler.hpp>
-#include <request/uri.hpp>
+#include "libhutznohmd/request.hpp"
+#include "request/lexer.hpp"
+#include "request/mime_handler.hpp"
+#include "request/uri.hpp"
 
 namespace hutzn
 {

@@ -16,6 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "listener.hpp"
+
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -24,10 +26,8 @@
 
 #include <cassert>
 
-#include <socket/connection.hpp>
-#include <socket/utility.hpp>
-
-#include "listener.hpp"
+#include "socket/connection.hpp"
+#include "socket/utility.hpp"
 
 namespace hutzn
 {

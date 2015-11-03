@@ -16,12 +16,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <memory>
-
-#include <http/parser/utility/media_type.hpp>
+#include "http/parser/utility/media_type.hpp"
 
 using namespace testing;
 

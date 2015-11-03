@@ -16,12 +16,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "demultiplexer.hpp"
+
 #include <cassert>
 
-#include <demux/demultiplex_handler.hpp>
-#include <demux/request_handler_holder.hpp>
-
-#include "demultiplexer.hpp"
+#include "demux/demultiplex_handler.hpp"
+#include "demux/request_handler_holder.hpp"
 
 namespace hutzn
 {

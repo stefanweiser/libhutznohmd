@@ -16,14 +16,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "request.hpp"
+
 #include <algorithm>
 #include <cctype>
 #include <iterator>
 #include <set>
 
-#include <request/md5.hpp>
-
-#include "request.hpp"
+#include "request/md5.hpp"
 
 namespace hutzn
 {

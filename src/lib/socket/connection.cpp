@@ -16,13 +16,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "connection.hpp"
+
 #include <algorithm>
 #include <cassert>
 #include <string>
 
-#include <socket/utility.hpp>
-
-#include "connection.hpp"
+#include "socket/utility.hpp"
 
 namespace hutzn
 {

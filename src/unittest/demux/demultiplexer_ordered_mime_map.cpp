@@ -19,8 +19,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <libhutznohmd/mock_request.hpp>
-#include <demux/demultiplexer_ordered_mime_map.hpp>
+#include "demux/demultiplexer_ordered_mime_map.hpp"
+#include "libhutznohmd/mock_request.hpp"
 
 using namespace testing;
 

@@ -22,9 +22,8 @@
 #include <array>
 #include <cassert>
 
-#include <libhutznohmd/types.hpp>
-
-#include <utility/common.hpp>
+#include "libhutznohmd/types.hpp"
+#include "utility/common.hpp"
 
 namespace hutzn
 {

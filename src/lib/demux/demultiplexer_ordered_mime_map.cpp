@@ -16,10 +16,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "demultiplexer_ordered_mime_map.hpp"
+
 #include <algorithm>
 #include <cassert>
-
-#include "demultiplexer_ordered_mime_map.hpp"
 
 namespace hutzn
 {

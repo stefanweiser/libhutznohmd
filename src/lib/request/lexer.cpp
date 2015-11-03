@@ -16,9 +16,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <cassert>
-
 #include "lexer.hpp"
+
+#include <cassert>
 
 namespace hutzn
 {

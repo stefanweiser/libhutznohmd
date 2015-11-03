@@ -16,14 +16,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "utility.hpp"
+
 #include <netinet/in.h>
-#include <sys/socket.h>
 #include <sys/poll.h>
+#include <sys/socket.h>
 #include <unistd.h>
 
 #include <system_error>
-
-#include "utility.hpp"
 
 namespace hutzn
 {

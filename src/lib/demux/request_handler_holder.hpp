@@ -21,9 +21,8 @@
 
 #include <memory>
 
-#include <libhutznohmd/demux.hpp>
-
-#include <demux/usage_interface.hpp>
+#include "demux/usage_interface.hpp"
+#include "libhutznohmd/demux.hpp"
 
 namespace hutzn
 {

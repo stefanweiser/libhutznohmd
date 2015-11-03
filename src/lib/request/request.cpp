@@ -16,16 +16,16 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "request.hpp"
+
 #include <cassert>
 #include <cstring>
 #include <limits>
 
-#include <request/mime_handler.hpp>
-#include <request/timestamp.hpp>
-#include <utility/parsing.hpp>
-#include <utility/trie.hpp>
-
-#include "request.hpp"
+#include "request/mime_handler.hpp"
+#include "request/timestamp.hpp"
+#include "utility/parsing.hpp"
+#include "utility/trie.hpp"
 
 namespace hutzn
 {

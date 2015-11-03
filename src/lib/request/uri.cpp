@@ -16,12 +16,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <utility/character_validation.hpp>
-#include <utility/parsing.hpp>
-#include <utility/select_char_map.hpp>
-#include <utility/trie.hpp>
-
 #include "uri.hpp"
+
+#include "utility/character_validation.hpp"
+#include "utility/parsing.hpp"
+#include "utility/select_char_map.hpp"
+#include "utility/trie.hpp"
 
 namespace hutzn
 {

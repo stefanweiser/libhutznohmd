@@ -23,7 +23,7 @@
 #include <cstdint>
 #include <vector>
 
-#include <libhutznohmd/types.hpp>
+#include "libhutznohmd/types.hpp"
 
 namespace hutzn
 {

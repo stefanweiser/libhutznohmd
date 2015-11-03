@@ -21,7 +21,7 @@
 
 #include <gmock/gmock.h>
 
-#include <demux/disconnect_interface.hpp>
+#include "demux/disconnect_interface.hpp"
 
 namespace hutzn
 {

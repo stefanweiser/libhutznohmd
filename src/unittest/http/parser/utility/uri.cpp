@@ -16,12 +16,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <memory>
-
-#include <http/parser/utility/uri.hpp>
+#include "http/parser/utility/uri.hpp"
 
 using namespace testing;
 

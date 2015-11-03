@@ -19,7 +19,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <utility/trie.hpp>
+#include "utility/trie.hpp"
 
 using namespace testing;
 

@@ -16,15 +16,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "timestamp.hpp"
+
 #include <cstring>
 
-#include <utility/common.hpp>
-#include <utility/date_calculation.hpp>
-#include <utility/parsing.hpp>
-#include <utility/select_char_map.hpp>
-#include <utility/trie.hpp>
-
-#include "timestamp.hpp"
+#include "utility/common.hpp"
+#include "utility/date_calculation.hpp"
+#include "utility/parsing.hpp"
+#include "utility/select_char_map.hpp"
+#include "utility/trie.hpp"
 
 namespace hutzn
 {

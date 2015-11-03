@@ -19,7 +19,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <http/parser/utility/lexer.hpp>
+#include "http/parser/utility/lexer.hpp"
 
 using namespace testing;
 

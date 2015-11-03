@@ -21,9 +21,8 @@
 
 #include <mutex>
 
-#include <libhutznohmd/request.hpp>
-
-#include <request/mime_data.hpp>
+#include "libhutznohmd/request.hpp"
+#include "request/mime_data.hpp"
 
 namespace hutzn
 {

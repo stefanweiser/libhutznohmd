@@ -16,15 +16,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "response_parser.hpp"
+
 #include <cmath>
 #include <cstdint>
 #include <limits>
 #include <map>
 
-#include <http/parser/utility/timestamp.hpp>
-#include <http/parser/utility/trie.hpp>
-
-#include "response_parser.hpp"
+#include "http/parser/utility/timestamp.hpp"
+#include "http/parser/utility/trie.hpp"
 
 namespace hutzn
 {

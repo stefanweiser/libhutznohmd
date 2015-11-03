@@ -22,7 +22,7 @@
 #include <map>
 #include <string>
 
-#include <utility/trie.hpp>
+#include "utility/trie.hpp"
 
 namespace hutzn
 {

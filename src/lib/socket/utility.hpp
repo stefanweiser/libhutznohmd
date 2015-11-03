@@ -19,9 +19,9 @@
 #ifndef LIBHUTZNOHMD_SOCKET_UTILITY_HPP
 #define LIBHUTZNOHMD_SOCKET_UTILITY_HPP
 
-#include <string>
-
 #include <arpa/inet.h>
+
+#include <string>
 
 namespace hutzn
 {

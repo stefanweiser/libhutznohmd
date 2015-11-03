@@ -16,11 +16,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "date_calculation.hpp"
+
 #include <array>
 
-#include <utility/common.hpp>
-
-#include "date_calculation.hpp"
+#include "utility/common.hpp"
 
 namespace hutzn
 {

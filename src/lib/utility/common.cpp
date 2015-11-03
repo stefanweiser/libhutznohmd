@@ -16,9 +16,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <utility/character_validation.hpp>
-
 #include "common.hpp"
+
+#include "utility/character_validation.hpp"
 
 namespace hutzn
 {

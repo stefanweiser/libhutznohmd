@@ -23,13 +23,11 @@
 #include <mutex>
 #include <condition_variable>
 
-#include <libhutznohmd/demux.hpp>
-
-#include <request/mime_handler.hpp>
-#include <demux/demultiplexer_ordered_mime_map.hpp>
-
-#include <demux/disconnect_interface.hpp>
-#include <demux/usage_interface.hpp>
+#include "demux/demultiplexer_ordered_mime_map.hpp"
+#include "demux/disconnect_interface.hpp"
+#include "demux/usage_interface.hpp"
+#include "libhutznohmd/demux.hpp"
+#include "request/mime_handler.hpp"
 
 namespace hutzn
 {

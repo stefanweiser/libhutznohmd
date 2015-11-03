@@ -16,13 +16,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "response.hpp"
+
 #include <algorithm>
 #include <cctype>
 #include <iterator>
 #include <set>
 #include <sstream>
-
-#include "response.hpp"
 
 namespace hutzn
 {

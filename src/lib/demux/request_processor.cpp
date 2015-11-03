@@ -16,11 +16,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "request_processor.hpp"
+
 #include <cassert>
 
-#include <demux/error_handler.hpp>
-
-#include "request_processor.hpp"
+#include "demux/error_handler.hpp"
 
 namespace hutzn
 {

@@ -16,11 +16,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#include "uri.hpp"
+
 #include <limits>
 
-#include <http/parser/utility/trie.hpp>
-
-#include "uri.hpp"
+#include "http/parser/utility/trie.hpp"
 
 namespace hutzn
 {

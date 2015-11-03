@@ -19,15 +19,13 @@
 #ifndef LIBHUTZNOHMD_HTTP_PARSER_UTILITY_BASE_PARSER_HPP
 #define LIBHUTZNOHMD_HTTP_PARSER_UTILITY_BASE_PARSER_HPP
 
-#include <http/parser/utility/anonymous_int_function.hpp>
-#include <http/parser/utility/lexer.hpp>
-#include <http/parser/utility/media_type.hpp>
-#include <http/parser/utility/push_back_string.hpp>
-#include <http/parser/utility/trie.hpp>
-
-#include <request/md5.hpp>
-
-#include <hutzn.hpp>
+#include "http/parser/utility/anonymous_int_function.hpp"
+#include "http/parser/utility/lexer.hpp"
+#include "http/parser/utility/media_type.hpp"
+#include "http/parser/utility/push_back_string.hpp"
+#include "http/parser/utility/trie.hpp"
+#include "hutzn.hpp"
+#include "request/md5.hpp"
 
 namespace hutzn
 {

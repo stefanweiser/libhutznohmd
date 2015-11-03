@@ -21,9 +21,8 @@
 
 #include <memory>
 
-#include <libhutznohmd/demux.hpp>
-
-#include <demux/reset_error_handler_interface.hpp>
+#include "demux/reset_error_handler_interface.hpp"
+#include "libhutznohmd/demux.hpp"
 
 namespace hutzn
 {

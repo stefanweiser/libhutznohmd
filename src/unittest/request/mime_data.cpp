@@ -19,8 +19,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <libhutznohmd/request.hpp>
-#include <request/mime_data.hpp>
+#include "libhutznohmd/request.hpp"
+#include "request/mime_data.hpp"
 
 using namespace testing;
 

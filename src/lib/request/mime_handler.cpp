@@ -16,9 +16,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <utility/select_char_map.hpp>
-
 #include "mime_handler.hpp"
+
+#include "utility/select_char_map.hpp"
 
 namespace hutzn
 {

@@ -24,7 +24,7 @@
 #include <limits>
 #include <type_traits>
 
-#include <libhutznohmd/types.hpp>
+#include "libhutznohmd/types.hpp"
 
 namespace hutzn
 {

@@ -19,7 +19,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <utility/character_validation.hpp>
+#include "utility/character_validation.hpp"
 
 using namespace testing;
 

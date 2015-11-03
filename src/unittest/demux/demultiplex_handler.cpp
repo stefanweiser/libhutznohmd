@@ -19,8 +19,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <demux/mock_disconnect_interface.hpp>
-#include <demux/demultiplex_handler.hpp>
+#include "demux/demultiplex_handler.hpp"
+#include "demux/mock_disconnect_interface.hpp"
 
 using namespace testing;
 

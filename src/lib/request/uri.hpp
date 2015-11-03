@@ -19,7 +19,7 @@
 #ifndef LIBHUTZNOHMD_REQUEST_URI_HPP
 #define LIBHUTZNOHMD_REQUEST_URI_HPP
 
-#include <hutzn.hpp>
+#include "hutzn.hpp"
 
 namespace hutzn
 {

@@ -19,8 +19,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <http/server.hpp>
-#include <socket/connection.hpp>
+#include "http/server.hpp"
+#include "socket/connection.hpp"
 
 using namespace testing;
 

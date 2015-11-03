@@ -16,10 +16,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <http/parser/utility/trie.hpp>
-#include <utility/common.hpp>
-
 #include "timestamp.hpp"
+
+#include "http/parser/utility/trie.hpp"
+#include "utility/common.hpp"
 
 namespace hutzn
 {

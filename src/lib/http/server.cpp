@@ -16,10 +16,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <http/request.hpp>
-#include <http/response.hpp>
-
 #include "server.hpp"
+
+#include "http/request.hpp"
+#include "http/response.hpp"
 
 namespace hutzn
 {

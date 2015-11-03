@@ -19,7 +19,7 @@
 #ifndef LIBHUTZNOHMD_DEMUX_DISCONNECT_INTERFACE_HPP
 #define LIBHUTZNOHMD_DEMUX_DISCONNECT_INTERFACE_HPP
 
-#include <libhutznohmd/demux.hpp>
+#include "libhutznohmd/demux.hpp"
 
 namespace hutzn
 {

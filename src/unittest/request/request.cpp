@@ -19,9 +19,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <libhutznohmd/mock_sockets.hpp>
-
-#include <request/request.hpp>
+#include "libhutznohmd/mock_sockets.hpp"
+#include "request/request.hpp"
 
 using namespace testing;
 
