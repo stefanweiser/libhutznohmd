@@ -38,14 +38,24 @@ public:
     explicit request_processor(const demux_query_pointer& query_interface,
                                const uint64_t& connection_timeout_in_sec);
 
+    //! @copydoc request_processor_interface::handle_one_request()
     bool handle_one_request(block_device_interface& device) const override;
+
+    //! @copydoc request_processor_interface::set_error_handler()
     handler_pointer set_error_handler(
         const http_status_code& code,
         const error_handler_callback& fn) override;
 
+    //! @copydoc reset_error_handler_interface::reset_error_handler()
     void reset_error_handler(const http_status_code& code) override;
+
+    //! @copydoc reset_error_handler_interface::disable()
     void disable(const http_status_code& code) override;
+
+    //! @copydoc reset_error_handler_interface::enable()
     void enable(const http_status_code& code) override;
+
+    //! @copydoc reset_error_handler_interface::is_enabled()
     bool is_enabled(const http_status_code& code) const override;
 
 private:

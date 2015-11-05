@@ -33,9 +33,16 @@ public:
     explicit error_handler(reset_error_handler_interface& request_processor,
                            const http_status_code& code);
 
+    //! @copydoc handler_interface::~handler_interface()
     ~error_handler(void) noexcept(true) override;
+
+    //! @copydoc handler_interface::disable()
     void disable(void) override;
+
+    //! @copydoc handler_interface::enable()
     void enable(void) override;
+
+    //! @copydoc handler_interface::is_enabled()
     bool is_enabled(void) const override;
 
 private:

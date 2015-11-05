@@ -35,6 +35,7 @@ public:
                                     const request_handler_callback& callback);
     ~request_handler_holder(void) noexcept(true);
 
+    //! @copydoc request_handler_holder_interface::call()
     http_status_code call(request_interface& request,
                           response_interface& response) override;
 

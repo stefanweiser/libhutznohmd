@@ -47,19 +47,42 @@ class demultiplexer : public demux_interface,
 public:
     explicit demultiplexer(void);
 
+    //! @copydoc demux_query_interface::determine_request_handler()
     request_handler_holder_pointer determine_request_handler(
         const request_interface& request) override;
+
+    //! @copydoc demux_interface::connect()
     handler_pointer connect(const request_handler_id& id,
                             const request_handler_callback& fn) override;
+
+    //! @copydoc disconnect_interface::disconnect()
     void disconnect(const request_handler_id& id) override;
+
+    //! @copydoc disconnect_interface::disable()
     void disable(const request_handler_id& id) override;
+
+    //! @copydoc disconnect_interface::enable()
     void enable(const request_handler_id& id) override;
+
+    //! @copydoc disconnect_interface::is_enabled()
     bool is_enabled(const request_handler_id& id) const override;
+
+    //! @copydoc demux_interface::register_mime_type()
     mime_type register_mime_type(const std::string& type) override;
+
+    //! @copydoc demux_interface::register_mime_subtype()
     mime_subtype register_mime_subtype(const std::string& subtype) override;
+
+    //! @copydoc demux_interface::unregister_mime_type()
     bool unregister_mime_type(const mime_type& type) override;
+
+    //! @copydoc demux_interface::unregister_mime_subtype()
     bool unregister_mime_subtype(const mime_subtype& subtype) override;
+
+    //! @copydoc usage_interface::increase_usage_counter()
     void increase_usage_counter(const request_handler_id& id) override;
+
+    //! @copydoc usage_interface::decrease_usage_counter()
     void decrease_usage_counter(const request_handler_id& id) override;
 
 private:

@@ -29,16 +29,36 @@
 namespace hutzn
 {
 
+//! Defines the kind of the header.
 enum class header_key : int8_t {
+    //! Defines a customized kind that must contain the concrete string.
     CUSTOM = -1,
+
+    //! Connection kind.
     CONNECTION,
+
+    //! Content-Length kind.
     CONTENT_LENGTH,
+
+    //! Connection-Type kind.
     CONTENT_TYPE,
+
+    //! Date kind.
     DATE,
+
+    //! Expect kind.
     EXPECT,
+
+    //! From kind.
     FROM,
+
+    //! Referer kind.
     REFERER,
+
+    //! User-Agent kind.
     USER_AGENT,
+
+    //! Number of concrete header kinds.
     SIZE
 };
 
