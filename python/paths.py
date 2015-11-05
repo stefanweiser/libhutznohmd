@@ -23,6 +23,7 @@ class Paths(object):
         self.project = project_path
         self.build = os.path.join(self.project, 'build')
         self.cmake = os.path.join(self.build, 'cmake')
+        self.documentation = os.path.join(self.build, 'documentation')
         self.download = os.path.join(self.build, 'download')
         self.install = os.path.join(self.build, 'install')
         self.reports = os.path.join(self.build, 'reports')

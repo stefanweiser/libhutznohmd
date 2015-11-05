@@ -67,16 +67,8 @@ class CoverageStep(object):
         paths.renew_folder(path.coverage)
         args.log_obj.info('Collect unittest\'s coverage information...')
         args.log_obj.execute([path.unittest_bin])
+        args.log_obj.execute([path.integrationtest_bin])
         run_gcovr('unittest', args.log_obj)
-
-        args.log_obj.info('Collect integrationtest\'s coverage information...')
-        args.log_obj.execute([path.integrationtest_bin])
-        run_gcovr('integrationtest', args.log_obj)
-
-        args.log_obj.info('Collect overall coverage information...')
-        args.log_obj.execute([path.unittest_bin])
-        args.log_obj.execute([path.integrationtest_bin])
-        run_gcovr('overall', args.log_obj)
 
     @staticmethod
     def name():

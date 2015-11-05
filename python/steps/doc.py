@@ -17,9 +17,11 @@ class DocStep(object):
             os.makedirs(path.download, exist_ok=True)
             httpget.http_get(path.plantuml_url, plantuml_path)
 
+        os.makedirs(path.documentation, exist_ok=True)
         args.log_obj.info('Generate documentation...')
         args.log_obj.execute(['doxygen', os.path.join(path.project,
-                                                      'Doxyfile')])
+                                                      'Doxyfile')],
+                             working_dir=path.documentation)
 
     @staticmethod
     def name():
