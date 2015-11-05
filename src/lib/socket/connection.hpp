@@ -41,16 +41,16 @@ public:
     //! @copydoc connection_interface::close()
     void close(void) override;
 
-    //! @copydoc block_device_interface::receive(buffer&, const size_t&)
+    //! @copydoc block_device_interface::receive()
     bool receive(buffer& data, const size_t& max_size) override;
 
-    //! @copydoc block_device_interface::send(const buffer&)
+    //! @copydoc block_device_interface::send()
     bool send(const buffer& data) override;
 
-    //! @copydoc block_device_interface::send(const std::string&)
+    //! @copydoc block_device_interface::send()
     bool send(const std::string& data) override;
 
-    //! @copydoc connection_interface::set_lingering_timeout(const int32_t&)
+    //! @copydoc connection_interface::set_lingering_timeout()
     bool set_lingering_timeout(const int32_t& timeout) override;
 
     bool connect(void);

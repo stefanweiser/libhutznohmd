@@ -52,23 +52,58 @@ public:
 
     bool parse(const mime_handler& handler);
 
+    //! @copydoc request_interface::fetch_content()
     void fetch_content(void) override;
+
+    //! @copydoc request_interface::method()
     http_verb method(void) const override;
+
+    //! @copydoc request_interface::path()
     const char_t* path(void) const override;
+
+    //! @copydoc request_interface::host()
     const char_t* host(void) const override;
+
+    //! @copydoc request_interface::query()
     const char_t* query(const char_t* const key) const override;
+
+    //! @copydoc request_interface::fragment()
     const char_t* fragment(void) const override;
+
+    //! @copydoc request_interface::version()
     http_version version(void) const override;
+
+    //! @copydoc request_interface::header_value()
     const char_t* header_value(const char_t* const name) const override;
+
+    //! @copydoc request_interface::keeps_connection()
     bool keeps_connection(void) const override;
+
+    //! @copydoc request_interface::date()
     time_t date(void) const override;
+
+    //! @copydoc request_interface::content()
     const void* content(void) const override;
+
+    //! @copydoc request_interface::content_length()
     size_t content_length(void) const override;
+
+    //! @copydoc request_interface::content_type()
     mime content_type(void) const override;
+
+    //! @copydoc request_interface::accept()
     bool accept(void*& handle, mime& type) const override;
+
+    //! @copydoc request_interface::expect()
     http_expectation expect(void) const override;
+
+    //! @copydoc request_interface::from()
     const char_t* from(void) const override;
+
+    //! @copydoc request_interface::referer()
     const char_t* referer(void) const override;
+
+    //! @copydoc request_interface::user_agent()
     const char_t* user_agent(void) const override;
 
 private:

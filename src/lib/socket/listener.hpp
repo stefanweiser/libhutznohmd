@@ -47,7 +47,7 @@ public:
     //! @copydoc listener_interface::stop()
     void stop(void) override;
 
-    //! @copydoc listener_interface::set_lingering_timeout(const int32_t&)
+    //! @copydoc listener_interface::set_lingering_timeout()
     bool set_lingering_timeout(const int32_t& timeout) override;
 
 private:
