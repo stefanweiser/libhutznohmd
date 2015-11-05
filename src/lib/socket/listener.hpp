@@ -34,10 +34,20 @@ public:
                                             const uint16_t& port);
 
     explicit listener(const int32_t& socket);
+
+    //! @copydoc listener_interface::~listener_interface()
     ~listener(void) override;
+
+    //! @copydoc listener_interface::accept()
     connection_pointer accept(void) const override;
+
+    //! @copydoc listener_interface::listening()
     bool listening(void) const override;
+
+    //! @copydoc listener_interface::stop()
     void stop(void) override;
+
+    //! @copydoc listener_interface::set_lingering_timeout(const int32_t&)
     bool set_lingering_timeout(const int32_t& timeout) override;
 
 private:
