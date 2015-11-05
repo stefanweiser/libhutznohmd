@@ -53,7 +53,6 @@ private:
         std::map<http_status_code, std::tuple<error_handler_callback, bool>>;
 
     demux_query_pointer demultiplexer_;
-    // uint64_t connection_timeout_in_sec_;
 
     mutable std::mutex error_handler_mutex_;
     error_handler_map error_handlers_;
