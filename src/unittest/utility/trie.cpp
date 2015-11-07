@@ -102,7 +102,18 @@ TEST(trie, find_part_strings)
     EXPECT_TRUE(t.erase(str2.c_str()));
 }
 
-TEST(trie, case_sensitive_reinsert)
+TEST(trie, erase_partial_strings_reversely)
+{
+    trie_ t{false};
+    static const std::string str1 = "abc";
+    static const std::string str2 = "abcdef";
+    EXPECT_TRUE(t.insert(str2.c_str(), 2));
+    EXPECT_TRUE(t.insert(str1.c_str(), 1));
+    EXPECT_TRUE(t.erase(str2.c_str()));
+    EXPECT_TRUE(t.erase(str1.c_str()));
+}
+
+TEST(trie, case_insensitive_reinsert)
 {
     trie_ t{true};
     static const std::string str1 = "abc";
@@ -113,7 +124,7 @@ TEST(trie, case_sensitive_reinsert)
     EXPECT_FALSE(t.erase(str1.c_str()));
 }
 
-TEST(trie, case_sensitive_find)
+TEST(trie, case_insensitive_find)
 {
     trie_ t{true};
     static const std::string str1 = "abc";
@@ -129,7 +140,7 @@ TEST(trie, case_sensitive_find)
     EXPECT_TRUE(t.erase(str1.c_str()));
 }
 
-TEST(trie, case_sensitive_special_characters)
+TEST(trie, case_insensitive_special_characters)
 {
     trie_ t{true};
     static const std::string str1 = "a b c";
