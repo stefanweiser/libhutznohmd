@@ -210,20 +210,6 @@ const char_t* uri::fragment(void) const
     return fragment_;
 }
 
-uri::first_pass_data::first_pass_data(void)
-    : scheme(NULL)
-    , scheme_size(0)
-    , authority(NULL)
-    , authority_size(0)
-    , path(NULL)
-    , path_size(0)
-    , query(NULL)
-    , query_size(0)
-    , fragment(NULL)
-    , fragment_size(0)
-{
-}
-
 bool uri::parse_1st_pass(char_t*& raw, size_t& remaining, first_pass_data& data,
                          bool skip_scheme)
 {
