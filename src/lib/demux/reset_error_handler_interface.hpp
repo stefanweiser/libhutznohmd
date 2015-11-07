@@ -24,14 +24,26 @@
 namespace hutzn
 {
 
+//! @brief Provides methods to reset an error handler.
+//!
+//! Contains methods for a control an error handler, which means enabling,
+//! disabling and reseting an error handler.
 class reset_error_handler_interface
 {
 public:
+    //! Does nothing.
     virtual ~reset_error_handler_interface(void);
 
+    //! Resets an error handler.
     virtual void reset_error_handler(const http_status_code& code) = 0;
+
+    //! Disables an error handler.
     virtual void disable(const http_status_code& code) = 0;
+
+    //! Enables an error handler.
     virtual void enable(const http_status_code& code) = 0;
+
+    //! Returns true if an error handler is enabled.
     virtual bool is_enabled(const http_status_code& code) const = 0;
 };
 

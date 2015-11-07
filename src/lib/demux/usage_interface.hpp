@@ -33,6 +33,7 @@ namespace hutzn
 class usage_interface
 {
 public:
+    //! Does nothing.
     virtual ~usage_interface(void);
 
     //! Sets the handler with the given id as used. Note, that this method is

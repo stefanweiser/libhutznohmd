@@ -33,6 +33,9 @@ public:
     explicit request_handler_holder(usage_interface& demuxer,
                                     const request_handler_id& id,
                                     const request_handler_callback& callback);
+
+    //! @copydoc request_handler_holder_interface::
+    //!          ~request_handler_holder_interface()
     ~request_handler_holder(void) noexcept(true);
 
     //! @copydoc request_handler_holder_interface::call()

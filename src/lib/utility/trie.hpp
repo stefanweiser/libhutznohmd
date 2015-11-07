@@ -138,10 +138,12 @@ public:
                 children_[static_cast<uint8_t>(*curr)];
             if (child != NULL) {
                 result = child->find(original, curr + 1, remaining - 1);
+                // If there is no longer match, take this result.
                 if (0 == result.used_size()) {
                     result = make_find_result(original, curr);
                 }
             } else {
+                // Found a matching result.
                 result = make_find_result(original, curr);
             }
         }
@@ -154,7 +156,7 @@ public:
                 const bool is_case_insensitive)
     {
         bool result = false;
-        if (static_cast<uint8_t>(*token) == 0) {
+        if ((*token) == '\0') {
 
             // Check if node is not already possessed.
             if (!has_value_) {
@@ -175,7 +177,7 @@ public:
     bool erase(const char_t* token, const bool is_case_insensitive)
     {
         bool result = false;
-        if (static_cast<uint8_t>(*token) == 0) {
+        if ((*token) == '\0') {
 
             // Check if node is possessed.
             if (has_value_) {
@@ -230,8 +232,10 @@ private:
         trie_node** result = NULL;
         if (is_case_insensitive) {
             if (check_range<uint8_t, 'A', 'Z'>(c)) {
+                // Upper case.
                 result = &(children_[make_lower(c)]);
             } else if (check_range<uint8_t, 'a', 'z'>(c)) {
+                // Lower case.
                 result = &(children_[make_upper(c)]);
             } else {
                 // Character is no letter.
@@ -246,6 +250,7 @@ private:
         const uint8_t c = static_cast<uint8_t>(*token);
         const char_t* next = token + 1;
 
+        // Add usage reference.
         trie_node*& child = children_[c];
         if (NULL == child) {
             add_child_reference(child, new trie_node());
@@ -253,6 +258,7 @@ private:
 
         bool result = false;
         if (child->insert(next, value, is_case_insensitive)) {
+            // Add a reference also to the pendant trie node.
             trie_node** other = get_pendant(c, is_case_insensitive);
             if ((other != NULL) && (NULL == (*other))) {
                 add_child_reference(*other, child);
@@ -269,12 +275,17 @@ private:
 
         bool result = false;
         trie_node*& child = children_[c];
+
         if ((child != NULL) && (child->erase(next, is_case_insensitive))) {
 
             if ((0 == child->used_children_) && (!child->has_value_)) {
+
+                // Delete the child and reduce the number of used children.
                 delete child;
                 remove_child_reference(child);
 
+                // In case of case insensitivity, reduce the number of used
+                // children of the pendant trie node also.
                 trie_node** other = get_pendant(c, is_case_insensitive);
                 if ((other != NULL) && ((*other) != NULL)) {
                     remove_child_reference(*other);
@@ -331,6 +342,8 @@ public:
         , root_node_(rhs.root_node_)
     {
         assert(count_ != NULL);
+
+        // Increases the counter.
         (*count_)++;
     }
 
@@ -339,9 +352,13 @@ public:
     trie& operator=(const trie& rhs)
     {
         is_case_insensitive_ = rhs.is_case_insensitive_;
+
+        // Copies the pointer and the counter.
         count_ = rhs.count_;
         root_node_ = rhs.root_node_;
         assert(count_ != NULL);
+
+        // Increases the counter.
         (*count_)++;
 
         return *this;
@@ -351,10 +368,12 @@ public:
     //! count drops to zero.
     ~trie()
     {
+        // Decrease the reference counter.
         (*count_)--;
 
         // Delete the content, when reference counter is zero.
         if (*count_ == 0) {
+            // Delete the counter and the data structure as well.
             delete root_node_;
             delete count_;
         }
