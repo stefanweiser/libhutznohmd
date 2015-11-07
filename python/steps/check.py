@@ -60,24 +60,7 @@ class CheckStep(object):
                              cppcheck_report_file, logger.STDERR)
         cppcheck_report_file.close()
 
-        # remove unwanted coverage data from xml output
-        tree = xml.etree.ElementTree.ElementTree()
-        tree.parse(cppcheck_report_filename)
-        errors_node = tree.find('.//errors')
-        if errors_node is not None:
-            errors = errors_node.findall('error')
-            for error in errors:
-                location = error.find('location')
-                attr = location.attrib['file']
-                if attr.startswith(os.path.join(path.project, 'build')) or \
-                   attr.startswith(os.path.join(path.project, 'gmock')) or \
-                   attr.startswith(os.path.join(path.project,
-                                                'src/examples')) or \
-                   attr.startswith(os.path.join(path.project,
-                                                'src/integrationtest')) or \
-                   attr.startswith(os.path.join(path.project, 'src/unittest')):
-                    errors_node.remove(error)
-            tree.write(cppcheck_report_filename)
+        CheckStep.__fix_cppcheck_report(cppcheck_report_filename, path.project)
 
         args.log_obj.info('Run rats...')
         rats_report_file = open(os.path.join(path.reports, 'rats.xml'), 'w+')
@@ -96,6 +79,28 @@ class CheckStep(object):
 
         args.log_obj.info('Run All report files were written to ' +
                           path.reports + '.')
+
+    @staticmethod
+    def __fix_cppcheck_report(cppcheck_report_filename, project_path):
+        ''' remove unwanted coverage data from xml output '''
+
+        tree = xml.etree.ElementTree.ElementTree()
+        tree.parse(cppcheck_report_filename)
+        errors_node = tree.find('.//errors')
+        if errors_node is not None:
+            errors = errors_node.findall('error')
+            for error in errors:
+                location = error.find('location')
+                attr = location.attrib['file']
+                if attr.startswith(os.path.join(project_path, 'build')) or \
+                   attr.startswith(os.path.join(project_path, 'gmock')) or \
+                   attr.startswith(os.path.join(project_path,
+                                                'src/examples')) or \
+                   attr.startswith(os.path.join(project_path,
+                                                'src/integrationtest')) or \
+                   attr.startswith(os.path.join(project_path, 'src/unittest')):
+                    errors_node.remove(error)
+            tree.write(cppcheck_report_filename)
 
     @staticmethod
     def name():
