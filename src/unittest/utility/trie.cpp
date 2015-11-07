@@ -72,6 +72,7 @@ TEST(trie, find_divergent_strings)
     EXPECT_EQ(make_trie_find_result(str2.length(), 2), t.find("defg", 4));
     EXPECT_EQ(make_trie_find_result(str2.length(), 2), t.find("defgh", 6));
     EXPECT_FALSE(t.erase("abcdef"));
+    EXPECT_FALSE(t.erase("abC"));
     EXPECT_TRUE(t.erase("abc"));
     EXPECT_FALSE(t.erase("defghi"));
     EXPECT_TRUE(t.erase("def"));
@@ -111,6 +112,17 @@ TEST(trie, erase_partial_strings_reversely)
     EXPECT_TRUE(t.insert(str1.c_str(), 1));
     EXPECT_TRUE(t.erase(str2.c_str()));
     EXPECT_TRUE(t.erase(str1.c_str()));
+}
+
+TEST(trie, erase_partial_strings)
+{
+    trie_ t{false};
+    static const std::string str1 = "abc";
+    static const std::string str2 = "abC";
+    EXPECT_TRUE(t.insert(str1.c_str(), 1));
+    EXPECT_TRUE(t.insert(str2.c_str(), 2));
+    EXPECT_TRUE(t.erase(str1.c_str()));
+    EXPECT_TRUE(t.erase(str2.c_str()));
 }
 
 TEST(trie, case_insensitive_reinsert)
