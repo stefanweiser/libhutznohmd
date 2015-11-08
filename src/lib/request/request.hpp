@@ -62,6 +62,7 @@ enum class header_key : int8_t {
     SIZE
 };
 
+//! @copydoc request_interface
 class request : public request_interface
 {
 public:

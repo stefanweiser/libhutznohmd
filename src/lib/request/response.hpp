@@ -24,6 +24,7 @@
 namespace hutzn
 {
 
+//! @copydoc response_interface
 class response : public response_interface
 {
 public:

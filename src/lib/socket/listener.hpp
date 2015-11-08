@@ -27,12 +27,15 @@
 namespace hutzn
 {
 
+//! @copydoc listener_interface
 class listener : public listener_interface
 {
 public:
+    //! Creates a new listener by host and port and returns it.
     static std::shared_ptr<listener> create(const std::string& host,
                                             const uint16_t& port);
 
+    //! Constructs a listener. Used to bind to a socket.
     explicit listener(const int32_t& socket);
 
     //! @copydoc listener_interface::~listener_interface()

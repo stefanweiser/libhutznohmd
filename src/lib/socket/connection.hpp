@@ -26,13 +26,18 @@
 namespace hutzn
 {
 
+//! @copydoc connection_interface
 class connection : public connection_interface
 {
 public:
+    //! Creates a new connection by host and port and returns it.
     static std::shared_ptr<connection> create(const std::string& host,
                                               const uint16_t& port);
 
+    //! Constructs a connection. Used to accept a connection as a server.
     explicit connection(const int32_t& socket);
+
+    //! Constructs a connection. Used to connect as a client to a server.
     explicit connection(const int32_t& socket, const sockaddr_in& address);
 
     //! @copydoc connection_interface::~connection_interface()
@@ -53,6 +58,8 @@ public:
     //! @copydoc connection_interface::set_lingering_timeout()
     bool set_lingering_timeout(const int32_t& timeout) override;
 
+    //! Connects to the server and returns true, when the connection was
+    //! established successfully.
     bool connect(void);
 
 private:
