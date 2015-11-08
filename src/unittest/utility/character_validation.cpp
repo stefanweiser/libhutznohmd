@@ -95,44 +95,6 @@ TEST(character_handling, from_hex)
     }
 }
 
-TEST(character_handling, reserved_uri_character)
-{
-    std::array<bool, NUMBER_OF_VALUES_PER_BYTE> validity_map;
-    std::fill(validity_map.begin(), validity_map.end(), false);
-
-    // Possible of a URI in general.
-    validity_map[' '] = true;
-    validity_map['\n'] = true;
-
-    // gen-delims
-    validity_map[':'] = true;
-    validity_map['/'] = true;
-    validity_map['?'] = true;
-    validity_map['#'] = true;
-    validity_map['['] = true;
-    validity_map[']'] = true;
-    validity_map['@'] = true;
-
-    // sub-delims
-    validity_map['!'] = true;
-    validity_map['$'] = true;
-    validity_map['&'] = true;
-    validity_map['\''] = true;
-    validity_map['('] = true;
-    validity_map[')'] = true;
-    validity_map['*'] = true;
-    validity_map['+'] = true;
-    validity_map[','] = true;
-    validity_map[';'] = true;
-    validity_map['='] = true;
-
-    // Check
-    for (size_t i = 0; i < validity_map.size(); i++) {
-        EXPECT_EQ(validity_map[i],
-                  is_reserved_uri_character(static_cast<uint8_t>(i)));
-    }
-}
-
 TEST(character_handling, uri_authority_characters)
 {
     std::array<bool, NUMBER_OF_VALUES_PER_BYTE> validity_map;

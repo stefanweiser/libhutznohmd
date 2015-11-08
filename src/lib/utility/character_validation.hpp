@@ -64,21 +64,6 @@ inline char_t from_hex(const char_t c)
     return hex_conversion_map[static_cast<uint8_t>(c)];
 }
 
-//! @brief Returns true, if the given character is a reserved character for a
-//! URI.
-inline bool is_reserved_uri_character(const uint8_t c)
-{
-    static const std::array<char_t, NUMBER_OF_VALUES_PER_BYTE>
-        uri_reserved_validity_map = {
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1,
-             1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0,
-             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
-    return uri_reserved_validity_map[c] != 0;
-}
-
 //! @brief Returns true, if the given character is a valid character for a URI
 //! authority without the '@' symbol.
 inline bool is_valid_uri_authority_character(uint8_t c)
