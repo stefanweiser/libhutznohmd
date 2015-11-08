@@ -18,6 +18,8 @@
 
 #include "uri.hpp"
 
+#include <tuple>
+
 #include "utility/character_validation.hpp"
 #include "utility/parsing.hpp"
 #include "utility/select_char_map.hpp"

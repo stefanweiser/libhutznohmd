@@ -19,7 +19,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "hutzn.hpp"
 #include "request/md5.hpp"
 
 using namespace testing;

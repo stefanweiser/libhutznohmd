@@ -21,7 +21,7 @@
 
 #include <gmock/gmock.h>
 
-#include "hutzn.hpp"
+#include "libhutznohmd/demux.hpp"
 
 namespace hutzn
 {

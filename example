@@ -11,7 +11,6 @@ if __name__ == "__main__":
     parser.add_argument('example', nargs='+')
     example_group = parser.add_argument_group(
         'examples')
-    example_group.add_argument('http', action='store_true')
     example_group.add_argument('socket', action='store_true')
     example_group.add_argument('performance', action='store_true')
     args = parser.parse_args()

@@ -2,17 +2,6 @@ demux/demultiplex_handler.cpp
 demux/demultiplexer.cpp
 demux/demultiplexer_ordered_mime_map.cpp
 demux/mock_disconnect_interface.hpp
-http/parser/request_parser.cpp
-http/parser/response_parser.cpp
-http/parser/utility/lexer.cpp
-http/parser/utility/media_type.cpp
-http/parser/utility/push_back_string.cpp
-http/parser/utility/timestamp.cpp
-http/parser/utility/trie.cpp
-http/parser/utility/uri.cpp
-http/request.cpp
-http/response.cpp
-http/server.cpp
 libhutznohmd/mock_demux.hpp
 libhutznohmd/mock_request.hpp
 libhutznohmd/mock_sockets.hpp
