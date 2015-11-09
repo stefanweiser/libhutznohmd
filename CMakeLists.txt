@@ -27,7 +27,6 @@ SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake"
                       ${CMAKE_MODULE_PATH})
 
 IF(NOT MINIMAL)
-    FIND_PACKAGE(Doxygen 1.8.8)
     FIND_PACKAGE(Java 1.7 COMPONENTS Runtime)
 ENDIF()
 
