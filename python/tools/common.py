@@ -10,7 +10,7 @@ class NotFoundError(Exception):
     ''' thrown when a tool is not found '''
 
     def __init__(self, name):
-        super(Exception, self).__init__()
+        super(NotFoundError, self).__init__()
         self.__name = name
 
     def name(self):
@@ -21,7 +21,7 @@ class VersionTooOldError(Exception):
     ''' thrown when the version number of a tool is too old '''
 
     def __init__(self, name, found_version, min_version):
-        super(Exception, self).__init__()
+        super(VersionTooOldError, self).__init__()
         self.__name = name
         self.__found_version = found_version
         self.__min_version = min_version
