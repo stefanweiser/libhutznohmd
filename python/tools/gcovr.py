@@ -21,7 +21,7 @@ class GcovrTool(object):
 
         # first line of stdout is of interest
         line = out[0].split(b'\n')[0]
-        version_string = re.match(b'^gcovr[\\s]+([\\d]\\.[\\d])',
+        version_string = re.match(b'^gcovr[\\s]+([\\d]+\\.[\\d]+)',
                                   line).groups()[0]
         found_version = [int(d) for d in version_string.split(b'.')]
         tools.common.compare_versions(args, self.__name, found_version,
