@@ -22,9 +22,7 @@ IF(NOT UNIX)
     MESSAGE(FATAL_ERROR "This project supports unixoid systems only.")
 ENDIF()
 
-SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake"
-                      "${PROJECT_SOURCE_DIR}/cmake/packages"
-                      ${CMAKE_MODULE_PATH})
+SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 IF(NOT MINIMAL)
     FIND_PACKAGE(Java 1.7 COMPONENTS Runtime)
