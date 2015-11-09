@@ -6,6 +6,7 @@ import argparse
 import os
 import subprocess
 import steps
+import tools.common
 
 
 def parse_arguments(configured_steps):
@@ -81,5 +82,13 @@ def main(path, log_obj):
             step_dict[step].execute(args, path)
 
     except subprocess.CalledProcessError as e:
-        args.log_obj.fail('<' + ' '.join(e.cmd) + '> failed (exit code ' +
-                          str(e.returncode) + ').')
+        args.log_obj.failure('<' + ' '.join(e.cmd) + '> failed (exit code ' +
+                             str(e.returncode) + ').')
+
+    except tools.common.NotFoundError as e:
+        args.log_obj.failure('The tool ' + e.name() + ' was not found.')
+
+    except tools.common.VersionTooOldError as e:
+        args.log_obj.failure('Expected at least version ' + e.min_version() +
+                             ' of ' + e.name() + ', but found version ' +
+                             e.found_version() + '.')

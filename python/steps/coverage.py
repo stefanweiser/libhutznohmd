@@ -5,6 +5,7 @@
 import os
 import paths
 import steps.build
+import tools.gcovr
 import xml.etree.ElementTree
 
 
@@ -13,22 +14,24 @@ class CoverageStep(object):
 
     def __init__(self):
         self.buildstep = steps.build.BuildStep()
+        self.gcovrtool = tools.gcovr.GcovrTool()
 
     def execute(self, args, path):
         args.target = 'coverage'
+        self.gcovrtool.find(args, [3, 2])
         self.buildstep.execute(args, path)
 
-        def run_gcovr(output_filename_base, log_obj):
+        def run_gcovr(gcovr, output_filename_base, log_obj):
             ''' runs gcovr and fixes the xml output '''
 
             filename_base = os.path.join(path.coverage, output_filename_base)
-            log_obj.execute(['gcovr', '--branches', '--xml', '--output=' +
+            log_obj.execute([gcovr, '--branches', '--xml', '--output=' +
                              filename_base + '.xml', '--root', path.project,
                              '--verbose'], working_dir=path.cmake)
-            log_obj.execute(['gcovr', '--branches', '--html', '--output=' +
+            log_obj.execute([gcovr, '--branches', '--html', '--output=' +
                              filename_base + '.html', '--root', path.project,
                              '--verbose'], working_dir=path.cmake)
-            log_obj.execute(['gcovr', '--delete', '--branches', '--output=' +
+            log_obj.execute([gcovr, '--delete', '--branches', '--output=' +
                              filename_base + '.txt', '--root', path.project,
                              '--verbose'], working_dir=path.cmake)
 
@@ -68,7 +71,7 @@ class CoverageStep(object):
         args.log_obj.info('Collect unittest\'s coverage information...')
         args.log_obj.execute([path.unittest_bin])
         args.log_obj.execute([path.integrationtest_bin])
-        run_gcovr('unittest', args.log_obj)
+        run_gcovr(self.gcovrtool.path(), 'unittest', args.log_obj)
 
     @staticmethod
     def name():
