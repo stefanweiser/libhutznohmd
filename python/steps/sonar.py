@@ -10,6 +10,7 @@ import paths
 import steps.check
 import steps.coverage
 import subprocess
+import tools.jre
 
 
 class SonarStep(object):
@@ -18,8 +19,11 @@ class SonarStep(object):
     def __init__(self):
         self.checkstep = steps.check.CheckStep()
         self.coveragestep = steps.coverage.CoverageStep()
+        self.jretool = tools.jre.JreTool()
 
     def execute(self, args, path):
+        self.jretool.find(args, [1, 7, 0])
+
         os.environ['project_key'] = 'libhutznohmd'
         os.environ['project_name'] = 'libhutznohmd'
         os.environ['project_path'] = path.project
@@ -51,10 +55,11 @@ class SonarStep(object):
             httpget.http_get(path.sonar_runner_url, sonar_runner_path)
 
         args.log_obj.info('Upload informations onto sonar...')
-        subprocess.check_call(['java', '-classpath', sonar_runner_path,
-                               '-Drunner.home=build', '-Dproject.home=.',
-                               '-Dproject.settings=' + sonar_property_file,
-                               'org.sonar.runner.Main'], cwd=path.project)
+        subprocess.check_call([self.jretool.path(), '-classpath',
+                               sonar_runner_path, '-Drunner.home=build',
+                               '-Dproject.home=.', '-Dproject.settings=' +
+                               sonar_property_file, 'org.sonar.runner.Main'],
+                              cwd=path.project)
 
     @staticmethod
     def name():

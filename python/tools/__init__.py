@@ -5,3 +5,4 @@
 import tools.cppcheck # flake8: noqa
 import tools.doxygen # flake8: noqa
 import tools.gcovr # flake8: noqa
+import tools.jre # flake8: noqa

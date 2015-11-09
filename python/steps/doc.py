@@ -5,6 +5,7 @@
 import httpget
 import os
 import tools.doxygen
+import tools.jre
 
 
 class DocStep(object):
@@ -12,9 +13,11 @@ class DocStep(object):
 
     def __init__(self):
         self.doxygentool = tools.doxygen.DoxygenTool()
+        self.jretool = tools.jre.JreTool()
 
     def execute(self, args, path):
         self.doxygentool.find(args, [1, 8, 8])
+        self.jretool.find(args, [1, 7, 0])
         plantuml_path = os.path.join(path.download, 'plantuml.jar')
         if not os.path.exists(plantuml_path):
             args.log_obj.info('Download plantuml...')
