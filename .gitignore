@@ -3,3 +3,4 @@ install
 *.user
 python/__pycache__/**
 python/steps/__pycache__/**
+python/tools/__pycache__/**
