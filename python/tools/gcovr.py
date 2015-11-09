@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-''' contains the bootstrap step '''
+''' contains the gcovr tool '''
 
 import re
 import tools.common
