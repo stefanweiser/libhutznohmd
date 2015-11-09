@@ -6,6 +6,7 @@ import logger
 import os
 import paths
 import steps.build
+import tools.cppcheck
 import xml.etree.ElementTree
 
 
@@ -14,8 +15,10 @@ class CheckStep(object):
 
     def __init__(self):
         self.buildstep = steps.build.BuildStep()
+        self.cppchecktool = tools.cppcheck.CppCheckTool()
 
     def execute(self, args, path):
+        self.cppchecktool.find(args, [1, 70])
         self.buildstep.execute(args, path)
 
         paths.renew_folder(path.reports)
@@ -41,11 +44,11 @@ class CheckStep(object):
         args.log_obj.info('Run cppcheck...')
         cppcheck_report_filename = os.path.join(path.reports, 'cppcheck.xml')
         cppcheck_report_file = open(cppcheck_report_filename, 'w')
-        args.log_obj.execute(['cppcheck', '--xml', '--xml-version=2',
-                              '--force', '--language=c++', '--platform=unix64',
-                              '--enable=all', '--std=c++11',
-                              '--suppress=missingIncludeSystem', '-DNDEBUG',
-                              '-UBOOST_HAS_TR1_TUPLE',
+        args.log_obj.execute([self.cppchecktool.path(), '--xml',
+                              '--xml-version=2', '--force', '--language=c++',
+                              '--platform=unix64', '--enable=all',
+                              '--std=c++11', '--suppress=missingIncludeSystem',
+                              '-DNDEBUG', '-UBOOST_HAS_TR1_TUPLE',
                               '-UGTEST_CREATE_SHARED_LIBRARY',
                               '-UGTEST_LINKED_AS_SHARED_LIBRARY',
                               '-UGTEST_HAS_STRING_PIECE_', '-U_AIX',
