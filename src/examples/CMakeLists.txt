@@ -15,4 +15,5 @@
 # along with the libhutznohmd project; if not, see
 # <http://www.gnu.org/licenses/>.
 
-RECURSIVE_SUBDIRS(performance socket)
+ADD_SUBDIRECTORY(performance)
+ADD_SUBDIRECTORY(socket)

@@ -34,7 +34,6 @@ IF(NOT MINIMAL)
 ENDIF()
 
 INCLUDE(ClangFormat)
-INCLUDE(RecursiveSubdirs)
 INCLUDE(Toolchain)
 
-RECURSIVE_SUBDIRS(src)
+ADD_SUBDIRECTORY(src)

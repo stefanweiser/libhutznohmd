@@ -15,4 +15,7 @@
 # along with the libhutznohmd project; if not, see
 # <http://www.gnu.org/licenses/>.
 
-RECURSIVE_SUBDIRS(examples integrationtest lib unittest)
+ADD_SUBDIRECTORY(examples)
+ADD_SUBDIRECTORY(integrationtest)
+ADD_SUBDIRECTORY(lib)
+ADD_SUBDIRECTORY(unittest)

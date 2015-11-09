@@ -196,5 +196,5 @@ IF(NOT __HAS_ACCEPT__ OR
    NOT __HAS_NTOHS__ OR
    NOT __HAS_NTOHL__ OR
    NOT __HAS_POLL__)
-    MESSAGE(FATAL_ERROR "One functions signature is not as expected.")
+    MESSAGE(FATAL_ERROR "One function signature is not as expected.")
 ENDIF()
