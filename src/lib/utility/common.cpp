@@ -29,35 +29,47 @@ bool is_valid_url_path(const std::string& path)
     bool must_be_a_slash = true;
     bool could_be_a_slash = true;
 
+    // the loop over every character of the path tries to proove, that this is
+    // not a valid path
     bool result = true;
     for (const char_t& c : path) {
+
         if (must_be_a_slash) {
+            // the first character must be a slash
             if (c != slash) {
                 result = false;
                 break;
             }
+
+            // never check this again
             must_be_a_slash = false;
         }
 
+        // it could be a slash, when no slash is directly preceding it
         if (could_be_a_slash) {
             if (c == slash) {
+                // the next character must not be a slash
                 could_be_a_slash = false;
-            } else {
-                could_be_a_slash = true;
             }
         } else {
             if (c == slash) {
+                // when the character is a slash even though is must not be one
+                // this path is not valid
                 result = false;
                 break;
             }
+
+            // the next one could be a slash again
             could_be_a_slash = true;
         }
 
+        // in any case the character must be a valid one
         if (!is_valid_uri_path_character(static_cast<uint8_t>(c))) {
             result = false;
             break;
         }
     }
+
     return result;
 }
 

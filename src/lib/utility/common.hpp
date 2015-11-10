@@ -50,8 +50,10 @@ bool check_range(const type& value)
 
 //! @brief Checks if a given url path is valid.
 //!
-//! The path must begin with a slash and double slashs are not allowed. Returns
-//! true, if the the path is valid.
+//! Note that this method implements just a subset of RFC 3986 chapter 3.3.
+//! @see request_handler_id for more details. Returns true, if the the path is
+//! valid.
+//! @param[in] path The path that gets checked for validity.
 bool is_valid_url_path(const std::string& path);
 
 } // namespace hutzn

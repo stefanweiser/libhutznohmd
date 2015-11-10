@@ -195,12 +195,15 @@ to the requesting client.
 */
 
 //! These informations are used by the demultiplexer to choose the right
-//! handler.
+//! handler. Note that this method implements just a subset of RFC 3986 chapter
+//! 3.3!
 struct request_handler_id
 {
-    //! This string contains only the path of the URL (e.g. "/index.html").
-    //! Scheme, authorization, host, port, queries and fragments are not allowed
-    //! in this path.
+    //! This string contains only the path of the URL (e.g. "/index.html"). This
+    //! path must begin with a slash and must not contain two or more
+    //! consecutive slashes. The valid character is described with the token
+    //! "pchar" in RFC 3986 chapter 3.3. Scheme, authorization, host, port,
+    //! queries and fragments are not allowed in this path.
     std::string path;
 
     //! Only GET, PUT, DELETE and POST are allowed verbs here. All other verbs
