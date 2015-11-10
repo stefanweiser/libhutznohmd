@@ -79,7 +79,7 @@ handler_pointer demultiplexer::connect(const request_handler_id& id,
 
     // Check for invalid uri paths.
     // Check whether the content and accept mime is valid.
-    if (is_valid_uri_path(id.path) &&
+    if (is_valid_url_path(id.path) &&
         mime_handler_.are_two_types_valid(id.content_type, id.accept_type)) {
 
         // Get specific map with handlers.
