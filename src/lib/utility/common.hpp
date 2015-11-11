@@ -24,6 +24,8 @@
 namespace hutzn
 {
 
+//! Base of the decimal system.
+static const uint8_t DECIMAL_BASE = 10;
 
 //! Number of bits per byte.
 static const size_t BITS_PER_BYTE = 8;

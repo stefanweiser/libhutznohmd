@@ -20,6 +20,7 @@
 #define LIBHUTZNOHMD_UTILITY_PARSING_HPP
 
 #include "libhutznohmd/types.hpp"
+#include "utility/common.hpp"
 #include "utility/select_char_map.hpp"
 
 namespace hutzn
@@ -79,7 +80,7 @@ inline int32_t parse_unsigned_integer(const char_t*& data, size_t& size)
             int32_t old = result;
 
             // Shift the new digit in on the right side.
-            result = (result * 10) + (character - '0');
+            result = (result * DECIMAL_BASE) + (character - '0');
 
             // Consume the character.
             data++;
