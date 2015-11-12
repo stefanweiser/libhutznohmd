@@ -64,8 +64,8 @@ TEST(character_handling, to_lower)
 
 TEST(character_handling, from_hex)
 {
-    std::array<char_t, NUMBER_OF_VALUES_PER_BYTE> validity_map;
-    validity_map.fill(-1);
+    std::array<uint8_t, NUMBER_OF_VALUES_PER_BYTE> validity_map;
+    validity_map.fill(0xFF);
     validity_map['0'] = 0;
     validity_map['1'] = 1;
     validity_map['2'] = 2;
