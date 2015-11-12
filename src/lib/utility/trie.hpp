@@ -23,6 +23,7 @@
 #include <cassert>
 
 #include "libhutznohmd/types.hpp"
+#include "utility/character_validation.hpp"
 #include "utility/common.hpp"
 
 namespace hutzn
@@ -193,9 +194,8 @@ public:
     }
 
 private:
-    static const uint8_t LETTER_CASE_BIT = 0x20U;
     static const uint8_t INVERSE_LETTER_CASE_BIT =
-        static_cast<uint8_t>(~LETTER_CASE_BIT);
+        static_cast<uint8_t>(~UPPER_LOWER_CASE_OFFSET);
 
     void clear_right_side_when_equal(const trie_node* const left,
                                      trie_node*& right)
@@ -219,7 +219,7 @@ private:
 
     static uint8_t make_lower(const uint8_t c)
     {
-        return c | LETTER_CASE_BIT;
+        return c | UPPER_LOWER_CASE_OFFSET;
     }
 
     static uint8_t make_upper(const uint8_t c)
