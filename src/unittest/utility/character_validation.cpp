@@ -134,7 +134,8 @@ TEST(character_handling, uri_path_characters)
     // Check
     for (size_t i = 0; i < validity_map.size(); i++) {
         EXPECT_EQ(validity_map[i],
-                  is_valid_uri_path_character(static_cast<uint8_t>(i)));
+                  is_valid_url_path_character(
+                      static_cast<char_t>(static_cast<uint8_t>(i))));
     }
 }
 

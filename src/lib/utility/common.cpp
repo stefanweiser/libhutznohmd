@@ -64,7 +64,7 @@ bool is_valid_url_path(const std::string& path)
         }
 
         // in any case the character must be a valid one
-        if (!is_valid_uri_path_character(static_cast<uint8_t>(c))) {
+        if (!is_valid_url_path_character(c)) {
             result = false;
             break;
         }

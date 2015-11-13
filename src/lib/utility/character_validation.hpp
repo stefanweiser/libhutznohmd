@@ -79,27 +79,49 @@ inline uint8_t from_hex(const char_t c)
          0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
          0xFF, 0xFF, 0xFF, 0xFF}};
 
+    static_assert(sizeof(char_t) == sizeof(uint8_t),
+                  "Sizes of char_t and uint8_t are not equal.");
     return hex_conversion_map[static_cast<uint8_t>(c)];
 }
 
-//! @brief Returns true, if the given character is a valid character for a URI
+//! @brief Returns true, if the given character is a valid character for a URL
 //! path.
-inline bool is_valid_uri_path_character(uint8_t c)
+//!
+//! Valid characters are described in RFC 3986 at chapter 3.3 as token "pchar".
+//! @param[in] c Character to check for validity.
+inline bool is_valid_url_path_character(char_t c)
 {
-    static const std::array<char_t,
+    static const std::array<bool,
                             NUMBER_OF_VALUES_PER_BYTE> uri_path_validity_map = {
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
-         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1,
-         0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-         1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
-    return uri_path_validity_map[c] != 0;
+        {false, false, false, false, false, false, false, false, false, false,
+         false, false, false, false, false, false, false, false, false, false,
+         false, false, false, false, false, false, false, false, false, false,
+         false, false, false, true, false, false, true, true, true, true, true,
+         true, true, true, true, true, true, true, true, true, true, true, true,
+         true, true, true, true, true, true, true, false, true, false, false,
+         true, true, true, true, true, true, true, true, true, true, true, true,
+         true, true, true, true, true, true, true, true, true, true, true, true,
+         true, true, true, true, false, true, false, true, false, true, true,
+         true, true, true, true, true, true, true, true, true, true, true, true,
+         true, true, true, true, true, true, true, true, true, true, true, true,
+         false, false, false, true, false, false, false, false, false, false,
+         false, false, false, false, false, false, false, false, false, false,
+         false, false, false, false, false, false, false, false, false, false,
+         false, false, false, false, false, false, false, false, false, false,
+         false, false, false, false, false, false, false, false, false, false,
+         false, false, false, false, false, false, false, false, false, false,
+         false, false, false, false, false, false, false, false, false, false,
+         false, false, false, false, false, false, false, false, false, false,
+         false, false, false, false, false, false, false, false, false, false,
+         false, false, false, false, false, false, false, false, false, false,
+         false, false, false, false, false, false, false, false, false, false,
+         false, false, false, false, false, false, false, false, false, false,
+         false, false, false, false, false, false, false, false, false, false,
+         false, false, false}};
+
+    static_assert(sizeof(char_t) == sizeof(uint8_t),
+                  "Sizes of char_t and uint8_t are not equal.");
+    return uri_path_validity_map[static_cast<uint8_t>(c)];
 }
 
 } // namespace hutzn
