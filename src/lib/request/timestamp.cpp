@@ -166,7 +166,7 @@ time_t parse_rfc1123_date_time(const char_t*& data, size_t& remaining)
 
     return seconds_since_epoch(
         static_cast<uint32_t>(second_of_day), static_cast<uint8_t>(day),
-        static_cast<uint8_t>(month), static_cast<uint32_t>(year));
+        static_cast<uint8_t>(month), static_cast<uint16_t>(year));
 }
 
 time_t parse_rfc850_date_time(const char_t*& data, size_t& remaining)
@@ -211,7 +211,7 @@ time_t parse_rfc850_date_time(const char_t*& data, size_t& remaining)
 
     return seconds_since_epoch(
         static_cast<uint32_t>(second_of_day), static_cast<uint8_t>(day),
-        static_cast<uint8_t>(month), static_cast<uint32_t>(year));
+        static_cast<uint8_t>(month), static_cast<uint16_t>(year));
 }
 
 time_t parse_asctime_date_time(const char_t*& data, size_t& remaining)
@@ -238,7 +238,7 @@ time_t parse_asctime_date_time(const char_t*& data, size_t& remaining)
 
     return seconds_since_epoch(
         static_cast<uint32_t>(second_of_day), static_cast<uint8_t>(day),
-        static_cast<uint8_t>(month), static_cast<uint32_t>(year));
+        static_cast<uint8_t>(month), static_cast<uint16_t>(year));
 }
 
 weekday_value_type parse_weekday(const char_t*& data, size_t& remaining)

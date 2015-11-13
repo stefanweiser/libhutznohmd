@@ -38,7 +38,7 @@ namespace hutzn
 //! @param[in] year          Year, which must be in the range of [1970..2099].
 epoch_time_t seconds_since_epoch(const uint32_t second_of_day,
                                  const uint8_t day, const uint8_t month,
-                                 const uint32_t year);
+                                 const uint16_t year);
 
 } // namespace hutzn
 
