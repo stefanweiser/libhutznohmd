@@ -470,10 +470,10 @@ way to enforce this gurantee without loosing the ability to test with
 to define a member function with the noexcept specifier and mock it).
 
 There is also one exception from this rule. The member function
-@ref request_processor_interface::handle_one_request may indirectly throw an
-exception, because it calls a request handler or an error handler which is not
-part of the library's code. The library will not enforce those handler functions
-to fulfill this no-throw policy.
+@ref hutzn::request_processor_interface::handle_one_request() may indirectly
+throw an exception, because it calls a request handler or an error handler which
+is not part of the library's code. The library will not enforce those handler
+functions to fulfill this no-throw policy.
 
 @section sec_thread_safety Thread safety
 
@@ -515,10 +515,10 @@ up. Therefore those objects shall always outlive all other objects.
 Note, that a request processor is getting constructed always after the
 demultiplexer, because the demultiplexer's query functionality is necessary for
 the request processor's construction (the destruction order is indifferent). To
-construct such objects simply call the global functions @ref make_demultiplexer,
-@ref make_request_processor and @ref listen. They all will return
-reference-counted objects, that will get automatically destroyed, when their
-scope is left.
+construct such objects simply call the global functions @ref
+make_demultiplexer(), @ref make_request_processor() and @ref listen(). They all
+will return reference-counted objects, that will get automatically destroyed,
+when their scope is left.
 
 The following code is an example construction order of those components:
 @code{.cpp}
@@ -566,7 +566,7 @@ de --> rp: "waits for\nusage lock"
 
 Therefore it is not allowed for a request handler to unregister itself. To
 control the ability of getting called, there are the methods @ref
-handler_interface::enable and @ref handler_interface::disable.
+hutzn::handler_interface::enable() and @ref hutzn::handler_interface::disable().
 
 Note, that the same deadlock problem affects error handlers. Also note, that in
 case of the user is exposing its own @c this pointer the handler object must get
@@ -578,11 +578,12 @@ undefined behaviour!
 When starting a web service by creating a listener, the user of the library has
 to call accept. This will wait till a connection is requested and will return
 the newly created connection, which is an automatically reference counted
-object. The connection will stay open till @ref connection_interface::close is
-called or the connection object is released by leaving its scope. This will also
-close the connection. As defined for TCP/IP connections, the connection's ports
-will then stay open for a "lingering time" to catch stray packets. These states
-are called @c TIME_WAIT and @c CLOSE_WAIT.
+object. The connection will stay open till @ref
+hutzn::connection_interface::close() is called or the connection object is
+released by leaving its scope. This will also close the connection. As defined
+for TCP/IP connections, the connection's ports will then stay open for a
+"lingering time" to catch stray packets. These states are called @c TIME_WAIT
+and @c CLOSE_WAIT.
 
 
 @page page_roadmap Roadmap
