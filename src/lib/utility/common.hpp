@@ -44,7 +44,7 @@ template <typename type, const type lower_bound, const type upper_bound>
 bool check_range(const type& value)
 {
     static_assert(lower_bound <= upper_bound,
-                  "Lower bound must be less or equal to upper bound.");
+                  "lower bound must be less or equal to upper bound");
     return (value >= lower_bound) && (value <= upper_bound);
 }
 

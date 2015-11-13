@@ -36,7 +36,7 @@ public:
     static const arithmetic_type special_value_count = 2;
 
     static_assert(sizeof(value_type) == sizeof(arithmetic_type),
-                  "Value and arithmetic type is not of the same size.");
+                  "value and arithmetic type is not of the same size");
 
     explicit mime_data(void)
         : next_value_(special_value_count)

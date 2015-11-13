@@ -79,7 +79,7 @@ inline uint8_t from_hex(const char_t c)
          0xFF, 0xFF, 0xFF, 0xFF}};
 
     static_assert(sizeof(char_t) == sizeof(uint8_t),
-                  "Sizes of char_t and uint8_t are not equal.");
+                  "sizes of char_t and uint8_t are not equal");
     return hex_conversion_map[static_cast<uint8_t>(c)];
 }
 
@@ -118,7 +118,7 @@ inline bool is_valid_url_path_character(char_t c)
          false, false, false}};
 
     static_assert(sizeof(char_t) == sizeof(uint8_t),
-                  "Sizes of char_t and uint8_t are not equal.");
+                  "sizes of char_t and uint8_t are not equal");
     return uri_path_validity_map[static_cast<uint8_t>(c)];
 }
 

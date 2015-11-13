@@ -443,7 +443,7 @@ void request::set_connection(const mime_handler&, const char_t* value_string,
     static const char_t keep_alive_str[] = "keep-alive";
     static const size_t keep_alive_size = sizeof(keep_alive_str);
     static_assert(keep_alive_size > 0,
-                  "Size of string keep-alive must be greater than 0.");
+                  "size of string keep-alive must be greater than 0");
     if ((keep_alive_size <= (value_length + 1)) &&
         (0 == ::strncasecmp(value_string, keep_alive_str, keep_alive_size))) {
         is_keep_alive_set_ = true;
@@ -478,7 +478,7 @@ void request::set_expect(const mime_handler&, const char_t* value_string,
     static const char_t continue_str[] = "100-continue";
     static const size_t continue_size = sizeof(continue_str);
     static_assert(continue_size > 0,
-                  "Size of string 100-continue must be greater than 0.");
+                  "size of string 100-continue must be greater than 0");
     if (0 == ::strncasecmp(value_string, continue_str, continue_size)) {
         expect_ = http_expectation::CONTINUE;
     }

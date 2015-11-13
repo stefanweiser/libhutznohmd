@@ -320,8 +320,8 @@ public:
 
     static_assert(
         sizeof(uint8_t) == sizeof(char_t),
-        "The trie implementation needs a char_t type that has 8 bits or"
-        " it would compromise some type convertions.");
+        "the trie implementation needs a char_t type that has 8 bits or it "
+        "would compromise some type convertions");
 
     //! @brief Determines whether the trie and all it's operations are acting
     //! case sensitive or not.
