@@ -26,7 +26,7 @@ using namespace testing;
 namespace hutzn
 {
 
-TEST(parsing, skip_whitespace_NULL)
+TEST(parsing, skip_whitespace_null)
 {
     const char_t* data = NULL;
     size_t remaining = 0;
@@ -109,7 +109,7 @@ TEST(parsing, skip_whitespace_mixed_spaces_and_tabs)
     EXPECT_EQ(str.size() - 4, remaining);
 }
 
-TEST(parsing, skip_one_character_NULL)
+TEST(parsing, skip_one_character_null)
 {
     const char_t* data = NULL;
     size_t remaining = 0;
@@ -144,12 +144,12 @@ TEST(parsing, skip_one_character_nothing)
     EXPECT_EQ(str.size(), remaining);
 }
 
-TEST(parsing, parse_unsigned_interger_NULL)
+TEST(parsing, parse_unsigned_interger_null)
 {
     const char_t* data = NULL;
     size_t remaining = 0;
 
-    EXPECT_EQ(-1, parse_unsigned_integer(data, remaining));
+    EXPECT_EQ(-1, parse_unsigned_integer<int32_t>(data, remaining));
     EXPECT_STREQ(NULL, data);
     EXPECT_EQ(0, remaining);
 }
@@ -160,7 +160,7 @@ TEST(parsing, parse_unsigned_interger_nothing)
     const char_t* data = str.c_str();
     size_t remaining = str.size();
 
-    EXPECT_EQ(-1, parse_unsigned_integer(data, remaining));
+    EXPECT_EQ(-1, parse_unsigned_integer<int32_t>(data, remaining));
     EXPECT_STREQ(str.c_str(), data);
     EXPECT_EQ(str.size(), remaining);
 }
@@ -171,7 +171,7 @@ TEST(parsing, parse_unsigned_interger_space)
     const char_t* data = str.c_str();
     size_t remaining = str.size();
 
-    EXPECT_EQ(-1, parse_unsigned_integer(data, remaining));
+    EXPECT_EQ(-1, parse_unsigned_integer<int32_t>(data, remaining));
     EXPECT_STREQ(str.c_str(), data);
     EXPECT_EQ(str.size(), remaining);
 }
@@ -182,7 +182,7 @@ TEST(parsing, parse_unsigned_interger_letter)
     const char_t* data = str.c_str();
     size_t remaining = str.size();
 
-    EXPECT_EQ(-1, parse_unsigned_integer(data, remaining));
+    EXPECT_EQ(-1, parse_unsigned_integer<int32_t>(data, remaining));
     EXPECT_STREQ(str.c_str(), data);
     EXPECT_EQ(str.size(), remaining);
 }
@@ -193,7 +193,7 @@ TEST(parsing, parse_unsigned_interger_zero)
     const char_t* data = str.c_str();
     size_t remaining = str.size();
 
-    EXPECT_EQ(0, parse_unsigned_integer(data, remaining));
+    EXPECT_EQ(0, parse_unsigned_integer<int32_t>(data, remaining));
     EXPECT_STREQ("", data);
     EXPECT_EQ(0, remaining);
 }
@@ -204,7 +204,7 @@ TEST(parsing, parse_unsigned_interger_zero_stop_due_to_space)
     const char_t* data = str.c_str();
     size_t remaining = str.size();
 
-    EXPECT_EQ(0, parse_unsigned_integer(data, remaining));
+    EXPECT_EQ(0, parse_unsigned_integer<int32_t>(data, remaining));
     EXPECT_STREQ(" ", data);
     EXPECT_EQ(1, remaining);
 }
@@ -215,7 +215,7 @@ TEST(parsing, parse_unsigned_interger_zero_stop_due_to_letter)
     const char_t* data = str.c_str();
     size_t remaining = str.size();
 
-    EXPECT_EQ(0, parse_unsigned_integer(data, remaining));
+    EXPECT_EQ(0, parse_unsigned_integer<int32_t>(data, remaining));
     EXPECT_STREQ("a", data);
     EXPECT_EQ(1, remaining);
 }
@@ -226,7 +226,18 @@ TEST(parsing, parse_unsigned_interger_zero_stop_due_to_overflow)
     const char_t* data = str.c_str();
     size_t remaining = str.size();
 
-    EXPECT_EQ(-1, parse_unsigned_integer(data, remaining));
+    EXPECT_EQ(-2, parse_unsigned_integer<int32_t>(data, remaining));
+    EXPECT_STREQ("", data);
+    EXPECT_EQ(0, remaining);
+}
+
+TEST(parsing, parse_unsigned_interger_zero_stop_due_to_overflow_64bit)
+{
+    std::string str = "30000000000000000000";
+    const char_t* data = str.c_str();
+    size_t remaining = str.size();
+
+    EXPECT_EQ(-2, parse_unsigned_integer<int64_t>(data, remaining));
     EXPECT_STREQ("", data);
     EXPECT_EQ(0, remaining);
 }
@@ -237,7 +248,7 @@ TEST(parsing, parse_unsigned_interger_useful_number)
     const char_t* data = str.c_str();
     size_t remaining = str.size();
 
-    EXPECT_EQ(42, parse_unsigned_integer(data, remaining));
+    EXPECT_EQ(42, parse_unsigned_integer<int32_t>(data, remaining));
     EXPECT_STREQ("", data);
     EXPECT_EQ(0, remaining);
 }

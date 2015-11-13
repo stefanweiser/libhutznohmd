@@ -322,7 +322,8 @@ bool uri::parse_authority(char_t* const authority_ptr, const size_t& size)
     }
 
     if (port_size > 0) {
-        int32_t port_number = parse_unsigned_integer(temp_port, port_size);
+        int32_t port_number =
+            parse_unsigned_integer<int32_t>(temp_port, port_size);
         if ((port_size == 0) &&
             (port_number > std::numeric_limits<uint16_t>::min()) &&
             (port_number <= std::numeric_limits<uint16_t>::max())) {

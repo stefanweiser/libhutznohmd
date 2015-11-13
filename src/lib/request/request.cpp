@@ -454,7 +454,8 @@ void request::set_content_length(const mime_handler&,
                                  const char_t* value_string,
                                  size_t value_length)
 {
-    const int32_t length = parse_unsigned_integer(value_string, value_length);
+    const int64_t length =
+        parse_unsigned_integer<int64_t>(value_string, value_length);
     if (length >= 0) {
         content_length_ = static_cast<size_t>(length);
     }

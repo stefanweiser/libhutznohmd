@@ -64,31 +64,38 @@ inline void skip_one_character(const char_t*& data, size_t& size)
 //! The string has to begin with digits. These digits are read until a character
 //! is no digit or the end of the string is reached. The data parameter is
 //! increased by the number of characters read and the size is decreased by that
-//! number. Returns -1 in case of nothing has been read or overflow.
-inline int32_t parse_unsigned_integer(const char_t*& data, size_t& size)
+//! number. Returns -1 in case of nothing has been read and -2 on an overflow.
+//! @param[in,out] data Points to the string.
+//! @param[in,out] size Remaining bytes till the string's end.
+//! @return             The parsed unsigned integer or -1 in case of nothing
+//!                     read or -2 in case of an overflow.
+template <typename result_type>
+inline result_type parse_unsigned_integer(const char_t*& data, size_t& size)
 {
-    int32_t result;
+    static_assert(std::is_signed<result_type>::value,
+                  "need signed type for error values");
+    result_type result;
 
-    // If there is data to read and the first character is a digit.
+    // when there is data to read and the first character is a digit
     if ((size > 0) && ((*data) >= '0') && ((*data) <= '9')) {
         result = 0;
         char_t character = *data;
 
-        // Loop until there are characters available, there is no overflow and
-        // the current character is a digit.
+        // loop until there are characters available, there is no overflow and
+        // the current character is a digit
         do {
-            int32_t old = result;
+            result_type old = result;
 
-            // Shift the new digit in on the right side.
+            // shift the new digit in on the right side
             result = (result * decimal_base) + (character - '0');
 
-            // Consume the character.
+            // consume the character
             data++;
             size--;
 
-            // Check for overflow.
+            // check for overflow
             if (old > result) {
-                result = -1;
+                result = -2;
                 break;
             }
 
