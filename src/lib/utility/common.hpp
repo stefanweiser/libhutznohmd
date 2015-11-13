@@ -25,17 +25,16 @@ namespace hutzn
 {
 
 //! Base of the decimal system.
-static const uint8_t DECIMAL_BASE = 10;
+static const uint8_t decimal_base = 10;
 
 //! Number of bits per byte.
-static const size_t BITS_PER_BYTE = 8;
+static const size_t bits_per_byte = 8;
 
 //! Number of bits per nibble.
-static const size_t NIBBLE_SIZE = 4;
+static const size_t nibble_size = 4;
 
 //! Contains the number of values, that can be represented by one byte.
-static const size_t NUMBER_OF_VALUES_PER_BYTE =
-    1 << (BITS_PER_BYTE * sizeof(uint8_t));
+static const size_t byte_state_count = 1 << (bits_per_byte * sizeof(uint8_t));
 
 //! @brief Checking, whether a value is inbetween a range.
 //!

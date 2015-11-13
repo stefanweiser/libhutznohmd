@@ -68,7 +68,7 @@ inline const table_k_type make_table_k()
 {
     static const uint64_t power =
         static_cast<uint64_t>(1)
-        << (BITS_PER_BYTE * sizeof(table_k_type::value_type));
+        << (bits_per_byte * sizeof(table_k_type::value_type));
 
     table_k_type result;
     for (size_t i = 0; i < block_size; i++) {
@@ -86,7 +86,7 @@ inline uint32_t get_value_of_k(const size_t i)
 
 inline uint32_t rotate_left(const uint32_t& x, const uint8_t bits)
 {
-    return (x << bits) | (x >> ((sizeof(x) * BITS_PER_BYTE) - bits));
+    return (x << bits) | (x >> ((sizeof(x) * bits_per_byte) - bits));
 }
 
 inline uint32_t set1(const uint32_t& a, const uint32_t& b, const uint32_t& c,
@@ -213,11 +213,11 @@ md5_array calculate_md5(const std::vector<char_t>& data)
     data_buffer[remaining] = static_cast<char_t>(last_bit);
 
     // Fill up the number of bits.
-    const uint64_t processed_bits = data.size() * BITS_PER_BYTE;
+    const uint64_t processed_bits = data.size() * bits_per_byte;
     for (size_t i = 0; i < size_of_size; ++i) {
         const size_t index = max_size_minus_size + i;
         data_buffer[index] =
-            static_cast<char_t>(processed_bits >> (i * BITS_PER_BYTE));
+            static_cast<char_t>(processed_bits >> (i * bits_per_byte));
     }
 
     // Process last block.
@@ -227,7 +227,7 @@ md5_array calculate_md5(const std::vector<char_t>& data)
     md5_array result;
     for (size_t i = 0; i < result.size(); ++i) {
         const size_t index = i / digest.size();
-        const size_t bits_to_shift = (i % digest.size()) * BITS_PER_BYTE;
+        const size_t bits_to_shift = (i % digest.size()) * bits_per_byte;
         result[i] = static_cast<uint8_t>(digest[index] >> bits_to_shift);
     }
     return std::move(result);

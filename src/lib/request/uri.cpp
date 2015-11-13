@@ -55,7 +55,7 @@ inline bool convert_char(char_t*& data, size_t& head, size_t& tail)
     uint8_t b = static_cast<uint8_t>(from_hex(data[head]));
     if ((a < hex_digit_count) && (b < hex_digit_count)) {
         data[tail] =
-            static_cast<char_t>(static_cast<uint8_t>((a << NIBBLE_SIZE) + b));
+            static_cast<char_t>(static_cast<uint8_t>((a << nibble_size) + b));
         head++;
         tail++;
         is_error = false;

@@ -195,7 +195,7 @@ public:
 
 private:
     static const uint8_t INVERSE_LETTER_CASE_BIT =
-        static_cast<uint8_t>(~UPPER_LOWER_CASE_OFFSET);
+        static_cast<uint8_t>(~letter_case_offset);
 
     void clear_right_side_when_equal(const trie_node* const left,
                                      trie_node*& right)
@@ -219,7 +219,7 @@ private:
 
     static uint8_t make_lower(const uint8_t c)
     {
-        return c | UPPER_LOWER_CASE_OFFSET;
+        return c | letter_case_offset;
     }
 
     static uint8_t make_upper(const uint8_t c)
@@ -299,7 +299,7 @@ private:
 
     bool has_value_;
     value_type value_;
-    std::array<trie_node*, NUMBER_OF_VALUES_PER_BYTE> children_;
+    std::array<trie_node*, byte_state_count> children_;
     size_t used_children_;
 };
 

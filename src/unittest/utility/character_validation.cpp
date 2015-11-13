@@ -31,7 +31,7 @@ namespace http
 
 TEST(character_handling, to_lower)
 {
-    const std::array<uint8_t, NUMBER_OF_VALUES_PER_BYTE> validity_map = {
+    const std::array<uint8_t, byte_state_count> validity_map = {
         {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
          0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
          0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23,
@@ -64,7 +64,7 @@ TEST(character_handling, to_lower)
 
 TEST(character_handling, from_hex)
 {
-    std::array<uint8_t, NUMBER_OF_VALUES_PER_BYTE> validity_map;
+    std::array<uint8_t, byte_state_count> validity_map;
     validity_map.fill(0xFF);
     validity_map['0'] = 0;
     validity_map['1'] = 1;
@@ -97,7 +97,7 @@ TEST(character_handling, from_hex)
 
 TEST(character_handling, uri_path_characters)
 {
-    std::array<bool, NUMBER_OF_VALUES_PER_BYTE> validity_map;
+    std::array<bool, byte_state_count> validity_map;
     std::fill(validity_map.begin(), validity_map.end(), false);
     for (char_t c = 'A'; c <= 'Z'; c++) {
         validity_map[static_cast<size_t>(c)] = true;

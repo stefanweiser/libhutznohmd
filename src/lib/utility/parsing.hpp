@@ -80,7 +80,7 @@ inline int32_t parse_unsigned_integer(const char_t*& data, size_t& size)
             int32_t old = result;
 
             // Shift the new digit in on the right side.
-            result = (result * DECIMAL_BASE) + (character - '0');
+            result = (result * decimal_base) + (character - '0');
 
             // Consume the character.
             data++;

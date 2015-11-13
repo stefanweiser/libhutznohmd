@@ -45,7 +45,7 @@ std::string encode_base64(const std::vector<uint8_t>& data)
     uint32_t bit_backlog = 0;
     uint8_t bytes_in_backlog = 0;
     while (remaining > 0) {
-        bit_backlog = (bit_backlog << BITS_PER_BYTE) | (*p);
+        bit_backlog = (bit_backlog << bits_per_byte) | (*p);
         bytes_in_backlog++;
         p++;
         remaining--;
@@ -64,7 +64,7 @@ std::string encode_base64(const std::vector<uint8_t>& data)
     if (bytes_in_backlog != 0) {
         const uint8_t original_bytes_in_backlog = bytes_in_backlog;
         while (bytes_in_backlog != evaluation_chunk_size) {
-            bit_backlog = bit_backlog << BITS_PER_BYTE;
+            bit_backlog = bit_backlog << bits_per_byte;
             bytes_in_backlog++;
         }
 
@@ -90,7 +90,7 @@ std::string encode_base64(const std::vector<uint8_t>& data)
 
 std::vector<uint8_t> decode_base64(const std::string& encoded_string)
 {
-    static const std::array<int8_t, 1 << BITS_PER_BYTE> base64_decoder_map = {
+    static const std::array<int8_t, 1 << bits_per_byte> base64_decoder_map = {
         {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
          -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
          -1, -1, -1, -1, -1, -1, -1, 62, -1, 62, -1, 63, 52, 53, 54, 55, 56, 57,
@@ -109,8 +109,8 @@ std::vector<uint8_t> decode_base64(const std::string& encoded_string)
 
     std::vector<uint8_t> result;
 
-    static const size_t second_byte = BITS_PER_BYTE;
-    static const size_t third_byte = second_byte + BITS_PER_BYTE;
+    static const size_t second_byte = bits_per_byte;
+    static const size_t third_byte = second_byte + bits_per_byte;
     static const size_t byte_bitmask = 0xFFU;
 
     uint32_t bit_backlog = 0;

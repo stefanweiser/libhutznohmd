@@ -29,7 +29,7 @@ namespace hutzn
 
 //! Use binary-or-operation with this value to convert characters into lower
 //! case.
-static const uint8_t UPPER_LOWER_CASE_OFFSET = 0x20U;
+static const uint8_t letter_case_offset = 0x20U;
 
 //! @brief Converts a letter into the corresponding lower case letter.
 //!
@@ -39,7 +39,7 @@ inline char_t to_lower(const char_t c)
 {
     char_t result;
     if (check_range<char_t, 'A', 'Z'>(c)) {
-        result = (c | UPPER_LOWER_CASE_OFFSET);
+        result = (c | letter_case_offset);
     } else {
         result = c;
     }
@@ -54,8 +54,7 @@ inline char_t to_lower(const char_t c)
 //! @param[in] c Character to convert.
 inline uint8_t from_hex(const char_t c)
 {
-    static const std::array<uint8_t,
-                            NUMBER_OF_VALUES_PER_BYTE> hex_conversion_map = {
+    static const std::array<uint8_t, byte_state_count> hex_conversion_map = {
         {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
          0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
          0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -91,8 +90,7 @@ inline uint8_t from_hex(const char_t c)
 //! @param[in] c Character to check for validity.
 inline bool is_valid_url_path_character(char_t c)
 {
-    static const std::array<bool,
-                            NUMBER_OF_VALUES_PER_BYTE> uri_path_validity_map = {
+    static const std::array<bool, byte_state_count> uri_path_validity_map = {
         {false, false, false, false, false, false, false, false, false, false,
          false, false, false, false, false, false, false, false, false, false,
          false, false, false, false, false, false, false, false, false, false,
