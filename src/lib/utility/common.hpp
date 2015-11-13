@@ -40,6 +40,7 @@ static const size_t NUMBER_OF_VALUES_PER_BYTE =
 //! @brief Checking, whether a value is inbetween a range.
 //!
 //! Returns true if the value is in the interval [lower_bound, upper_bound].
+//! @param[in] value Gets checked against the functions boundaries.
 template <typename type, const type lower_bound, const type upper_bound>
 bool check_range(const type& value)
 {

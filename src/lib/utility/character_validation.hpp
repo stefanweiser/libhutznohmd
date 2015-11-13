@@ -32,10 +32,13 @@ namespace hutzn
 static const uint8_t UPPER_LOWER_CASE_OFFSET = 0x20U;
 
 //! @brief Converts a letter into the corresponding lower case letter.
+//!
+//! Simply returns the character, when the character is no upper case letter.
+//! @param[in] c Character to convert.
 inline char_t to_lower(const char_t c)
 {
     char_t result;
-    if ((c >= 'A') && (c <= 'Z')) {
+    if (check_range<char_t, 'A', 'Z'>(c)) {
         result = (c | UPPER_LOWER_CASE_OFFSET);
     } else {
         result = c;
