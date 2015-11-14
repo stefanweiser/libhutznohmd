@@ -194,9 +194,6 @@ public:
     }
 
 private:
-    static const uint8_t INVERSE_LETTER_CASE_BIT =
-        static_cast<uint8_t>(~letter_case_offset);
-
     void clear_right_side_when_equal(const trie_node* const left,
                                      trie_node*& right)
     {
@@ -224,7 +221,7 @@ private:
 
     static uint8_t make_upper(const uint8_t c)
     {
-        return c & INVERSE_LETTER_CASE_BIT;
+        return c & static_cast<uint8_t>(~letter_case_offset);
     }
 
     trie_node** get_pendant(const uint8_t c, const bool is_case_insensitive)
