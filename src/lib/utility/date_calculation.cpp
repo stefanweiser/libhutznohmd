@@ -30,15 +30,13 @@ namespace
 
 static const uint8_t years_between_leapyears = 4;
 static const uint8_t last_month = 12;
-
-// Due to the leap year rule, that only century turns divisible by 400 are
-// leapyears, this algorithm is valid between 1970 and 2099.
 static const uint16_t epoch_start_year = 1970;
 
 //! @brief Returns true, if a year is a leapyear.
 //!
 //! Does not check its boundaries, but is only valid within.
 //! @param[in] year  Year [1970..2099]
+//! @return          True if the given year is a leapyear and false when not.
 bool is_leapyear(const uint16_t year)
 {
     return (year % years_between_leapyears) == 0;
@@ -51,6 +49,7 @@ bool is_leapyear(const uint16_t year)
 //! @param[in] day   Day in the month [1..MAX_DAY_OF_MONTH]
 //! @param[in] month Month of the year [1..12]
 //! @param[in] year  Year [1970..2099]
+//! @return          The number of days passed in this year.
 uint16_t day_of_the_year(const uint8_t day, const uint8_t month,
                          const uint16_t year)
 {
@@ -73,9 +72,12 @@ uint16_t day_of_the_year(const uint8_t day, const uint8_t month,
 //! @param[in] day   Day in the month [1..MAX_DAY_OF_MONTH]
 //! @param[in] month Month of the year [1..12]
 //! @param[in] year  Year [1970..2099]
+//! @return          True if the given date is valid and false when not.
 bool is_valid_epoch_date(const uint8_t day, const uint8_t month,
                          const uint16_t year)
 {
+    // only century turns divisible by 400 are leapyears and therefore this
+    // algorithm is only valid between 1970 and 2099
     static const uint8_t february = 2;
     static const uint8_t first_month = 1;
     static const uint16_t last_valid_year = 2099;

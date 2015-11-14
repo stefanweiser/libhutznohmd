@@ -36,6 +36,7 @@ namespace hutzn
 //! @param[in] month         Month of the year. Must stay in the range of
 //!                          [1..12].
 //! @param[in] year          Year, which must be in the range of [1970..2099].
+//! @return                  The number of seconds since epoch.
 epoch_time_t seconds_since_epoch(const uint32_t second_of_day,
                                  const uint8_t day, const uint8_t month,
                                  const uint16_t year);

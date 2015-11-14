@@ -26,19 +26,22 @@
 namespace hutzn
 {
 
-//! @brief Skips whitespace from a size-based string.
+//! @brief Skips whitespace from the begin of a size-based string.
 //!
 //! Skips whitespace characters by increasing the data pointer until the first
-//! character is neither space, tabs, linefeed nor carriage return. The
-//! size parameter (which actual is the length of the string) is decreased by
-//! the number of increases. Does nothing on an empty string or a NULL.
+//! character is neither space, tab, linefeed nor carriage return. The size
+//! parameter (which actual is the length of the string) is decreased by the
+//! number of increase steps. Does nothing on an empty string or a NULL, because
+//! in both cases the size must be zero.
+//! @param[in,out] data Points to the string.
+//! @param[in,out] size Remaining bytes till the string's end.
 inline void skip_whitespace(const char_t*& data, size_t& size)
 {
     static const select_char_map map =
         make_select_char_map(' ', '\t', '\n', '\r');
 
-    // Loop until the end of the string is reached or the current front
-    // character is no whitespace.
+    // loop until the end of the string is reached or the current front
+    // character is no whitespace
     while ((size > 0) && (map[static_cast<uint8_t>(*data)])) {
         data++;
         size--;
@@ -48,11 +51,14 @@ inline void skip_whitespace(const char_t*& data, size_t& size)
 //! @brief Skips one character from a size-based string.
 //!
 //! Skips one character by increasing the data pointer once. The size parameter
-//! (which actual is the length of the string) is decreased one time. Does
-//! nothing on an empty string or on a NULL.
+//! (which actually is the length of the string) is decreased one time. Does
+//! nothing on an empty string or on a NULL, because in both cases the size must
+//! be zero.
+//! @param[in,out] data Points to the string.
+//! @param[in,out] size Remaining bytes till the string's end.
 inline void skip_one_character(const char_t*& data, size_t& size)
 {
-    // Do only something, when the size is greater zero.
+    // do only something, when the size is greater zero
     if (size > 0) {
         data++;
         size--;

@@ -40,6 +40,7 @@ static const size_t byte_state_count = 1 << (bits_per_byte * sizeof(uint8_t));
 //!
 //! Returns true if the value is in the interval [lower_bound, upper_bound].
 //! @param[in] value Gets checked against the functions boundaries.
+//! @return          True if value is in range and false when not.
 template <typename type, const type lower_bound, const type upper_bound>
 bool check_range(const type& value)
 {
@@ -54,6 +55,7 @@ bool check_range(const type& value)
 //! @see request_handler_id for more details. Returns true, if the the path is
 //! valid.
 //! @param[in] path The path that gets checked for validity.
+//! @return         True if path is a valid url path and false when not.
 bool is_valid_url_path(const std::string& path);
 
 } // namespace hutzn

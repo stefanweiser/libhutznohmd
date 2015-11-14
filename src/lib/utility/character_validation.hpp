@@ -35,6 +35,7 @@ static const uint8_t letter_case_offset = 0x20U;
 //!
 //! Simply returns the character, when the character is no upper case letter.
 //! @param[in] c Character to convert.
+//! @return      The lower case variant of c.
 inline char_t to_lower(const char_t c)
 {
     char_t result;
@@ -52,6 +53,7 @@ inline char_t to_lower(const char_t c)
 //! representation of the character (e.g. 5 for '5' and 11 for 'b'). Conversion
 //! works case insensitive (e.g. 'c' represents the same as 'C').
 //! @param[in] c Character to convert.
+//! @return      -1 or the integer representation of c.
 inline uint8_t from_hex(const char_t c)
 {
     static const std::array<uint8_t, byte_state_count> hex_conversion_map = {
@@ -88,6 +90,7 @@ inline uint8_t from_hex(const char_t c)
 //!
 //! Valid characters are described in RFC 3986 at chapter 3.3 as token "pchar".
 //! @param[in] c Character to check for validity.
+//! @return      True if c is valid and false when not.
 inline bool is_valid_url_path_character(char_t c)
 {
     static const std::array<bool, byte_state_count> uri_path_validity_map = {

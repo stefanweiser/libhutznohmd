@@ -53,7 +53,11 @@ static void fill_select_char_map(select_char_map&)
 }
 
 //! @brief Sets a selection character in a select_char_map to true and calls the
-//! function for all other given characters too.
+//! function recursively for the rest of the given characters.
+//!
+//! @param[in,out] result               The character map to operate on.
+//! @param[in]     selection_character  One selection character.
+//! @param[in]     selection_characters Some remaining selection character.
 template <typename... tn>
 void fill_select_char_map(select_char_map& result,
                           const select_char_map_base_type selection_character,
@@ -67,11 +71,22 @@ void fill_select_char_map(select_char_map& result,
 
 //! @brief Creates and returns a select_char_map, which maps a character to a
 //! boolean value.
+//!
+//! All bits of the result are false by default. Only those bits given by the
+//! selection_characters will return true, when checking a character against the
+//! resulting map.
+//! @param[in] selection_characters The characters should return true, when
+//!                                 asking the select_char_map.
+//! @return                         A select_char_map.
 template <typename... tn>
-select_char_map make_select_char_map(const tn... stop_chars)
+select_char_map make_select_char_map(const tn... selection_characters)
 {
     select_char_map result;
-    detail::fill_select_char_map(result, stop_chars...);
+
+    // calls recursively algorithm, that ends when no selection characters
+    // remain
+    detail::fill_select_char_map(result, selection_characters...);
+
     return result;
 }
 
