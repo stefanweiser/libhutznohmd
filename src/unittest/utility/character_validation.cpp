@@ -26,9 +26,6 @@ using namespace testing;
 namespace hutzn
 {
 
-namespace http
-{
-
 TEST(character_handling, to_lower)
 {
     const std::array<uint8_t, byte_state_count> validity_map = {
@@ -138,7 +135,5 @@ TEST(character_handling, uri_path_characters)
                       static_cast<char_t>(static_cast<uint8_t>(i))));
     }
 }
-
-} // namespace http
 
 } // namespace hutzn
