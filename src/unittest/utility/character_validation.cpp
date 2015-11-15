@@ -26,114 +26,148 @@ using namespace testing;
 namespace hutzn
 {
 
-TEST(character_handling, to_lower)
-{
-    const std::array<uint8_t, byte_state_count> validity_map = {
-        {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
-         0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
-         0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23,
-         0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F,
-         0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B,
-         0x3C, 0x3D, 0x3E, 0x3F, 0x40, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67,
-         0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F, 0x70, 0x71, 0x72, 0x73,
-         0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F,
-         0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B,
-         0x6C, 0x6D, 0x6E, 0x6F, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77,
-         0x78, 0x79, 0x7A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F, 0x80, 0x81, 0x82, 0x83,
-         0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F,
-         0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9A, 0x9B,
-         0x9C, 0x9D, 0x9E, 0x9F, 0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
-         0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF, 0xB0, 0xB1, 0xB2, 0xB3,
-         0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF,
-         0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB,
-         0xCC, 0xCD, 0xCE, 0xCF, 0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD7,
-         0xD8, 0xD9, 0xDA, 0xDB, 0xDC, 0xDD, 0xDE, 0xDF, 0xE0, 0xE1, 0xE2, 0xE3,
-         0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF,
-         0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB,
-         0xFC, 0xFD, 0xFE, 0xFF}};
+using to_lower_test_param = std::tuple<char_t, char_t>;
 
-    // Check
-    for (size_t i = 0; i < validity_map.size(); i++) {
-        EXPECT_EQ(validity_map[i],
-                  static_cast<uint8_t>(to_lower(static_cast<char_t>(i))));
+class to_lower_test : public TestWithParam<to_lower_test_param>
+{
+};
+
+std::vector<to_lower_test_param> get_all_to_lower_test_params()
+{
+    std::vector<to_lower_test_param> result;
+    for (size_t i = 0; i < byte_state_count; i++) {
+        const char_t c = static_cast<char_t>(i);
+        result.push_back(std::make_tuple(c, c));
     }
+    result['A'] = std::make_tuple('A', 'a');
+    result['B'] = std::make_tuple('B', 'b');
+    result['C'] = std::make_tuple('C', 'c');
+    result['D'] = std::make_tuple('D', 'd');
+    result['E'] = std::make_tuple('E', 'e');
+    result['F'] = std::make_tuple('F', 'f');
+    result['G'] = std::make_tuple('G', 'g');
+    result['H'] = std::make_tuple('H', 'h');
+    result['I'] = std::make_tuple('I', 'i');
+    result['J'] = std::make_tuple('J', 'j');
+    result['K'] = std::make_tuple('K', 'k');
+    result['L'] = std::make_tuple('L', 'l');
+    result['M'] = std::make_tuple('M', 'm');
+    result['N'] = std::make_tuple('N', 'n');
+    result['O'] = std::make_tuple('O', 'o');
+    result['P'] = std::make_tuple('P', 'p');
+    result['Q'] = std::make_tuple('Q', 'q');
+    result['R'] = std::make_tuple('R', 'r');
+    result['S'] = std::make_tuple('S', 's');
+    result['T'] = std::make_tuple('T', 't');
+    result['U'] = std::make_tuple('U', 'u');
+    result['V'] = std::make_tuple('V', 'v');
+    result['W'] = std::make_tuple('W', 'w');
+    result['X'] = std::make_tuple('X', 'x');
+    result['Y'] = std::make_tuple('Y', 'y');
+    result['Z'] = std::make_tuple('Z', 'z');
+    return result;
 }
 
-TEST(character_handling, from_hex)
-{
-    std::array<uint8_t, byte_state_count> validity_map;
-    validity_map.fill(0xFF);
-    validity_map['0'] = 0;
-    validity_map['1'] = 1;
-    validity_map['2'] = 2;
-    validity_map['3'] = 3;
-    validity_map['4'] = 4;
-    validity_map['5'] = 5;
-    validity_map['6'] = 6;
-    validity_map['7'] = 7;
-    validity_map['8'] = 8;
-    validity_map['9'] = 9;
-    validity_map['a'] = 10;
-    validity_map['b'] = 11;
-    validity_map['c'] = 12;
-    validity_map['d'] = 13;
-    validity_map['e'] = 14;
-    validity_map['f'] = 15;
-    validity_map['A'] = 10;
-    validity_map['B'] = 11;
-    validity_map['C'] = 12;
-    validity_map['D'] = 13;
-    validity_map['E'] = 14;
-    validity_map['F'] = 15;
+INSTANTIATE_TEST_CASE_P(character_handling, to_lower_test,
+                        ValuesIn(get_all_to_lower_test_params()));
 
-    // Check
-    for (size_t i = 0; i < validity_map.size(); i++) {
-        EXPECT_EQ(validity_map[i], from_hex(static_cast<char_t>(i)));
-    }
+TEST_P(to_lower_test, to_lower)
+{
+    char_t input;
+    char_t output;
+    std::tie(input, output) = GetParam();
+    EXPECT_EQ(output, to_lower(input));
 }
 
-TEST(character_handling, uri_path_characters)
+using from_hex_test_param = std::tuple<char_t, uint8_t>;
+
+class from_hex_test : public TestWithParam<from_hex_test_param>
 {
-    std::array<bool, byte_state_count> validity_map;
-    std::fill(validity_map.begin(), validity_map.end(), false);
+};
+
+std::vector<from_hex_test_param> get_all_from_hex_test_params()
+{
+    std::vector<from_hex_test_param> result;
+    for (size_t i = 0; i < byte_state_count; i++) {
+        const char_t c = static_cast<char_t>(i);
+        result.push_back(std::make_tuple(c, 0xFF));
+    }
+    result['0'] = std::make_tuple('0', 0);
+    result['1'] = std::make_tuple('1', 1);
+    result['2'] = std::make_tuple('2', 2);
+    result['3'] = std::make_tuple('3', 3);
+    result['4'] = std::make_tuple('4', 4);
+    result['5'] = std::make_tuple('5', 5);
+    result['6'] = std::make_tuple('6', 6);
+    result['7'] = std::make_tuple('7', 7);
+    result['8'] = std::make_tuple('8', 8);
+    result['9'] = std::make_tuple('9', 9);
+    result['A'] = std::make_tuple('A', 10);
+    result['B'] = std::make_tuple('B', 11);
+    result['C'] = std::make_tuple('C', 12);
+    result['D'] = std::make_tuple('D', 13);
+    result['E'] = std::make_tuple('E', 14);
+    result['F'] = std::make_tuple('F', 15);
+    result['a'] = std::make_tuple('a', 10);
+    result['b'] = std::make_tuple('b', 11);
+    result['c'] = std::make_tuple('c', 12);
+    result['d'] = std::make_tuple('d', 13);
+    result['e'] = std::make_tuple('e', 14);
+    result['f'] = std::make_tuple('f', 15);
+    return result;
+}
+
+INSTANTIATE_TEST_CASE_P(character_handling, from_hex_test,
+                        ValuesIn(get_all_from_hex_test_params()));
+
+TEST_P(from_hex_test, from_hex)
+{
+    char_t input;
+    uint8_t output;
+    std::tie(input, output) = GetParam();
+    EXPECT_EQ(output, from_hex(input));
+}
+
+using url_path_test_param = std::tuple<char_t, bool>;
+
+class url_path_test : public TestWithParam<url_path_test_param>
+{
+};
+
+std::vector<url_path_test_param> get_all_url_path_test_params()
+{
+    std::vector<url_path_test_param> result;
+    for (size_t i = 0; i < byte_state_count; i++) {
+        const char_t c = static_cast<char_t>(i);
+        result.push_back(std::make_tuple(c, false));
+    }
+
     for (char_t c = 'A'; c <= 'Z'; c++) {
-        validity_map[static_cast<size_t>(c)] = true;
+        result[c] = std::make_tuple(c, true);
     }
     for (char_t c = 'a'; c <= 'z'; c++) {
-        validity_map[static_cast<size_t>(c)] = true;
+        result[c] = std::make_tuple(c, true);
     }
     for (char_t c = '0'; c <= '9'; c++) {
-        validity_map[static_cast<size_t>(c)] = true;
+        result[c] = std::make_tuple(c, true);
     }
-    validity_map['-'] = true;
-    validity_map['.'] = true;
-    validity_map['_'] = true;
-    validity_map['~'] = true;
-
-    validity_map['%'] = true;
-    validity_map['!'] = true;
-    validity_map['$'] = true;
-    validity_map['&'] = true;
-    validity_map['\''] = true;
-    validity_map['('] = true;
-    validity_map[')'] = true;
-    validity_map['*'] = true;
-    validity_map['+'] = true;
-    validity_map[','] = true;
-    validity_map[';'] = true;
-    validity_map['='] = true;
-    validity_map[':'] = true;
-    validity_map['/'] = true;
-    validity_map['['] = true;
-    validity_map[']'] = true;
-    validity_map['@'] = true;
-
-    // Check
-    for (size_t i = 0; i < validity_map.size(); i++) {
-        EXPECT_EQ(validity_map[i],
-                  is_valid_url_path_character(
-                      static_cast<char_t>(static_cast<uint8_t>(i))));
+    for (const char_t c :
+         {'-', '.', '_', '~', '%', '!', '$', '&', '\'', '(', ')', '*', '+', ',',
+          ';', '=', ':', '/', '[', ']', '@'}) {
+        result[c] = std::make_tuple(c, true);
     }
+    return result;
+}
+
+INSTANTIATE_TEST_CASE_P(character_handling, url_path_test,
+                        ValuesIn(get_all_url_path_test_params()));
+
+TEST_P(url_path_test, url_path)
+{
+    char_t input;
+    bool output;
+    std::tie(input, output) = GetParam();
+    EXPECT_EQ(output, is_valid_url_path_character(input));
 }
 
 } // namespace hutzn
