@@ -27,7 +27,7 @@ using namespace testing;
 namespace hutzn
 {
 
-class demultiplexer_test : public ::testing::Test
+class demultiplexer_test : public Test
 {
 public:
     void SetUp(void) override

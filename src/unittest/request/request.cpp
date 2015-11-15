@@ -27,7 +27,7 @@ using namespace testing;
 namespace hutzn
 {
 
-class request_test : public ::testing::Test
+class request_test : public Test
 {
 public:
     void SetUp(void) override

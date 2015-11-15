@@ -27,7 +27,7 @@ using namespace testing;
 namespace hutzn
 {
 
-class demultiplexer_ordered_mime_map_test : public ::testing::Test
+class demultiplexer_ordered_mime_map_test : public Test
 {
 protected:
     static std::function<bool(void*&, mime&)> make_accept_fn(const mime& type)

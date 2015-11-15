@@ -28,7 +28,7 @@ using namespace testing;
 namespace hutzn
 {
 
-class uri_test : public ::testing::Test
+class uri_test : public Test
 {
 public:
     uri::first_pass_data check_1st_pass(std::string& str,
