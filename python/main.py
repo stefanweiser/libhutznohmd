@@ -85,6 +85,9 @@ def main(path, log_obj):
         args.log_obj.failure('<' + ' '.join(e.cmd) + '> failed (exit code ' +
                              str(e.returncode) + ').')
 
+    except steps.bootstrap.CompilerError as e:
+        args.log_obj.failure('No valid compiler found.')
+
     except tools.common.NotFoundError as e:
         args.log_obj.failure('The tool ' + e.name() + ' was not found.')
 

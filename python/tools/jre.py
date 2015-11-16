@@ -30,3 +30,6 @@ class JreTool(object):
 
     def path(self):
         return self.__path
+
+    def is_available(self):
+        return tools.common.is_tool_available(self.__name)

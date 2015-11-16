@@ -50,15 +50,32 @@ def get_tool_command_output(args, cmd):
     return cmd[0], process.communicate()
 
 
-def compare_versions(args, name, found_version, min_version):
-    ''' compares the found version with the minimal version and throw an
-        exception when the found one is older than the new one '''
+def is_too_old(args, name, found_version, min_version):
+    ''' compares the found version with the minimal version and returns false
+        when the found one is older than the new one and true in any other
+        case '''
 
     if min_version > found_version:
-        raise VersionTooOldError(name, found_version, min_version)
+        return False
 
     found_version_string = '.'.join(str(x) for x in found_version)
     min_version_string = '.'.join(str(x) for x in min_version)
     args.log_obj.info('Found ' + name + ' ' + found_version_string +
                       ' which matches minimal version constraint (' +
                       min_version_string + ').')
+    return True
+
+
+def compare_versions(args, name, found_version, min_version):
+    ''' compares the found version with the minimal version and throw an
+        exception when the found one is older than the new one '''
+
+    if is_too_old(args, name, found_version, min_version) is False:
+        raise VersionTooOldError(name, found_version, min_version)
+
+
+def is_tool_available(cmd):
+    if shutil.which(cmd) is None:
+        return False
+    else:
+        return True
