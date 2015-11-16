@@ -4,6 +4,7 @@
 
 import os
 import tools.clang
+import tools.clangformat
 import tools.gcc
 
 
@@ -19,6 +20,7 @@ class BootstrapStep(object):
 
     def __init__(self):
         self.clangtool = tools.clang.ClangTool()
+        self.clangformattool = tools.clangformat.ClangFormatTool()
         self.gcctool = tools.gcc.GccTool()
 
     def execute(self, args, path):
@@ -26,6 +28,8 @@ class BootstrapStep(object):
         gcc_found = self.gcctool.does_version_match(args, [4, 8])
         if (clang_found is False) and (gcc_found is False):
             raise CompilerError()
+
+        clangformat_found = self.clangformattool.find(args, [3, 5])
 
         args.log_obj.info('Bootstrap project for target ' + args.target +
                           '...')

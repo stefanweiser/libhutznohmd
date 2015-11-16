@@ -16,8 +16,6 @@
 # <http://www.gnu.org/licenses/>.
 
 IF(NOT MINIMAL)
-    FIND_PACKAGE(ClangFormat 3.5 REQUIRED)
-
     MACRO(STYLE_FILES TARGET)
         SET(FORMAT_COMMANDS)
         FOREACH(ARG ${ARGN})
