@@ -75,6 +75,8 @@ def compare_versions(args, name, found_version, min_version):
 
 
 def is_tool_available(cmd):
+    ''' Returns true, if tool exists and false when it ts not existing '''
+
     if shutil.which(cmd) is None:
         return False
     else:

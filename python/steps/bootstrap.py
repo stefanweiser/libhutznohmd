@@ -29,7 +29,7 @@ class BootstrapStep(object):
         if (clang_found is False) and (gcc_found is False):
             raise CompilerError()
 
-        clangformat_found = self.clangformattool.find(args, [3, 5])
+        self.clangformattool.find(args, [3, 5])
 
         args.log_obj.info('Bootstrap project for target ' + args.target +
                           '...')
