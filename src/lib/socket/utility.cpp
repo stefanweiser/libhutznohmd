@@ -48,18 +48,18 @@ int32_t accept_signal_safe(const int32_t socket_descriptor,
     return result;
 }
 
-int32_t connect_signal_safe(const int32_t socket_fd,
+int32_t connect_signal_safe(const int32_t file_descriptor,
                             const sockaddr* const address,
                             const socklen_t size) noexcept(true)
 {
     // Try to connect.
-    int32_t result = connect(socket_fd, address, size);
+    int32_t result = connect(file_descriptor, address, size);
 
     // If this fails, try to recover from this error state.
     if ((result == -1) && (errno == EINTR)) {
 
         // Wait till the socket gets writable.
-        pollfd p{socket_fd, POLLOUT, 0};
+        pollfd p{file_descriptor, POLLOUT, 0};
         do {
             result = poll(&p, 1, -1);
         } while ((result == -1) && (errno == EINTR));
@@ -68,7 +68,8 @@ int32_t connect_signal_safe(const int32_t socket_fd,
             // Check the error option of the socket.
             int32_t error;
             socklen_t s = sizeof(error);
-            result = getsockopt(socket_fd, SOL_SOCKET, SO_ERROR, &error, &s);
+            result =
+                getsockopt(file_descriptor, SOL_SOCKET, SO_ERROR, &error, &s);
             if (error != 0) {
                 result = -1;
             }
