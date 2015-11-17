@@ -27,10 +27,11 @@ class PackageStep(object):
         args.log_obj.execute(['tar', '--create', '--gzip', '--owner=root',
                               '--group=root', '--preserve-permissions',
                               '--exclude=.git', '--exclude=.gitignore',
-                              '--exclude=build', '--exclude=install',
-                              '--exclude=' + os.path.join('python',
-                                                          '__pycache__'),
+                              '--exclude=build', '--exclude=' +
+                              os.path.join('python', '__pycache__'),
                               '--exclude=' + os.path.join('python', 'steps',
+                                                          '__pycache__'),
+                              '--exclude=' + os.path.join('python', 'tools',
                                                           '__pycache__'),
                               '--exclude=*.user', '--directory', path.project,
                               '--file', src_tar_name, '.'])
