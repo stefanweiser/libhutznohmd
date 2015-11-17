@@ -234,9 +234,9 @@ Library.
 
 The short story: It was a tradition of the people, who lived in the Ore
 Mountains in the past centuries. It was a "communication platform", with its own
-set of dos and don'ts, where informations about simply all ordinary topics were
-exchanged. Just what REST is for HTTP, which is the reason to call this helper
-library after the Hutznohmd.
+set of dos and don'ts, where informations about just all ordinary topics were
+exchanged. Just what REST is for HTTP, which is the reason to call this library
+after the Hutznohmd.
 
 The long story is, that the Ore Mountains (german Erzgebirge, czech Krušné hory)
 were populated during the medieval times, because silver and other ores were
@@ -247,14 +247,14 @@ In the 17th century economical crisis and especially the Thirty-Years-War
 disrupted the mining boom in the Ore Mountains. The population had to find other
 occupations. The textile industry and the industry of producing wooden goods and
 toys arose out of this. Knipling became increasingly popular. Due to the harsh
-climate, to save firewood and because of companion, the women began to work
+climate, to save firewood and because of camaraderie, the women began to work
 together in one room. This was the birth of the Hutznstube.
 
 Slowly the Hutzenstube got filled with tradition. The men often joined their
-wives after work. They started carving, smoked pipe, talked and sang together.
-The Hutzenohmd (or Hutzenabend in standard german) was born. Later artists wrote
-songs about this tradition. Nowadays the Hutzenabend is getting marketed more
-and more as an event including dinner and music.
+wives after work. They started carving and smoked pipe. The people talked and
+sang together. The Hutzenohmd (or Hutzenabend in standard german) was born.
+Later artists wrote songs about this tradition. Nowadays the Hutzenabend is
+getting marketed more and more as an event including dinner and music.
 
 @section sec_etymology Etymology
 
@@ -264,7 +264,7 @@ simply the german word for the evening.
 The word hutzen (a german weak verb) is a bit complicated, because it is not
 used as verb anymore and nowadays all existing sources seem to conflict each
 other. In the dialect of the Ore Mountains (as in Vogtland and Franconia) it was
-used to say: "to meet people by strolling to them".
+used to say: "to visit people on a stroll".
 
 
 @page page_development Development
@@ -312,7 +312,7 @@ Recommended for developing:
 For documentation:
 - @b doxygen >= 1.8.8
 - @b dot >= 2.26
-- @b java >= 1.6
+- @b java >= 1.7
 - A network connection to download PlantUML in a recent version.
 
 For coverage:
@@ -322,7 +322,7 @@ For coverage:
 For metrics:
 - @b cppcheck >= 1.70
 - @b [rats >= 2.4](https://code.google.com/p/rough-auditing-tool-for-security/)
-- @b sonar >= 5.0
+- @b sonarqube >= 5.0
 - @b valgrind >= 3.7
 - @b vera++ >= 1.2
 - A network connection to download sonar-runner in a recent version.
