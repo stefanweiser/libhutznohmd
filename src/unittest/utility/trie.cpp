@@ -107,9 +107,12 @@ TEST(trie, erase_partial_strings_reversely)
 {
     trie_ t{false};
     static const std::string str1 = "abc";
-    static const std::string str2 = "abcdef";
+    static const std::string str2 = "abC";
+    static const std::string str3 = "abcdef";
+    EXPECT_TRUE(t.insert(str3.c_str(), 3));
     EXPECT_TRUE(t.insert(str2.c_str(), 2));
     EXPECT_TRUE(t.insert(str1.c_str(), 1));
+    EXPECT_TRUE(t.erase(str3.c_str()));
     EXPECT_TRUE(t.erase(str2.c_str()));
     EXPECT_TRUE(t.erase(str1.c_str()));
 }
