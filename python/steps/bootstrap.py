@@ -38,7 +38,8 @@ class BootstrapStep(object):
                               '-DCMAKE_INSTALL_PREFIX=' + path.install,
                               '-DCMAKE_BUILD_TYPE=' + args.target,
                               '-DMINIMAL=' + str(args.minimal),
-                              '-DLIBRARY_VERSION=' + args.library_version],
+                              '-DLIBRARY_VERSION=' + args.library_version,
+                              '-DCLANG_FORMAT=' + self.clangformattool.path()],
                              working_dir=path.cmake)
 
     @staticmethod
