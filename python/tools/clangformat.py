@@ -12,6 +12,7 @@ class ClangFormatTool(object):
     def __init__(self):
         self.__name = ['clang-format', 'clang-format-3.5']
         self.__path = ''
+        self.__realname = ''
 
     def find(self, args, min_version):
         ''' tries to find clang-format and checks the version '''

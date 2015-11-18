@@ -12,6 +12,7 @@ class ClangTool(object):
     def __init__(self):
         self.__name = ['clang', 'clang-3.5']
         self.__path = ''
+        self.__realname = ''
 
     def does_version_match(self, args, min_version):
         ''' tries to find clang and checks the version '''
