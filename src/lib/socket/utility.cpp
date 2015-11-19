@@ -108,9 +108,6 @@ ssize_t receive_signal_safe(const int32_t file_descriptor, void* const buffer,
         received = recv(file_descriptor, buffer, size, flags);
     } while ((received == -1) && (errno == EINTR));
 
-    if (received == -1) {
-        throw std::system_error(errno, std::system_category());
-    }
     // return the result which must not be an interruption
     return received;
 }
