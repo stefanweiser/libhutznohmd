@@ -25,6 +25,39 @@
 namespace hutzn
 {
 
+TEST(socket_utility, close_illegal_socket)
+{
+    EXPECT_EQ(close_signal_safe(42), -1);
+    EXPECT_EQ(errno, EBADF);
+}
+
+TEST(socket_utility, accept_illegal_socket)
+{
+    sockaddr addr;
+    socklen_t size = sizeof(addr);
+    EXPECT_EQ(accept_signal_safe(42, &addr, &size), -1);
+    EXPECT_EQ(errno, EBADF);
+}
+
+TEST(socket_utility, connect_illegal_socket)
+{
+    sockaddr addr;
+    EXPECT_EQ(connect_signal_safe(42, &addr, sizeof(addr)), -1);
+    EXPECT_EQ(errno, EBADF);
+}
+
+TEST(socket_utility, send_illegal_socket)
+{
+    EXPECT_EQ(send_signal_safe(42, nullptr, 0, 0), -1);
+    EXPECT_EQ(errno, EBADF);
+}
+
+TEST(socket_utility, receive_illegal_socket)
+{
+    EXPECT_EQ(receive_signal_safe(42, nullptr, 0, 0), -1);
+    EXPECT_EQ(errno, EBADF);
+}
+
 TEST(socket_utility, fill_address_ok)
 {
     sockaddr_in address = fill_address("127.0.0.1", 0x8000);
