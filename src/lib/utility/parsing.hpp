@@ -82,6 +82,9 @@ inline result_type parse_unsigned_integer(const char_t*& data, size_t& size)
                   "need signed type for error values");
     result_type result;
 
+    static const result_type nothing_read_error = -1;
+    static const result_type overflow_error = -2;
+
     // when there is data to read and the first character is a digit
     if ((size > 0) && ((*data) >= '0') && ((*data) <= '9')) {
         result = 0;
@@ -101,14 +104,14 @@ inline result_type parse_unsigned_integer(const char_t*& data, size_t& size)
 
             // check for overflow
             if (old > result) {
-                result = -2;
+                result = nothing_read_error;
                 break;
             }
 
             character = *data;
         } while ((size > 0) && (character >= '0') && (character <= '9'));
     } else {
-        result = -1;
+        result = overflow_error;
     }
     return result;
 }

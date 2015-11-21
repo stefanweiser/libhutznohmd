@@ -90,7 +90,8 @@ static trie<header_key> get_header_key_trie(size_t& max_size)
          std::make_pair("user-agent", header_key::USER_AGENT)};
     for (const std::pair<const char_t* const, header_key>& pair : header_keys) {
         result.insert(pair.first, pair.second);
-        max_size = std::max(max_size, ::strnlen(pair.first, 16));
+        max_size =
+            std::max(max_size, ::strnlen(pair.first, trie_string_max_length));
     }
 
     return result;
