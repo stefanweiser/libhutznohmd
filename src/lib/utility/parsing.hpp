@@ -104,14 +104,14 @@ inline result_type parse_unsigned_integer(const char_t*& data, size_t& size)
 
             // check for overflow
             if (old > result) {
-                result = nothing_read_error;
+                result = overflow_error;
                 break;
             }
 
             character = *data;
         } while ((size > 0) && (character >= '0') && (character <= '9'));
     } else {
-        result = overflow_error;
+        result = nothing_read_error;
     }
     return result;
 }
