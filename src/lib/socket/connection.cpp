@@ -34,7 +34,9 @@ std::shared_ptr<connection> connection::create(const std::string& host,
     const int32_t socket_fd = socket(PF_INET, SOCK_STREAM, 0);
     if (socket_fd != -1) {
         const sockaddr_in address = fill_address(host, port);
-        result = std::make_shared<connection>(socket_fd, address);
+        if (address.sin_family != AF_UNSPEC) {
+            result = std::make_shared<connection>(socket_fd, address);
+        }
     }
     return result;
 }
