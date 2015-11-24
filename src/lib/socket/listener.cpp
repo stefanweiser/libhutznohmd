@@ -42,6 +42,7 @@ std::shared_ptr<listener> listener::create(const std::string& host,
 {
     std::shared_ptr<listener> result;
     const int32_t socket_fd = socket(PF_INET, SOCK_STREAM, 0);
+    // only listen if a valid socket file descriptor was created
     if (socket_fd >= 0) {
 
         // This is an accepted exceptional use of an union (breaks MISRA
@@ -56,6 +57,8 @@ std::shared_ptr<listener> listener::create(const std::string& host,
         addr.in = fill_address(host, port);
         const int32_t result1 = bind(socket_fd, &addr.base, sizeof(addr.in));
         const int32_t result2 = ::listen(socket_fd, 4);
+        // return a valid object only if bind and listen does not return an
+        // error
         if ((result1 != -1) && (result2 != -1)) {
             result = std::make_shared<listener>(socket_fd);
         }
@@ -72,6 +75,7 @@ listener::listener(const int32_t& socket)
 
 listener::~listener(void)
 {
+    // stop listening and close the socket before destructing the object
     stop();
     const int32_t close_result = close_signal_safe(socket_);
     assert(close_result == 0);
@@ -81,6 +85,8 @@ listener::~listener(void)
 connection_pointer listener::accept(void) const
 {
     connection_pointer result;
+
+    // accept will only succeed when the socket is connected
     if (is_listening_) {
 
         // This is an accepted exceptional use of an union (breaks MISRA
@@ -94,6 +100,7 @@ connection_pointer listener::accept(void) const
 
         socklen_t size = sizeof(addr.in);
         const int32_t client = accept_signal_safe(socket_, &addr.base, &size);
+        // return an empty object when accept signalises an error
         if (client >= 0) {
             result = std::make_shared<connection>(client);
         }

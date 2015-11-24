@@ -31,11 +31,19 @@ namespace hutzn
 class listener : public listener_interface
 {
 public:
-    //! Creates a new listener by host and port and returns it.
+    //! @brief Creates a new listener.
+    //!
+    //! Uses host and port to create the listener. Returns the listener after
+    //! resolving and binding to the IP and port.
+    //! @param[in] host Host IP to listen on as string.
+    //! @param[in] port Port to listen on.
+    //! @return         The newly created listener, which has bound to the
+    //!                 address and is ready to accept connections.
     static std::shared_ptr<listener> create(const std::string& host,
                                             const uint16_t& port);
 
-    //! Constructs a listener. Used to bind to a socket.
+    //! @brief Constructs a listener. Used to bind to a socket.
+    //! @param[in] socket A socket file descriptor.
     explicit listener(const int32_t& socket);
 
     //! @copydoc listener_interface::~listener_interface()
@@ -54,7 +62,10 @@ public:
     bool set_lingering_timeout(const int32_t& timeout) override;
 
 private:
+    //! Is true, when the object is listening and false otherwise.
     bool is_listening_;
+
+    //! Stores the file descriptor of the listening or closed socket.
     int32_t socket_;
 };
 

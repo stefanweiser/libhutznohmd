@@ -32,8 +32,12 @@ std::shared_ptr<connection> connection::create(const std::string& host,
 {
     std::shared_ptr<connection> result;
     const int32_t socket_fd = socket(PF_INET, SOCK_STREAM, 0);
+
+    // only connect if a valid socket file descriptor was created
     if (socket_fd != -1) {
         const sockaddr_in address = fill_address(host, port);
+        // only return a connection if the host and port could be resolved
+        // successfully
         if (address.sin_family != AF_UNSPEC) {
             result = std::make_shared<connection>(socket_fd, address);
         }
@@ -57,6 +61,8 @@ connection::connection(const int32_t& socket, const sockaddr_in& address)
 
 connection::~connection(void)
 {
+    // first shutdown and then close the connection before destructing the
+    // object
     close();
     const int32_t close_result = close_signal_safe(socket_);
     assert(close_result == 0);
@@ -72,10 +78,14 @@ void connection::close(void)
 bool connection::receive(buffer& data, const size_t& max_size)
 {
     bool result = false;
+    // receive will only succeed when the socket is connected
     if (is_connected_) {
         const size_t old_size = data.size();
         data.resize(old_size + max_size);
         void* const p = data.data() + old_size;
+        // reveive is not called in a loop, because there is propably not more
+        // to receive and the user has to decide whether to read more data due
+        // to protocol necessities or not
         const ssize_t received = receive_signal_safe(socket_, p, max_size, 0);
         const ssize_t new_extension_size = std::max<ssize_t>(received, 0);
         data.resize(old_size + static_cast<size_t>(new_extension_size));
@@ -86,22 +96,27 @@ bool connection::receive(buffer& data, const size_t& max_size)
 
 bool connection::send(const buffer& data)
 {
+    // convert the buffer and use a single send method
     return send(data.data(), data.size());
 }
 
 bool connection::send(const std::string& data)
 {
+    // convert the buffer and use a single send method
     return send(data.data(), data.size());
 }
 
 bool connection::send(const char_t* data, const size_t& size)
 {
     bool result = false;
+    // send will only succeed when the socket is connected
+    // also check for a valid size, because signed size_t is used internally
     if ((is_connected_) &&
         (size <= static_cast<size_t>(std::numeric_limits<ssize_t>::max()))) {
 
         const ssize_t ssize = static_cast<ssize_t>(size);
         ssize_t total_sent_size = 0;
+        // loop until all is sent
         while (total_sent_size < ssize) {
             const size_t block_size =
                 static_cast<size_t>(ssize - total_sent_size);
@@ -136,6 +151,7 @@ bool connection::set_lingering_timeout(const int32_t& timeout)
 bool connection::connect(void)
 {
     bool result = false;
+    // connecting makes only sense if the socket is not connected
     if (!is_connected_) {
 
         // This is an accepted exceptional use of an union (breaks MISRA
@@ -153,6 +169,7 @@ bool connection::connect(void)
             is_connected_ = true;
             result = true;
         } else {
+            // we'll shutdown the socket in case of a failed try to connect
             close();
         }
     }

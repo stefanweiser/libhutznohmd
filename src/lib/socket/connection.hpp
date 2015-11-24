@@ -30,14 +30,24 @@ namespace hutzn
 class connection : public connection_interface
 {
 public:
-    //! Creates a new connection by host and port and returns it.
+    //! @brief Creates a new connection.
+    //!
+    //! Uses host and port to create the connection. Returns the connection
+    //! after resolving the host and port.
+    //! @param[in] host Host IP to connect to as string.
+    //! @param[in] port Port on the host to connect to.
+    //! @return         The newly created connection, which is not yet
+    //!                 connected.
     static std::shared_ptr<connection> create(const std::string& host,
                                               const uint16_t& port);
 
-    //! Constructs a connection. Used to accept a connection as a server.
+    //! @brief Constructs a connection. Used to accept a connection as a server.
+    //! @param[in] socket A socket file descriptor.
     explicit connection(const int32_t& socket);
 
-    //! Constructs a connection. Used to connect as a client to a server.
+    //! @brief Constructs a connection. Used to connect as a client to a server.
+    //! @param[in] socket  A socket file descriptor.
+    //! @param[in] address Address of the host.
     explicit connection(const int32_t& socket, const sockaddr_in& address);
 
     //! @copydoc connection_interface::~connection_interface()
@@ -63,10 +73,24 @@ public:
     bool connect(void);
 
 private:
+    //! @brief Sends a buffer.
+    //!
+    //! Internal send method, which is used by all external visible send
+    //! methods.
+    //! @param[in] buffer Points to the data to send.
+    //! @param[in] size   Number of bytes to read.
+    //! @return           True when the buffer could be send completely and
+    //!                   false otherwise.
     bool send(const char_t* buffer, const size_t& size);
 
+    //! Is true, when the connection is established and false otherwise.
     bool is_connected_;
+
+    //! Stores the file descriptor of the open or closed socket.
     int32_t socket_;
+
+    //! Stores the socket's address with which computer the connection is or was
+    //! established.
     const sockaddr_in address_;
 };
 
