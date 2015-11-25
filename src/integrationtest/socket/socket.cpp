@@ -25,7 +25,7 @@
 namespace hutzn
 {
 
-TEST(socket, construction_no_throw)
+TEST(socket, listener_construction)
 {
     auto listener = listen("127.0.0.1", 10000);
     EXPECT_TRUE(listener->set_lingering_timeout(0));
@@ -34,6 +34,11 @@ TEST(socket, construction_no_throw)
 }
 
 TEST(socket, wrong_construction_arguments)
+{
+    EXPECT_EQ(listener_pointer(), listen("127.0.0:1", 10000));
+}
+
+TEST(socket, reuse_host_and_port)
 {
     auto listener = listen("127.0.0.1", 10000);
     EXPECT_TRUE(listener->set_lingering_timeout(0));
