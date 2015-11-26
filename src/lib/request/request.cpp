@@ -124,8 +124,8 @@ bool request::parse(const mime_handler& handler)
 
     const bool fetch_result = lexer_.fetch_header();
     int32_t ch = lexer_.get();
-    if ((fetch_result) && (parse_method(ch)) && (parse_uri(ch)) &&
-        (parse_version(ch))) {
+    if (fetch_result && parse_method(ch) && parse_uri(ch) &&
+        parse_version(ch)) {
         ch = lexer_.get();
         while (ch >= 0) {
             if (is_newline(ch)) {
@@ -197,7 +197,7 @@ const char_t* request::header_value(const char_t* const name) const
 
 bool request::keeps_connection(void) const
 {
-    return (version() > http_version::HTTP_1_0) || (is_keep_alive_set_);
+    return (version() > http_version::HTTP_1_0) || is_keep_alive_set_;
 }
 
 time_t request::date(void) const

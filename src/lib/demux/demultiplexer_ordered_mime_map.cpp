@@ -139,7 +139,7 @@ request_handler_callback demultiplexer_ordered_mime_map::find_ordered(
             (type.second == value.second) ||
             (type.second == mime_subtype::WILDCARD);
 
-        if ((type_equal_or_wildcard) && (subtype_equal_or_wildcard)) {
+        if (type_equal_or_wildcard && subtype_equal_or_wildcard) {
 
             auto it = map_.find(value);
             assert(it != map_.end());

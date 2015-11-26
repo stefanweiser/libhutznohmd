@@ -58,7 +58,7 @@ bool mime_handler::are_two_types_valid(const mime& type1,
                                        const mime& type2) const
 {
     std::lock_guard<std::mutex> lock(mime_type_mutex_);
-    return (is_mime_valid(type1)) && (is_mime_valid(type2));
+    return is_mime_valid(type1) && is_mime_valid(type2);
 }
 
 mime mime_handler::parse(const char_t* const data,

@@ -111,7 +111,7 @@ bool connection::send(const char_t* data, const size_t& size)
     bool result = false;
     // send will only succeed when the socket is connected
     // also check for a valid size, because signed size_t is used internally
-    if ((is_connected_) &&
+    if (is_connected_ &&
         (size <= static_cast<size_t>(std::numeric_limits<ssize_t>::max()))) {
 
         const ssize_t ssize = static_cast<ssize_t>(size);
