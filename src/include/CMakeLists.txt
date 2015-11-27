@@ -15,21 +15,8 @@
 # along with the libhutznohmd project; if not, see
 # <http://www.gnu.org/licenses/>.
 
-SETUP_COMPILER_FLAGS()
-DISABLE_GMOCK_DEPENDENT_WARNINGS()
-
-GET_SOURCE_FILES("files.txt" "${CMAKE_CURRENT_SOURCE_DIR}" FILES)
-GET_SOURCE_FILES("${PROJECT_SOURCE_DIR}/gmock/files.txt"
-                 "${PROJECT_SOURCE_DIR}/gmock" GMOCK)
-ADD_EXECUTABLE(integrationtest_hutznohmd ${FILES} ${GMOCK})
-STYLE_FILES(integrationtest_hutznohmd ${FILES})
-
-SET_SOURCE_FILES_PROPERTIES(${GMOCK} PROPERTIES COMPILE_FLAGS -w)
-
-TARGET_LINK_LIBRARIES(integrationtest_hutznohmd hutznohmd)
-INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/src/include")
-INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/src/lib")
-INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}")
-INCLUDE_DIRECTORIES(SYSTEM "${PROJECT_SOURCE_DIR}/gmock")
-
-INSTALL(TARGETS integrationtest_hutznohmd DESTINATION bin)
+INSTALL(FILES hutzn.hpp DESTINATION include)
+INSTALL(FILES libhutznohmd/demux.hpp DESTINATION include/libhutznohmd)
+INSTALL(FILES libhutznohmd/request.hpp DESTINATION include/libhutznohmd)
+INSTALL(FILES libhutznohmd/sockets.hpp DESTINATION include/libhutznohmd)
+INSTALL(FILES libhutznohmd/types.hpp DESTINATION include/libhutznohmd)

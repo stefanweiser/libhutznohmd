@@ -16,14 +16,9 @@ demux/reset_error_handler_interface.cpp
 demux/reset_error_handler_interface.hpp
 demux/usage_interface.cpp
 demux/usage_interface.hpp
-hutzn.hpp
 libhutznohmd/demux.cpp
-libhutznohmd/demux.hpp
 libhutznohmd/request.cpp
-libhutznohmd/request.hpp
 libhutznohmd/sockets.cpp
-libhutznohmd/sockets.hpp
-libhutznohmd/types.hpp
 request/base64.cpp
 request/base64.hpp
 request/lexer.cpp

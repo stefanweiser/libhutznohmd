@@ -16,7 +16,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "demux.hpp"
+#include "libhutznohmd/demux.hpp"
 
 namespace hutzn
 {

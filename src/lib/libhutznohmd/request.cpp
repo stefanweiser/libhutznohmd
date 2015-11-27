@@ -16,7 +16,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "request.hpp"
+#include "libhutznohmd/request.hpp"
 
 namespace hutzn
 {
