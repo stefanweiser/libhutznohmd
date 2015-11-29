@@ -8,7 +8,13 @@ sonar.projectVersion=${version}
 sonar.working.directory=${build_path}/sonar
 sonar.sourceEncoding=UTF-8
 
-sonar.modules=python, src
+sonar.modules=include, python, src
+
+
+include.sonar.sources=.
+include.sonar.language=c++
+include.sonar.cxx.includeDirectories=${include_paths}
+include.sonar.cxx.forceIncludes=${cmake_path}/defines.h
 
 
 python.sonar.sources=.
