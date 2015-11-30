@@ -607,4 +607,9 @@ REST:
 
 */
 
+#include <libhutznohmd/demux.hpp>
+#include <libhutznohmd/request.hpp>
+#include <libhutznohmd/sockets.hpp>
+#include <libhutznohmd/types.hpp>
+
 #endif // LIBHUTZNOHMD_HUTZN_HPP
