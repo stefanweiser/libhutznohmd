@@ -17,18 +17,72 @@
 
 SETUP_COMPILER_FLAGS()
 
-GET_SOURCE_FILES("files.txt" "${CMAKE_CURRENT_SOURCE_DIR}" FILES)
-GET_SOURCE_FILES("../../include/files.txt"
-                 "${PROJECT_SOURCE_DIR}/include"
-                 INCLUDE_FILES)
+SET(GENERATED_FILES "${CMAKE_BINARY_DIR}/version.cpp")
+SET(FILES   "${PROJECT_SOURCE_DIR}/include/hutzn.hpp"
+            "${PROJECT_SOURCE_DIR}/include/libhutznohmd/demux.hpp"
+            "${PROJECT_SOURCE_DIR}/include/libhutznohmd/request.hpp"
+            "${PROJECT_SOURCE_DIR}/include/libhutznohmd/sockets.hpp"
+            "${PROJECT_SOURCE_DIR}/include/libhutznohmd/types.hpp"
+            demux/demultiplex_handler.cpp
+            demux/demultiplex_handler.hpp
+            demux/demultiplexer.cpp
+            demux/demultiplexer.hpp
+            demux/demultiplexer_ordered_mime_map.cpp
+            demux/demultiplexer_ordered_mime_map.hpp
+            demux/disconnect_interface.cpp
+            demux/disconnect_interface.hpp
+            demux/error_handler.cpp
+            demux/error_handler.hpp
+            demux/request_handler_holder.cpp
+            demux/request_handler_holder.hpp
+            demux/request_processor.cpp
+            demux/request_processor.hpp
+            demux/reset_error_handler_interface.cpp
+            demux/reset_error_handler_interface.hpp
+            demux/usage_interface.cpp
+            demux/usage_interface.hpp
+            libhutznohmd/demux.cpp
+            libhutznohmd/request.cpp
+            libhutznohmd/sockets.cpp
+            request/base64.cpp
+            request/base64.hpp
+            request/lexer.cpp
+            request/lexer.hpp
+            request/md5.cpp
+            request/md5.hpp
+            request/mime_data.hpp
+            request/mime_handler.cpp
+            request/mime_handler.hpp
+            request/request.cpp
+            request/request.hpp
+            request/response.cpp
+            request/response.hpp
+            request/timestamp.cpp
+            request/timestamp.hpp
+            request/uri.cpp
+            request/uri.hpp
+            socket/connection.cpp
+            socket/connection.hpp
+            socket/listener.cpp
+            socket/listener.hpp
+            socket/utility.cpp
+            socket/utility.hpp
+            utility/character_validation.hpp
+            utility/common.cpp
+            utility/common.hpp
+            utility/date_calculation.cpp
+            utility/date_calculation.hpp
+            utility/parsing.hpp
+            utility/select_char_map.hpp
+            utility/trie.hpp
+            version.hpp)
+
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/version.cpp.in"
                "${CMAKE_BINARY_DIR}/version.cpp")
-ADD_LIBRARY(hutznohmd SHARED ${FILES} ${INCLUDE_FILES}
-            "${CMAKE_BINARY_DIR}/version.cpp")
+ADD_LIBRARY(hutznohmd SHARED ${FILES} ${GENERATED_FILES})
 STYLE_FILES(hutznohmd ${FILES})
 SET_TARGET_PROPERTIES(hutznohmd PROPERTIES VERSION "${LIBRARY_VERSION}")
 
-INCLUDE_DIRECTORIES("${CMAKE_BINARY_DIR}")
 INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/include")
 INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}")
 

@@ -18,13 +18,13 @@
 SETUP_COMPILER_FLAGS()
 DISABLE_GMOCK_DEPENDENT_WARNINGS()
 
-GET_SOURCE_FILES("files.txt" "${CMAKE_CURRENT_SOURCE_DIR}" FILES)
-GET_SOURCE_FILES("${PROJECT_SOURCE_DIR}/gmock/files.txt"
-                 "${PROJECT_SOURCE_DIR}/gmock" GMOCK)
-ADD_EXECUTABLE(integrationtest_hutznohmd ${FILES} ${GMOCK})
+SET(FILES   socket/socket.cpp
+            socket/utility.cpp)
+
+ADD_EXECUTABLE(integrationtest_hutznohmd ${FILES} ${GMOCK_FILES})
 STYLE_FILES(integrationtest_hutznohmd ${FILES})
 
-SET_SOURCE_FILES_PROPERTIES(${GMOCK} PROPERTIES COMPILE_FLAGS -w)
+SET_SOURCE_FILES_PROPERTIES(${GMOCK_FILES} PROPERTIES COMPILE_FLAGS -w)
 
 TARGET_LINK_LIBRARIES(integrationtest_hutznohmd hutznohmd)
 INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/include")

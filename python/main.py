@@ -58,8 +58,7 @@ def main(path, log_obj):
     step_list = (steps.build.BuildStep(), steps.check.CheckStep(),
                  steps.clean.CleanStep(), steps.coverage.CoverageStep(),
                  steps.doc.DocStep(), steps.package.PackageStep(),
-                 steps.sonar.SonarStep(), steps.test.TestStep(),
-                 steps.update.UpdateStep())
+                 steps.sonar.SonarStep(), steps.test.TestStep())
 
     # parse command line arguments
     args = parse_arguments(step_list)

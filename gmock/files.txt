@@ -1,4 +1,0 @@
-gmock-gtest-all.cc
-gmock/gmock.h
-gmock_main.cc
-gtest/gtest.h

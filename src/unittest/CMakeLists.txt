@@ -18,13 +18,30 @@
 SETUP_COMPILER_FLAGS()
 DISABLE_GMOCK_DEPENDENT_WARNINGS()
 
-GET_SOURCE_FILES("files.txt" "${CMAKE_CURRENT_SOURCE_DIR}" FILES)
-GET_SOURCE_FILES("${PROJECT_SOURCE_DIR}/gmock/files.txt"
-                 "${PROJECT_SOURCE_DIR}/gmock" GMOCK)
-ADD_EXECUTABLE(unittest_hutznohmd ${FILES} ${GMOCK})
+SET(FILES   demux/demultiplex_handler.cpp
+            demux/demultiplexer.cpp
+            demux/demultiplexer_ordered_mime_map.cpp
+            demux/mock_disconnect_interface.hpp
+            libhutznohmd/mock_demux.hpp
+            libhutznohmd/mock_request.hpp
+            libhutznohmd/mock_sockets.hpp
+            request/base64.cpp
+            request/lexer.cpp
+            request/md5.cpp
+            request/mime_data.cpp
+            request/request.cpp
+            request/timestamp.cpp
+            request/uri.cpp
+            utility/character_validation.cpp
+            utility/common.cpp
+            utility/parsing.cpp
+            utility/select_char_map.cpp
+            utility/trie.cpp)
+
+ADD_EXECUTABLE(unittest_hutznohmd ${FILES} ${GMOCK_FILES})
 STYLE_FILES(unittest_hutznohmd ${FILES})
 
-SET_SOURCE_FILES_PROPERTIES(${GMOCK} PROPERTIES COMPILE_FLAGS -w)
+SET_SOURCE_FILES_PROPERTIES(${GMOCK_FILES} PROPERTIES COMPILE_FLAGS -w)
 
 TARGET_LINK_LIBRARIES(unittest_hutznohmd hutznohmd)
 INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/include")

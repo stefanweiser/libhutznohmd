@@ -23,6 +23,10 @@ IF(NOT UNIX)
 ENDIF()
 
 SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+SET(GMOCK_FILES "${PROJECT_SOURCE_DIR}/gmock/gmock/gmock.h"
+                "${PROJECT_SOURCE_DIR}/gmock/gtest/gtest.h"
+                "${PROJECT_SOURCE_DIR}/gmock/gmock-gtest-all.cc"
+                "${PROJECT_SOURCE_DIR}/gmock/gmock_main.cc")
 
 INCLUDE(ClangFormat)
 INCLUDE(Toolchain)

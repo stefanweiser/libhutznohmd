@@ -17,7 +17,8 @@
 
 SETUP_COMPILER_FLAGS()
 
-GET_SOURCE_FILES("files.txt" "${CMAKE_CURRENT_SOURCE_DIR}" FILES)
+SET(FILES main.cpp)
+
 ADD_EXECUTABLE(example_performance ${FILES})
 STYLE_FILES(example_performance ${FILES})
 
