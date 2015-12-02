@@ -21,10 +21,6 @@ DISABLE_GMOCK_DEPENDENT_WARNINGS()
 SET(FILES   demux/demultiplex_handler.cpp
             demux/demultiplexer.cpp
             demux/demultiplexer_ordered_mime_map.cpp
-            demux/mock_disconnect_interface.hpp
-            libhutznohmd/mock_demux.hpp
-            libhutznohmd/mock_request.hpp
-            libhutznohmd/mock_sockets.hpp
             request/base64.cpp
             request/lexer.cpp
             request/md5.cpp
@@ -46,6 +42,7 @@ SET_SOURCE_FILES_PROPERTIES(${GMOCK_FILES} PROPERTIES COMPILE_FLAGS -w)
 TARGET_LINK_LIBRARIES(unittest_hutznohmd hutznohmd)
 INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/include")
 INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/src/lib")
+INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/src/mock")
 INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}")
 INCLUDE_DIRECTORIES(SYSTEM "${PROJECT_SOURCE_DIR}/gmock")
 
