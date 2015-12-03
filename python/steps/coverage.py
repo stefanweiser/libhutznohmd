@@ -57,8 +57,10 @@ class CoverageStep(object):
                     name = package.attrib['name']
                     if name.startswith('build') or \
                        name.startswith('gmock') or \
+                       name.startswith('include') or \
                        name.startswith('src.examples') or \
                        name.startswith('src.integrationtest') or \
+                       name.startswith('src.mock') or \
                        name.startswith('src.unittest'):
                         packages_node.remove(package)
                     else:

@@ -13,7 +13,7 @@ sonar.modules=include, python, src
 
 include.sonar.sources=.
 include.sonar.language=c++
-include.sonar.cxx.includeDirectories=${include_paths}
+include.sonar.cxx.includeDirectories=${include_paths},${project_path}/include
 include.sonar.cxx.forceIncludes=${cmake_path}/defines.h
 
 
@@ -23,7 +23,7 @@ python.sonar.language=py
 
 src.sonar.sources=lib
 src.sonar.language=c++
-src.sonar.cxx.includeDirectories=${include_paths},${project_path}/src/lib
+src.sonar.cxx.includeDirectories=${include_paths},${project_path}/include,${project_path}/src/lib
 src.sonar.cxx.forceIncludes=${cmake_path}/defines.h
 
 src.sonar.cxx.cppcheck.reportPath=${reports_path}/cppcheck.xml

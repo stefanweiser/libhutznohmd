@@ -33,9 +33,11 @@ class CheckStep(object):
         args.log_obj.execute([path.unittest_bin, '--gtest_output=xml:' +
                               os.path.join(path.reports, 'unittest.xml')])
 
+        include_path = os.path.join(path.project, 'include')
         src_path = os.path.join(path.project, 'src')
         integrationtest_path = os.path.join(src_path, 'integrationtest')
         lib_path = os.path.join(src_path, 'lib')
+        mock_path = os.path.join(src_path, 'mock')
         unittest_path = os.path.join(src_path, 'unittest')
         gmock_path = os.path.join(path.project, 'gmock')
 
@@ -58,8 +60,9 @@ class CheckStep(object):
                               '-U__IBMCPP__', '-U__INTEL_COMPILER',
                               '-U__SUNPRO_CC', '-U__SVR4', '-U__clang__',
                               '-U__hpux', '-U_LIBC', '-U__ANDROID__', '-I',
-                              lib_path, '-I', gmock_path, '-I', unittest_path,
-                              '-I', integrationtest_path, src_path],
+                              include_path, '-I', lib_path, '-I', mock_path,
+                              '-I', gmock_path, '-I', unittest_path, '-I',
+                              integrationtest_path, src_path],
                              cppcheck_report_file, logger.STDERR)
         cppcheck_report_file.close()
 
@@ -87,6 +90,7 @@ class CheckStep(object):
                                                 'src/examples')) or \
                    attr.startswith(os.path.join(project_path,
                                                 'src/integrationtest')) or \
+                   attr.startswith(os.path.join(project_path, 'src/mock')) or \
                    attr.startswith(os.path.join(project_path, 'src/unittest')):
                     errors_node.remove(error)
             tree.write(cppcheck_report_filename)
