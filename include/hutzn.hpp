@@ -612,4 +612,15 @@ REST:
 #include <libhutznohmd/sockets.hpp>
 #include <libhutznohmd/types.hpp>
 
+namespace hutzn
+{
+
+//! @brief Returns the version number as a string.
+//!
+//! The library version is configured by cmake.
+//! @return Returns a string of the current version.
+std::string get_version(void);
+
+} // namespace hutzn
+
 #endif // LIBHUTZNOHMD_HUTZN_HPP

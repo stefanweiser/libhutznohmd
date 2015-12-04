@@ -78,8 +78,7 @@ SET(FILES   "${PROJECT_SOURCE_DIR}/include/hutzn.hpp"
             utility/date_calculation.hpp
             utility/parsing.hpp
             utility/select_char_map.hpp
-            utility/trie.hpp
-            version.hpp)
+            utility/trie.hpp)
 
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/version.cpp.in"
                "${CMAKE_BINARY_DIR}/version.cpp")
