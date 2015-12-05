@@ -19,6 +19,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
+#include "libhutznohmd/types.hpp"
 #include "utility/common.hpp"
 
 using namespace testing;
@@ -26,40 +27,67 @@ using namespace testing;
 namespace hutzn
 {
 
-TEST(common, check_range_upper_bound)
-{
-    auto fn = [](const size_t v) { return check_range<size_t, 2, 3>(v); };
+using check_range_test_param = std::tuple<size_t, bool>;
 
-    EXPECT_TRUE(fn(2));
-    EXPECT_TRUE(fn(3));
-    EXPECT_FALSE(fn(4));
+class check_range_test : public TestWithParam<check_range_test_param>
+{
+};
+
+std::vector<check_range_test_param> get_all_check_range_test_params()
+{
+    std::vector<check_range_test_param> result;
+    result.push_back(std::make_tuple(1, false));
+    result.push_back(std::make_tuple(2, true));
+    result.push_back(std::make_tuple(3, true));
+    result.push_back(std::make_tuple(4, false));
+    return result;
 }
 
-TEST(common, check_range_lower_bound)
-{
-    auto fn = [](const size_t v) { return check_range<size_t, 2, 3>(v); };
+INSTANTIATE_TEST_CASE_P(common, check_range_test,
+                        ValuesIn(get_all_check_range_test_params()));
 
-    EXPECT_FALSE(fn(1));
-    EXPECT_TRUE(fn(2));
-    EXPECT_TRUE(fn(3));
+TEST_P(check_range_test, bounds)
+{
+    size_t input;
+    bool output;
+    std::tie(input, output) = GetParam();
+
+    auto fn = [](const size_t i) { return check_range<size_t, 2, 3>(i); };
+    EXPECT_EQ(output, fn(input));
 }
 
-TEST(common, is_valid_url_path_valid)
+using check_url_test_param = std::tuple<const char_t* const, bool>;
+
+class check_url_test : public TestWithParam<check_url_test_param>
 {
-    EXPECT_TRUE(is_valid_url_path("/foo/bar"));
-    EXPECT_TRUE(is_valid_url_path("/foo/bar/"));
-    EXPECT_TRUE(is_valid_url_path("/"));
+};
+
+std::vector<check_url_test_param> get_all_check_url_test_params()
+{
+    std::vector<check_url_test_param> result;
+    result.push_back(std::make_tuple("/foo/bar", true));
+    result.push_back(std::make_tuple("/foo/bar/", true));
+    result.push_back(std::make_tuple("/", true));
+    result.push_back(std::make_tuple("//", false));
+    result.push_back(std::make_tuple("/foo//bar", false));
+    result.push_back(std::make_tuple("/foo/bar//", false));
+    result.push_back(std::make_tuple("foo", false));
+    result.push_back(std::make_tuple("foo/bar", false));
+    result.push_back(std::make_tuple("/#", false));
+    result.push_back(std::make_tuple("/?", false));
+    return result;
 }
 
-TEST(common, is_valid_url_path_invalid)
+INSTANTIATE_TEST_CASE_P(common, check_url_test,
+                        ValuesIn(get_all_check_url_test_params()));
+
+TEST_P(check_url_test, validity)
 {
-    EXPECT_FALSE(is_valid_url_path("//"));
-    EXPECT_FALSE(is_valid_url_path("/foo//bar"));
-    EXPECT_FALSE(is_valid_url_path("/foo/bar//"));
-    EXPECT_FALSE(is_valid_url_path("foo"));
-    EXPECT_FALSE(is_valid_url_path("foo/bar"));
-    EXPECT_FALSE(is_valid_url_path("/#"));
-    EXPECT_FALSE(is_valid_url_path("/?"));
+    const char_t* input;
+    bool output;
+    std::tie(input, output) = GetParam();
+
+    EXPECT_EQ(output, is_valid_url_path(input));
 }
 
 } // namespace hutzn
