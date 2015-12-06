@@ -75,3 +75,8 @@ class Logger(object):
         process = subprocess.Popen(cmd, cwd=working_dir, stdout=stdout_file,
                                    stderr=stderr_file)
         process.wait()
+
+        # check for error and throw when exit code is not 0
+        rc = process.returncode
+        if rc is not 0:
+            raise subprocess.CalledProcessError(rc, cmd)
