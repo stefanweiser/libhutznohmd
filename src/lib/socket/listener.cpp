@@ -55,12 +55,15 @@ std::shared_ptr<listener> listener::create(const std::string& host,
         } addr;
 
         addr.in = fill_address(host, port);
-        const int32_t result1 = bind(socket_fd, &addr.base, sizeof(addr.in));
-        const int32_t result2 = ::listen(socket_fd, 4);
-        // return a valid object only if bind and listen does not return an
-        // error
-        if ((result1 != -1) && (result2 != -1)) {
-            result = std::make_shared<listener>(socket_fd);
+        if (addr.in.sin_family != AF_UNSPEC) {
+            const int32_t result1 =
+                bind(socket_fd, &addr.base, sizeof(addr.in));
+            const int32_t result2 = ::listen(socket_fd, 4);
+            // return a valid object only if bind and listen does not return an
+            // error
+            if ((result1 != -1) && (result2 != -1)) {
+                result = std::make_shared<listener>(socket_fd);
+            }
         }
     }
 
