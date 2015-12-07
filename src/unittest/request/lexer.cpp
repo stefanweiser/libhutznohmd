@@ -29,15 +29,6 @@ namespace hutzn
 
 class lexer_test : public Test
 {
-public:
-    void SetUp(void) override
-    {
-    }
-
-    void TearDown(void) override
-    {
-    }
-
 protected:
     void check(const std::string& chunk, const std::string& result,
                const bool fetch_result)
