@@ -33,7 +33,7 @@ protected:
     void check(const std::string& chunk, const std::string& result,
                const bool fetch_result)
     {
-        connection_mock_pointer connection =
+        const connection_mock_pointer connection =
             std::make_shared<connection_interface_mock>();
         EXPECT_CALL(*connection, receive(_, _))
             .Times(AtLeast(1))
@@ -64,7 +64,7 @@ protected:
         EXPECT_EQ(NULL,
                   const_cast<const lexer&>(lex).header_data(result.size()));
 
-        char_t* data = lex.header_data(0);
+        const char_t* data = lex.header_data(0);
         const char_t* data2 = const_cast<const lexer&>(lex).header_data(0);
         ASSERT_TRUE(NULL != data);
         ASSERT_EQ(data, data2);
@@ -76,7 +76,8 @@ protected:
 
 TEST_F(lexer_test, construction)
 {
-    connection_mock_pointer c = std::make_shared<connection_interface_mock>();
+    const connection_mock_pointer c =
+        std::make_shared<connection_interface_mock>();
     EXPECT_CALL(*c, receive(_, _)).Times(1).WillOnce(Return(false));
 
     lexer lex(c);
@@ -87,63 +88,63 @@ TEST_F(lexer_test, construction)
 
 TEST_F(lexer_test, call_receive_successfully_once)
 {
-    std::string chunk = "GET / HTTP/1.1\n\n";
+    const std::string chunk = "GET / HTTP/1.1\n\n";
     check(chunk, chunk, true);
 }
 
 TEST_F(lexer_test, several_lws_tokens)
 {
-    std::string chunk = "a\n b\r\n c\r d\n\te\r\n\tf\r\tg";
-    std::string result = "a b c d e f g";
+    const std::string chunk = "a\n b\r\n c\r d\n\te\r\n\tf\r\tg";
+    const std::string result = "a b c d e f g";
     check(chunk, result, false);
 }
 
 TEST_F(lexer_test, newline_token_1)
 {
-    std::string chunk = "a\nb\r\nc\rd";
-    std::string result = "a\nb\nc\nd";
+    const std::string chunk = "a\nb\r\nc\rd";
+    const std::string result = "a\nb\nc\nd";
     check(chunk, result, false);
 }
 
 TEST_F(lexer_test, newline_token_2)
 {
-    std::string chunk = "a\r\n\r\nb";
-    std::string result = "a\n\n";
+    const std::string chunk = "a\r\n\r\nb";
+    const std::string result = "a\n\n";
     check(chunk, result, true);
 }
 
 TEST_F(lexer_test, newline_token_3)
 {
-    std::string chunk = "a\r\rb";
-    std::string result = "a\n\n";
+    const std::string chunk = "a\r\rb";
+    const std::string result = "a\n\n";
     check(chunk, result, true);
 }
 
 TEST_F(lexer_test, newline_token_4)
 {
-    std::string chunk = "a\n\rb";
-    std::string result = "a\n\n";
+    const std::string chunk = "a\n\rb";
+    const std::string result = "a\n\n";
     check(chunk, result, true);
 }
 
 TEST_F(lexer_test, newline_token_5)
 {
-    std::string chunk = "a\n\r\nb";
-    std::string result = "a\n\n";
+    const std::string chunk = "a\n\r\nb";
+    const std::string result = "a\n\n";
     check(chunk, result, true);
 }
 
 TEST_F(lexer_test, newline_token_6)
 {
-    std::string chunk = "a\r\n\rb";
-    std::string result = "a\n\n";
+    const std::string chunk = "a\r\n\rb";
+    const std::string result = "a\n\n";
     check(chunk, result, true);
 }
 
 TEST_F(lexer_test, set_index)
 {
-    std::string chunk = "abcdefgh";
-    connection_mock_pointer connection =
+    const std::string chunk = "abcdefgh";
+    const connection_mock_pointer connection =
         std::make_shared<connection_interface_mock>();
     EXPECT_CALL(*connection, receive(_, _))
         .Times(2)
@@ -169,8 +170,8 @@ TEST_F(lexer_test, set_index)
 
 TEST_F(lexer_test, set_index_beyond_border)
 {
-    std::string chunk = "abcdefgh";
-    connection_mock_pointer connection =
+    const std::string chunk = "abcdefgh";
+    const connection_mock_pointer connection =
         std::make_shared<connection_interface_mock>();
     EXPECT_CALL(*connection, receive(_, _))
         .Times(2)
@@ -194,8 +195,8 @@ TEST_F(lexer_test, set_index_beyond_border)
 
 TEST_F(lexer_test, set_index_to_eof)
 {
-    std::string chunk = "abcdefgh";
-    connection_mock_pointer connection =
+    const std::string chunk = "abcdefgh";
+    const connection_mock_pointer connection =
         std::make_shared<connection_interface_mock>();
     EXPECT_CALL(*connection, receive(_, _))
         .Times(2)
@@ -221,10 +222,10 @@ TEST_F(lexer_test, set_index_to_eof)
 
 TEST_F(lexer_test, content)
 {
-    std::string chunk1 = "\r\n\r\n";
-    std::string chunk2 = "a";
-    std::string chunk3 = "b";
-    connection_mock_pointer connection =
+    const std::string chunk1 = "\r\n\r\n";
+    const std::string chunk2 = "a";
+    const std::string chunk3 = "b";
+    const connection_mock_pointer connection =
         std::make_shared<connection_interface_mock>();
     EXPECT_CALL(*connection, receive(_, _))
         .Times(4)
