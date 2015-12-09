@@ -28,13 +28,17 @@
 namespace hutzn
 {
 
+//! Number of bytes in a md5 sum.
 static const size_t md5_size = 16;
+
+//! Type that stores a md5 sum.
 using md5_array = std::array<uint8_t, md5_size>;
 
 //! @brief Calculates the MD5 sum of a given vector of bytes.
-//! @param data Vector of data to parse.
-//! @return Array of 16 bytes, that contains the digest.
-//! @warning This currently works only on little endian architectures.
+//!
+//! @param[in] data Vector of data to parse.
+//! @return         Array of 16 bytes, that contains the digest.
+//! @warning        This currently works only on little endian architectures.
 md5_array calculate_md5(const std::vector<char_t>& data);
 
 } // namespace hutzn
