@@ -547,10 +547,7 @@ enum class mime_type : uint8_t {
 
     //! The character *. Used to catch all types or declaring that the subtype
     //! is not of interest.
-    WILDCARD,
-
-    //! Used internally to count the number of initial elements.
-    COUNT
+    WILDCARD
 };
 
 //! The subtype of a MIME-Type defines the concrete format of the
@@ -565,10 +562,7 @@ enum class mime_subtype : uint16_t {
 
     //! The character *. Used to catch all subtypes or declaring that the
     //! subtype is not of interest.
-    WILDCARD,
-
-    //! Used internally to count the number of initial elements.
-    COUNT
+    WILDCARD
 };
 
 //! Used to describe a MIME type combination. Often this type is used.
