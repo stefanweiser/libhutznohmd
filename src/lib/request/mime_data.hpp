@@ -21,23 +21,17 @@
 
 #include <map>
 #include <string>
+#include <type_traits>
 
 #include "utility/trie.hpp"
 
 namespace hutzn
 {
 
-template <typename value_type, typename arithmetic_type>
+template <typename value_type>
 class mime_data
 {
 public:
-    // There are always two special values: INVALID and NONE. Therefore indexing
-    // starts with 2.
-    static const arithmetic_type special_value_count = 2;
-
-    static_assert(sizeof(value_type) == sizeof(arithmetic_type),
-                  "value and arithmetic type is not of the same size");
-
     explicit mime_data(void)
         : next_value_(special_value_count)
         , registered_types_()
@@ -101,6 +95,12 @@ public:
     }
 
 private:
+    using arithmetic_type = typename std::underlying_type<value_type>::type;
+
+    // There are always two special values: INVALID and NONE. Therefore indexing
+    // starts with 2.
+    static const arithmetic_type special_value_count = 2;
+
     arithmetic_type next_value_;
     std::map<value_type, std::string> registered_types_;
     trie<value_type> types_;

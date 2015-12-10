@@ -76,10 +76,10 @@ private:
     mutable std::mutex mime_type_mutex_;
 
     //! Stores registered mime types.
-    mime_data<mime_type, uint8_t> mime_types_;
+    mime_data<mime_type> mime_types_;
 
     //! Stores registered mime subtypes.
-    mime_data<mime_subtype, uint16_t> mime_subtypes_;
+    mime_data<mime_subtype> mime_subtypes_;
 };
 
 } // namespace hutzn
