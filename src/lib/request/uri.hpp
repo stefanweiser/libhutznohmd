@@ -48,15 +48,67 @@ public:
     explicit uri(const uri& rhs) = delete;
     uri& operator=(const uri& rhs) = delete;
 
+    //! @brief Parses an uri string.
+    //!
+    //! Disassembles the uri string, by nullterminating its parts and parsing
+    //! the scheme into an enum value. The disassembled parts may need at most
+    //! 2 bytes more of space, than the original source data. Therefore a
+    //! destination string buffer has to be provided. The buffer data can
+    //! overlap as long as the destination buffer begins before the source
+    //! buffer. The destination buffer must be at least 2 bytes larger than the
+    //! uri string.
+    //! @warning The callee has to ensure, that the destination buffer is not
+    //! freed before the uri!
+    //! @param[in] source             Points to the uri string.
+    //! @param[in] source_length      Length of the uri string in bytes.
+    //! @param[in] destination        Points to the destination buffer.
+    //! @param[in] destination_length Length of the destination buffer.
+    //! @param[in] skip_scheme        Assumes that there is no scheme when true.
+    //! @return                       True when the uri was successfully parsed
+    //!                               and false if not.
     bool parse(const char_t* source, size_t source_length, char_t* destination,
                size_t destination_length, bool skip_scheme = false);
 
+    //! @brief Returns the scheme of the uri.
+    //!
+    //! Is valid after parse was called.
+    //! @return Scheme of the uri.
     uri_scheme scheme(void) const;
+
+    //! @brief Returns the userinfo of the uri.
+    //!
+    //! Is valid after parse was called.
+    //! @return Userinfo of the uri.
     const char_t* userinfo(void) const;
+
+    //! @brief Returns the host of the uri.
+    //!
+    //! Is valid after parse was called.
+    //! @return Host of the uri.
     const char_t* host(void) const;
+
+    //! @brief Returns the port of the uri.
+    //!
+    //! Is valid after parse was called.
+    //! @return Port of the uri.
     uint16_t port(void) const;
+
+    //! @brief Returns the path of the uri.
+    //!
+    //! Is valid after parse was called.
+    //! @return Path of the uri.
     const char_t* path(void) const;
+
+    //! @brief Returns the query string of the uri.
+    //!
+    //! Is valid after parse was called.
+    //! @return Query string of the uri.
     const char_t* query(void) const;
+
+    //! @brief Returns the fragment of the uri.
+    //!
+    //! Is valid after parse was called.
+    //! @return Fragment of the uri.
     const char_t* fragment(void) const;
 
 private:
