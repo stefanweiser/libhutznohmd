@@ -33,10 +33,17 @@ static const size_t sextets_per_evaluation_chunk = 4;
 static const size_t sextets_size = 6;
 static const size_t hexade_bitmask = 0x3FU;
 
-static const std::string base64_encoder_map =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    "abcdefghijklmnopqrstuvwxyz"
-    "0123456789+/";
+//! @brief Returns the encoder map of the base64 implementation.
+//!
+//! @return A reference to the encoder map of base64.
+const std::string& get_base64_encoder_map()
+{
+    static const std::string base64_encoder_map =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz"
+        "0123456789+/";
+    return base64_encoder_map;
+}
 
 //! @brief Completes a base64 string.
 //!
@@ -65,13 +72,16 @@ void append_base64_last_bytes(std::string& result, uint8_t bytes_in_backlog,
         static const size_t fourth_hexade = third_hexade + sextets_size;
 
         // append all original hexades
-        result.push_back(base64_encoder_map[(bit_backlog >> fourth_hexade) &
-                                            hexade_bitmask]);
         result.push_back(
-            base64_encoder_map[(bit_backlog >> third_hexade) & hexade_bitmask]);
+            get_base64_encoder_map()[(bit_backlog >> fourth_hexade) &
+                                     hexade_bitmask]);
+        result.push_back(
+            get_base64_encoder_map()[(bit_backlog >> third_hexade) &
+                                     hexade_bitmask]);
         if ((evaluation_chunk_size - 1) == original_bytes_in_backlog) {
-            result.push_back(base64_encoder_map[(bit_backlog >> second_hexade) &
-                                                hexade_bitmask]);
+            result.push_back(
+                get_base64_encoder_map()[(bit_backlog >> second_hexade) &
+                                         hexade_bitmask]);
         } else {
             // when there was no hexade, fill with padding
             result.push_back('=');
@@ -108,7 +118,7 @@ std::string encode_base64(const std::vector<uint8_t>& data)
                  bits_to_shift >= 0; bits_to_shift -= sextets_size) {
                 const uint8_t token =
                     (bit_backlog >> bits_to_shift) & hexade_bitmask;
-                result.push_back(base64_encoder_map[token]);
+                result.push_back(get_base64_encoder_map()[token]);
             }
             bytes_in_backlog = 0;
         }

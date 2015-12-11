@@ -36,7 +36,7 @@ IF(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR ("${CMAKE_CXX_COMPILER_ID}" 
         SET(USE_STRICTEST_RULES_FLAG "${USE_STRICTEST_RULES_FLAG} -Weverything")
         SET(USE_STRICTEST_RULES_FLAG "${USE_STRICTEST_RULES_FLAG} -Wno-unused-function -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-exit-time-destructors -Wno-missing-prototypes -Wno-covered-switch-default -Wno-documentation-unknown-command")
 
-        SET(WEAKENING_STRICT_RULES_DUE_TO_GMOCK "-Wno-global-constructors -Wno-weak-vtables")
+        SET(WEAKENING_STRICT_RULES_DUE_TO_GMOCK "-Wno-global-constructors -Wno-weak-vtables -Wno-missing-variable-declarations")
     ELSEIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         SET(USE_STRICTEST_RULES_FLAG "${USE_STRICTEST_RULES_FLAG} -Wextra -Wall -Wcast-align -Wcast-qual -Wchar-subscripts -Wcomment -Wdisabled-optimization -Wfloat-equal -Wformat -Wformat=2 -Wformat-nonliteral -Wformat-security -Wformat-y2k -Wimport -Winit-self -Winvalid-pch -Wmissing-braces -Wmissing-format-attribute -Wmissing-include-dirs -Wmissing-noreturn -Wpacked -Wparentheses -Wpointer-arith -Wredundant-decls -Wreturn-type -Wsequence-point -Wshadow -Wsign-compare -Wstack-protector -Wstrict-aliasing -Wstrict-aliasing=2 -Wswitch -Wswitch-default -Wtrigraphs -Wuninitialized -Wunknown-pragmas -Wunreachable-code -Wunsafe-loop-optimizations -Wunused -Wunused-label -Wunused-parameter -Wunused-value -Wunused-variable -Wvariadic-macros -Wvolatile-register-var -Wwrite-strings -Wconversion -Weffc++ -Wlong-long -Wmissing-field-initializers -Wswitch-enum")
         SET(USE_STRICTEST_RULES_FLAG "${USE_STRICTEST_RULES_FLAG} -Wno-unused-function")

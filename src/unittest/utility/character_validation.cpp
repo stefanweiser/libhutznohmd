@@ -143,18 +143,18 @@ std::vector<url_path_test_param> get_all_url_path_test_params()
     }
 
     for (char_t c = 'A'; c <= 'Z'; c++) {
-        result[c] = std::make_tuple(c, true);
+        result[static_cast<size_t>(c)] = std::make_tuple(c, true);
     }
     for (char_t c = 'a'; c <= 'z'; c++) {
-        result[c] = std::make_tuple(c, true);
+        result[static_cast<size_t>(c)] = std::make_tuple(c, true);
     }
     for (char_t c = '0'; c <= '9'; c++) {
-        result[c] = std::make_tuple(c, true);
+        result[static_cast<size_t>(c)] = std::make_tuple(c, true);
     }
     for (const char_t c :
          {'-', '.', '_', '~', '%', '!', '$', '&', '\'', '(', ')', '*', '+', ',',
           ';', '=', ':', '/', '[', ']', '@'}) {
-        result[c] = std::make_tuple(c, true);
+        result[static_cast<size_t>(c)] = std::make_tuple(c, true);
     }
     return result;
 }

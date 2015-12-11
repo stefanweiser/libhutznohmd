@@ -235,8 +235,8 @@ public:
 private:
     //! @brief Clears the right operand to NULL, when both pointers are equal.
     //!
-    //! @param[in]      left  Left operand.
-    //! @param[in, out] right Right operand.
+    //! @param[in]     left  Left operand.
+    //! @param[in,out] right Right operand.
     void clear_right_side_when_equal(const trie_node* const left,
                                      trie_node*& right)
     {
@@ -485,7 +485,7 @@ public:
     //! result's used size is zero.
     //! @param[in] search_string String to find a token on.
     //! @param[in] max_length    Maximum search depth, due to the string length.
-    //! @return                  @see trie_find_result.
+    //! @return                  A trie_find_result.
     trie_find_result_ find(const char_t* const search_string,
                            const size_t max_length) const
     {
