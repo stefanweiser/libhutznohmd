@@ -102,7 +102,7 @@ TEST_F(request_test, default_request)
     ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
-    EXPECT_STREQ("", r.path());
+    EXPECT_STREQ("/", r.path());
     EXPECT_STREQ(NULL, r.host());
     EXPECT_STREQ(NULL, r.query(NULL));
     EXPECT_STREQ(NULL, r.fragment());
@@ -132,7 +132,7 @@ TEST_F(request_test, request_with_content)
     ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
-    EXPECT_STREQ("", r.path());
+    EXPECT_STREQ("/", r.path());
     EXPECT_STREQ(NULL, r.host());
     EXPECT_STREQ(NULL, r.query(NULL));
     EXPECT_STREQ(NULL, r.fragment());
@@ -170,7 +170,7 @@ TEST_F(request_test, request_with_content_type)
     ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
-    EXPECT_STREQ("", r.path());
+    EXPECT_STREQ("/", r.path());
     EXPECT_STREQ(NULL, r.host());
     EXPECT_STREQ(NULL, r.query(NULL));
     EXPECT_STREQ(NULL, r.fragment());
@@ -205,7 +205,7 @@ TEST_F(request_test, http_1_0_request_without_keep_alive)
     ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
-    EXPECT_STREQ("", r.path());
+    EXPECT_STREQ("/", r.path());
     EXPECT_STREQ(NULL, r.host());
     EXPECT_STREQ(NULL, r.query(NULL));
     EXPECT_STREQ(NULL, r.fragment());
@@ -235,7 +235,7 @@ TEST_F(request_test, http_1_0_request_with_non_keep_alive)
     ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
-    EXPECT_STREQ("", r.path());
+    EXPECT_STREQ("/", r.path());
     EXPECT_STREQ(NULL, r.host());
     EXPECT_STREQ(NULL, r.query(NULL));
     EXPECT_STREQ(NULL, r.fragment());
@@ -265,7 +265,7 @@ TEST_F(request_test, http_1_0_request_with_keep_alive)
     ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
-    EXPECT_STREQ("", r.path());
+    EXPECT_STREQ("/", r.path());
     EXPECT_STREQ(NULL, r.host());
     EXPECT_STREQ(NULL, r.query(NULL));
     EXPECT_STREQ(NULL, r.fragment());
@@ -296,7 +296,7 @@ TEST_F(request_test, request_with_date)
     ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
-    EXPECT_STREQ("", r.path());
+    EXPECT_STREQ("/", r.path());
     EXPECT_STREQ(NULL, r.host());
     EXPECT_STREQ(NULL, r.query(NULL));
     EXPECT_STREQ(NULL, r.fragment());
@@ -326,7 +326,7 @@ TEST_F(request_test, request_with_from)
     ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
-    EXPECT_STREQ("", r.path());
+    EXPECT_STREQ("/", r.path());
     EXPECT_STREQ(NULL, r.host());
     EXPECT_STREQ(NULL, r.query(NULL));
     EXPECT_STREQ(NULL, r.fragment());
@@ -356,7 +356,7 @@ TEST_F(request_test, request_with_referer)
     ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
-    EXPECT_STREQ("", r.path());
+    EXPECT_STREQ("/", r.path());
     EXPECT_STREQ(NULL, r.host());
     EXPECT_STREQ(NULL, r.query(NULL));
     EXPECT_STREQ(NULL, r.fragment());
@@ -386,7 +386,7 @@ TEST_F(request_test, request_with_user_agent)
     ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
-    EXPECT_STREQ("", r.path());
+    EXPECT_STREQ("/", r.path());
     EXPECT_STREQ(NULL, r.host());
     EXPECT_STREQ(NULL, r.query(NULL));
     EXPECT_STREQ(NULL, r.fragment());
@@ -416,7 +416,7 @@ TEST_F(request_test, custom_header)
     ASSERT_TRUE(r.parse(handler_));
 
     EXPECT_EQ(http_verb::GET, r.method());
-    EXPECT_STREQ("", r.path());
+    EXPECT_STREQ("/", r.path());
     EXPECT_STREQ(NULL, r.host());
     EXPECT_STREQ(NULL, r.query(NULL));
     EXPECT_STREQ(NULL, r.fragment());

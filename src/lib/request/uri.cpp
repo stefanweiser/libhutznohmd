@@ -44,17 +44,18 @@ static trie<std::tuple<uri_scheme, uint16_t>> make_scheme_trie()
     return t;
 }
 
-inline bool convert_char(char_t*& data, size_t& head, size_t& tail)
+inline bool convert_char(const char_t*& source, char_t*& destination,
+                         size_t& head, size_t& tail)
 {
     static const uint8_t hex_digit_count = 16;
 
     bool is_error;
     head++;
-    uint8_t a = static_cast<uint8_t>(from_hex(data[head]));
+    uint8_t a = static_cast<uint8_t>(from_hex(source[head]));
     head++;
-    uint8_t b = static_cast<uint8_t>(from_hex(data[head]));
+    uint8_t b = static_cast<uint8_t>(from_hex(source[head]));
     if ((a < hex_digit_count) && (b < hex_digit_count)) {
-        data[tail] =
+        destination[tail] =
             static_cast<char_t>(static_cast<uint8_t>((a << nibble_size) + b));
         head++;
         tail++;
@@ -66,7 +67,7 @@ inline bool convert_char(char_t*& data, size_t& head, size_t& tail)
     return is_error;
 }
 
-inline void skip_optional_slashes(char_t*& raw, size_t& remaining)
+inline void skip_optional_slashes(const char_t*& raw, size_t& remaining)
 {
     static const uint8_t optional_slash_size = 2;
     if ((remaining >= optional_slash_size) && ('/' == raw[0]) &&
@@ -79,7 +80,8 @@ inline void skip_optional_slashes(char_t*& raw, size_t& remaining)
 //! Parses maximal remaining characters of data and stops, when one of the
 //! selected characters is discovered.
 template <typename... tn>
-size_t parse_uri_word(char_t*& data, size_t& remaining,
+size_t parse_uri_word(const char_t*& source, size_t& source_remaining,
+                      char_t*& destination, size_t& destination_remaining,
                       const tn... select_chars)
 {
     static const select_char_map map = make_select_char_map(select_chars...);
@@ -88,44 +90,52 @@ size_t parse_uri_word(char_t*& data, size_t& remaining,
     size_t tail = 0;
     bool stop = false;
     while (!stop) {
-        const char_t ch = data[head];
-        if ((map[static_cast<uint8_t>(ch)]) || (head >= remaining)) {
+        const char_t ch = source[head];
+        if ((map[static_cast<uint8_t>(ch)]) || (head >= source_remaining) ||
+            (tail >= destination_remaining)) {
             stop = true;
         } else if ('%' == ch) {
             static const uint8_t char_encoding_size = 3;
-            if ((remaining - head) >= char_encoding_size) {
-                stop = convert_char(data, head, tail);
+            if ((source_remaining - head) >= char_encoding_size) {
+                stop = convert_char(source, destination, head, tail);
             } else {
                 tail = 0;
                 stop = true;
             }
         } else {
-            data[tail] = data[head];
+            destination[tail] = source[head];
             head++;
             tail++;
         }
     }
 
-    remaining -= head;
-    data += head;
-    return tail;
+    destination[tail] = '\0';
+    tail++;
+
+    source_remaining -= head;
+    destination_remaining -= tail;
+    source += head;
+    destination += tail;
+    return tail - 1;
 }
 
 template <typename... tn>
 char_t* parse_optional_positional_token(
-    char_t*& data, size_t& remaining, char_t& last_char, size_t& result_size,
+    const char_t*& source, size_t& source_remaining, char_t*& destination,
+    size_t& destination_remaining, char_t& last_char, size_t& result_size,
     const char_t conditional_start_character, const tn... select_chars)
 {
     char_t* result = NULL;
-    if ((remaining > 0) && (last_char == conditional_start_character)) {
-        remaining--;
-        data++;
+    if ((source_remaining > 0) && (destination_remaining > 0) &&
+        (last_char == conditional_start_character)) {
+        source_remaining--;
+        source++;
 
-        char_t* original_data = data;
-        size_t length = parse_uri_word(data, remaining, select_chars...);
-        last_char = *data;
-        original_data[length] = '\0';
-        result = original_data;
+        char_t* original_destination = destination;
+        size_t length = parse_uri_word(source, source_remaining, destination,
+                                       destination_remaining, select_chars...);
+        last_char = *source;
+        result = original_destination;
         result_size = length;
     }
     return result;
@@ -146,11 +156,14 @@ uri::uri(void)
 }
 
 //! @todo seperate http and mailto uri parser to get rid of skip_scheme param.
-bool uri::parse(char_t*& raw, size_t& remaining, bool skip_scheme)
+bool uri::parse(const char_t* source, size_t source_length,
+                char_t*& destination, size_t& destination_length,
+                bool skip_scheme)
 {
     first_pass_data data;
     const bool passed_first_pass =
-        parse_1st_pass(raw, remaining, data, skip_scheme);
+        parse_1st_pass(source, source_length, destination, destination_length,
+                       data, skip_scheme);
     bool result = passed_first_pass;
     if (passed_first_pass) {
         // This implementation supports both: URIs with and without scheme or
@@ -212,62 +225,72 @@ const char_t* uri::fragment(void) const
     return fragment_;
 }
 
-bool uri::parse_1st_pass(char_t*& raw, size_t& remaining, first_pass_data& data,
-                         bool skip_scheme)
+bool uri::parse_1st_pass(const char_t* source, size_t source_length,
+                         char_t*& destination, size_t& destination_length,
+                         first_pass_data& data, bool skip_scheme)
 {
-    if (remaining > 0) {
+    if ((source_length > 0) && (destination_length > 0)) {
         static const select_char_map path_query_fragment_map =
             make_select_char_map('/', '?', '#');
 
-        char_t c = *raw;
+        char_t c = *source;
         if (!path_query_fragment_map[static_cast<uint8_t>(c)]) {
-            char_t* scheme_or_authority_data = raw;
-            size_t length = parse_uri_word(raw, remaining, ':', '/', '?', '#',
-                                           ' ', '\t', '\r', '\n');
-            if ((!skip_scheme) && (':' == raw[0])) {
-                scheme_or_authority_data[length] = '\0';
+            char_t* scheme_or_authority_data = destination;
+            size_t length = parse_uri_word(source, source_length, destination,
+                                           destination_length, ':', '/', '?',
+                                           '#', ' ', '\t', '\r', '\n', '\0');
+            if ((!skip_scheme) && (':' == source[0])) {
                 data.scheme = scheme_or_authority_data;
                 data.scheme_size = length;
-                remaining--;
-                raw++;
+                source_length--;
+                source++;
 
-                skip_optional_slashes(raw, remaining);
+                skip_optional_slashes(source, source_length);
             } else {
-                length += parse_uri_word(raw, remaining, '/', '?', '#', ' ',
-                                         '\t', '\r', '\n');
-                c = *raw;
-                scheme_or_authority_data[length] = '\0';
+                destination--;
+                destination_length++;
+                length += parse_uri_word(source, source_length, destination,
+                                         destination_length, '/', '?', '#', ' ',
+                                         '\t', '\r', '\n', '\0');
+                c = *source;
                 data.authority = scheme_or_authority_data;
                 data.authority_size = length;
             }
         }
 
-        if (remaining > 0) {
+        if ((source_length > 0) && (destination_length > 0)) {
             if (!path_query_fragment_map[static_cast<uint8_t>(c)]) {
-                char_t* authority_data = raw;
-                size_t length = parse_uri_word(raw, remaining, '/', '?', '#',
-                                               ' ', '\t', '\r', '\n');
-                c = *raw;
-                authority_data[length] = '\0';
+                char_t* authority_data = destination;
+                const size_t length = parse_uri_word(
+                    source, source_length, destination, destination_length, '/',
+                    '?', '#', ' ', '\t', '\r', '\n', '\0');
+                c = *source;
                 data.authority = authority_data;
                 data.authority_size = length;
             }
 
-            data.path = parse_optional_positional_token(
-                raw, remaining, c, data.path_size, '/', '?', '#', ' ', '\t',
-                '\r', '\n');
+            if ((source_length > 0) && (destination_length > 0) && (c == '/')) {
+                char_t* original_destination = destination;
+                size_t length = parse_uri_word(
+                    source, source_length, destination, destination_length, '?',
+                    '#', ' ', '\t', '\r', '\n', '\0');
+                c = *source;
+                data.path = original_destination;
+                data.path_size = length;
+            }
+
             data.query = parse_optional_positional_token(
-                raw, remaining, c, data.query_size, '?', '#', ' ', '\t', '\r',
-                '\n');
+                source, source_length, destination, destination_length, c,
+                data.query_size, '?', '#', ' ', '\t', '\r', '\n', '\0');
             data.fragment = parse_optional_positional_token(
-                raw, remaining, c, data.fragment_size, '#', ' ', '\t', '\r',
-                '\n');
+                source, source_length, destination, destination_length, c,
+                data.fragment_size, '#', ' ', '\t', '\r', '\n', '\0');
         }
     }
 
     static const select_char_map empty_map =
-        make_select_char_map(' ', '\t', '\r', '\n');
-    return (remaining == 0) || (empty_map[static_cast<uint8_t>(*raw)]);
+        make_select_char_map(' ', '\t', '\r', '\n', '\0');
+    return (source_length == 0) || empty_map[static_cast<uint8_t>(*source)];
 }
 
 bool uri::parse_scheme(const char_t* const scheme_ptr, const size_t& size)

@@ -42,25 +42,31 @@ void test_date_parser(const std::string& date_string)
               << " ns for date string: " << date_string << std::endl;
 }
 
-void test_uri_parser(const std::string& uri)
+void test_uri_parser(std::string uri)
 {
     {
         // This initializes all static variables, that else would sophisticate
         // the results.
         hutzn::uri u;
         std::string tmp = uri;
-        size_t s = tmp.size();
-        hutzn::char_t* ptr = &(tmp[0]);
-        u.parse(ptr, s, false);
+        size_t src_len = tmp.size();
+        std::string tmp2(src_len + 4, ' ');
+        size_t dest_len = tmp2.size();
+        hutzn::char_t* src = &(tmp[0]);
+        hutzn::char_t* dest = &(tmp2[0]);
+        u.parse(src, src_len, dest, dest_len, false);
     }
 
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
     for (size_t i = 0; i < 1000000; i++) {
         hutzn::uri u;
         std::string tmp = uri;
-        size_t s = tmp.size();
-        hutzn::char_t* ptr = &(tmp[0]);
-        u.parse(ptr, s, false);
+        std::string tmp2(tmp.size() + 1, ' ');
+        size_t src_len = tmp.size();
+        size_t dest_len = tmp2.size();
+        hutzn::char_t* src = &(tmp[0]);
+        hutzn::char_t* dest = &(tmp2[0]);
+        u.parse(src, src_len, dest, dest_len, false);
     }
     std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
     auto diff =

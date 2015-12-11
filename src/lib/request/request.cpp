@@ -311,19 +311,19 @@ bool request::parse_uri(int32_t& ch)
         ch = lexer_.get();
     }
 
-    char_t* value = lexer_.header_data(lexer_.prev_index());
-    size_t length = 0;
+    char_t* source = lexer_.header_data(lexer_.prev_index());
+    size_t source_length = 0;
     while (ch >= 0) {
         if (is_whitespace(ch)) {
-            // Overwrite the newline with null. The value is getting null
-            // terminated by this.
-            lexer_.header_data(lexer_.prev_index())[0] = '\0';
-            result = path_uri_.parse(value, length, true);
+            char_t* destination = lexer_.header_data(0);
+            size_t destination_length = lexer_.prev_index();
+            result = path_uri_.parse(source, source_length, destination,
+                                     destination_length, true);
             break;
         }
 
         ch = lexer_.get();
-        length++;
+        source_length++;
     }
 
     return result;

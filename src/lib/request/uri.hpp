@@ -48,7 +48,8 @@ public:
     explicit uri(const uri& rhs) = delete;
     uri& operator=(const uri& rhs) = delete;
 
-    bool parse(char_t*& data, size_t& remaining, bool skip_scheme = false);
+    bool parse(const char_t* source, size_t source_length, char_t*& destination,
+               size_t& destination_length, bool skip_scheme = false);
 
     const uri_scheme& scheme(void) const;
     const char_t* userinfo(void) const;
@@ -93,8 +94,9 @@ public:
     };
 
 private:
-    bool parse_1st_pass(char_t*& raw, size_t& remaining, first_pass_data& data,
-                        bool skip_scheme);
+    bool parse_1st_pass(const char_t* source, size_t source_length,
+                        char_t*& destination, size_t& destination_length,
+                        first_pass_data& data, bool skip_scheme);
     bool parse_scheme(const char_t* const scheme_ptr, const size_t& size);
     bool parse_authority(char_t* const authority_ptr, const size_t& size);
 
