@@ -183,15 +183,9 @@ bool uri::parse(const char_t* source, size_t source_length, char_t* destination,
                 (!parse_authority(data.authority, data.authority_size))) {
                 result = false;
             }
-            if (data.path != NULL) {
-                path_ = data.path;
-            }
-            if (data.query != NULL) {
-                query_ = data.query;
-            }
-            if (data.fragment != NULL) {
-                fragment_ = data.fragment;
-            }
+            path_ = data.path;
+            query_ = data.query;
+            fragment_ = data.fragment;
         }
     }
     return result;
