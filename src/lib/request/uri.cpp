@@ -156,41 +156,43 @@ uri::uri(void)
 }
 
 //! @todo seperate http and mailto uri parser to get rid of skip_scheme param.
-bool uri::parse(const char_t* source, size_t source_length,
-                char_t*& destination, size_t& destination_length,
-                bool skip_scheme)
+bool uri::parse(const char_t* source, size_t source_length, char_t* destination,
+                size_t destination_length, bool skip_scheme)
 {
-    first_pass_data data;
-    const bool passed_first_pass =
-        parse_1st_pass(source, source_length, destination, destination_length,
-                       data, skip_scheme);
-    bool result = passed_first_pass;
-    if (passed_first_pass) {
-        // This implementation supports both: URIs with and without scheme or
-        // authority. Though it is not strictly conforming with RFC 3986, HTTP
-        // specifies request URIs without scheme and authority.
-        if ((data.scheme_size > 0) &&
-            (!parse_scheme(data.scheme, data.scheme_size))) {
-            result = false;
-        }
-        if ((data.authority_size > 0) &&
-            (!parse_authority(data.authority, data.authority_size))) {
-            result = false;
-        }
-        if (data.path != NULL) {
-            path_ = data.path;
-        }
-        if (data.query != NULL) {
-            query_ = data.query;
-        }
-        if (data.fragment != NULL) {
-            fragment_ = data.fragment;
+    bool result = false;
+    if ((source_length + 2) <= destination_length) {
+        first_pass_data data;
+        const bool passed_first_pass =
+            parse_1st_pass(source, source_length, destination,
+                           destination_length, data, skip_scheme);
+        result = passed_first_pass;
+        if (passed_first_pass) {
+            // This implementation supports both: URIs with and without scheme
+            // or authority. Though it is not strictly conforming with RFC 3986,
+            // HTTP specifies request URIs without scheme and authority.
+            if ((data.scheme_size > 0) &&
+                (!parse_scheme(data.scheme, data.scheme_size))) {
+                result = false;
+            }
+            if ((data.authority_size > 0) &&
+                (!parse_authority(data.authority, data.authority_size))) {
+                result = false;
+            }
+            if (data.path != NULL) {
+                path_ = data.path;
+            }
+            if (data.query != NULL) {
+                query_ = data.query;
+            }
+            if (data.fragment != NULL) {
+                fragment_ = data.fragment;
+            }
         }
     }
     return result;
 }
 
-const uri_scheme& uri::scheme(void) const
+uri_scheme uri::scheme(void) const
 {
     return scheme_;
 }
@@ -205,7 +207,7 @@ const char_t* uri::host(void) const
     return host_;
 }
 
-const uint16_t& uri::port(void) const
+uint16_t uri::port(void) const
 {
     return port_;
 }

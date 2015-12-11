@@ -31,7 +31,7 @@ namespace hutzn
 class uri_test : public Test
 {
 public:
-    static const size_t maximum_uri_enlargement = 10;
+    static const size_t maximum_uri_enlargement = 2;
 
     uri::first_pass_data check_1st_pass(std::string& source,
                                         std::string& destination,
@@ -661,6 +661,15 @@ TEST_F(uri_test, erroneous_authority2)
     EXPECT_STREQ(NULL, u->path());
     EXPECT_STREQ(NULL, u->query());
     EXPECT_STREQ(NULL, u->fragment());
+}
+
+TEST_F(uri_test, destination_buffer_to_small)
+{
+    uri u;
+    char_t x[4] = "";
+    char_t y[4] = "  ";
+    EXPECT_FALSE(u.parse(x, 0, y, 1));
+    EXPECT_TRUE(u.parse(x, 0, y, 2));
 }
 
 } // namespace hutzn

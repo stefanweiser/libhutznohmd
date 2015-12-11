@@ -48,13 +48,13 @@ public:
     explicit uri(const uri& rhs) = delete;
     uri& operator=(const uri& rhs) = delete;
 
-    bool parse(const char_t* source, size_t source_length, char_t*& destination,
-               size_t& destination_length, bool skip_scheme = false);
+    bool parse(const char_t* source, size_t source_length, char_t* destination,
+               size_t destination_length, bool skip_scheme = false);
 
-    const uri_scheme& scheme(void) const;
+    uri_scheme scheme(void) const;
     const char_t* userinfo(void) const;
     const char_t* host(void) const;
-    const uint16_t& port(void) const;
+    uint16_t port(void) const;
     const char_t* path(void) const;
     const char_t* query(void) const;
     const char_t* fragment(void) const;
