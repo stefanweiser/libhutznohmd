@@ -59,6 +59,7 @@ public:
     const char_t* query(void) const;
     const char_t* fragment(void) const;
 
+private:
     //! Contains data of the first pass.
     struct first_pass_data
     {
@@ -93,7 +94,6 @@ public:
         size_t fragment_size{0};
     };
 
-private:
     bool parse_1st_pass(const char_t* source, size_t source_length,
                         char_t*& destination, size_t& destination_length,
                         first_pass_data& data, bool skip_scheme);
@@ -111,6 +111,24 @@ private:
 
     friend class uri_test;
     friend class uri_test_first_pass_NULL_Test;
+    friend class uri_test_first_pass_empty_Test;
+    friend class uri_test_first_pass_simple_path_Test;
+    friend class uri_test_first_pass_localhost_Test;
+    friend class uri_test_first_pass_complete_uri_Test;
+    friend class uri_test_first_pass_only_authority_Test;
+    friend class uri_test_first_pass_only_authority_with_userinfo_Test;
+    friend class uri_test_first_pass_only_scheme_Test;
+    friend class uri_test_first_pass_no_authority_Test;
+    friend class uri_test_first_pass_only_query_Test;
+    friend class uri_test_first_pass_only_fragment_Test;
+    friend class uri_test_first_pass_encoded_characters_in_scheme_Test;
+    friend class uri_test_first_pass_encoded_characters_in_authority_Test;
+    friend class uri_test_first_pass_encoded_characters_in_authority_2_Test;
+    friend class uri_test_first_pass_encoded_characters_in_path_Test;
+    friend class uri_test_first_pass_encoded_characters_in_query_Test;
+    friend class uri_test_first_pass_encoded_characters_in_fragment_Test;
+    friend class uri_test_first_pass_encoded_characters_at_the_end_Test;
+    friend class uri_test_valid_minimal_uri_Test;
 };
 
 } // namespace hutzn
