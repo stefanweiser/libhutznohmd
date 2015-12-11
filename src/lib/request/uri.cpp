@@ -123,13 +123,16 @@ template <typename... tn>
 char_t* parse_optional_positional_token(
     const char_t*& source, size_t& source_remaining, char_t*& destination,
     size_t& destination_remaining, char_t& last_char, size_t& result_size,
-    const char_t conditional_start_character, const tn... select_chars)
+    const char_t conditional_start_character, const bool skip_one_character,
+    const tn... select_chars)
 {
     char_t* result = NULL;
     if ((source_remaining > 0) && (destination_remaining > 0) &&
         (last_char == conditional_start_character)) {
-        source_remaining--;
-        source++;
+        if (skip_one_character) {
+            source_remaining--;
+            source++;
+        }
 
         char_t* original_destination = destination;
         size_t length = parse_uri_word(source, source_remaining, destination,
@@ -161,7 +164,8 @@ bool uri::parse(const char_t* source, size_t source_length, char_t* destination,
 {
     bool result = false;
     static const size_t maximum_uri_enlargement = 2;
-    if ((source_length + maximum_uri_enlargement) <= destination_length) {
+    if (((source_length + maximum_uri_enlargement) <= destination_length) &&
+        (source_length > 0) && (destination_length > 0)) {
         first_pass_data data;
         const bool passed_first_pass =
             parse_1st_pass(source, source_length, destination,
@@ -232,63 +236,54 @@ bool uri::parse_1st_pass(const char_t* source, size_t source_length,
                          char_t*& destination, size_t& destination_length,
                          first_pass_data& data, bool skip_scheme)
 {
+    static const select_char_map path_query_fragment_map =
+        make_select_char_map('/', '?', '#');
+
+    char_t c = *source;
+    if (!path_query_fragment_map[static_cast<uint8_t>(c)]) {
+        char_t* scheme_or_authority_data = destination;
+        size_t length = parse_uri_word(source, source_length, destination,
+                                       destination_length, ':', '/', '?', '#',
+                                       ' ', '\t', '\r', '\n', '\0');
+        if ((!skip_scheme) && (':' == source[0])) {
+            data.scheme = scheme_or_authority_data;
+            data.scheme_size = length;
+            source_length--;
+            source++;
+
+            skip_optional_slashes(source, source_length);
+        } else {
+            destination--;
+            destination_length++;
+            length += parse_uri_word(source, source_length, destination,
+                                     destination_length, '/', '?', '#', ' ',
+                                     '\t', '\r', '\n', '\0');
+            c = *source;
+            data.authority = scheme_or_authority_data;
+            data.authority_size = length;
+        }
+    }
+
     if ((source_length > 0) && (destination_length > 0)) {
-        static const select_char_map path_query_fragment_map =
-            make_select_char_map('/', '?', '#');
-
-        char_t c = *source;
         if (!path_query_fragment_map[static_cast<uint8_t>(c)]) {
-            char_t* scheme_or_authority_data = destination;
-            size_t length = parse_uri_word(source, source_length, destination,
-                                           destination_length, ':', '/', '?',
-                                           '#', ' ', '\t', '\r', '\n', '\0');
-            if ((!skip_scheme) && (':' == source[0])) {
-                data.scheme = scheme_or_authority_data;
-                data.scheme_size = length;
-                source_length--;
-                source++;
-
-                skip_optional_slashes(source, source_length);
-            } else {
-                destination--;
-                destination_length++;
-                length += parse_uri_word(source, source_length, destination,
-                                         destination_length, '/', '?', '#', ' ',
-                                         '\t', '\r', '\n', '\0');
-                c = *source;
-                data.authority = scheme_or_authority_data;
-                data.authority_size = length;
-            }
+            char_t* authority_data = destination;
+            const size_t length = parse_uri_word(
+                source, source_length, destination, destination_length, '/',
+                '?', '#', ' ', '\t', '\r', '\n', '\0');
+            c = *source;
+            data.authority = authority_data;
+            data.authority_size = length;
         }
 
-        if ((source_length > 0) && (destination_length > 0)) {
-            if (!path_query_fragment_map[static_cast<uint8_t>(c)]) {
-                char_t* authority_data = destination;
-                const size_t length = parse_uri_word(
-                    source, source_length, destination, destination_length, '/',
-                    '?', '#', ' ', '\t', '\r', '\n', '\0');
-                c = *source;
-                data.authority = authority_data;
-                data.authority_size = length;
-            }
-
-            if ((source_length > 0) && (destination_length > 0) && (c == '/')) {
-                char_t* original_destination = destination;
-                size_t length = parse_uri_word(
-                    source, source_length, destination, destination_length, '?',
-                    '#', ' ', '\t', '\r', '\n', '\0');
-                c = *source;
-                data.path = original_destination;
-                data.path_size = length;
-            }
-
-            data.query = parse_optional_positional_token(
-                source, source_length, destination, destination_length, c,
-                data.query_size, '?', '#', ' ', '\t', '\r', '\n', '\0');
-            data.fragment = parse_optional_positional_token(
-                source, source_length, destination, destination_length, c,
-                data.fragment_size, '#', ' ', '\t', '\r', '\n', '\0');
-        }
+        data.path = parse_optional_positional_token(
+            source, source_length, destination, destination_length, c,
+            data.path_size, '/', false, '?', '#', ' ', '\t', '\r', '\n', '\0');
+        data.query = parse_optional_positional_token(
+            source, source_length, destination, destination_length, c,
+            data.query_size, '?', true, '#', ' ', '\t', '\r', '\n', '\0');
+        data.fragment = parse_optional_positional_token(
+            source, source_length, destination, destination_length, c,
+            data.fragment_size, '#', true, ' ', '\t', '\r', '\n', '\0');
     }
 
     static const select_char_map empty_map =

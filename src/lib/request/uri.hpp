@@ -162,7 +162,6 @@ private:
     const char_t* fragment_;
 
     friend class uri_test;
-    friend class uri_test_first_pass_NULL_Test;
     friend class uri_test_first_pass_empty_Test;
     friend class uri_test_first_pass_simple_path_Test;
     friend class uri_test_first_pass_localhost_Test;

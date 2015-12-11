@@ -65,34 +65,13 @@ public:
     }
 };
 
-TEST_F(uri_test, first_pass_NULL)
-{
-    uri u;
-    char_t* src = NULL;
-    char_t* dest = NULL;
-    size_t src_len = 0;
-    size_t dest_len = 0;
-    uri::first_pass_data data;
-    EXPECT_TRUE(u.parse_1st_pass(src, src_len, dest, dest_len, data, false));
-    EXPECT_STREQ(NULL, data.scheme);
-    EXPECT_STREQ(NULL, data.authority);
-    EXPECT_STREQ(NULL, data.path);
-    EXPECT_STREQ(NULL, data.query);
-    EXPECT_STREQ(NULL, data.fragment);
-    EXPECT_EQ(0, data.scheme_size);
-    EXPECT_EQ(0, data.authority_size);
-    EXPECT_EQ(0, data.path_size);
-    EXPECT_EQ(0, data.query_size);
-    EXPECT_EQ(0, data.fragment_size);
-}
-
 TEST_F(uri_test, first_pass_empty)
 {
     std::string source = "";
     std::string destination(source.size() + maximum_uri_enlargement, ' ');
     const uri::first_pass_data data = check_1st_pass(source, destination, true);
     EXPECT_STREQ(NULL, data.scheme);
-    EXPECT_STREQ(NULL, data.authority);
+    EXPECT_STREQ("", data.authority);
     EXPECT_STREQ(NULL, data.path);
     EXPECT_STREQ(NULL, data.query);
     EXPECT_STREQ(NULL, data.fragment);
@@ -395,6 +374,19 @@ TEST_F(uri_test, valid_minimal_uri)
     EXPECT_EQ(6, data.fragment_size);
 }
 
+TEST_F(uri_test, parse_nullpointer)
+{
+    uri u;
+    EXPECT_FALSE(u.parse(NULL, 0, NULL, 0, false));
+    EXPECT_EQ(uri_scheme::UNKNOWN, u.scheme());
+    EXPECT_STREQ(NULL, u.userinfo());
+    EXPECT_STREQ(NULL, u.host());
+    EXPECT_EQ(0, u.port());
+    EXPECT_STREQ(NULL, u.path());
+    EXPECT_STREQ(NULL, u.query());
+    EXPECT_STREQ(NULL, u.fragment());
+}
+
 TEST_F(uri_test, path_only)
 {
     std::string source = "/";
@@ -666,10 +658,10 @@ TEST_F(uri_test, erroneous_authority2)
 TEST_F(uri_test, destination_buffer_to_small)
 {
     uri u;
-    char_t x[4] = "";
-    char_t y[4] = "  ";
-    EXPECT_FALSE(u.parse(x, 0, y, 1));
-    EXPECT_TRUE(u.parse(x, 0, y, 2));
+    char_t x[4] = "/";
+    char_t y[4] = "   ";
+    EXPECT_FALSE(u.parse(x, 1, y, 2));
+    EXPECT_TRUE(u.parse(x, 1, y, 3));
 }
 
 } // namespace hutzn
