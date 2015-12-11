@@ -160,7 +160,8 @@ bool uri::parse(const char_t* source, size_t source_length, char_t* destination,
                 size_t destination_length, bool skip_scheme)
 {
     bool result = false;
-    if ((source_length + 2) <= destination_length) {
+    static const size_t maximum_uri_enlargement = 2;
+    if ((source_length + maximum_uri_enlargement) <= destination_length) {
         first_pass_data data;
         const bool passed_first_pass =
             parse_1st_pass(source, source_length, destination,
