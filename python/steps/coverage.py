@@ -42,7 +42,6 @@ class CoverageStep(object):
                     filename = os.path.join(path.project,
                                             cl.attrib['filename'])
                     filename = os.path.realpath(filename)
-                    filename = os.path.relpath(filename, source_path)
                     cl.attrib['filename'] = filename
 
             # remove unwanted coverage data from xml output and remove module
@@ -51,7 +50,6 @@ class CoverageStep(object):
             tree.parse(filename_base + '.xml')
             packages_node = tree.find('.//packages')
             if packages_node is not None:
-                source_path = os.path.join(path.project, 'src')
                 packages = packages_node.findall('package')
                 for package in packages:
                     name = package.attrib['name']

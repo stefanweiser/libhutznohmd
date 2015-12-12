@@ -8,27 +8,13 @@ sonar.projectVersion=${version}
 sonar.working.directory=${build_path}/sonar
 sonar.sourceEncoding=UTF-8
 
-sonar.modules=include, python, src
+sonar.sources=include,python,src/lib
+sonar.cxx.includeDirectories=${include_paths},${project_path}/include,${project_path}/src/lib
+sonar.cxx.forceIncludes=${cmake_path}/defines.h
 
-
-include.sonar.sources=.
-include.sonar.language=c++
-include.sonar.cxx.includeDirectories=${include_paths},${project_path}/include
-include.sonar.cxx.forceIncludes=${cmake_path}/defines.h
-
-
-python.sonar.sources=.
-python.sonar.language=py
-
-
-src.sonar.sources=lib
-src.sonar.language=c++
-src.sonar.cxx.includeDirectories=${include_paths},${project_path}/include,${project_path}/src/lib
-src.sonar.cxx.forceIncludes=${cmake_path}/defines.h
-
-src.sonar.cxx.cppcheck.reportPath=${reports_path}/cppcheck.xml
-src.sonar.cxx.rats.reportPath=${reports_path}/rats.xml
-src.sonar.cxx.valgrind.reportPath=${reports_path}/valgrind.xml
-src.sonar.cxx.xunit.reportPath=${reports_path}/unittest.xml
-src.sonar.cxx.vera.reportPath=${reports_path}/vera++.xml
-src.sonar.cxx.coverage.reportPath=${coverage_path}/unittest.xml
+sonar.cxx.cppcheck.reportPath=${reports_path}/cppcheck.xml
+sonar.cxx.rats.reportPath=${reports_path}/rats.xml
+sonar.cxx.valgrind.reportPath=${reports_path}/valgrind.xml
+sonar.cxx.xunit.reportPath=${reports_path}/unittest.xml
+sonar.cxx.vera.reportPath=${reports_path}/vera++.xml
+sonar.cxx.coverage.reportPath=${coverage_path}/unittest.xml
