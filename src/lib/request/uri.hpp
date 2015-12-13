@@ -67,7 +67,7 @@ public:
     //! @return                       True when the uri was successfully parsed
     //!                               and false if not.
     bool parse(const char_t* source, size_t source_length, char_t* destination,
-               size_t destination_length, bool skip_scheme = false);
+               size_t destination_length, const bool skip_scheme = false);
 
     //! @brief Returns the scheme of the uri.
     //!
@@ -147,8 +147,8 @@ private:
     };
 
     bool parse_1st_pass(const char_t* source, size_t source_length,
-                        char_t*& destination, size_t& destination_length,
-                        first_pass_data& data, bool skip_scheme);
+                        char_t* destination, size_t destination_length,
+                        first_pass_data& data, const bool skip_scheme);
     bool parse_scheme(const char_t* const scheme_ptr, const size_t& size);
     bool parse_authority(char_t* const authority_ptr, const size_t& size);
 

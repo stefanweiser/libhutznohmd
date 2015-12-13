@@ -160,7 +160,7 @@ uri::uri(void)
 
 //! @todo seperate http and mailto uri parser to get rid of skip_scheme param.
 bool uri::parse(const char_t* source, size_t source_length, char_t* destination,
-                size_t destination_length, bool skip_scheme)
+                size_t destination_length, const bool skip_scheme)
 {
     bool result = false;
     static const size_t maximum_uri_enlargement = 2;
@@ -227,8 +227,8 @@ const char_t* uri::fragment(void) const
 }
 
 bool uri::parse_1st_pass(const char_t* source, size_t source_length,
-                         char_t*& destination, size_t& destination_length,
-                         first_pass_data& data, bool skip_scheme)
+                         char_t* destination, size_t destination_length,
+                         first_pass_data& data, const bool skip_scheme)
 {
     static const select_char_map path_query_fragment_map =
         make_select_char_map('/', '?', '#');
