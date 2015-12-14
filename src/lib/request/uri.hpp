@@ -152,7 +152,6 @@ private:
     bool parse_scheme(const char_t* const scheme_ptr, const size_t& size);
     bool parse_authority(char_t* const authority_ptr, const size_t& size);
 
-    bool already_called_;
     uri_scheme scheme_;
     const char_t* userinfo_;
     const char_t* host_;

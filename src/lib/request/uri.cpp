@@ -147,8 +147,7 @@ char_t* parse_optional_positional_token(
 } // namespace
 
 uri::uri(void)
-    : already_called_(false)
-    , scheme_(uri_scheme::UNKNOWN)
+    : scheme_(uri_scheme::UNKNOWN)
     , userinfo_(NULL)
     , host_(NULL)
     , port_(0)
