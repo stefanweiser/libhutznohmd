@@ -31,7 +31,7 @@ namespace hutzn
 class uri_test : public Test
 {
 public:
-    static const size_t maximum_uri_enlargement = 2;
+    static const size_t maximum_uri_enlargement = 3;
 
     uri::first_pass_data check_1st_pass(std::string& source,
                                         std::string& destination,
@@ -71,7 +71,7 @@ TEST_F(uri_test, first_pass_empty)
     std::string destination(source.size() + maximum_uri_enlargement, ' ');
     const uri::first_pass_data data = check_1st_pass(source, destination, true);
     EXPECT_STREQ(NULL, data.scheme);
-    EXPECT_STREQ("", data.authority);
+    EXPECT_STREQ(NULL, data.authority);
     EXPECT_STREQ(NULL, data.path);
     EXPECT_STREQ(NULL, data.query);
     EXPECT_STREQ(NULL, data.fragment);
@@ -191,7 +191,7 @@ TEST_F(uri_test, first_pass_no_authority)
     std::string destination(source.size() + maximum_uri_enlargement, ' ');
     const uri::first_pass_data data = check_1st_pass(source, destination, true);
     EXPECT_STREQ("http", data.scheme);
-    EXPECT_STREQ("", data.authority);
+    EXPECT_STREQ(NULL, data.authority);
     EXPECT_STREQ("/", data.path);
     EXPECT_STREQ(NULL, data.query);
     EXPECT_STREQ(NULL, data.fragment);
@@ -208,7 +208,7 @@ TEST_F(uri_test, first_pass_only_query)
     std::string destination(source.size() + maximum_uri_enlargement, ' ');
     const uri::first_pass_data data = check_1st_pass(source, destination, true);
     EXPECT_STREQ("http", data.scheme);
-    EXPECT_STREQ("", data.authority);
+    EXPECT_STREQ(NULL, data.authority);
     EXPECT_STREQ(NULL, data.path);
     EXPECT_STREQ("", data.query);
     EXPECT_STREQ(NULL, data.fragment);
@@ -225,7 +225,7 @@ TEST_F(uri_test, first_pass_only_fragment)
     std::string destination(source.size() + maximum_uri_enlargement, ' ');
     const uri::first_pass_data data = check_1st_pass(source, destination, true);
     EXPECT_STREQ("http", data.scheme);
-    EXPECT_STREQ("", data.authority);
+    EXPECT_STREQ(NULL, data.authority);
     EXPECT_STREQ(NULL, data.path);
     EXPECT_STREQ(NULL, data.query);
     EXPECT_STREQ("", data.fragment);
@@ -660,8 +660,8 @@ TEST_F(uri_test, destination_buffer_to_small)
     uri u;
     char_t x[4] = "/";
     char_t y[4] = "   ";
-    EXPECT_FALSE(u.parse(x, 1, y, 2));
-    EXPECT_TRUE(u.parse(x, 1, y, 3));
+    EXPECT_FALSE(u.parse(x, 1, y, 1 + maximum_uri_enlargement - 1));
+    EXPECT_TRUE(u.parse(x, 1, y, 1 + maximum_uri_enlargement));
 }
 
 } // namespace hutzn

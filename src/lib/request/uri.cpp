@@ -89,18 +89,27 @@ inline bool convert_char(const char_t* const source, char_t*& destination,
     static const uint8_t hex_digit_count = 16;
 
     bool is_error;
-    head++;
-    uint8_t a = static_cast<uint8_t>(from_hex(source[head]));
-    head++;
-    uint8_t b = static_cast<uint8_t>(from_hex(source[head]));
+
+    // skip the percent character
+    source_index++;
+
+    // get the first hex-digit
+    uint8_t a = static_cast<uint8_t>(from_hex(source[source_index]));
+    source_index++;
+
+    // get the second hex-digit
+    uint8_t b = static_cast<uint8_t>(from_hex(source[source_index]));
+    source_index++;
+
+    // check the hex digits for validity
     if ((a < hex_digit_count) && (b < hex_digit_count)) {
-        destination[tail] =
+        // write it to destination when valid and increase the index once
+        destination[destination_index] =
             static_cast<char_t>(static_cast<uint8_t>((a << nibble_size) + b));
-        head++;
-        tail++;
+        destination_index++;
         is_error = false;
     } else {
-        tail = 0;
+        // digits are not valid
         is_error = true;
     }
     return is_error;
@@ -202,22 +211,22 @@ size_t parse_uri_word(const char_t*& source, size_t& source_remaining,
 template <typename... tn>
 char_t* parse_optional_positional_token(
     const char_t*& source, size_t& source_remaining, char_t*& destination,
-    size_t& destination_remaining, char_t& last_char, size_t& result_size,
+    size_t& destination_remaining, size_t& result_size,
     const char_t conditional_start_character, const bool skip_one_character,
     const tn... select_chars)
 {
+    // the token is present when the conditional_start_character is found at the
+    // begin
     char_t* result = NULL;
     if ((source_remaining > 0) && (destination_remaining > 0) &&
-        (last_char == conditional_start_character)) {
+        ((*source) == conditional_start_character)) {
         if (skip_one_character) {
-            source_remaining--;
-            source++;
+            consume_one_character(source, source_remaining);
         }
 
         char_t* original_destination = destination;
         size_t length = parse_uri_word(source, source_remaining, destination,
                                        destination_remaining, select_chars...);
-        last_char = *source;
         result = original_destination;
         result_size = length;
     }
@@ -242,7 +251,7 @@ bool uri::parse(const char_t* source, size_t source_length, char_t* destination,
                 size_t destination_length, const bool skip_scheme)
 {
     bool result = false;
-    static const size_t maximum_uri_enlargement = 2;
+    static const size_t maximum_uri_enlargement = 3;
     if (((source_length + maximum_uri_enlargement) <= destination_length) &&
         (source_length > 0) && (destination_length > 0)) {
         first_pass_data data;
@@ -313,52 +322,55 @@ bool uri::parse_1st_pass(const char_t* source, size_t source_length,
     static const select_char_map path_query_fragment_map =
         make_select_char_map('/', '?', '#');
 
-    char_t c = *source;
-    if (!path_query_fragment_map[static_cast<uint8_t>(c)]) {
+    // first check whether it begins already the path, query string or fragment
+    if (!path_query_fragment_map[static_cast<uint8_t>(*source)]) {
         char_t* scheme_or_authority_data = destination;
         size_t length = parse_uri_word(source, source_length, destination,
                                        destination_length, ':', '/', '?', '#',
                                        ' ', '\t', '\r', '\n', '\0');
-        if ((!skip_scheme) && (':' == source[0])) {
+
+        // check if this is the scheme or the authority part
+        char_t* authority_data;
+        if ((!skip_scheme) && (':' == (*source))) {
             data.scheme = scheme_or_authority_data;
             data.scheme_size = length;
-            source_length--;
-            source++;
+            length = 0;
+            consume_one_character(source, source_length);
 
             skip_optional_slashes(source, source_length);
+            authority_data = destination;
         } else {
-            destination--;
-            destination_length++;
+            revert_one_character_consumation(destination, destination_length);
+            authority_data = scheme_or_authority_data;
+        }
+
+        // if the authority part was not already parsed
+        if (!path_query_fragment_map[static_cast<uint8_t>(*source)]) {
             length += parse_uri_word(source, source_length, destination,
                                      destination_length, '/', '?', '#', ' ',
                                      '\t', '\r', '\n', '\0');
-            c = *source;
-            data.authority = scheme_or_authority_data;
-            data.authority_size = length;
+
+            if (length > 0) {
+                data.authority = authority_data;
+                data.authority_size = length;
+            }
         }
     }
 
-    if ((source_length > 0) && (destination_length > 0)) {
-        if (!path_query_fragment_map[static_cast<uint8_t>(c)]) {
-            char_t* authority_data = destination;
-            const size_t length = parse_uri_word(
-                source, source_length, destination, destination_length, '/',
-                '?', '#', ' ', '\t', '\r', '\n', '\0');
-            c = *source;
-            data.authority = authority_data;
-            data.authority_size = length;
-        }
+    // parse path
+    data.path = parse_optional_positional_token(
+        source, source_length, destination, destination_length, data.path_size,
+        '/', false, '?', '#', ' ', '\t', '\r', '\n', '\0');
 
-        data.path = parse_optional_positional_token(
-            source, source_length, destination, destination_length, c,
-            data.path_size, '/', false, '?', '#', ' ', '\t', '\r', '\n', '\0');
-        data.query = parse_optional_positional_token(
-            source, source_length, destination, destination_length, c,
-            data.query_size, '?', true, '#', ' ', '\t', '\r', '\n', '\0');
-        data.fragment = parse_optional_positional_token(
-            source, source_length, destination, destination_length, c,
-            data.fragment_size, '#', true, ' ', '\t', '\r', '\n', '\0');
-    }
+    // parse query string
+    data.query = parse_optional_positional_token(
+        source, source_length, destination, destination_length, data.query_size,
+        '?', true, '#', ' ', '\t', '\r', '\n', '\0');
+
+    // parse fragment
+    data.fragment = parse_optional_positional_token(
+        source, source_length, destination, destination_length,
+        data.fragment_size, '#', true, ' ', '\t', '\r', '\n', '\0');
 
     static const select_char_map empty_map =
         make_select_char_map(' ', '\t', '\r', '\n', '\0');

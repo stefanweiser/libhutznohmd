@@ -56,8 +56,8 @@ public:
     //!
     //! Disassembles the uri string, by nullterminating its parts and parsing
     //! the scheme into an enum value. The disassembled parts may need at most
-    //! 2 bytes more of space, than the original source data. Therefore a
-    //! destination string buffer has to be provided, that must be at least 2
+    //! 3 bytes more of space, than the original source data. Therefore a
+    //! destination string buffer has to be provided, that must be at least 3
     //! bytes larger than the uri string. The buffer data can overlap as long as
     //! the destination buffer begins before the source buffer.
     //! @warning The callee has to ensure, that the destination buffer is not
