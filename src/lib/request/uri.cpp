@@ -31,8 +31,10 @@ namespace hutzn
 namespace
 {
 
-//! Makes and returns a newly created scheme trie.
-static trie<std::tuple<uri_scheme, uint16_t>> make_scheme_trie()
+//! @brief Makes and returns a newly created scheme trie.
+//!
+//! @return Trie of uri scheme, port tuples.
+trie<std::tuple<uri_scheme, uint16_t>> make_scheme_trie()
 {
     using value_type = std::tuple<uri_scheme, uint16_t>;
     static const value_type http_value{uri_scheme::HTTP, 80};
@@ -44,8 +46,19 @@ static trie<std::tuple<uri_scheme, uint16_t>> make_scheme_trie()
     return t;
 }
 
-inline bool convert_char(const char_t*& source, char_t*& destination,
-                         size_t& head, size_t& tail)
+//! @brief Converts a percent encoded character into a byte.
+//!
+//! @warning Expects, that at least 2 more bytes after the current one will
+//! follow and that the current character is a "percent".
+//! @param[in] source                Source pointer where to read the characters
+//!                                  from.
+//! @param[in,out] destination       Points to the destination buffer of the
+//!                                  converted character.
+//! @param[in,out] source_index      Current index in the source buffer.
+//! @param[in,out] destination_index Current index in the destination buffer.
+//! @return True if the conversion was successful and false when not.
+inline bool convert_char(const char_t* const source, char_t*& destination,
+                         size_t& source_index, size_t& destination_index)
 {
     static const uint8_t hex_digit_count = 16;
 
@@ -67,8 +80,14 @@ inline bool convert_char(const char_t*& source, char_t*& destination,
     return is_error;
 }
 
+//! @brief Skips slashes after the sheme part if they are present.
+//!
+//! @param[in,out] raw       Source buffer.
+//! @param[in,out] remaining Remaining bytes in the source buffer.
 inline void skip_optional_slashes(const char_t*& raw, size_t& remaining)
 {
+    // skips character when there are at least two characters to come and both
+    // actually are slashes
     static const uint8_t optional_slash_size = 2;
     if ((remaining >= optional_slash_size) && ('/' == raw[0]) &&
         ('/' == raw[1])) {
@@ -77,8 +96,18 @@ inline void skip_optional_slashes(const char_t*& raw, size_t& remaining)
     }
 }
 
-//! Parses maximal remaining characters of data and stops, when one of the
-//! selected characters is discovered.
+//! @brief Parses an uri word.
+//!
+//! This means all remaining characters get parsed until one of the selected
+//! characters or the end of the string is discovered. The word gets
+//! nullterminated in the destination buffer afterwards.
+//! @param[in,out] source                Points to the source buffer.
+//! @param[in,out] source_remaining      Number of bytes remaining to parse.
+//! @param[in,out] destination           Points to the destination buffer.
+//! @param[in,out] destination_remaining Number of bytes available to write.
+//! @param[in] select_chars              Several character, that will stop
+//!                                      parsing.
+//! @return                              The length of the written word.
 template <typename... tn>
 size_t parse_uri_word(const char_t*& source, size_t& source_remaining,
                       char_t*& destination, size_t& destination_remaining,
@@ -91,10 +120,13 @@ size_t parse_uri_word(const char_t*& source, size_t& source_remaining,
     bool stop = false;
     while (!stop) {
         const char_t ch = source[head];
+
+        // if the read character is a stop character it's a reason to stop
         if ((map[static_cast<uint8_t>(ch)]) || (head >= source_remaining) ||
             (tail >= destination_remaining)) {
             stop = true;
         } else if ('%' == ch) {
+            // in case of a percent-encoding
             static const uint8_t char_encoding_size = 3;
             if ((source_remaining - head) >= char_encoding_size) {
                 stop = convert_char(source, destination, head, tail);
@@ -103,22 +135,44 @@ size_t parse_uri_word(const char_t*& source, size_t& source_remaining,
                 stop = true;
             }
         } else {
+            // in any other case simply copy the character
             destination[tail] = source[head];
             head++;
             tail++;
         }
     }
 
+    // the string gets zero-terminated
     destination[tail] = '\0';
     tail++;
 
+    // update pointer and counters
     source_remaining -= head;
     destination_remaining -= tail;
     source += head;
     destination += tail;
+
+    // the zero-termination will not count for the length of the uri word
     return tail - 1;
 }
 
+//! @brief Parses an optional positional token.
+//!
+//! This is either path, query string or fragment. These tokens get parsed, when
+//! a start character is present.
+//! @param[in,out] source                  Points to the source buffer.
+//! @param[in,out] source_remaining        Number of bytes remaining to parse.
+//! @param[in,out] destination             Points to the destination buffer.
+//! @param[in,out] destination_remaining   Number of bytes available to write.
+//! @param[in,out] result_size             Length of the result if not NULL.
+//! @param[in] conditional_start_character Source must start with this character
+//!                                        or the token is not present.
+//! @param[in] skip_one_character          The first character does not get part
+//!                                        of the resultant string in the
+//!                                        destination buffer.
+//! @param[in] select_chars                Several character, that will stop
+//!                                        parsing.
+//! @return                                A pointer to the resultant token.
 template <typename... tn>
 char_t* parse_optional_positional_token(
     const char_t*& source, size_t& source_remaining, char_t*& destination,
@@ -171,9 +225,10 @@ bool uri::parse(const char_t* source, size_t source_length, char_t* destination,
                            destination_length, data, skip_scheme);
         result = passed_first_pass;
         if (passed_first_pass) {
-            // This implementation supports both: URIs with and without scheme
-            // or authority. Though it is not strictly conforming with RFC 3986,
-            // HTTP specifies request URIs without scheme and authority.
+            // this implementation supports both: uris with and without scheme
+            // or authority
+            // though it is not strictly conforming with RFC 3986 HTTP also
+            // specifies request uris without scheme and authority
             if ((data.scheme_size > 0) &&
                 (!parse_scheme(data.scheme, data.scheme_size))) {
                 result = false;
@@ -299,15 +354,20 @@ bool uri::parse_scheme(const char_t* const scheme_ptr, const size_t& size)
 
 bool uri::parse_authority(char_t* const authority_ptr, const size_t& size)
 {
-    // There is an ambiguity in the authority part of a URI specified by
-    // RFC3986. You are not able to correctly parse the authority into tokens
-    // without looking ahead n symbols, where n is the length of the whole
-    // authority part, because the symbol of ':' could occur before and after
-    // the '@' symbol, which is also optional. So what do you do, if you have
-    // found a ':' symbol without an '@' symbol before? The ':' could be part of
-    // the user info or it separates host and port. Therefore it is easier to
-    // perform a 2-pass parsing to determine, whether a '@' symbol occurs or
-    // not.
+    // there is an ambiguity in the authority part of an uri specified by
+    // RFC 3986: you are not able to correctly split the authority into tokens
+    // without looking ahead n symbols where n is the length of the whole
+    // authority part
+    //
+    // this is because of the symbol ':' that could occur before and after
+    // the '@' symbol which is also optional
+    //
+    // so what's to do if you have found a ':' symbol without an '@' symbol
+    // before: the ':' could be part of the user info or it separates host and
+    // port
+    //
+    // therefore it is easier to perform a 2-pass parsing to determine whether
+    // an '@' symbol occurs or not.
 
     bool result = true;
 
