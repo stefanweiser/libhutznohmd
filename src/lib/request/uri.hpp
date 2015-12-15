@@ -38,11 +38,15 @@ enum class uri_scheme : uint8_t {
     HTTPS = 2
 };
 
-//! Implements parsing of URIs as specified in RFC 3986. It supports only the
-//! specified schemes.
+//! @brief Implements parsing of URIs as specified in RFC 3986.
+//!
+//! It supports only the specified schemes.
 class uri
 {
 public:
+    //! @brief Initializes all members.
+    //!
+    //! Call @ref hutzn::uri::parse() to set them.
     explicit uri(void);
 
     explicit uri(const uri& rhs) = delete;
@@ -53,10 +57,9 @@ public:
     //! Disassembles the uri string, by nullterminating its parts and parsing
     //! the scheme into an enum value. The disassembled parts may need at most
     //! 2 bytes more of space, than the original source data. Therefore a
-    //! destination string buffer has to be provided. The buffer data can
-    //! overlap as long as the destination buffer begins before the source
-    //! buffer. The destination buffer must be at least 2 bytes larger than the
-    //! uri string.
+    //! destination string buffer has to be provided, that must be at least 2
+    //! bytes larger than the uri string. The buffer data can overlap as long as
+    //! the destination buffer begins before the source buffer.
     //! @warning The callee has to ensure, that the destination buffer is not
     //! freed before the uri!
     //! @param[in] source             Points to the uri string.
@@ -146,18 +149,57 @@ private:
         size_t fragment_size{0};
     };
 
+    //! @brief Parses the uri a first time.
+    //!
+    //! Rewrites the uri by splitting its parts and fill a first_pass_data
+    //! structure.
+    //! @param[in] source                 Points to the encoded uri.
+    //! @param[in] source_length          Length of the encoded uri in bytes.
+    //! @param[in,out] destination        Points to a buffer where to write to.
+    //! @param[in,out] destination_length Length of the destination buffer.
+    //! @param[in,out] data               Reference to the first_pass_data.
+    //! @param[in] skip_scheme            Skips the scheme when true.
+    //! @return                           True if success of false when failed.
     bool parse_1st_pass(const char_t* source, size_t source_length,
                         char_t* destination, size_t destination_length,
                         first_pass_data& data, const bool skip_scheme);
+
+    //! @brief Parses the scheme of an uri.
+    //!
+    //! Converts the scheme of the first pass into a value of the enum class
+    //! @ref uri_scheme.
+    //! @param[in] scheme_ptr Points to the begin of the scheme.
+    //! @param[in] size       Size of the scheme string in bytes.
+    //! @return               True if a valid scheme was found.
     bool parse_scheme(const char_t* const scheme_ptr, const size_t& size);
+
+    //! @brief Parses the authority of an uri.
+    //!
+    //! Splits the authority part into userinfo, host and port.
+    //! @param[in] authority_ptr Points to the begin of the authority.
+    //! @param[in] size          Size of the authority string in bytes.
+    //! @return                  True if the split and conversion succeeded.
     bool parse_authority(char_t* const authority_ptr, const size_t& size);
 
+    //! Scheme of the uri.
     uri_scheme scheme_;
+
+    //! Points to an external buffer containing the userinfo.
     const char_t* userinfo_;
+
+    //! Points to an external buffer containing the host.
     const char_t* host_;
+
+    //! Contains the parsed port or 0.
     uint16_t port_;
+
+    //! Points to an external buffer containing the path.
     const char_t* path_;
+
+    //! Points to an external buffer containing the query string.
     const char_t* query_;
+
+    //! Points to an external buffer containing the fragment.
     const char_t* fragment_;
 
     friend class uri_test;
