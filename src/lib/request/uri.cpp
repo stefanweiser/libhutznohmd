@@ -46,6 +46,32 @@ trie<std::tuple<uri_scheme, uint16_t>> make_scheme_trie()
     return t;
 }
 
+//! @brief Consumes one character.
+//!
+//! This will set the data pointer one character forth and decreases the
+//! remaining size.
+//! @warning There is no over- or underflow checking.
+//! @param[in,out] data      Points to a buffer.
+//! @param[in,out] remaining Remaining size of the buffer.
+void consume_one_character(const char_t*& data, size_t& remaining)
+{
+    data++;
+    remaining--;
+}
+
+//! @brief Reverts one character consumation.
+//!
+//! This will set the data pointer one character backwards and increases the
+//! remaining size.
+//! @warning There is no over- or underflow checking.
+//! @param[in,out] data      Points to a buffer.
+//! @param[in,out] remaining Remaining size of the buffer.
+void revert_one_character_consumation(char_t*& data, size_t& remaining)
+{
+    data--;
+    remaining++;
+}
+
 //! @brief Converts a percent encoded character into a byte.
 //!
 //! @warning Expects, that at least 2 more bytes after the current one will
