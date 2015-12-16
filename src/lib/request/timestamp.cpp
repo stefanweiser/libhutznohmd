@@ -257,19 +257,17 @@ weekday_value_type parse_weekday(const char_t*& data, size_t& remaining)
 
 } // namespace
 
-time_t parse_timestamp(const char_t* const data, const size_t length)
+time_t parse_timestamp(const char_t* data, size_t length)
 {
     int32_t weekday = -1;
     int32_t is_long_format = false;
-    const char_t* ptr = data;
-    size_t remaining = length;
-    std::tie(weekday, is_long_format) = parse_weekday(ptr, remaining);
+    std::tie(weekday, is_long_format) = parse_weekday(data, length);
     if (is_long_format) {
-        return parse_rfc850_date_time(ptr, remaining);
-    } else if (((*ptr) == ' ') || ((*ptr) == '\t')) {
-        return parse_asctime_date_time(ptr, remaining);
+        return parse_rfc850_date_time(data, length);
+    } else if (((*data) == ' ') || ((*data) == '\t')) {
+        return parse_asctime_date_time(data, length);
     } else {
-        return parse_rfc1123_date_time(ptr, remaining);
+        return parse_rfc1123_date_time(data, length);
     }
 }
 

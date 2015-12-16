@@ -26,7 +26,7 @@
 namespace hutzn
 {
 
-time_t parse_timestamp(const char_t* const data, const size_t length);
+time_t parse_timestamp(const char_t* data, size_t length);
 
 } // namespace hutzn
 
