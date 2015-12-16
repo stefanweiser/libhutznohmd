@@ -66,10 +66,10 @@ enum class header_key : int8_t {
 class request : public request_interface
 {
 public:
+    explicit request(const connection_pointer& connection);
+
     explicit request(const request& rhs) = delete;
     request& operator=(const request& rhs) = delete;
-
-    explicit request(const connection_pointer& connection);
 
     bool parse(const mime_handler& handler);
 
