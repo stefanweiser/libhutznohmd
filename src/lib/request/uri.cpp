@@ -246,7 +246,7 @@ uri::uri(void)
 {
 }
 
-//! @todo seperate http and mailto uri parser to get rid of skip_scheme param.
+//! @todo implement RFC 3986 correctly.
 bool uri::parse(const char_t* source, size_t source_length, char_t* destination,
                 size_t destination_length, const bool skip_scheme)
 {
