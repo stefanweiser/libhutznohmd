@@ -28,6 +28,9 @@ namespace hutzn
 class response : public response_interface
 {
 public:
+    //! @brief Constructs the response by a connection to write to.
+    //!
+    //! @param[in] connection Connection to use for communication.
     explicit response(const connection_pointer& connection);
 
     //! @copydoc response_interface::set_header()
