@@ -95,21 +95,23 @@ static trie<int32_t> get_month_trie(size_t& max_size)
 
 int32_t parse_time(const char_t*& data, size_t& remaining)
 {
-    int32_t hour = parse_unsigned_integer<int32_t>(data, remaining);
+    const int32_t hour = parse_unsigned_integer<int32_t>(data, remaining);
+    skip_whitespace(data, remaining);
     if ((!check_range<int32_t, 0, hours_per_day - 1>(hour)) ||
         ((*data) != ':')) {
         return -1;
     }
     skip_one_character(data, remaining);
     skip_whitespace(data, remaining);
-    int32_t minute = parse_unsigned_integer<int32_t>(data, remaining);
+    const int32_t minute = parse_unsigned_integer<int32_t>(data, remaining);
+    skip_whitespace(data, remaining);
     if ((!check_range<int32_t, 0, minutes_per_hour - 1>(minute)) ||
         ((*data) != ':')) {
         return -1;
     }
     skip_one_character(data, remaining);
     skip_whitespace(data, remaining);
-    int32_t second = parse_unsigned_integer<int32_t>(data, remaining);
+    const int32_t second = parse_unsigned_integer<int32_t>(data, remaining);
     if (!check_range<int32_t, 0, seconds_per_minute - 1>(second)) {
         return -1;
     }
