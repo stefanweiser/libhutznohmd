@@ -233,11 +233,6 @@ time_t parse_asctime_date_time(const char_t*& data, size_t& remaining)
     skip_whitespace(data, remaining);
     const int32_t year = parse_unsigned_integer<int32_t>(data, remaining);
 
-    if ((*data) == ' ') {
-        skip_one_character(data, remaining);
-        skip_whitespace(data, remaining);
-    }
-
     return seconds_since_epoch(
         static_cast<uint32_t>(second_of_day), static_cast<uint8_t>(day),
         static_cast<uint8_t>(month), static_cast<uint16_t>(year));
