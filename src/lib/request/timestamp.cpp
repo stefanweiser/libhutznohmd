@@ -40,7 +40,8 @@ static const int32_t end_of_19_hundrets = 1999;
 static const size_t trie_string_max_length = 16;
 
 using weekday_value_type = std::tuple<int8_t, bool>;
-static trie<weekday_value_type> get_weekday_trie(size_t& max_size)
+
+trie<weekday_value_type> make_weekday_trie(size_t& max_size)
 {
     trie<weekday_value_type> result{true};
 
@@ -71,7 +72,7 @@ static trie<weekday_value_type> get_weekday_trie(size_t& max_size)
     return result;
 }
 
-static trie<int32_t> get_month_trie(size_t& max_size)
+trie<int32_t> make_month_trie(size_t& max_size)
 {
     trie<int32_t> result{true};
 
@@ -121,7 +122,7 @@ int32_t parse_time(const char_t*& data, size_t& remaining)
 int32_t parse_month(const char_t*& data, size_t& remaining)
 {
     static size_t maximum_month_length = 0;
-    static const trie<int32_t> months = get_month_trie(maximum_month_length);
+    static const trie<int32_t> months = make_month_trie(maximum_month_length);
 
     trie_find_result<int32_t> result = months.find(data, remaining);
     data += result.used_size();
@@ -242,7 +243,7 @@ weekday_value_type parse_weekday(const char_t*& data, size_t& remaining)
 {
     static size_t maximum_weekday_length = 0;
     static const trie<weekday_value_type> weekdays =
-        get_weekday_trie(maximum_weekday_length);
+        make_weekday_trie(maximum_weekday_length);
 
     skip_whitespace(data, remaining);
     trie_find_result<weekday_value_type> result =
