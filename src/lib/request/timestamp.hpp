@@ -26,6 +26,16 @@
 namespace hutzn
 {
 
+//! @brief Parses a RFC 850, RFC 1123 or ASCII-time timestamp from a string.
+//!
+//! The data pointer and the length will be modified. On success the data
+//! pointer will point on the first character beyond the timestamp afterwards
+//! and the length gets decreased by the number of bytes read.
+//! @warning When the operation fails, both values are getting undefined.
+//! @param[in,out] data   Data buffer pointing to the begin of the timestamp
+//!                       representation.
+//! @param[in,out] length Remaining number of bytes in the buffer.
+//! @return               Timestamp in epoch time or -1 on error.
 time_t parse_timestamp(const char_t* data, size_t length);
 
 } // namespace hutzn
