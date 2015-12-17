@@ -26,6 +26,7 @@ SET(FILES   demux/demultiplex_handler.cpp
             request/md5.cpp
             request/mime_data.cpp
             request/request.cpp
+            request/response.cpp
             request/timestamp.cpp
             request/uri.cpp
             utility/character_validation.cpp
