@@ -21,11 +21,11 @@
 namespace hutzn
 {
 
-demux_query_interface::~demux_query_interface(void)
+demux_query_interface::~demux_query_interface(void) noexcept(true)
 {
 }
 
-demux_interface::~demux_interface(void)
+demux_interface::~demux_interface(void) noexcept(true)
 {
 }
 
@@ -38,7 +38,7 @@ request_handler_holder_interface::~request_handler_holder_interface(
 {
 }
 
-request_processor_interface::~request_processor_interface(void)
+request_processor_interface::~request_processor_interface(void) noexcept(true)
 {
 }
 

@@ -47,7 +47,7 @@ public:
     explicit listener(const int32_t& socket);
 
     //! @copydoc listener_interface::~listener_interface()
-    ~listener(void) override;
+    ~listener(void) noexcept(true) override;
 
     //! @copydoc listener_interface::accept()
     connection_pointer accept(void) const override;

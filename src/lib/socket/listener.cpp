@@ -76,7 +76,7 @@ listener::listener(const int32_t& socket)
 {
 }
 
-listener::~listener(void)
+listener::~listener(void) noexcept(true)
 {
     // stop listening and close the socket before destructing the object
     stop();

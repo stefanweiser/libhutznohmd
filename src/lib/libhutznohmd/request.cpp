@@ -188,11 +188,11 @@ NOTE: This definitions are getting used in later versions.
 
 */
 
-request_interface::~request_interface(void)
+request_interface::~request_interface(void) noexcept(true)
 {
 }
 
-response_interface::~response_interface(void)
+response_interface::~response_interface(void) noexcept(true)
 {
 }
 

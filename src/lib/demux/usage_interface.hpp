@@ -34,7 +34,7 @@ class usage_interface
 {
 public:
     //! Does nothing.
-    virtual ~usage_interface(void);
+    virtual ~usage_interface(void) noexcept(true);
 
     //! Sets the handler with the given id as used. Note, that this method is
     //! not thread-safe, because it has to be solely called during determining

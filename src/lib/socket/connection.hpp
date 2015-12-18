@@ -51,7 +51,7 @@ public:
     explicit connection(const int32_t& socket, const sockaddr_in& address);
 
     //! @copydoc connection_interface::~connection_interface()
-    ~connection(void) override;
+    ~connection(void) noexcept(true) override;
 
     //! @copydoc connection_interface::close()
     void close(void) override;

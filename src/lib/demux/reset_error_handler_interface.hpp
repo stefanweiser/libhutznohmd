@@ -32,7 +32,7 @@ class reset_error_handler_interface
 {
 public:
     //! Does nothing.
-    virtual ~reset_error_handler_interface(void);
+    virtual ~reset_error_handler_interface(void) noexcept(true);
 
     //! Resets an error handler.
     virtual void reset_error_handler(const http_status_code& code) = 0;

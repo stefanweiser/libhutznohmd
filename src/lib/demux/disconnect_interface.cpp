@@ -21,7 +21,7 @@
 namespace hutzn
 {
 
-disconnect_interface::~disconnect_interface(void)
+disconnect_interface::~disconnect_interface(void) noexcept(true)
 {
 }
 

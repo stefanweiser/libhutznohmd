@@ -782,7 +782,7 @@ class request_interface
 {
 public:
     //! Virtual destructor.
-    virtual ~request_interface(void);
+    virtual ~request_interface(void) noexcept(true);
 
     //! Fetches the content, which is not fetched by the request processor. Call
     //! it at least one time before calling @ref request_interface::content.
@@ -881,7 +881,7 @@ class response_interface
 {
 public:
     //! Virtual destructor.
-    virtual ~response_interface(void);
+    virtual ~response_interface(void) noexcept(true);
 
     //! Sets or overwrites a custom header. Every header field name, which is
     //! explicitly predefined by @ref page_requests gets rejected. Returns true,

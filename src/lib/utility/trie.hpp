@@ -107,7 +107,7 @@ public:
     //!
     //! Deletes its children recursively. Clears the pointers if they are case
     //! sensitive.
-    ~trie_node(void)
+    ~trie_node(void) noexcept(true)
     {
         // release all children first
         for (size_t i = 0; i < children_.size(); i++) {
@@ -465,7 +465,7 @@ public:
     //! @brief Destroys the trie.
     //!
     //! Deletes the trie node, when the reference count drops to zero.
-    ~trie(void)
+    ~trie(void) noexcept(true)
     {
         // decrease the reference counter
         (*count_)--;

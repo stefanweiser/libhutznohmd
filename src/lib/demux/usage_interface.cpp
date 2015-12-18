@@ -21,7 +21,7 @@
 namespace hutzn
 {
 
-usage_interface::~usage_interface(void)
+usage_interface::~usage_interface(void) noexcept(true)
 {
 }
 

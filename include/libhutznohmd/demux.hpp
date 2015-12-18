@@ -282,7 +282,7 @@ class demux_query_interface
 {
 public:
     //! Do not destroy the demultiplexer while performing any operation on it.
-    virtual ~demux_query_interface(void);
+    virtual ~demux_query_interface(void) noexcept(true);
 
     //! @brief Determines and returns the best-fitting request handler callback,
     //! that is registered at this demultiplexer.
@@ -305,7 +305,7 @@ class demux_interface : public demux_query_interface
 {
 public:
     //! Do not destroy the demultiplexer while performing any operation on it.
-    virtual ~demux_interface(void);
+    virtual ~demux_interface(void) noexcept(true);
 
     //! @brief Connects a request handler to a resource.
     //!
@@ -365,7 +365,7 @@ class request_processor_interface
 public:
     //! It is necessary, that no request is getting processed while destroying
     //! it.
-    virtual ~request_processor_interface(void);
+    virtual ~request_processor_interface(void) noexcept(true);
 
     //! @brief Takes a block device to answer one request.
     //!

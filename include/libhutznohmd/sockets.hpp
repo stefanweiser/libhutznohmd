@@ -129,7 +129,7 @@ class block_device_interface
 {
 public:
     //! Releases the resources allocated by the block device.
-    virtual ~block_device_interface(void);
+    virtual ~block_device_interface(void) noexcept(true);
 
     //! Invokes a blocking receive operation until something but at most
     //! @c max_size is read from the connection. The buffer will retain its
@@ -156,7 +156,7 @@ class connection_interface : public block_device_interface
 public:
     //! Shuts the connection down if not already done and releases the allocated
     //! resources.
-    virtual ~connection_interface(void);
+    virtual ~connection_interface(void) noexcept(true);
 
     //! Shuts down the connection, but remain holding the resources. This will
     //! immediately stop any call on that connection. The connection object
@@ -187,7 +187,7 @@ class listener_interface
 public:
     //! Shuts down the listening. Releases all resources of the listener socket
     //! afterwards.
-    virtual ~listener_interface(void);
+    virtual ~listener_interface(void) noexcept(true);
 
     //! Blocks until someone wants to connect to the listener or the listener
     //! gets closed. In the first case the connection gets established and

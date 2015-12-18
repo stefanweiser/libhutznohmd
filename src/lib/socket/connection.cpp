@@ -59,7 +59,7 @@ connection::connection(const int32_t& socket, const sockaddr_in& address)
 {
 }
 
-connection::~connection(void)
+connection::~connection(void) noexcept(true)
 {
     // first shutdown and then close the connection before destructing the
     // object
