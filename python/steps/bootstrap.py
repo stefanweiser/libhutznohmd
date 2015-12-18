@@ -33,14 +33,14 @@ class BootstrapStep(object):
 
         args.log_obj.info('Bootstrap project for target ' + args.target +
                           '...')
-        os.makedirs(path.cmake, exist_ok=True)
-        args.log_obj.execute(['cmake', os.path.join(path.cmake, '..', '..'),
-                              '-DCMAKE_INSTALL_PREFIX=' + path.install,
+        os.makedirs(path.cmake(), exist_ok=True)
+        args.log_obj.execute(['cmake', os.path.join(path.cmake(), '..', '..'),
+                              '-DCMAKE_INSTALL_PREFIX=' + path.install(),
                               '-DCMAKE_BUILD_TYPE=' + args.target,
                               '-DMINIMAL=' + str(args.minimal),
                               '-DLIBRARY_VERSION=' + args.library_version,
                               '-DCLANG_FORMAT=' + self.clangformattool.path()],
-                             working_dir=path.cmake)
+                             working_dir=path.cmake())
 
     @staticmethod
     def name():

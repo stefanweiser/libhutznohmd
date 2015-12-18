@@ -22,7 +22,7 @@ class PackageStep(object):
 
         args.log_obj.execute(['tar', '--create', '--gzip', '--owner=root',
                               '--group=root', '--preserve-permissions',
-                              '--directory', path.install, '--file', tar_name,
+                              '--directory', path.install(), '--file', tar_name,
                               '.'])
         args.log_obj.execute(['tar', '--create', '--gzip', '--owner=root',
                               '--group=root', '--preserve-permissions',
@@ -33,7 +33,7 @@ class PackageStep(object):
                                                           '__pycache__'),
                               '--exclude=' + os.path.join('python', 'tools',
                                                           '__pycache__'),
-                              '--exclude=*.user', '--directory', path.project,
+                              '--exclude=*.user', '--directory', path.project(),
                               '--file', src_tar_name, '.'])
 
     @staticmethod

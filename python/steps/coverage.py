@@ -24,22 +24,22 @@ class CoverageStep(object):
         def run_gcovr(gcovr, output_filename_base, log_obj):
             ''' runs gcovr and fixes the xml output '''
 
-            filename_base = os.path.join(path.coverage, output_filename_base)
+            filename_base = os.path.join(path.coverage(), output_filename_base)
             log_obj.execute([gcovr, '--branches', '--xml', '--output=' +
-                             filename_base + '.xml', '--root', path.project,
-                             '--verbose'], working_dir=path.cmake)
+                             filename_base + '.xml', '--root', path.project(),
+                             '--verbose'], working_dir=path.cmake())
             log_obj.execute([gcovr, '--branches', '--html', '--output=' +
-                             filename_base + '.html', '--root', path.project,
-                             '--verbose'], working_dir=path.cmake)
+                             filename_base + '.html', '--root', path.project(),
+                             '--verbose'], working_dir=path.cmake())
             log_obj.execute([gcovr, '--delete', '--branches', '--output=' +
-                             filename_base + '.txt', '--root', path.project,
-                             '--verbose'], working_dir=path.cmake)
+                             filename_base + '.txt', '--root', path.project(),
+                             '--verbose'], working_dir=path.cmake())
 
             def update_filename(classes):
                 ''' updates the filename of all classes '''
 
                 for cl in classes:
-                    filename = os.path.join(path.project,
+                    filename = os.path.join(path.project(),
                                             cl.attrib['filename'])
                     filename = os.path.realpath(filename)
                     cl.attrib['filename'] = filename
@@ -67,10 +67,10 @@ class CoverageStep(object):
 
         args.log_obj.info('Generate coverage information...')
 
-        paths.renew_folder(path.coverage)
+        paths.renew_folder(path.coverage())
         args.log_obj.info('Collect unittest\'s coverage information...')
-        args.log_obj.execute([path.unittest_bin])
-        args.log_obj.execute([path.integrationtest_bin])
+        args.log_obj.execute([path.unittest_bin()])
+        args.log_obj.execute([path.integrationtest_bin()])
         run_gcovr(self.gcovrtool.path(), 'unittest', args.log_obj)
 
     @staticmethod

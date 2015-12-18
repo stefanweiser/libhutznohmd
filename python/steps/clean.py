@@ -12,8 +12,8 @@ class CleanStep(object):
     @staticmethod
     def execute(args, path):
         args.log_obj.info('Clean project...')
-        if os.path.exists(path.cmake):
-            shutil.rmtree(path.cmake)
+        if os.path.exists(path.cmake()):
+            shutil.rmtree(path.cmake())
 
     @staticmethod
     def name():

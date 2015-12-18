@@ -2,7 +2,8 @@
 
 ''' includes all of the directory '''
 
-import tools.cppcheck # flake8: noqa
-import tools.doxygen # flake8: noqa
-import tools.gcovr # flake8: noqa
-import tools.jre # flake8: noqa
+# flake8: noqa
+import tools.cppcheck
+import tools.doxygen
+import tools.gcovr
+import tools.jre

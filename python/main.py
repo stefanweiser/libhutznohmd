@@ -67,7 +67,7 @@ def main(path, log_obj):
     args.log_obj = log_obj
 
     # read current library version from file and add to arguments
-    version_file = open(os.path.join(path.project, 'version'), 'r')
+    version_file = open(os.path.join(path.project(), 'version'), 'r')
     args.library_version = version_file.read().strip()
     version_file.close()
 

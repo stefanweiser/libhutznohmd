@@ -18,17 +18,17 @@ class DocStep(object):
     def execute(self, args, path):
         self.doxygentool.find(args, [1, 8, 8])
         self.jretool.find(args, [1, 7, 0])
-        plantuml_path = os.path.join(path.download, 'plantuml.jar')
+        plantuml_path = os.path.join(path.download(), 'plantuml.jar')
         if not os.path.exists(plantuml_path):
             args.log_obj.info('Download plantuml...')
-            os.makedirs(path.download, exist_ok=True)
-            httpget.http_get(path.plantuml_url, plantuml_path)
+            os.makedirs(path.download(), exist_ok=True)
+            httpget.http_get(path.plantuml_url(), plantuml_path)
 
-        os.makedirs(path.documentation, exist_ok=True)
+        os.makedirs(path.documentation(), exist_ok=True)
         args.log_obj.info('Generate documentation...')
         args.log_obj.execute([self.doxygentool.path(),
-                              os.path.join(path.project, 'Doxyfile')],
-                             working_dir=path.documentation)
+                              os.path.join(path.project(), 'Doxyfile')],
+                             working_dir=path.documentation())
 
     @staticmethod
     def name():

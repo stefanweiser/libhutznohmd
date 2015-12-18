@@ -21,10 +21,10 @@ if __name__ == "__main__":
     os.chdir(os.path.dirname(__file__))
 
     # create build path if not exist
-    os.makedirs(path.build, exist_ok=True)
+    os.makedirs(path.build(), exist_ok=True)
 
     # create a logger
-    with logger.Logger(os.path.join(path.build, 'build.log')) as log_obj:
+    with logger.Logger(os.path.join(path.build(), 'build.log')) as log_obj:
         # the script requires at least python 3.2
         if sys.version_info < (3, 2):
             log_obj.failure('At least python 3.2 expected, but found:\n' +

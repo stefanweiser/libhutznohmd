@@ -15,9 +15,9 @@ class TestStep(object):
         self.buildstep.execute(args, path)
 
         args.log_obj.info('Run unittest...')
-        args.log_obj.execute([path.unittest_bin])
+        args.log_obj.execute([path.unittest_bin()])
         args.log_obj.info('Run integrationtest...')
-        args.log_obj.execute([path.integrationtest_bin])
+        args.log_obj.execute([path.integrationtest_bin()])
 
     @staticmethod
     def name():

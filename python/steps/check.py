@@ -21,30 +21,30 @@ class CheckStep(object):
         self.cppchecktool.find(args, [1, 70])
         self.buildstep.execute(args, path)
 
-        paths.renew_folder(path.reports)
+        paths.renew_folder(path.reports())
 
         args.log_obj.info('Run valgrind...')
         args.log_obj.execute(['valgrind', '--leak-check=full', '--xml=yes',
-                              '--xml-file=' + os.path.join(path.reports,
+                              '--xml-file=' + os.path.join(path.reports(),
                                                            'valgrind.xml'),
-                              path.unittest_bin])
+                              path.unittest_bin()])
 
         args.log_obj.info('Run unittest...')
-        args.log_obj.execute([path.unittest_bin, '--gtest_output=xml:' +
-                              os.path.join(path.reports, 'unittest.xml')])
+        args.log_obj.execute([path.unittest_bin(), '--gtest_output=xml:' +
+                              os.path.join(path.reports(), 'unittest.xml')])
 
-        include_path = os.path.join(path.project, 'include')
-        src_path = os.path.join(path.project, 'src')
+        include_path = os.path.join(path.project(), 'include')
+        src_path = os.path.join(path.project(), 'src')
         integrationtest_path = os.path.join(src_path, 'integrationtest')
         lib_path = os.path.join(src_path, 'lib')
         mock_path = os.path.join(src_path, 'mock')
         unittest_path = os.path.join(src_path, 'unittest')
-        gmock_path = os.path.join(path.project, 'gmock')
+        gmock_path = os.path.join(path.project(), 'gmock')
 
         # running cppcheck with all the code, to improve 'unused function'
         # warnings
         args.log_obj.info('Run cppcheck...')
-        cppcheck_report_filename = os.path.join(path.reports, 'cppcheck.xml')
+        cppcheck_report_filename = os.path.join(path.reports(), 'cppcheck.xml')
         cppcheck_report_file = open(cppcheck_report_filename, 'w')
         args.log_obj.execute([self.cppchecktool.path(), '--xml',
                               '--xml-version=2', '--force', '--language=c++',
@@ -66,11 +66,12 @@ class CheckStep(object):
                              cppcheck_report_file, logger.STDERR)
         cppcheck_report_file.close()
 
-        CheckStep.__fix_cppcheck_report(cppcheck_report_filename, path.project)
-        CheckStep.__run_rats_and_vera(args, src_path, lib_path, path.reports)
+        CheckStep.__fix_cppcheck_report(cppcheck_report_filename,
+                                        path.project())
+        CheckStep.__run_rats_and_vera(args, src_path, lib_path, path.reports())
 
         args.log_obj.info('Run All report files were written to ' +
-                          path.reports + '.')
+                          path.reports() + '.')
 
     @staticmethod
     def __fix_cppcheck_report(cppcheck_report_filename, project_path):
