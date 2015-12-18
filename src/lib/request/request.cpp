@@ -97,6 +97,26 @@ static trie<header_key> get_header_key_trie(size_t& max_size)
     return result;
 }
 
+template <typename T>
+bool parse_specific_value(const trie<T>& t, const size_t& max_length,
+                          const char_t* const string, const size_t& length,
+                          T& value)
+{
+    bool result = false;
+
+    // Parsing the value will succeed, when the token is not too long and the
+    // found value length is exactly the token length.
+    if (length <= max_length) {
+        auto r = t.find(string, length);
+        if (r.used_size() == length) {
+            value = r.value();
+            result = true;
+        }
+    }
+
+    return result;
+}
+
 } // namespace
 
 request::request(const connection_pointer& connection)
@@ -243,26 +263,6 @@ const char_t* request::referer(void) const
 const char_t* request::user_agent(void) const
 {
     return user_agent_;
-}
-
-template <typename T>
-bool request::parse_specific_value(const trie<T>& t, const size_t& max_length,
-                                   const char_t* const string,
-                                   const size_t& length, T& value)
-{
-    bool result = false;
-
-    // Parsing the value will succeed, when the token is not too long and the
-    // found value length is exactly the token length.
-    if (length <= max_length) {
-        auto r = t.find(string, length);
-        if (r.used_size() == length) {
-            value = r.value();
-            result = true;
-        }
-    }
-
-    return result;
 }
 
 bool request::parse_method(int32_t& ch)

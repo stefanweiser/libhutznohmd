@@ -128,11 +128,6 @@ public:
     const char_t* user_agent(void) const override;
 
 private:
-    template <typename T>
-    bool parse_specific_value(const trie<T>& t, const size_t& max_length,
-                              const char_t* const string, const size_t& length,
-                              T& value);
-
     bool parse_method(int32_t& ch);
     bool parse_uri(int32_t& ch);
     bool parse_version(int32_t& ch);
