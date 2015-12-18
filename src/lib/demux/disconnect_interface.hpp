@@ -34,6 +34,7 @@ namespace hutzn
 class disconnect_interface
 {
 public:
+    //! @brief Destroys a disconnect interface.
     virtual ~disconnect_interface(void) noexcept(true);
 
     //! @brief Disconnects the handler with the given id from the demultiplexer.

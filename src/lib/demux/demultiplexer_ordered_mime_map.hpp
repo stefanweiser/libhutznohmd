@@ -36,6 +36,7 @@ namespace hutzn
 class demultiplexer_ordered_mime_map
 {
 public:
+    //! @brief Constructs a ordered MIME map for the use in a demultiplexer.
     explicit demultiplexer_ordered_mime_map(void);
 
     //! @brief Returns the number of elements stored in the data structure.

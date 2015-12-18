@@ -66,11 +66,21 @@ enum class header_key : int8_t {
 class request : public request_interface
 {
 public:
+    //! @brief Constructs a request by a connection.
+    //!
+    //! @param[in] connection Connection to use when more data is needed.
     explicit request(const connection_pointer& connection);
 
     explicit request(const request& rhs) = delete;
     request& operator=(const request& rhs) = delete;
 
+    //! @brief Parses a request.
+    //!
+    //! Reads the header from the stream. Splits and converts the header's parts
+    //! to improve operation speed afterwards. Needs a mime_handler to be used
+    //! when reading MIMEs.
+    //! @param[in] handler MIME handler to be used when parsing the header.
+    //! @return            True then parsing was successful and false when not.
     bool parse(const mime_handler& handler);
 
     //! @copydoc request_interface::fetch_content()

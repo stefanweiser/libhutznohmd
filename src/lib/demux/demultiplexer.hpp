@@ -45,6 +45,7 @@ class demultiplexer : public demux_interface,
                       public usage_interface
 {
 public:
+    //! @brief Constructs a demultiplexer.
     explicit demultiplexer(void);
 
     //! @copydoc demux_query_interface::determine_request_handler()

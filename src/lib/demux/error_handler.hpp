@@ -27,9 +27,11 @@
 namespace hutzn
 {
 
+//! Acts as a handle for error handlers.
 class error_handler : public handler_interface
 {
 public:
+    //! Constructs a error handler.
     explicit error_handler(reset_error_handler_interface& request_processor,
                            const http_status_code& code);
 

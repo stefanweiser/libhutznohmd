@@ -27,9 +27,11 @@
 namespace hutzn
 {
 
+//! Stores a request handler to call it.
 class request_handler_holder : public request_handler_holder_interface
 {
 public:
+    //! Constructs a request handler holder.
     explicit request_handler_holder(usage_interface& demuxer,
                                     const request_handler_id& id,
                                     const request_handler_callback& callback);

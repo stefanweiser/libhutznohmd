@@ -31,10 +31,12 @@
 namespace hutzn
 {
 
+//! Provides helper logic to process requests.
 class request_processor : public request_processor_interface,
                           public reset_error_handler_interface
 {
 public:
+    //! Constructs a request processor.
     explicit request_processor(const demux_query_pointer& query_interface,
                                const uint64_t& connection_timeout_in_sec);
 
