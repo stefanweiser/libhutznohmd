@@ -199,8 +199,7 @@ private:
     //! query entries! It is designed for only one purpose: To let the string's
     //! content decide the order of the elements in the map. This map has to
     //! enforce, that all characters are null-terminated!
-    struct enforced_null_terminated_less
-    {
+    struct enforced_null_terminated_less {
         bool operator()(const char_t* const lhs, const char_t* const rhs) const;
     };
 

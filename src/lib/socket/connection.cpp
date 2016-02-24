@@ -157,8 +157,7 @@ bool connection::connect(void)
         // This is an accepted exceptional use of an union (breaks MISRA
         // C++:2008 Rule 9-5-1). Alternatively a reinterpret_cast could be used,
         // but anyway there must be a way to fulfill the BSD socket interface.
-        union
-        {
+        union {
             sockaddr base;
             sockaddr_in in;
         } addr;

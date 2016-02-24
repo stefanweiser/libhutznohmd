@@ -24,12 +24,12 @@ class BootstrapStep(object):
         self.gcctool = tools.gcc.GccTool()
 
     def execute(self, args, path):
-        clang_found = self.clangtool.does_version_match(args, [3, 5])
+        clang_found = self.clangtool.does_version_match(args, [3, 7])
         gcc_found = self.gcctool.does_version_match(args, [4, 8])
         if (clang_found is False) and (gcc_found is False):
             raise CompilerError()
 
-        self.clangformattool.find(args, [3, 5])
+        self.clangformattool.find(args, [3, 7])
 
         args.log_obj.info('Bootstrap project for target ' + args.target +
                           '...')

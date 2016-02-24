@@ -41,8 +41,9 @@ protected:
     static request_handler_callback make_request_handler(
         const http_status_code& code)
     {
-        return [code](const request_interface&,
-                      response_interface&) { return code; };
+        return [code](const request_interface&, response_interface&) {
+            return code;
+        };
     }
 
     const mime none_{mime_type::NONE, mime_subtype::NONE};

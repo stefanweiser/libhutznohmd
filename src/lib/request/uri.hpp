@@ -116,8 +116,7 @@ public:
 
 private:
     //! Contains data of the first pass.
-    struct first_pass_data
-    {
+    struct first_pass_data {
         //! Points to the begin of the scheme.
         const char_t* scheme{NULL};
 

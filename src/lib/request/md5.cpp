@@ -50,8 +50,7 @@ using set_functor = uint32_t (*)(const uint32_t& a, const uint32_t& b,
                                  const size_t& j, const uint8_t& s);
 
 //! @brief Defines a setting for a dword.
-struct dword_setting
-{
+struct dword_setting {
     //! A number of indices, which are used to select an input data index for
     //! a calculation.
     std::array<size_t, processed_width_per_step> indices;

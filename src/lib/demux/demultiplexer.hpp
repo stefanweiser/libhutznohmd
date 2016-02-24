@@ -87,8 +87,7 @@ public:
     void decrease_usage_counter(const request_handler_id& id) override;
 
 private:
-    struct resource_key
-    {
+    struct resource_key {
         std::string path;
         http_verb method;
         mime content_type;

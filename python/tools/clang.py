@@ -10,7 +10,7 @@ class ClangTool(object):
     ''' searches for the clang tool '''
 
     def __init__(self):
-        self.__name = ['clang', 'clang-3.5']
+        self.__name = ['clang', 'clang-3.7']
         self.__path = ''
         self.__realname = ''
 

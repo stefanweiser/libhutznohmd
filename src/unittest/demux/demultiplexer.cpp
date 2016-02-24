@@ -129,8 +129,9 @@ TEST_F(demultiplexer_test, determine_request_unknown_path)
     ASSERT_TRUE(NULL != demultiplexer_.get());
 
     auto request = std::make_shared<request_interface_mock>();
-    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(
-        Return(id().content_type));
+    EXPECT_CALL(*request, content_type())
+        .Times(1)
+        .WillOnce(Return(id().content_type));
     EXPECT_CALL(*request, path()).Times(1).WillOnce(Return(id().path.c_str()));
     EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(id().method));
 
@@ -144,8 +145,9 @@ TEST_F(demultiplexer_test, determine_request_unknown_method)
     ASSERT_TRUE(NULL != handler.get());
 
     auto request = std::make_shared<request_interface_mock>();
-    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(
-        Return(id().content_type));
+    EXPECT_CALL(*request, content_type())
+        .Times(1)
+        .WillOnce(Return(id().content_type));
     EXPECT_CALL(*request, path()).Times(1).WillOnce(Return(id().path.c_str()));
     EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(http_verb::PUT));
 
@@ -202,10 +204,12 @@ TEST_F(demultiplexer_test, determine_request_handler_unknown_accept_type)
     auto request = std::make_shared<request_interface_mock>();
     EXPECT_CALL(*request, path()).Times(1).WillOnce(Return(id().path.c_str()));
     EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(id().method));
-    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(
-        Return(id().content_type));
-    EXPECT_CALL(*request, accept(_, _)).Times(1).WillOnce(
-        Invoke([](void*&, mime&) { return false; }));
+    EXPECT_CALL(*request, content_type())
+        .Times(1)
+        .WillOnce(Return(id().content_type));
+    EXPECT_CALL(*request, accept(_, _))
+        .Times(1)
+        .WillOnce(Invoke([](void*&, mime&) { return false; }));
 
     EXPECT_FALSE(demultiplexer_->determine_request_handler(*request));
 }
@@ -220,10 +224,12 @@ TEST_F(demultiplexer_test, determine_request_handler_success_1)
     auto request = std::make_shared<request_interface_mock>();
     EXPECT_CALL(*request, path()).Times(1).WillOnce(Return(id().path.c_str()));
     EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(id().method));
-    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(
-        Return(test_id.content_type));
-    EXPECT_CALL(*request, accept(_, _)).Times(1).WillOnce(
-        Invoke([](void*&, mime& m) {
+    EXPECT_CALL(*request, content_type())
+        .Times(1)
+        .WillOnce(Return(test_id.content_type));
+    EXPECT_CALL(*request, accept(_, _))
+        .Times(1)
+        .WillOnce(Invoke([](void*&, mime& m) {
             m.first = mime_type::WILDCARD;
             m.second = mime_subtype::WILDCARD;
             return true;
@@ -242,8 +248,9 @@ TEST_F(demultiplexer_test, determine_request_handler_success_2)
     auto request = std::make_shared<request_interface_mock>();
     EXPECT_CALL(*request, path()).Times(1).WillOnce(Return(id().path.c_str()));
     EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(id().method));
-    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(
-        Return(test_id.content_type));
+    EXPECT_CALL(*request, content_type())
+        .Times(1)
+        .WillOnce(Return(test_id.content_type));
     EXPECT_CALL(*request, accept(_, _))
         .Times(2)
         .WillOnce(Invoke([this](void*&, mime& m) {
@@ -271,8 +278,9 @@ TEST_F(demultiplexer_test, determine_request_handler_disabled_handler)
     auto request = std::make_shared<request_interface_mock>();
     EXPECT_CALL(*request, path()).Times(1).WillOnce(Return(id().path.c_str()));
     EXPECT_CALL(*request, method()).Times(1).WillOnce(Return(id().method));
-    EXPECT_CALL(*request, content_type()).Times(1).WillOnce(
-        Return(test_id.content_type));
+    EXPECT_CALL(*request, content_type())
+        .Times(1)
+        .WillOnce(Return(test_id.content_type));
     EXPECT_CALL(*request, accept(_, _))
         .Times(2)
         .WillOnce(Invoke([this](void*&, mime& m) {
@@ -288,10 +296,12 @@ TEST_F(demultiplexer_test, determine_request_handler_disabled_handler)
     auto request2 = std::make_shared<request_interface_mock>();
     EXPECT_CALL(*request2, path()).Times(1).WillOnce(Return(id().path.c_str()));
     EXPECT_CALL(*request2, method()).Times(1).WillOnce(Return(id().method));
-    EXPECT_CALL(*request2, content_type()).Times(1).WillOnce(
-        Return(test_id.content_type));
-    EXPECT_CALL(*request2, accept(_, _)).Times(1).WillOnce(
-        Invoke([this](void*&, mime& m) {
+    EXPECT_CALL(*request2, content_type())
+        .Times(1)
+        .WillOnce(Return(test_id.content_type));
+    EXPECT_CALL(*request2, accept(_, _))
+        .Times(1)
+        .WillOnce(Invoke([this](void*&, mime& m) {
             m.first = mt_image_;
             m.second = ms_plain_;
             return true;

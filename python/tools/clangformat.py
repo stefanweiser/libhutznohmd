@@ -10,7 +10,7 @@ class ClangFormatTool(object):
     ''' searches for the clang-format tool '''
 
     def __init__(self):
-        self.__name = ['clang-format', 'clang-format-3.5']
+        self.__name = ['clang-format', 'clang-format-3.7']
         self.__path = ''
         self.__realname = ''
 

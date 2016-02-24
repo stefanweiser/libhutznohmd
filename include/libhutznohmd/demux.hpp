@@ -197,8 +197,7 @@ to the requesting client.
 //! These informations are used by the demultiplexer to choose the right
 //! handler. Note that this method implements just a subset of RFC 3986 chapter
 //! 3.3!
-struct request_handler_id
-{
+struct request_handler_id {
     //! This string contains only the path of the URL (e.g. "/index.html"). This
     //! path must begin with a slash and must not contain two or more
     //! consecutive slashes. The valid character is described with the token

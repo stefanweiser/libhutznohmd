@@ -91,8 +91,7 @@ public:
     bool is_available(const mime& type) const;
 
 private:
-    struct request_handler_infos
-    {
+    struct request_handler_infos {
         request_handler_callback handler;
         size_t usage_counter;
         bool is_available;
