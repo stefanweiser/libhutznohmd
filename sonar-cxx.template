@@ -16,5 +16,4 @@ sonar.cxx.cppcheck.reportPath=${reports_path}/cppcheck.xml
 sonar.cxx.rats.reportPath=${reports_path}/rats.xml
 sonar.cxx.valgrind.reportPath=${reports_path}/valgrind.xml
 sonar.cxx.xunit.reportPath=${reports_path}/unittest.xml
-sonar.cxx.vera.reportPath=${reports_path}/vera++.xml
 sonar.cxx.coverage.reportPath=${coverage_path}/unittest.xml

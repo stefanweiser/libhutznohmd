@@ -68,7 +68,7 @@ class CheckStep(object):
 
         CheckStep.__fix_cppcheck_report(cppcheck_report_filename,
                                         path.project())
-        CheckStep.__run_rats_and_vera(args, src_path, lib_path, path.reports())
+        CheckStep.__run_rats(args, src_path, path.reports())
 
         args.log_obj.info('Run All report files were written to ' +
                           path.reports() + '.')
@@ -97,23 +97,14 @@ class CheckStep(object):
             tree.write(cppcheck_report_filename)
 
     @staticmethod
-    def __run_rats_and_vera(args, src_path, lib_path, report_path):
-        ''' will produce reports for rats and vera++ '''
+    def __run_rats(args, src_path, report_path):
+        ''' will produce reports for rats '''
 
         args.log_obj.info('Run rats...')
         rats_report_file = open(os.path.join(report_path, 'rats.xml'), 'w+')
         args.log_obj.execute(['rats', '--xml', '--resultsonly', '-w', '3',
                               src_path], rats_report_file, logger.STDOUT)
         rats_report_file.close()
-
-        args.log_obj.info('Run vera++...')
-        vera_cmd_line = ['vera++', '--checkstyle-report',
-                         os.path.join(report_path, 'vera++.xml')]
-        for dirpath, _, files in os.walk(lib_path):
-            for f in files:
-                if f.endswith('.cpp') or f.endswith('.hpp'):
-                    vera_cmd_line.append(os.path.join(dirpath, f))
-        args.log_obj.execute(vera_cmd_line)
 
     @staticmethod
     def name():

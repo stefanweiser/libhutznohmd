@@ -324,7 +324,6 @@ For metrics:
 - @b [rats >= 2.4](https://code.google.com/p/rough-auditing-tool-for-security/)
 - @b sonarqube >= 5.0
 - @b valgrind >= 3.7
-- @b vera++ >= 1.2
 - A network connection to download sonar-runner in a recent version.
 
 For packaging:
