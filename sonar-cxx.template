@@ -1,7 +1,3 @@
-sonar.jdbc.url=jdbc:postgresql://localhost/sonar
-sonar.jdbc.username=sonar
-sonar.jdbc.password=sonar
-
 sonar.projectKey=cxx:${project_key}
 sonar.projectName=${project_name}
 sonar.projectVersion=${version}
