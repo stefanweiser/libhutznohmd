@@ -21,8 +21,7 @@ class JreTool(object):
 
         # first line of stderr is of interest
         line = out[1].split(b'\n')[0]
-        version_string = re.match(b'^java[\\s]+version[\\s]+"' +
-                                  b'([\\d]+\\.[\\d]+\\.[\\d]+)',
+        version_string = re.match(b'[^"]*"([\\d]+\\.[\\d]+\\.[\\d]+)',
                                   line).groups()[0]
         found_version = [int(d) for d in version_string.split(b'.')]
         tools.common.compare_versions(args, self.__name, found_version,
