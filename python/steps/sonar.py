@@ -31,8 +31,8 @@ class SonarStep(object):
         os.environ['cmake_path'] = path.cmake()
         os.environ['coverage_path'] = os.path.join('build', 'coverage')
         os.environ['reports_path'] = os.path.join('build', 'reports')
-        os.environ['version'] = '.'.join(args.library_version,
-                                         os.environ['BUILD_NUMBER'])
+        os.environ['version'] = '.'.join([args.library_version,
+                                          os.environ['BUILD_NUMBER']])
         os.environ['include_paths'] = \
             ','.join(compiler.get_include_list(['-std=c++11', '-DNDEBUG']))
 
