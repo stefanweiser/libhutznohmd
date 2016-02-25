@@ -61,7 +61,8 @@ class SonarStep(object):
                                '-Dproject.home=.', '-Dproject.settings=' +
                                sonar_property_file, '-Dsonar.login=' +
                                os.environ['SONAR_USER'], '-Dsonar.password=' +
-                               os.environ['SONAR_PASSWORD'], 'org.sonar.runner.Main'],
+                               os.environ['SONAR_PASSWORD'],
+                               'org.sonar.runner.Main'],
                               cwd=path.project())
 
     @staticmethod
