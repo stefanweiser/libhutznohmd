@@ -1,4 +1,4 @@
-sonar.projectKey=cxx:${project_key}
+sonar.projectKey=${project_key}
 sonar.projectName=${project_name}
 sonar.projectVersion=${version}
 sonar.working.directory=${build_path}/sonar
