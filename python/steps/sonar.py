@@ -58,7 +58,9 @@ class SonarStep(object):
         subprocess.check_call([self.jretool.path(), '-classpath',
                                sonar_runner_path, '-Drunner.home=build',
                                '-Dproject.home=.', '-Dproject.settings=' +
-                               sonar_property_file, 'org.sonar.runner.Main'],
+                               sonar_property_file, '-Dsonar.login=' +
+                               os.environ['SONAR_USER'], '-Dsonar.password=' +
+                               os.environ['SONAR_PASSWORD'], 'org.sonar.runner.Main'],
                               cwd=path.project())
 
     @staticmethod
