@@ -97,6 +97,7 @@ public:
     //!
     //! Returns the parsed registration value or INVALID when not.
     //! @param[in] string String to search on.
+    //! @param[in] expected_length Length of the string to search on.
     //! @return           A registrated value or INVALID.
     value_type parse_type(const char_t* const string,
                           const size_t expected_length) const
