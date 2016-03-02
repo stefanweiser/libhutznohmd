@@ -302,8 +302,8 @@ Generally:
 - @b python >= 3.2
 
 For building:
-- @b clang >= 3.5
-- @b clang-format >= 3.5
+- @b clang >= 3.7
+- @b clang-format >= 3.7
 - @b g++ >= 4.8
 
 Recommended for developing:
@@ -321,8 +321,8 @@ For coverage:
 
 For metrics:
 - @b cppcheck >= 1.70
-- @b [rats >= 2.4](https://code.google.com/p/rough-auditing-tool-for-security/)
-- @b sonarqube >= 5.0
+- @b [rats >= 2.4](https://github.com/andrew-d/rough-auditing-tool-for-security)
+- @b sonarqube >= 5.3
 - @b valgrind >= 3.7
 - A network connection to download sonar-runner in a recent version.
 
