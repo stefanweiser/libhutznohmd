@@ -24,8 +24,11 @@ Some examples are provided by another script:
 Documentation
 -------------
 
-For a complete doxygen documentation (including concepts), you can generate
-it with:
+The newest documentation is available at:
+
+    https://doc.stefanweiser.de/libhutznohmd/
+
+You can also generate a complete doxygen documentation (including concepts) by:
 
     $ ./make doc
 
@@ -39,3 +42,18 @@ utilizes PlantUML and therefore you will also need Java installed. The script
 will download PlantUML automatically to the build folder before building the
 documentation.
 
+Software Quality
+----------------
+
+Continuous inspection of source code quality with a very strict rule set is done
+on:
+
+    https://sonar.stefanweiser.de/overview?id=libhutznohmd
+
+Continuous Integration
+----------------------
+
+Completed builds, build stability information and nightly builds are available
+at:
+
+    https://ci.stefanweiser.de/job/libhutznohmd/

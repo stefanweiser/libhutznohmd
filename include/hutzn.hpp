@@ -343,6 +343,11 @@ $ ./make --help
 Normally making @c build in both targets (@c --debug and @c --release) or making
 @c coverage is of interest.
 
+Completed builds, build stability information and nightly builds are available
+at the [CI server](https://ci.stefanweiser.de/job/libhutznohmd/). Continuous
+inspection of source code quality with a very strict rule set is available at
+the [SonarQube server](https://sonar.stefanweiser.de/overview?id=libhutznohmd).
+
 @subsection subsec_deploying Deploying
 
 Deploying a version is done by incrementing the version number in the file @c
