@@ -52,7 +52,7 @@ See @subpage page_about_hutznohmd to learn more about the name of the library
 and what it has to do with REST.
 
 @section sec_contact Contact
-Stefan Weiser <stefan (dot) weiser (at) bluewin (dot) ch>
+Stefan Weiser <stefan.weiser@bluewin.ch>
 
 @section sec_license License
 
