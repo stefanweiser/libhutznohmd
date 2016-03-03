@@ -234,7 +234,7 @@ Library.
 
 The short story: It was a tradition of the people, who lived in the Ore
 Mountains in the past centuries. It was a "communication platform", with its own
-set of dos and don'ts, where informations about just all ordinary topics were
+set of dos and don'ts, where information about just all ordinary topics were
 exchanged. Just what REST is for HTTP, which is the reason to call this library
 after the Hutznohmd.
 

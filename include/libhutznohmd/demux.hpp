@@ -194,7 +194,7 @@ to the requesting client.
 
 */
 
-//! These informations are used by the demultiplexer to choose the right
+//! These information are used by the demultiplexer to choose the right
 //! handler. Note that this method implements just a subset of RFC 3986 chapter
 //! 3.3!
 struct request_handler_id {

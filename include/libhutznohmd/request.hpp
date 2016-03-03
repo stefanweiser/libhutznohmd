@@ -158,7 +158,7 @@ namespace hutzn {
 A part of all headers defined by the current HTTP standard are listed. Every
 header field documentation is splitted into three parts:
 - @a Description: What and how does it influence the system? What could be
-expected? Informations on the content.
+expected? Information on the content.
 - @a Example: A common example on how to use it.
 - @a Default: Which value the server supposes, if the header field is missing.
 - @a Implementation @a Status: Since when is it implemented by the library.
@@ -412,7 +412,7 @@ unimplemented
 
 @subsection sub_user_agent User-Agent
 
-Contains informations about the requesting client product.
+Contains information about the requesting client product.
 
 @subsubsection subsub_user_agent_example Example:
 
@@ -599,7 +599,7 @@ enum class http_version : uint8_t {
 //! The user has to ensure, that this properties are fulfilled. It is not easy
 //! to solve this by a framework or library.
 enum class http_verb : uint8_t {
-    //! The verb GET is used to retrieve informations from the entity assigned
+    //! The verb GET is used to retrieve information from the entity assigned
     //! to the URI. The request must not have side effects.
     GET = 0,
 
@@ -647,11 +647,11 @@ enum class http_status_code : uint16_t {
 
     //! Since HTTP/1.1
     //! The request was processed successfully, but the response contains
-    //! informations from another source.
+    //! information from another source.
     NON_AUTHORATIVE_INFORMATION = 203,
 
     //! The request was processed successfully, but the response does not
-    //! contain any informations.
+    //! contain any information.
     NO_CONTENT = 204,
 
     //! Indicates multiple options for the client to follow.
