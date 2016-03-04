@@ -44,7 +44,7 @@ using demux_mock_pointer = std::shared_ptr<demux_interface_mock>;
 class request_processor_interface_mock : public request_processor_interface
 {
 public:
-    MOCK_CONST_METHOD1(handle_one_request, bool(block_device_interface&));
+    MOCK_CONST_METHOD1(handle_one_request, bool(block_device&));
     MOCK_METHOD2(set_error_handler,
                  handler_pointer(const http_status_code&,
                                  const error_handler_callback&));

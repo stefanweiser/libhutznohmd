@@ -45,7 +45,7 @@ connection is represented by a connection object.
 namespace hutzn {
   class buffer <<typedef>>
 
-  interface block_device_interface {
+  interface block_device {
     +receive(data: buffer, max_size: size): boolean
     +send(data: buffer): boolean
     +send(data: string): boolean
@@ -69,7 +69,7 @@ namespace hutzn {
 
   class listener
 
-  block_device_interface <|-- connection_interface
+  block_device <|-- connection_interface
   connection_interface <|-- connection: <<implements>>
   listener_interface <|-- listener: <<implements>>
 }
@@ -125,11 +125,11 @@ using buffer = std::vector<char_t>;
 
 //! A block device is an object, which could be used to send and receive data
 //! blockwise. These blocks could be of custom size.
-class block_device_interface
+class block_device
 {
 public:
     //! Releases the resources allocated by the block device.
-    virtual ~block_device_interface(void) noexcept(true);
+    virtual ~block_device(void) noexcept(true);
 
     //! Invokes a blocking receive operation until something but at most
     //! @c max_size is read from the connection. The buffer will retain its
@@ -151,7 +151,7 @@ public:
 //! The term connection is here used as one side of a connected communication
 //! channel. This marks the difference to a listener, that defines only a single
 //! endpoint and cannot be used for communication directly.
-class connection_interface : public block_device_interface
+class connection_interface : public block_device
 {
 public:
     //! Shuts the connection down if not already done and releases the allocated

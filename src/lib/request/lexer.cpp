@@ -52,7 +52,7 @@ bool lexer::fetch_header(void)
         if (connection_->receive(header_, chunk_size)) {
 
             // at least one character is available to get evaluated, because
-            // block_device_interface::receive returns true, when at least one
+            // block_device::receive returns true, when at least one
             // byte was read
             do {
                 fetch_header_step(tail, head, last);

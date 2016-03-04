@@ -21,7 +21,7 @@
 namespace hutzn
 {
 
-block_device_interface::~block_device_interface(void) noexcept(true)
+block_device::~block_device(void) noexcept(true)
 {
 }
 

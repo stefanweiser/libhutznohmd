@@ -45,7 +45,7 @@ functor could be found, the request processor will respond an error document.
 
 @startuml{demultiplexer_classes.svg} "Demultiplexer's class diagram"
 namespace hutzn {
-  interface block_device_interface
+  interface block_device
 
   interface request_interface
   interface response_interface
@@ -88,7 +88,7 @@ namespace hutzn {
   class request_processor
   class demultiplexer
 
-  block_device_interface -- request_processor_interface: < uses
+  block_device -- request_processor_interface: < uses
   request_interface -- request_processor_interface: < uses
   response_interface -- request_processor_interface: < uses
   handler_interface -- request_processor_interface: < returns
@@ -372,7 +372,7 @@ public:
     //! handler. Returns true, if one request was successfully answered (either
     //! as error or not) and false when the block device got closed during read
     //! or send on the connection.
-    virtual bool handle_one_request(block_device_interface& device) const = 0;
+    virtual bool handle_one_request(block_device& device) const = 0;
 
     //! @brief Connects an error handler to a specific status code.
     //!

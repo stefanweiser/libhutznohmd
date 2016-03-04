@@ -41,7 +41,7 @@ public:
                                const uint64_t& connection_timeout_in_sec);
 
     //! @copydoc request_processor_interface::handle_one_request()
-    bool handle_one_request(block_device_interface& device) const override;
+    bool handle_one_request(block_device& device) const override;
 
     //! @copydoc request_processor_interface::set_error_handler()
     handler_pointer set_error_handler(

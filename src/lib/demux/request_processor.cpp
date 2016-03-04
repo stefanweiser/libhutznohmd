@@ -43,8 +43,7 @@ request_processor::request_processor(
 {
 }
 
-bool request_processor::handle_one_request(
-    block_device_interface& /*device*/) const
+bool request_processor::handle_one_request(block_device& /*device*/) const
 {
     return false;
 }

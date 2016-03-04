@@ -56,13 +56,13 @@ public:
     //! @copydoc connection_interface::close()
     void close(void) override;
 
-    //! @copydoc block_device_interface::receive()
+    //! @copydoc block_device::receive()
     bool receive(buffer& data, const size_t& max_size) override;
 
-    //! @copydoc block_device_interface::send()
+    //! @copydoc block_device::send()
     bool send(const buffer& data) override;
 
-    //! @copydoc block_device_interface::send()
+    //! @copydoc block_device::send()
     bool send(const std::string& data) override;
 
     //! @copydoc connection_interface::set_lingering_timeout()
