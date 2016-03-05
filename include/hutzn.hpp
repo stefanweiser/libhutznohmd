@@ -354,7 +354,7 @@ Deploying a version is done by incrementing the version number in the file @c
 version and making a package:
 
 @code
-$ ./make --release --minimal package
+$ ./make --release package
 @endcode
 
 The packages will be left in the @c build subdirectory. They ought to be

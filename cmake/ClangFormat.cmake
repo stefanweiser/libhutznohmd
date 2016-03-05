@@ -15,18 +15,13 @@
 # along with the libhutznohmd project; if not, see
 # <http://www.gnu.org/licenses/>.
 
-IF(NOT MINIMAL)
-    MACRO(STYLE_FILES TARGET)
-        SET(FORMAT_COMMANDS)
-        FOREACH(ARG ${ARGN})
-            LIST(APPEND FORMAT_COMMANDS COMMAND ${CLANG_FORMAT} -i ${ARG})
-        ENDFOREACH()
-        ADD_CUSTOM_TARGET(format___${TARGET} ${FORMAT_COMMANDS}
-                          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                          VERBATIM)
-        ADD_DEPENDENCIES(${TARGET} format___${TARGET})
-    ENDMACRO()
-ELSE()
-    MACRO(STYLE_FILES)
-    ENDMACRO()
-ENDIF()
+MACRO(STYLE_FILES TARGET)
+    SET(FORMAT_COMMANDS)
+    FOREACH(ARG ${ARGN})
+        LIST(APPEND FORMAT_COMMANDS COMMAND ${CLANG_FORMAT} -i ${ARG})
+    ENDFOREACH()
+    ADD_CUSTOM_TARGET(format___${TARGET} ${FORMAT_COMMANDS}
+                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                      VERBATIM)
+    ADD_DEPENDENCIES(${TARGET} format___${TARGET})
+ENDMACRO()

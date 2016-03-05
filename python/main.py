@@ -14,13 +14,6 @@ def parse_arguments(configured_steps):
 
     parser = argparse.ArgumentParser()
 
-    # possible to just create a package with reduced toolset
-    parser.add_argument('-m',
-                        '--minimal',
-                        dest='minimal',
-                        action='store_true',
-                        help='builds a minimal dependency toolchain')
-
     # defines targets, which is either debug or release
     mutual_target_group = parser.add_mutually_exclusive_group()
     mutual_target_group.add_argument('-d',
