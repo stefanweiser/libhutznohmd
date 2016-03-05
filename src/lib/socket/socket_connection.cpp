@@ -16,7 +16,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "connection.hpp"
+#include "socket_connection.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -27,10 +27,10 @@
 namespace hutzn
 {
 
-std::shared_ptr<connection> connection::create(const std::string& host,
-                                               const uint16_t& port)
+std::shared_ptr<socket_connection> socket_connection::create(
+    const std::string& host, const uint16_t& port)
 {
-    std::shared_ptr<connection> result;
+    std::shared_ptr<socket_connection> result;
     const int32_t socket_fd = socket(PF_INET, SOCK_STREAM, 0);
 
     // only connect if a valid socket file descriptor was created
@@ -39,27 +39,28 @@ std::shared_ptr<connection> connection::create(const std::string& host,
         // only return a connection if the host and port could be resolved
         // successfully
         if (address.sin_family != AF_UNSPEC) {
-            result = std::make_shared<connection>(socket_fd, address);
+            result = std::make_shared<socket_connection>(socket_fd, address);
         }
     }
     return result;
 }
 
-connection::connection(const int32_t& socket)
+socket_connection::socket_connection(const int32_t& socket)
     : is_connected_(true)
     , socket_(socket)
     , address_()
 {
 }
 
-connection::connection(const int32_t& socket, const sockaddr_in& address)
+socket_connection::socket_connection(const int32_t& socket,
+                                     const sockaddr_in& address)
     : is_connected_(false)
     , socket_(socket)
     , address_(address)
 {
 }
 
-connection::~connection(void) noexcept(true)
+socket_connection::~socket_connection(void) noexcept(true)
 {
     // first shutdown and then close the connection before destructing the
     // object
@@ -69,13 +70,13 @@ connection::~connection(void) noexcept(true)
     UNUSED(close_result);
 }
 
-void connection::close(void)
+void socket_connection::close(void)
 {
     is_connected_ = false;
     shutdown(socket_, SHUT_RDWR);
 }
 
-bool connection::receive(buffer& data, const size_t& max_size)
+bool socket_connection::receive(buffer& data, const size_t& max_size)
 {
     bool result = false;
     // receive will only succeed when the socket is connected
@@ -94,19 +95,19 @@ bool connection::receive(buffer& data, const size_t& max_size)
     return result;
 }
 
-bool connection::send(const buffer& data)
+bool socket_connection::send(const buffer& data)
 {
     // convert the buffer and use a single send method
     return send(data.data(), data.size());
 }
 
-bool connection::send(const std::string& data)
+bool socket_connection::send(const std::string& data)
 {
     // convert the buffer and use a single send method
     return send(data.data(), data.size());
 }
 
-bool connection::send(const char_t* data, const size_t& size)
+bool socket_connection::send(const char_t* data, const size_t& size)
 {
     bool result = false;
     // send will only succeed when the socket is connected
@@ -142,13 +143,13 @@ bool connection::send(const char_t* data, const size_t& size)
     return result;
 }
 
-bool connection::set_lingering_timeout(const int32_t& timeout)
+bool socket_connection::set_lingering_timeout(const int32_t& timeout)
 {
     linger lex{1, timeout};
     return setsockopt(socket_, SOL_SOCKET, SO_LINGER, &lex, sizeof(lex)) == 0;
 }
 
-bool connection::connect(void)
+bool socket_connection::connect(void)
 {
     bool result = false;
     // connecting makes only sense if the socket is not connected

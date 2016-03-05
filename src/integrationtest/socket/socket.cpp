@@ -20,7 +20,7 @@
 
 #include <gtest/gtest.h>
 
-#include "socket/connection.hpp"
+#include "socket/socket_connection.hpp"
 
 namespace hutzn
 {
@@ -56,15 +56,15 @@ TEST(socket, accepting_closed_socket)
 
 TEST(socket, connecting_closed_socket)
 {
-    auto connection = connection::create("127.0.0.1", 10000);
-    connection->close();
-    EXPECT_FALSE(connection->connect());
+    auto conn = socket_connection::create("127.0.0.1", 10000);
+    conn->close();
+    EXPECT_FALSE(conn->connect());
 }
 
 TEST(socket, connection_refused)
 {
-    auto connection = connection::create("127.0.0.1", 10000);
-    EXPECT_FALSE(connection->connect());
+    auto conn = socket_connection::create("127.0.0.1", 10000);
+    EXPECT_FALSE(conn->connect());
 }
 
 TEST(socket, receive_send_closed_socket)
@@ -76,20 +76,20 @@ TEST(socket, receive_send_closed_socket)
     bool connected = false;
     bool disconnected = false;
     std::thread thread([&disconnected, &connected] {
-        auto connection = connection::create("127.0.0.1", 10000);
-        EXPECT_TRUE(connection->connect());
-        EXPECT_TRUE(connection->set_lingering_timeout(0));
+        auto conn = socket_connection::create("127.0.0.1", 10000);
+        EXPECT_TRUE(conn->connect());
+        EXPECT_TRUE(conn->set_lingering_timeout(0));
         connected = true;
         while (disconnected == false) {
             usleep(1);
         }
 
         buffer data;
-        EXPECT_FALSE(connection->receive(data, 8));
+        EXPECT_FALSE(conn->receive(data, 8));
 
-        connection->close();
-        EXPECT_FALSE(connection->receive(data, 8));
-        EXPECT_FALSE(connection->send(data));
+        conn->close();
+        EXPECT_FALSE(conn->receive(data, 8));
+        EXPECT_FALSE(conn->send(data));
     });
 
     connection_pointer connection = listener->accept();
@@ -110,10 +110,10 @@ TEST(socket, double_connect)
     EXPECT_TRUE(listener->listening());
 
     std::thread thread([] {
-        auto connection = connection::create("127.0.0.1", 10000);
-        EXPECT_TRUE(connection->connect());
-        EXPECT_FALSE(connection->connect());
-        EXPECT_TRUE(connection->set_lingering_timeout(0));
+        auto conn = socket_connection::create("127.0.0.1", 10000);
+        EXPECT_TRUE(conn->connect());
+        EXPECT_FALSE(conn->connect());
+        EXPECT_TRUE(conn->set_lingering_timeout(0));
     });
 
     connection_pointer connection = listener->accept();
@@ -124,20 +124,20 @@ TEST(socket, double_connect)
 
 TEST(socket, unconnected_send_receive)
 {
-    auto connection = connection::create("127.0.0.1", 10000);
+    auto conn = socket_connection::create("127.0.0.1", 10000);
     buffer data;
-    EXPECT_FALSE(connection->send(""));
-    EXPECT_FALSE(connection->receive(data, 0));
+    EXPECT_FALSE(conn->send(""));
+    EXPECT_FALSE(conn->receive(data, 0));
 }
 
 TEST(socket, terminate_try_to_connect)
 {
-    auto connection = connection::create("240.0.0.1", 65535);
+    auto conn = socket_connection::create("240.0.0.1", 65535);
 
-    std::thread thread([&connection] { EXPECT_FALSE(connection->connect()); });
+    std::thread thread([&conn] { EXPECT_FALSE(conn->connect()); });
 
     usleep(10000);
-    connection->close();
+    conn->close();
     thread.join();
 }
 
@@ -166,15 +166,15 @@ TEST(socket, normal_use_case)
     EXPECT_TRUE(listener->listening());
 
     std::thread thread([] {
-        auto connection = connection::create("127.0.0.1", 10000);
-        EXPECT_TRUE(connection->connect());
-        EXPECT_NE(connection_pointer(), connection);
-        EXPECT_TRUE(connection->set_lingering_timeout(0));
+        auto conn = socket_connection::create("127.0.0.1", 10000);
+        EXPECT_TRUE(conn->connect());
+        EXPECT_NE(connection_pointer(), conn);
+        EXPECT_TRUE(conn->set_lingering_timeout(0));
         buffer data;
-        EXPECT_TRUE(connection->receive(data, 8));
+        EXPECT_TRUE(conn->receive(data, 8));
         EXPECT_EQ(buffer({0, 1, 2, 3}), data);
         data = {4, 5, 6, 7};
-        EXPECT_TRUE(connection->send(data));
+        EXPECT_TRUE(conn->send(data));
     });
 
     connection_pointer connection = listener->accept();

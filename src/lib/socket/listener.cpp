@@ -26,7 +26,7 @@
 
 #include <cassert>
 
-#include "socket/connection.hpp"
+#include "socket/socket_connection.hpp"
 #include "socket/utility.hpp"
 
 namespace hutzn
@@ -103,7 +103,7 @@ connection_pointer listener::accept(void) const
         const int32_t client = accept_signal_safe(socket_, &addr.base, &size);
         // return an empty object when accept signalises an error
         if (client >= 0) {
-            result = std::make_shared<connection>(client);
+            result = std::make_shared<socket_connection>(client);
         }
     }
     return result;

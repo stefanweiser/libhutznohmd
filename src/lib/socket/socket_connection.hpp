@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_SOCKET_CONNECTION_HPP
-#define LIBHUTZNOHMD_SOCKET_CONNECTION_HPP
+#ifndef LIBHUTZNOHMD_SOCKET_SOCKET_CONNECTION_HPP
+#define LIBHUTZNOHMD_SOCKET_SOCKET_CONNECTION_HPP
 
 #include <netinet/in.h>
 
@@ -27,31 +27,34 @@ namespace hutzn
 {
 
 //! @copydoc connection_interface
-class connection : public connection_interface
+class socket_connection : public connection_interface
 {
 public:
-    //! @brief Creates a new connection.
+    //! @brief Creates a new socket based connection.
     //!
     //! Uses host and port to create the connection. Returns the connection
     //! after resolving the host and port.
     //! @param[in] host Host IP to connect to as string.
     //! @param[in] port Port on the host to connect to.
-    //! @return         The newly created connection, which is not yet
+    //! @return         The newly created socket connection, which is not yet
     //!                 connected.
-    static std::shared_ptr<connection> create(const std::string& host,
-                                              const uint16_t& port);
+    static std::shared_ptr<socket_connection> create(const std::string& host,
+                                                     const uint16_t& port);
 
-    //! @brief Constructs a connection. Used to accept a connection as a server.
+    //! @brief Constructs a socket based connection. Used to accept a connection
+    //! as a server.
     //! @param[in] socket A socket file descriptor.
-    explicit connection(const int32_t& socket);
+    explicit socket_connection(const int32_t& socket);
 
-    //! @brief Constructs a connection. Used to connect as a client to a server.
+    //! @brief Constructs a socket based connection. Used to connect as a client
+    //! to a server.
     //! @param[in] socket  A socket file descriptor.
     //! @param[in] address Address of the host.
-    explicit connection(const int32_t& socket, const sockaddr_in& address);
+    explicit socket_connection(const int32_t& socket,
+                               const sockaddr_in& address);
 
     //! @copydoc connection_interface::~connection_interface()
-    ~connection(void) noexcept(true) override;
+    ~socket_connection(void) noexcept(true) override;
 
     //! @copydoc connection_interface::close()
     void close(void) override;
@@ -96,4 +99,4 @@ private:
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_SOCKET_CONNECTION_HPP
+#endif // LIBHUTZNOHMD_SOCKET_SOCKET_CONNECTION_HPP

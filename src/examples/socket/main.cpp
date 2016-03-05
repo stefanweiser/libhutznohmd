@@ -20,22 +20,22 @@
 #include <thread>
 #include <vector>
 
-#include "socket/connection.hpp"
+#include "socket/socket_connection.hpp"
 
 void client(void)
 {
     const hutzn::buffer data = {0, 1, 2, 3};
 
     std::cout << "  connecting" << std::endl;
-    auto connection = hutzn::connection::create("127.0.0.1", 30000);
-    if (!connection->connect()) {
+    auto conn = hutzn::socket_connection::create("127.0.0.1", 30000);
+    if (!conn->connect()) {
         std::cout << "  client not connected" << std::endl;
         abort();
     }
 
     std::cout << "  client receiving" << std::endl;
     hutzn::buffer data2;
-    if (!connection->receive(data2, 8)) {
+    if (!conn->receive(data2, 8)) {
         std::cout << "  client aborts on receive" << std::endl;
         abort();
     }
@@ -46,7 +46,7 @@ void client(void)
     }
 
     std::cout << "  client sending" << std::endl;
-    if (!connection->send(data2)) {
+    if (!conn->send(data2)) {
         std::cout << "  client aborts on send" << std::endl;
     }
 
@@ -64,16 +64,16 @@ int main(void)
     std::thread thread(&client);
 
     std::cout << "  accepting" << std::endl;
-    auto connection = listener->accept();
+    auto conn = listener->accept();
 
     std::cout << "  server sending" << std::endl;
-    if (!connection->send(data)) {
+    if (!conn->send(data)) {
         std::cout << "  server aborts on send" << std::endl;
     }
 
     std::cout << "  server receiving" << std::endl;
     hutzn::buffer data2;
-    if (!connection->receive(data2, 8)) {
+    if (!conn->receive(data2, 8)) {
         std::cout << "  server aborts on receive" << std::endl;
     }
 
