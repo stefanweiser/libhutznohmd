@@ -26,7 +26,7 @@
 namespace hutzn
 {
 
-class connection_interface_mock : public connection_interface
+class connection_mock : public connection
 {
 public:
     MOCK_METHOD0(connect, bool(void));
@@ -37,12 +37,12 @@ public:
     MOCK_METHOD1(set_lingering_timeout, bool(const int32_t&));
 };
 
-using connection_mock_pointer = std::shared_ptr<connection_interface_mock>;
+using connection_mock_ptr = std::shared_ptr<connection_mock>;
 
 class listener_interface_mock : public listener_interface
 {
 public:
-    MOCK_CONST_METHOD0(accept, connection_pointer(void));
+    MOCK_CONST_METHOD0(accept, connection_ptr(void));
     MOCK_CONST_METHOD0(listening, bool(void));
     MOCK_METHOD0(stop, void(void));
     MOCK_METHOD1(set_lingering_timeout, bool(const int32_t&));

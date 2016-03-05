@@ -39,7 +39,7 @@ public:
     //!
     //! Initializes all data structures.
     //! @param[in] connection Connection to use as data input.
-    explicit lexer(const connection_pointer& connection);
+    explicit lexer(const connection_ptr& connection);
 
     //! @brief Reads the complete header.
     //!
@@ -170,7 +170,7 @@ private:
     };
 
     //! Connection to read data from.
-    connection_pointer connection_;
+    connection_ptr connection_;
 
     //! Current state of the lexer.
     lexer_state state_;

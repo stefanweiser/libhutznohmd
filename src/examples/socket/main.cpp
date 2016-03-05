@@ -64,7 +64,7 @@ int main(void)
     std::thread thread(&client);
 
     std::cout << "  accepting" << std::endl;
-    auto conn = listener->accept();
+    auto conn = listnr->accept();
 
     std::cout << "  server sending" << std::endl;
     if (!conn->send(data)) {

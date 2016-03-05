@@ -31,7 +31,7 @@ public:
     //! @brief Constructs the response by a connection to write to.
     //!
     //! @param[in] connection Connection to use for communication.
-    explicit response(const connection_pointer& connection);
+    explicit response(const connection_ptr& connection);
 
     //! @copydoc response_interface::set_header()
     bool set_header(const char_t* const name,
@@ -53,7 +53,7 @@ public:
     void set_server(const char_t* const fingerprint) override;
 
 private:
-    connection_pointer connection_;
+    connection_ptr connection_;
 };
 
 } // namespace hutzn

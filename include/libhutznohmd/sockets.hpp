@@ -33,9 +33,9 @@ namespace hutzn
 @page page_data_source_and_sink Data source and sink
 
 Each restful application has to communicate with its users. To fulfill this
-necessity this library defines @ref connection_interface "connections"
-and @ref listener_interface "listeners", which are the two types of
-sockets, that are typically used by network communication protocols.
+necessity this library defines @ref connection "connections" and @ref
+listener_interface "listeners", which are the two types of sockets, that are
+typically used by network communication protocols.
 
 A listener is defined as an endpoint, to which connection endpoints can connect
 to. Once a connection has been established, it connects two processes. This
@@ -51,27 +51,27 @@ namespace hutzn {
     +send(data: string): boolean
   }
 
-  interface connection_interface {
+  interface connection {
     +close()
     +set_lingering_timeout(timeout: seconds)
     +socket(): file_descriptor
   }
 
   interface listener_interface {
-    +accept(): connection_interface
+    +accept(): connection
     +listening(): boolean
     +stop()
     +set_lingering_timeout(timeout: seconds)
     +socket(): file_descriptor
   }
 
-  class connection
+  class socket_connection
 
   class listener
 
-  block_device <|-- connection_interface
-  connection_interface <|-- connection: <<implements>>
   listener_interface <|-- listener: <<implements>>
+  block_device <|-- socket_connection
+  connection <|-- socket_connection: <<implements>>
 }
 @enduml
 
@@ -143,20 +143,20 @@ public:
     //! shut down during the send it will return false.
     virtual bool send(const buffer& data) = 0;
 
-    //! @see connection_interface::send(const buffer&) This function behaves
-    //! equally, but takes a string instead of a binary buffer.
+    //! @see connection::send(const buffer&) This function behaves equally, but
+    //! takes a string instead of a binary buffer.
     virtual bool send(const std::string& data) = 0;
 };
 
-//! The term connection is here used as one side of a connected communication
+//! The term connection is used here as one side of a connected communication
 //! channel. This marks the difference to a listener, that defines only a single
 //! endpoint and cannot be used for communication directly.
-class connection_interface : public block_device
+class connection : public block_device
 {
 public:
     //! Shuts the connection down if not already done and releases the allocated
     //! resources.
-    virtual ~connection_interface(void) noexcept(true);
+    virtual ~connection(void) noexcept(true);
 
     //! Shuts down the connection, but remain holding the resources. This will
     //! immediately stop any call on that connection. The connection object
@@ -177,7 +177,7 @@ public:
 };
 
 //! A connection is always handled via reference counted pointers.
-using connection_pointer = std::shared_ptr<connection_interface>;
+using connection_ptr = std::shared_ptr<connection>;
 
 //! A listener is someone, that opens a socket and waits for clients to connect
 //! to it. Listeners are not used for communication, but to establish the
@@ -193,7 +193,7 @@ public:
     //! gets closed. In the first case the connection gets established and
     //! returned. In case of closing the listener an empty pointer is getting
     //! returned and the listener can be released.
-    virtual connection_pointer accept(void) const = 0;
+    virtual connection_ptr accept(void) const = 0;
 
     //! Returns whether the listener is currently listening or not. Naturally
     //! this value is a volatile information.
@@ -204,7 +204,7 @@ public:
     //! will succeed if it is shut.
     virtual void stop(void) = 0;
 
-    //! @see connection_interface::set_lingering_timeout(const int32_t&)
+    //! @see connection::set_lingering_timeout(const int32_t&)
     virtual bool set_lingering_timeout(const int32_t& timeout) = 0;
 };
 

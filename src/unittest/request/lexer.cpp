@@ -33,9 +33,8 @@ protected:
     void check(const std::string& chunk, const std::string& result,
                const bool fetch_result)
     {
-        const connection_mock_pointer connection =
-            std::make_shared<connection_interface_mock>();
-        EXPECT_CALL(*connection, receive(_, _))
+        const connection_mock_ptr conn = std::make_shared<connection_mock>();
+        EXPECT_CALL(*conn, receive(_, _))
             .Times(AtLeast(1))
             .WillOnce(Invoke([chunk](buffer& b, const size_t& m) {
                 EXPECT_LE(chunk.size(), m);
@@ -44,7 +43,7 @@ protected:
             }))
             .WillRepeatedly(Return(false));
 
-        lexer lex(connection);
+        lexer lex(conn);
         EXPECT_EQ(fetch_result, lex.fetch_header());
         for (size_t i = 0; i < result.size(); i++) {
             EXPECT_EQ(i, lex.index());
@@ -76,11 +75,10 @@ protected:
 
 TEST_F(lexer_test, construction)
 {
-    const connection_mock_pointer c =
-        std::make_shared<connection_interface_mock>();
-    EXPECT_CALL(*c, receive(_, _)).Times(1).WillOnce(Return(false));
+    const connection_mock_ptr conn = std::make_shared<connection_mock>();
+    EXPECT_CALL(*conn, receive(_, _)).Times(1).WillOnce(Return(false));
 
-    lexer lex(c);
+    lexer lex(conn);
     EXPECT_EQ(NULL, lex.header_data(0));
     EXPECT_EQ(-1, lex.get());
     EXPECT_FALSE(lex.fetch_header());
@@ -144,9 +142,8 @@ TEST_F(lexer_test, newline_token_6)
 TEST_F(lexer_test, set_index)
 {
     const std::string chunk = "abcdefgh";
-    const connection_mock_pointer connection =
-        std::make_shared<connection_interface_mock>();
-    EXPECT_CALL(*connection, receive(_, _))
+    const connection_mock_ptr conn = std::make_shared<connection_mock>();
+    EXPECT_CALL(*conn, receive(_, _))
         .Times(2)
         .WillOnce(Invoke([chunk](buffer& b, const size_t& m) {
             EXPECT_LE(chunk.size(), m);
@@ -155,7 +152,7 @@ TEST_F(lexer_test, set_index)
         }))
         .WillOnce(Return(false));
 
-    lexer lex(connection);
+    lexer lex(conn);
     EXPECT_FALSE(lex.fetch_header());
     ASSERT_EQ(0, lex.index());
     EXPECT_EQ('a', lex.get());
@@ -171,9 +168,8 @@ TEST_F(lexer_test, set_index)
 TEST_F(lexer_test, set_index_beyond_border)
 {
     const std::string chunk = "abcdefgh";
-    const connection_mock_pointer connection =
-        std::make_shared<connection_interface_mock>();
-    EXPECT_CALL(*connection, receive(_, _))
+    const connection_mock_ptr conn = std::make_shared<connection_mock>();
+    EXPECT_CALL(*conn, receive(_, _))
         .Times(2)
         .WillOnce(Invoke([chunk](buffer& b, const size_t& m) {
             EXPECT_LE(chunk.size(), m);
@@ -182,7 +178,7 @@ TEST_F(lexer_test, set_index_beyond_border)
         }))
         .WillOnce(Return(false));
 
-    lexer lex(connection);
+    lexer lex(conn);
     EXPECT_FALSE(lex.fetch_header());
     ASSERT_EQ(0, lex.index());
     EXPECT_EQ('a', lex.get());
@@ -196,9 +192,8 @@ TEST_F(lexer_test, set_index_beyond_border)
 TEST_F(lexer_test, set_index_to_eof)
 {
     const std::string chunk = "abcdefgh";
-    const connection_mock_pointer connection =
-        std::make_shared<connection_interface_mock>();
-    EXPECT_CALL(*connection, receive(_, _))
+    const connection_mock_ptr conn = std::make_shared<connection_mock>();
+    EXPECT_CALL(*conn, receive(_, _))
         .Times(2)
         .WillOnce(Invoke([chunk](buffer& b, const size_t& m) {
             EXPECT_LE(chunk.size(), m);
@@ -207,7 +202,7 @@ TEST_F(lexer_test, set_index_to_eof)
         }))
         .WillOnce(Return(false));
 
-    lexer lex(connection);
+    lexer lex(conn);
     EXPECT_FALSE(lex.fetch_header());
     ASSERT_EQ(0, lex.index());
     EXPECT_EQ('a', lex.get());
@@ -225,9 +220,8 @@ TEST_F(lexer_test, content)
     const std::string chunk1 = "\r\n\r\n";
     const std::string chunk2 = "a";
     const std::string chunk3 = "b";
-    const connection_mock_pointer connection =
-        std::make_shared<connection_interface_mock>();
-    EXPECT_CALL(*connection, receive(_, _))
+    const connection_mock_ptr conn = std::make_shared<connection_mock>();
+    EXPECT_CALL(*conn, receive(_, _))
         .Times(4)
         .WillOnce(Invoke([chunk1](buffer& b, const size_t& m) {
             EXPECT_LE(chunk1.size(), m);
@@ -246,7 +240,7 @@ TEST_F(lexer_test, content)
         }))
         .WillOnce(Return(false));
 
-    lexer lex(connection);
+    lexer lex(conn);
 
     // Initially the content is empty..
     EXPECT_EQ(0, lex.content_length());

@@ -26,8 +26,8 @@
 namespace hutzn
 {
 
-//! @copydoc connection_interface
-class socket_connection : public connection_interface
+//! @copydoc connection
+class socket_connection : public connection
 {
 public:
     //! @brief Creates a new socket based connection.
@@ -53,10 +53,10 @@ public:
     explicit socket_connection(const int32_t& socket,
                                const sockaddr_in& address);
 
-    //! @copydoc connection_interface::~connection_interface()
+    //! @copydoc connection::~connection()
     ~socket_connection(void) noexcept(true) override;
 
-    //! @copydoc connection_interface::close()
+    //! @copydoc connection::close()
     void close(void) override;
 
     //! @copydoc block_device::receive()
@@ -68,7 +68,7 @@ public:
     //! @copydoc block_device::send()
     bool send(const std::string& data) override;
 
-    //! @copydoc connection_interface::set_lingering_timeout()
+    //! @copydoc connection::set_lingering_timeout()
     bool set_lingering_timeout(const int32_t& timeout) override;
 
     //! Connects to the server and returns true, when the connection was

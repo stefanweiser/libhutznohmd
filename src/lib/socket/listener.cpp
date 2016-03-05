@@ -84,9 +84,9 @@ listener::~listener(void) noexcept(true)
     UNUSED(close_result);
 }
 
-connection_pointer listener::accept(void) const
+connection_ptr listener::accept(void) const
 {
-    connection_pointer result;
+    connection_ptr result;
 
     // accept will only succeed when the socket is connected
     if (is_listening_) {

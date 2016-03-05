@@ -25,7 +25,7 @@ block_device::~block_device(void) noexcept(true)
 {
 }
 
-connection_interface::~connection_interface(void) noexcept(true)
+connection::~connection(void) noexcept(true)
 {
 }
 

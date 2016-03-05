@@ -32,7 +32,7 @@ class response_test : public Test
 public:
     void SetUp(void) override
     {
-        connection_ = std::make_shared<connection_interface_mock>();
+        connection_ = std::make_shared<connection_mock>();
     }
 
     void TearDown(void) override
@@ -41,7 +41,7 @@ public:
     }
 
 protected:
-    connection_mock_pointer connection_;
+    connection_mock_ptr connection_;
 };
 
 TEST_F(response_test, construction)

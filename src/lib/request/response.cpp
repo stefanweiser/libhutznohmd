@@ -21,7 +21,7 @@
 namespace hutzn
 {
 
-response::response(const connection_pointer& connection)
+response::response(const connection_ptr& connection)
     : connection_(connection)
 {
 }

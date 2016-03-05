@@ -51,7 +51,7 @@ TEST(socket, accepting_closed_socket)
     auto listener = listen("127.0.0.1", 10000);
     EXPECT_TRUE(listener->set_lingering_timeout(0));
     listener->stop();
-    EXPECT_EQ(connection_pointer(), listener->accept());
+    EXPECT_EQ(connection_ptr(), listener->accept());
 }
 
 TEST(socket, connecting_closed_socket)
@@ -92,7 +92,7 @@ TEST(socket, receive_send_closed_socket)
         EXPECT_FALSE(conn->send(data));
     });
 
-    connection_pointer connection = listener->accept();
+    connection_ptr connection = listener->accept();
     EXPECT_TRUE(connection->set_lingering_timeout(0));
     while (connected == false) {
         usleep(1);
@@ -116,7 +116,7 @@ TEST(socket, double_connect)
         EXPECT_TRUE(conn->set_lingering_timeout(0));
     });
 
-    connection_pointer connection = listener->accept();
+    connection_ptr connection = listener->accept();
     EXPECT_TRUE(connection->set_lingering_timeout(0));
     thread.join();
     EXPECT_TRUE(listener->listening());
@@ -148,7 +148,7 @@ TEST(socket, terminate_try_to_accept)
     EXPECT_TRUE(listener->listening());
 
     std::thread thread([&listener] {
-        EXPECT_EQ(connection_pointer(), listener->accept());
+        EXPECT_EQ(connection_ptr(), listener->accept());
         EXPECT_FALSE(listener->listening());
     });
 
@@ -168,7 +168,7 @@ TEST(socket, normal_use_case)
     std::thread thread([] {
         auto conn = socket_connection::create("127.0.0.1", 10000);
         EXPECT_TRUE(conn->connect());
-        EXPECT_NE(connection_pointer(), conn);
+        EXPECT_NE(connection_ptr(), conn);
         EXPECT_TRUE(conn->set_lingering_timeout(0));
         buffer data;
         EXPECT_TRUE(conn->receive(data, 8));
@@ -177,8 +177,8 @@ TEST(socket, normal_use_case)
         EXPECT_TRUE(conn->send(data));
     });
 
-    connection_pointer connection = listener->accept();
-    EXPECT_NE(connection_pointer(), connection);
+    connection_ptr connection = listener->accept();
+    EXPECT_NE(connection_ptr(), connection);
     EXPECT_TRUE(connection->set_lingering_timeout(0));
     buffer data = {0, 1, 2, 3};
     EXPECT_TRUE(connection->send(data));

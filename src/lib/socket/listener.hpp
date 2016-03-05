@@ -50,7 +50,7 @@ public:
     ~listener(void) noexcept(true) override;
 
     //! @copydoc listener_interface::accept()
-    connection_pointer accept(void) const override;
+    connection_ptr accept(void) const override;
 
     //! @copydoc listener_interface::listening()
     bool listening(void) const override;

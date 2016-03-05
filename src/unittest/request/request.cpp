@@ -32,7 +32,7 @@ class request_test : public Test
 public:
     void SetUp(void) override
     {
-        connection_ = std::make_shared<connection_interface_mock>();
+        connection_ = std::make_shared<connection_mock>();
         text_type_ = handler_.register_mime_type("text");
         plain_subtype_ = handler_.register_mime_subtype("plain");
     }
@@ -83,7 +83,7 @@ public:
     }
 
 protected:
-    connection_mock_pointer connection_;
+    connection_mock_ptr connection_;
     mime_handler handler_;
     mime_type text_type_;
     mime_subtype plain_subtype_;

@@ -119,7 +119,7 @@ bool parse_specific_value(const trie<T>& t, const size_t& max_length,
 
 } // namespace
 
-request::request(const connection_pointer& connection)
+request::request(const connection_ptr& connection)
     : lexer_(connection)
     , method_(http_verb::GET)
     , path_uri_()

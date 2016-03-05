@@ -69,7 +69,7 @@ public:
     //! @brief Constructs a request by a connection.
     //!
     //! @param[in] connection Connection to use when more data is needed.
-    explicit request(const connection_pointer& connection);
+    explicit request(const connection_ptr& connection);
 
     explicit request(const request& rhs) = delete;
     request& operator=(const request& rhs) = delete;

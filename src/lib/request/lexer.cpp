@@ -23,7 +23,7 @@
 namespace hutzn
 {
 
-lexer::lexer(const connection_pointer& connection)
+lexer::lexer(const connection_ptr& connection)
     : connection_(connection)
     , state_(lexer_state::copy)
     , header_()
