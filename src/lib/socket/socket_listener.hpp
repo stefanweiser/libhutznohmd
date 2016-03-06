@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_SOCKET_LISTENER_HPP
-#define LIBHUTZNOHMD_SOCKET_LISTENER_HPP
+#ifndef LIBHUTZNOHMD_SOCKET_SOCKET_LISTENER_HPP
+#define LIBHUTZNOHMD_SOCKET_SOCKET_LISTENER_HPP
 
 #include <memory>
 #include <string>
@@ -28,10 +28,10 @@ namespace hutzn
 {
 
 //! @copydoc listener_interface
-class listener : public listener_interface
+class socket_listener : public listener_interface
 {
 public:
-    //! @brief Creates a new listener.
+    //! @brief Creates a new socket listener.
     //!
     //! Uses host and port to create the listener. Returns the listener after
     //! resolving and binding to the IP and port.
@@ -39,15 +39,15 @@ public:
     //! @param[in] port Port to listen on.
     //! @return         The newly created listener, which has bound to the
     //!                 address and is ready to accept connections.
-    static std::shared_ptr<listener> create(const std::string& host,
-                                            const uint16_t& port);
+    static std::shared_ptr<socket_listener> create(const std::string& host,
+                                                   const uint16_t& port);
 
-    //! @brief Constructs a listener. Used to bind to a socket.
+    //! @brief Constructs a socket listener. Used to bind to a socket.
     //! @param[in] socket A socket file descriptor.
-    explicit listener(const int32_t& socket);
+    explicit socket_listener(const int32_t& socket);
 
     //! @copydoc listener_interface::~listener_interface()
-    ~listener(void) noexcept(true) override;
+    ~socket_listener(void) noexcept(true) override;
 
     //! @copydoc listener_interface::accept()
     connection_ptr accept(void) const override;
@@ -71,4 +71,4 @@ private:
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_SOCKET_LISTENER_HPP
+#endif // LIBHUTZNOHMD_SOCKET_SOCKET_LISTENER_HPP

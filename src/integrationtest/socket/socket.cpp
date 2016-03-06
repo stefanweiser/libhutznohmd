@@ -27,10 +27,10 @@ namespace hutzn
 
 TEST(socket, listener_construction)
 {
-    auto listener = listen("127.0.0.1", 10000);
-    EXPECT_TRUE(listener->set_lingering_timeout(0));
-    EXPECT_NE(listener_pointer(), listener);
-    EXPECT_TRUE(listener->listening());
+    auto listnr = listen("127.0.0.1", 10000);
+    EXPECT_TRUE(listnr->set_lingering_timeout(0));
+    EXPECT_NE(listener_pointer(), listnr);
+    EXPECT_TRUE(listnr->listening());
 }
 
 TEST(socket, wrong_construction_arguments)
@@ -40,18 +40,18 @@ TEST(socket, wrong_construction_arguments)
 
 TEST(socket, reuse_host_and_port)
 {
-    auto listener = listen("127.0.0.1", 10000);
-    EXPECT_TRUE(listener->set_lingering_timeout(0));
+    auto listnr = listen("127.0.0.1", 10000);
+    EXPECT_TRUE(listnr->set_lingering_timeout(0));
     EXPECT_EQ(listener_pointer(), listen("127.0.0.1", 10000));
-    EXPECT_TRUE(listener->listening());
+    EXPECT_TRUE(listnr->listening());
 }
 
 TEST(socket, accepting_closed_socket)
 {
-    auto listener = listen("127.0.0.1", 10000);
-    EXPECT_TRUE(listener->set_lingering_timeout(0));
-    listener->stop();
-    EXPECT_EQ(connection_ptr(), listener->accept());
+    auto listnr = listen("127.0.0.1", 10000);
+    EXPECT_TRUE(listnr->set_lingering_timeout(0));
+    listnr->stop();
+    EXPECT_EQ(connection_ptr(), listnr->accept());
 }
 
 TEST(socket, connecting_closed_socket)
@@ -69,9 +69,9 @@ TEST(socket, connection_refused)
 
 TEST(socket, receive_send_closed_socket)
 {
-    auto listener = listen("127.0.0.1", 10000);
-    EXPECT_TRUE(listener->set_lingering_timeout(0));
-    EXPECT_TRUE(listener->listening());
+    auto listnr = listen("127.0.0.1", 10000);
+    EXPECT_TRUE(listnr->set_lingering_timeout(0));
+    EXPECT_TRUE(listnr->listening());
 
     bool connected = false;
     bool disconnected = false;
@@ -92,7 +92,7 @@ TEST(socket, receive_send_closed_socket)
         EXPECT_FALSE(conn->send(data));
     });
 
-    connection_ptr connection = listener->accept();
+    connection_ptr connection = listnr->accept();
     EXPECT_TRUE(connection->set_lingering_timeout(0));
     while (connected == false) {
         usleep(1);
@@ -100,14 +100,14 @@ TEST(socket, receive_send_closed_socket)
     connection.reset();
     disconnected = true;
     thread.join();
-    EXPECT_TRUE(listener->listening());
+    EXPECT_TRUE(listnr->listening());
 }
 
 TEST(socket, double_connect)
 {
-    listener_pointer listener = listen("127.0.0.1", 10000);
-    EXPECT_TRUE(listener->set_lingering_timeout(0));
-    EXPECT_TRUE(listener->listening());
+    listener_pointer listnr = listen("127.0.0.1", 10000);
+    EXPECT_TRUE(listnr->set_lingering_timeout(0));
+    EXPECT_TRUE(listnr->listening());
 
     std::thread thread([] {
         auto conn = socket_connection::create("127.0.0.1", 10000);
@@ -116,10 +116,10 @@ TEST(socket, double_connect)
         EXPECT_TRUE(conn->set_lingering_timeout(0));
     });
 
-    connection_ptr connection = listener->accept();
+    connection_ptr connection = listnr->accept();
     EXPECT_TRUE(connection->set_lingering_timeout(0));
     thread.join();
-    EXPECT_TRUE(listener->listening());
+    EXPECT_TRUE(listnr->listening());
 }
 
 TEST(socket, unconnected_send_receive)
@@ -143,27 +143,27 @@ TEST(socket, terminate_try_to_connect)
 
 TEST(socket, terminate_try_to_accept)
 {
-    listener_pointer listener = listen("127.0.0.1", 10000);
-    EXPECT_TRUE(listener->set_lingering_timeout(0));
-    EXPECT_TRUE(listener->listening());
+    listener_pointer listnr = listen("127.0.0.1", 10000);
+    EXPECT_TRUE(listnr->set_lingering_timeout(0));
+    EXPECT_TRUE(listnr->listening());
 
-    std::thread thread([&listener] {
-        EXPECT_EQ(connection_ptr(), listener->accept());
-        EXPECT_FALSE(listener->listening());
+    std::thread thread([&listnr] {
+        EXPECT_EQ(connection_ptr(), listnr->accept());
+        EXPECT_FALSE(listnr->listening());
     });
 
     usleep(10000);
-    EXPECT_TRUE(listener->listening());
-    listener->stop();
+    EXPECT_TRUE(listnr->listening());
+    listnr->stop();
     thread.join();
-    EXPECT_FALSE(listener->listening());
+    EXPECT_FALSE(listnr->listening());
 }
 
 TEST(socket, normal_use_case)
 {
-    listener_pointer listener = listen("127.0.0.1", 10000);
-    EXPECT_TRUE(listener->set_lingering_timeout(0));
-    EXPECT_TRUE(listener->listening());
+    listener_pointer listnr = listen("127.0.0.1", 10000);
+    EXPECT_TRUE(listnr->set_lingering_timeout(0));
+    EXPECT_TRUE(listnr->listening());
 
     std::thread thread([] {
         auto conn = socket_connection::create("127.0.0.1", 10000);
@@ -177,7 +177,7 @@ TEST(socket, normal_use_case)
         EXPECT_TRUE(conn->send(data));
     });
 
-    connection_ptr connection = listener->accept();
+    connection_ptr connection = listnr->accept();
     EXPECT_NE(connection_ptr(), connection);
     EXPECT_TRUE(connection->set_lingering_timeout(0));
     buffer data = {0, 1, 2, 3};
@@ -187,7 +187,7 @@ TEST(socket, normal_use_case)
     EXPECT_EQ(buffer({4, 5, 6, 7}), data);
 
     thread.join();
-    EXPECT_TRUE(listener->listening());
+    EXPECT_TRUE(listnr->listening());
 }
 
 } // namespace hutzn

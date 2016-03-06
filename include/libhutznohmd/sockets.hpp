@@ -67,11 +67,11 @@ namespace hutzn {
 
   class socket_connection
 
-  class listener
+  class socket_listener
 
-  listener_interface <|-- listener: <<implements>>
   block_device <|-- socket_connection
   connection <|-- socket_connection: <<implements>>
+  listener_interface <|-- socket_listener: <<implements>>
 }
 @enduml
 
@@ -93,13 +93,13 @@ CLOSE_WAIT when the opposite connection is closed first).
 @code{.cpp}
 int main()
 {
-    auto listener = listen("0.0.0.0", 80);
-    auto connection = listener->accept();
+    auto listnr = listen("0.0.0.0", 80);
+    auto conn = listnr->accept();
     buffer request;
-    if (connection->read(request, 1024)) {
+    if (conn->read(request, 1024)) {
         buffer response;
         // Parse the HTTP request and build a response.
-        connection->send(response);
+        conn->send(response);
     }
     return 0;
 }

@@ -67,8 +67,8 @@ SET(FILES   "${PROJECT_SOURCE_DIR}/include/hutzn.hpp"
             request/uri.hpp
             socket/socket_connection.cpp
             socket/socket_connection.hpp
-            socket/listener.cpp
-            socket/listener.hpp
+            socket/socket_listener.cpp
+            socket/socket_listener.hpp
             socket/utility.cpp
             socket/utility.hpp
             utility/character_validation.hpp

@@ -16,7 +16,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "listener.hpp"
+#include "socket_listener.hpp"
 
 #include <arpa/inet.h>
 #include <netdb.h>
@@ -34,13 +34,13 @@ namespace hutzn
 
 listener_pointer listen(const std::string& host, const uint16_t& port)
 {
-    return listener::create(host, port);
+    return socket_listener::create(host, port);
 }
 
-std::shared_ptr<listener> listener::create(const std::string& host,
-                                           const uint16_t& port)
+std::shared_ptr<socket_listener> socket_listener::create(
+    const std::string& host, const uint16_t& port)
 {
-    std::shared_ptr<listener> result;
+    std::shared_ptr<socket_listener> result;
     const int32_t socket_fd = socket(PF_INET, SOCK_STREAM, 0);
     // only listen if a valid socket file descriptor was created
     if (socket_fd >= 0) {
@@ -61,7 +61,7 @@ std::shared_ptr<listener> listener::create(const std::string& host,
             // return a valid object only if bind and listen does not return an
             // error
             if ((result1 != -1) && (result2 != -1)) {
-                result = std::make_shared<listener>(socket_fd);
+                result = std::make_shared<socket_listener>(socket_fd);
             }
         }
     }
@@ -69,13 +69,13 @@ std::shared_ptr<listener> listener::create(const std::string& host,
     return result;
 }
 
-listener::listener(const int32_t& socket)
+socket_listener::socket_listener(const int32_t& socket)
     : is_listening_(true)
     , socket_(socket)
 {
 }
 
-listener::~listener(void) noexcept(true)
+socket_listener::~socket_listener(void) noexcept(true)
 {
     // stop listening and close the socket before destructing the object
     stop();
@@ -84,7 +84,7 @@ listener::~listener(void) noexcept(true)
     UNUSED(close_result);
 }
 
-connection_ptr listener::accept(void) const
+connection_ptr socket_listener::accept(void) const
 {
     connection_ptr result;
 
@@ -109,18 +109,18 @@ connection_ptr listener::accept(void) const
     return result;
 }
 
-bool listener::listening(void) const
+bool socket_listener::listening(void) const
 {
     return is_listening_;
 }
 
-void listener::stop(void)
+void socket_listener::stop(void)
 {
     is_listening_ = false;
     shutdown(socket_, SHUT_RDWR);
 }
 
-bool listener::set_lingering_timeout(const int32_t& timeout)
+bool socket_listener::set_lingering_timeout(const int32_t& timeout)
 {
     const linger lex{1, timeout};
     return setsockopt(socket_, SOL_SOCKET, SO_LINGER, &lex, sizeof(lex)) == 0;

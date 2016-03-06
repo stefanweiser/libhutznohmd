@@ -60,7 +60,7 @@ int main(void)
     std::cout << "example_socket" << std::endl;
 
     std::cout << "  listening" << std::endl;
-    auto listener = hutzn::listen("127.0.0.1", 30000);
+    auto listnr = hutzn::listen("127.0.0.1", 30000);
     std::thread thread(&client);
 
     std::cout << "  accepting" << std::endl;
