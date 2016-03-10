@@ -246,26 +246,24 @@ public:
 //! Handlers are always reference counted.
 using handler_ptr = std::shared_ptr<handler>;
 
-//! Wraps a call to the request handler. This is usually handled by the request
-//! processor.
-class request_handler_holder_interface
+//! Holds a callback. This is usually handled by the request processor.
+class callback_holder
 {
 public:
-    //! Resets the request handlers usage state to unused.
-    virtual ~request_handler_holder_interface(void) noexcept(true);
+    //! Releases the held callback.
+    virtual ~callback_holder(void) noexcept(true);
 
-    //! @brief Calls the stored request handler.
+    //! @brief Calls the stored callback.
     //!
-    //! This will increase the request handlers usage counter before calling the
-    //! handler and decreasing it afterwards. This method may throw exceptions
-    //! which are thrown from the request handler.
+    //! This may increase the usage counter of the callback before calling the
+    //! handler and decreasing it afterwards. It may throw exceptions, which are
+    //! thrown from the request handler.
     virtual http_status_code call(request_interface& request,
                                   response_interface& response) = 0;
 };
 
-//! Holders of request handlers are always reference counted.
-using request_handler_holder_pointer =
-    std::shared_ptr<request_handler_holder_interface>;
+//! Callback holders of are always reference counted.
+using callback_holder_ptr = std::shared_ptr<callback_holder>;
 
 //! Is used when the demultiplexer calls a request handler in order to get a
 //! response on a request.
@@ -288,7 +286,7 @@ public:
     //!
     //! Wildcard accept types are resolved by a first-come-first-served concept.
     //! The first matching request handler is returned.
-    virtual request_handler_holder_pointer determine_request_handler(
+    virtual callback_holder_ptr determine_request_handler(
         const request_interface& request) = 0;
 };
 

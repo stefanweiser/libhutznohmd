@@ -33,8 +33,7 @@ handler::~handler(void) noexcept(true)
 {
 }
 
-request_handler_holder_interface::~request_handler_holder_interface(
-    void) noexcept(true)
+callback_holder::~callback_holder(void) noexcept(true)
 {
 }
 

@@ -49,7 +49,7 @@ public:
     explicit demultiplexer(void);
 
     //! @copydoc demux_query_interface::determine_request_handler()
-    request_handler_holder_pointer determine_request_handler(
+    callback_holder_ptr determine_request_handler(
         const request_interface& request) override;
 
     //! @copydoc demux_interface::connect()

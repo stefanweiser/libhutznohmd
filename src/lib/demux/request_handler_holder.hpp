@@ -28,7 +28,7 @@ namespace hutzn
 {
 
 //! Stores a request handler to call it.
-class request_handler_holder : public request_handler_holder_interface
+class request_handler_holder : public callback_holder
 {
 public:
     //! Constructs a request handler holder.

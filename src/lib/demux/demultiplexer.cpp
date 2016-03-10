@@ -39,10 +39,10 @@ demultiplexer::demultiplexer(void)
 {
 }
 
-request_handler_holder_pointer demultiplexer::determine_request_handler(
+callback_holder_ptr demultiplexer::determine_request_handler(
     const request_interface& request)
 {
-    request_handler_holder_pointer result;
+    callback_holder_ptr result;
 
     // A wildcard content type is not allowed.
     const mime content_type = request.content_type();
