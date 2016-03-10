@@ -37,16 +37,15 @@ class request_processor : public request_processor_interface,
 {
 public:
     //! Constructs a request processor.
-    explicit request_processor(const demux_query_pointer& query_interface,
+    explicit request_processor(const demux_query_ptr& query_interface,
                                const uint64_t& connection_timeout_in_sec);
 
     //! @copydoc request_processor_interface::handle_one_request()
     bool handle_one_request(block_device& device) const override;
 
     //! @copydoc request_processor_interface::set_error_handler()
-    handler_pointer set_error_handler(
-        const http_status_code& code,
-        const error_handler_callback& fn) override;
+    handler_ptr set_error_handler(const http_status_code& code,
+                                  const error_handler_callback& fn) override;
 
     //! @copydoc reset_error_handler_interface::reset_error_handler()
     void reset_error_handler(const http_status_code& code) override;
@@ -64,7 +63,7 @@ private:
     using error_handler_map =
         std::map<http_status_code, std::tuple<error_handler_callback, bool>>;
 
-    demux_query_pointer demultiplexer_;
+    demux_query_ptr demultiplexer_;
 
     mutable std::mutex error_handler_mutex_;
     error_handler_map error_handlers_;

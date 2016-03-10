@@ -26,7 +26,7 @@
 namespace hutzn
 {
 
-demux_pointer make_demultiplexer(void)
+demux_ptr make_demultiplexer(void)
 {
     return std::make_shared<demultiplexer>();
 }
@@ -72,10 +72,10 @@ request_handler_holder_pointer demultiplexer::determine_request_handler(
     return result;
 }
 
-handler_pointer demultiplexer::connect(const request_handler_id& id,
-                                       const request_handler_callback& fn)
+handler_ptr demultiplexer::connect(const request_handler_id& id,
+                                   const request_handler_callback& fn)
 {
-    handler_pointer result;
+    handler_ptr result;
 
     // Check for invalid uri paths.
     // Check whether the content and accept mime is valid.

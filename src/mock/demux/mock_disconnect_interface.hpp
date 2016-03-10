@@ -35,7 +35,7 @@ public:
     MOCK_CONST_METHOD1(is_enabled, bool(const request_handler_id&));
 };
 
-using disconnect_mock_pointer = std::shared_ptr<disconnect_interface_mock>;
+using disconnect_mock_ptr = std::shared_ptr<disconnect_interface_mock>;
 
 } // namespace hutzn
 

@@ -53,8 +53,8 @@ public:
         const request_interface& request) override;
 
     //! @copydoc demux_interface::connect()
-    handler_pointer connect(const request_handler_id& id,
-                            const request_handler_callback& fn) override;
+    handler_ptr connect(const request_handler_id& id,
+                        const request_handler_callback& fn) override;
 
     //! @copydoc disconnect_interface::disconnect()
     void disconnect(const request_handler_id& id) override;

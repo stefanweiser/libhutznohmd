@@ -36,8 +36,7 @@ bool operator==(const request_handler_id& lhs, const request_handler_id& rhs)
 
 TEST(demultiplex_handler, disconnect)
 {
-    disconnect_mock_pointer demuxer =
-        std::make_shared<disconnect_interface_mock>();
+    disconnect_mock_ptr demuxer = std::make_shared<disconnect_interface_mock>();
 
     request_handler_id id{"/", http_verb::GET,
                           mime(mime_type::WILDCARD, mime_subtype::WILDCARD),

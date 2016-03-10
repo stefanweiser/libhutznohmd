@@ -119,7 +119,7 @@ use a member function (by using @c std::bind) as the callback function.
 
 @code{.cpp}
 using namespace std::placeholders;
-std::bind(&Foo::bar, foo_pointer, _1, _2);
+std::bind(&Foo::bar, foo_ptr, _1, _2);
 @endcode
 
 The following example registers a resource handler and sets an error handler
@@ -244,7 +244,7 @@ public:
 };
 
 //! Handlers are always reference counted.
-using handler_pointer = std::shared_ptr<handler_interface>;
+using handler_ptr = std::shared_ptr<handler_interface>;
 
 //! Wraps a call to the request handler. This is usually handled by the request
 //! processor.
@@ -293,7 +293,7 @@ public:
 };
 
 //! Demultiplexers should always be used with reference counted pointers.
-using demux_query_pointer = std::shared_ptr<demux_query_interface>;
+using demux_query_ptr = std::shared_ptr<demux_query_interface>;
 
 //! @brief Stores request handlers and custom mime types.
 //!
@@ -313,8 +313,8 @@ public:
     //! registered, the operation will fail. It also fails, if the given path is
     //! not valid or one of the used mime types is not registered. When the
     //! operation fails it returns an empty shared pointer.
-    virtual handler_pointer connect(const request_handler_id& id,
-                                    const request_handler_callback& fn) = 0;
+    virtual handler_ptr connect(const request_handler_id& id,
+                                const request_handler_callback& fn) = 0;
 
     //! @brief Registers a custom MIME type and returns a new mime_type value if
     //! that type was not already registered.
@@ -346,10 +346,10 @@ public:
 };
 
 //! Demultiplexers should always be used with reference counted pointers.
-using demux_pointer = std::shared_ptr<demux_interface>;
+using demux_ptr = std::shared_ptr<demux_interface>;
 
 //! Creates a new empty demultiplexer.
-demux_pointer make_demultiplexer(void);
+demux_ptr make_demultiplexer(void);
 
 //! Is used by the demultiplexer in case of an error to get a useful response.
 using error_handler_callback =
@@ -378,18 +378,18 @@ public:
     //!
     //! Returns a handler object, which acts as the error handler's lifetime
     //! scope. If there is already one registered, it returns null.
-    virtual handler_pointer set_error_handler(
-        const http_status_code& code, const error_handler_callback& fn) = 0;
+    virtual handler_ptr set_error_handler(const http_status_code& code,
+                                          const error_handler_callback& fn) = 0;
 };
 
 //! The request processor should always be a reference counted pointer
-using request_processor_pointer = std::shared_ptr<request_processor_interface>;
+using request_processor_ptr = std::shared_ptr<request_processor_interface>;
 
 //! Creates a new request processor. Needs a query pointer and a connection
 //! timeout in seconds. The timeout determines how long to wait till the
 //! connection gets closed in order to inactivity.
-request_processor_pointer make_request_processor(
-    const demux_query_pointer& query_interface,
+request_processor_ptr make_request_processor(
+    const demux_query_ptr& query_interface,
     const uint64_t& connection_timeout_in_sec = 30);
 
 } // namespace hutzn

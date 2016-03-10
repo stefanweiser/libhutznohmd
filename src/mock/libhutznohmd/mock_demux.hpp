@@ -31,23 +31,22 @@ class demux_interface_mock : public demux_interface
 public:
     MOCK_METHOD1(determine_request_handler,
                  request_handler_holder_pointer(const request_interface&));
-    MOCK_METHOD2(connect, handler_pointer(const request_handler_id&,
-                                          const request_handler_callback&));
+    MOCK_METHOD2(connect, handler_ptr(const request_handler_id&,
+                                      const request_handler_callback&));
     MOCK_METHOD1(register_mime_type, mime_type(const std::string&));
     MOCK_METHOD1(register_mime_subtype, mime_subtype(const std::string&));
     MOCK_METHOD1(unregister_mime_type, bool(const mime_type&));
     MOCK_METHOD1(unregister_mime_subtype, bool(const mime_subtype&));
 };
 
-using demux_mock_pointer = std::shared_ptr<demux_interface_mock>;
+using demux_mock_ptr = std::shared_ptr<demux_interface_mock>;
 
 class request_processor_interface_mock : public request_processor_interface
 {
 public:
     MOCK_CONST_METHOD1(handle_one_request, bool(block_device&));
-    MOCK_METHOD2(set_error_handler,
-                 handler_pointer(const http_status_code&,
-                                 const error_handler_callback&));
+    MOCK_METHOD2(set_error_handler, handler_ptr(const http_status_code&,
+                                                const error_handler_callback&));
 };
 
 using request_processor_mock_pointer =

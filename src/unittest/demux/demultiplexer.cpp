@@ -56,7 +56,7 @@ protected:
         return result;
     }
 
-    demux_pointer demultiplexer_;
+    demux_ptr demultiplexer_;
     mime_type mt_audio_;
     mime_type mt_image_;
     mime_type mt_text_;
@@ -78,7 +78,7 @@ TEST_F(demultiplexer_test, connect_disconnect)
 {
     ASSERT_TRUE(NULL != demultiplexer_.get());
 
-    handler_pointer handler = demultiplexer_->connect(id(), &handler_fn);
+    handler_ptr handler = demultiplexer_->connect(id(), &handler_fn);
 
     EXPECT_TRUE(NULL != handler.get());
 }
@@ -87,8 +87,8 @@ TEST_F(demultiplexer_test, connect_twice)
 {
     ASSERT_TRUE(NULL != demultiplexer_.get());
 
-    handler_pointer handler1 = demultiplexer_->connect(id(), &handler_fn);
-    handler_pointer handler2 = demultiplexer_->connect(id(), &handler_fn);
+    handler_ptr handler1 = demultiplexer_->connect(id(), &handler_fn);
+    handler_ptr handler2 = demultiplexer_->connect(id(), &handler_fn);
 
     EXPECT_TRUE(NULL != handler1.get());
     EXPECT_EQ(NULL, handler2.get());
@@ -141,7 +141,7 @@ TEST_F(demultiplexer_test, determine_request_unknown_path)
 TEST_F(demultiplexer_test, determine_request_unknown_method)
 {
     ASSERT_TRUE(NULL != demultiplexer_.get());
-    handler_pointer handler = demultiplexer_->connect(id(), &handler_fn);
+    handler_ptr handler = demultiplexer_->connect(id(), &handler_fn);
     ASSERT_TRUE(NULL != handler.get());
 
     auto request = std::make_shared<request_interface_mock>();
@@ -157,7 +157,7 @@ TEST_F(demultiplexer_test, determine_request_unknown_method)
 TEST_F(demultiplexer_test, determine_request_handler_wildcard_content_type)
 {
     ASSERT_TRUE(NULL != demultiplexer_.get());
-    handler_pointer handler = demultiplexer_->connect(id(), &handler_fn);
+    handler_ptr handler = demultiplexer_->connect(id(), &handler_fn);
     ASSERT_TRUE(NULL != handler.get());
 
     auto request = std::make_shared<request_interface_mock>();
@@ -170,7 +170,7 @@ TEST_F(demultiplexer_test, determine_request_handler_wildcard_content_type)
 TEST_F(demultiplexer_test, determine_request_handler_wildcard_content_subtype)
 {
     ASSERT_TRUE(NULL != demultiplexer_.get());
-    handler_pointer handler = demultiplexer_->connect(id(), &handler_fn);
+    handler_ptr handler = demultiplexer_->connect(id(), &handler_fn);
     ASSERT_TRUE(NULL != handler.get());
 
     auto request = std::make_shared<request_interface_mock>();
@@ -183,7 +183,7 @@ TEST_F(demultiplexer_test, determine_request_handler_wildcard_content_subtype)
 TEST_F(demultiplexer_test, determine_request_handler_unknown_content_type)
 {
     ASSERT_TRUE(NULL != demultiplexer_.get());
-    handler_pointer handler = demultiplexer_->connect(id(), &handler_fn);
+    handler_ptr handler = demultiplexer_->connect(id(), &handler_fn);
     ASSERT_TRUE(NULL != handler.get());
 
     auto request = std::make_shared<request_interface_mock>();
@@ -198,7 +198,7 @@ TEST_F(demultiplexer_test, determine_request_handler_unknown_content_type)
 TEST_F(demultiplexer_test, determine_request_handler_unknown_accept_type)
 {
     ASSERT_TRUE(NULL != demultiplexer_.get());
-    handler_pointer handler = demultiplexer_->connect(id(), &handler_fn);
+    handler_ptr handler = demultiplexer_->connect(id(), &handler_fn);
     ASSERT_TRUE(NULL != handler.get());
 
     auto request = std::make_shared<request_interface_mock>();
@@ -218,7 +218,7 @@ TEST_F(demultiplexer_test, determine_request_handler_success_1)
 {
     ASSERT_TRUE(NULL != demultiplexer_.get());
     request_handler_id test_id = id();
-    handler_pointer handler = demultiplexer_->connect(test_id, &handler_fn);
+    handler_ptr handler = demultiplexer_->connect(test_id, &handler_fn);
     ASSERT_TRUE(NULL != handler.get());
 
     auto request = std::make_shared<request_interface_mock>();
@@ -242,7 +242,7 @@ TEST_F(demultiplexer_test, determine_request_handler_success_2)
 {
     ASSERT_TRUE(NULL != demultiplexer_.get());
     request_handler_id test_id = id();
-    handler_pointer handler = demultiplexer_->connect(test_id, &handler_fn);
+    handler_ptr handler = demultiplexer_->connect(test_id, &handler_fn);
     ASSERT_TRUE(NULL != handler.get());
 
     auto request = std::make_shared<request_interface_mock>();
@@ -271,7 +271,7 @@ TEST_F(demultiplexer_test, determine_request_handler_disabled_handler)
 {
     ASSERT_TRUE(NULL != demultiplexer_.get());
     request_handler_id test_id = id();
-    handler_pointer handler = demultiplexer_->connect(test_id, &handler_fn);
+    handler_ptr handler = demultiplexer_->connect(test_id, &handler_fn);
     ASSERT_TRUE(NULL != handler.get());
     handler->disable();
 

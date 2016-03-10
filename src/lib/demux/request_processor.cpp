@@ -25,8 +25,8 @@
 namespace hutzn
 {
 
-request_processor_pointer make_request_processor(
-    const demux_query_pointer& query_interface,
+request_processor_ptr make_request_processor(
+    const demux_query_ptr& query_interface,
     const uint64_t& connection_timeout_in_sec)
 {
     return std::make_shared<request_processor>(query_interface,
@@ -34,7 +34,7 @@ request_processor_pointer make_request_processor(
 }
 
 request_processor::request_processor(
-    const demux_query_pointer& query_interface,
+    const demux_query_ptr& query_interface,
     const uint64_t& /*connection_timeout_in_sec*/)
     : demultiplexer_(query_interface)
     // , connection_timeout_in_sec_(connection_timeout_in_sec)
@@ -48,7 +48,7 @@ bool request_processor::handle_one_request(block_device& /*device*/) const
     return false;
 }
 
-handler_pointer request_processor::set_error_handler(
+handler_ptr request_processor::set_error_handler(
     const http_status_code& code, const error_handler_callback& fn)
 {
     std::lock_guard<std::mutex> lock(error_handler_mutex_);
@@ -57,7 +57,7 @@ handler_pointer request_processor::set_error_handler(
     std::pair<error_handler_map::iterator, bool> insertion_result =
         error_handlers_.insert(std::make_pair(code, std::make_tuple(fn, true)));
 
-    handler_pointer result;
+    handler_ptr result;
     if (insertion_result.second) {
         result = std::make_shared<error_handler>(*this, code);
     }
