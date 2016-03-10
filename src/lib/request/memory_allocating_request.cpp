@@ -16,7 +16,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "request.hpp"
+#include "memory_allocating_request.hpp"
 
 #include <cassert>
 #include <cstring>
@@ -119,7 +119,8 @@ bool parse_specific_value(const trie<T>& t, const size_t& max_length,
 
 } // namespace
 
-request::request(const connection_ptr& connection)
+memory_allocating_request::memory_allocating_request(
+    const connection_ptr& connection)
     : lexer_(connection)
     , method_(http_verb::GET)
     , path_uri_()
@@ -138,7 +139,7 @@ request::request(const connection_ptr& connection)
 {
 }
 
-bool request::parse(const mime_handler& handler)
+bool memory_allocating_request::parse(const mime_handler& handler)
 {
     bool result = false;
 
@@ -162,7 +163,7 @@ bool request::parse(const mime_handler& handler)
     return result;
 }
 
-void request::fetch_content(void)
+void memory_allocating_request::fetch_content(void)
 {
     const size_t length = content_length();
     if ((length > 0) && (lexer_.fetch_content(length))) {
@@ -170,22 +171,22 @@ void request::fetch_content(void)
     }
 }
 
-http_verb request::method(void) const
+http_verb memory_allocating_request::method(void) const
 {
     return method_;
 }
 
-const char_t* request::path(void) const
+const char_t* memory_allocating_request::path(void) const
 {
     return path_uri_.path();
 }
 
-const char_t* request::host(void) const
+const char_t* memory_allocating_request::host(void) const
 {
     return path_uri_.host();
 }
 
-const char_t* request::query(const char_t* const key) const
+const char_t* memory_allocating_request::query(const char_t* const key) const
 {
     const char_t* result = NULL;
     auto it = query_entries_.find(key);
@@ -195,17 +196,18 @@ const char_t* request::query(const char_t* const key) const
     return result;
 }
 
-const char_t* request::fragment(void) const
+const char_t* memory_allocating_request::fragment(void) const
 {
     return path_uri_.fragment();
 }
 
-http_version request::version(void) const
+http_version memory_allocating_request::version(void) const
 {
     return version_;
 }
 
-const char_t* request::header_value(const char_t* const name) const
+const char_t* memory_allocating_request::header_value(
+    const char_t* const name) const
 {
     const char_t* result = NULL;
     auto it = header_fields_.find(name);
@@ -215,57 +217,57 @@ const char_t* request::header_value(const char_t* const name) const
     return result;
 }
 
-bool request::keeps_connection(void) const
+bool memory_allocating_request::keeps_connection(void) const
 {
     return (version() > http_version::HTTP_1_0) || is_keep_alive_set_;
 }
 
-time_t request::date(void) const
+time_t memory_allocating_request::date(void) const
 {
     return date_;
 }
 
-const void* request::content(void) const
+const void* memory_allocating_request::content(void) const
 {
     return content_;
 }
 
-size_t request::content_length(void) const
+size_t memory_allocating_request::content_length(void) const
 {
     return content_length_;
 }
 
-mime request::content_type(void) const
+mime memory_allocating_request::content_type(void) const
 {
     return content_type_;
 }
 
-bool request::accept(void*& /*handle*/, mime& /*type*/) const
+bool memory_allocating_request::accept(void*& /*handle*/, mime& /*type*/) const
 {
     return false;
 }
 
-http_expectation request::expect(void) const
+http_expectation memory_allocating_request::expect(void) const
 {
     return expect_;
 }
 
-const char_t* request::from(void) const
+const char_t* memory_allocating_request::from(void) const
 {
     return from_;
 }
 
-const char_t* request::referer(void) const
+const char_t* memory_allocating_request::referer(void) const
 {
     return referer_;
 }
 
-const char_t* request::user_agent(void) const
+const char_t* memory_allocating_request::user_agent(void) const
 {
     return user_agent_;
 }
 
-bool request::parse_method(int32_t& ch)
+bool memory_allocating_request::parse_method(int32_t& ch)
 {
     static size_t maximum_method_length = 0;
     static const trie<http_verb> methods =
@@ -299,7 +301,7 @@ bool request::parse_method(int32_t& ch)
     return result;
 }
 
-bool request::parse_uri(int32_t& ch)
+bool memory_allocating_request::parse_uri(int32_t& ch)
 {
     bool result = false;
 
@@ -329,7 +331,7 @@ bool request::parse_uri(int32_t& ch)
     return result;
 }
 
-bool request::parse_version(int32_t& ch)
+bool memory_allocating_request::parse_version(int32_t& ch)
 {
     static size_t maximum_version_length = 0;
     static const trie<http_version> versions =
@@ -363,7 +365,8 @@ bool request::parse_version(int32_t& ch)
     return result;
 }
 
-bool request::parse_header(const mime_handler& handler, int32_t& ch)
+bool memory_allocating_request::parse_header(const mime_handler& handler,
+                                             int32_t& ch)
 {
     bool result = false;
     static size_t maximum_header_key_length = 0;
@@ -416,18 +419,26 @@ bool request::parse_header(const mime_handler& handler, int32_t& ch)
     return result;
 }
 
-void request::set_header(const mime_handler& handler, header_key key,
-                         const char_t* const key_string,
-                         const char_t* value_string, size_t value_length)
+void memory_allocating_request::set_header(const mime_handler& handler,
+                                           header_key key,
+                                           const char_t* const key_string,
+                                           const char_t* value_string,
+                                           size_t value_length)
 {
     using set_header_functor =
-        void (request::*)(const mime_handler&, const char_t*, size_t);
+        void (memory_allocating_request::*)(const mime_handler&, const char_t*,
+                                            size_t);
     using header_fn_array =
         std::array<set_header_functor, static_cast<size_t>(header_key::SIZE)>;
     static const header_fn_array set_header_fns = {
-        {&request::set_connection, &request::set_content_length,
-         &request::set_content_type, &request::set_date, &request::set_expect,
-         &request::set_from, &request::set_referer, &request::set_user_agent}};
+        {&memory_allocating_request::set_connection,
+         &memory_allocating_request::set_content_length,
+         &memory_allocating_request::set_content_type,
+         &memory_allocating_request::set_date,
+         &memory_allocating_request::set_expect,
+         &memory_allocating_request::set_from,
+         &memory_allocating_request::set_referer,
+         &memory_allocating_request::set_user_agent}};
     skip_whitespace(value_string, value_length);
 
     if ((key > header_key::CUSTOM) && (key < header_key::SIZE)) {
@@ -438,8 +449,9 @@ void request::set_header(const mime_handler& handler, header_key key,
     }
 }
 
-void request::set_connection(const mime_handler&, const char_t* value_string,
-                             size_t value_length)
+void memory_allocating_request::set_connection(const mime_handler&,
+                                               const char_t* value_string,
+                                               size_t value_length)
 {
     static const char_t keep_alive_str[] = "keep-alive";
     static const size_t keep_alive_size = sizeof(keep_alive_str);
@@ -451,9 +463,9 @@ void request::set_connection(const mime_handler&, const char_t* value_string,
     }
 }
 
-void request::set_content_length(const mime_handler&,
-                                 const char_t* value_string,
-                                 size_t value_length)
+void memory_allocating_request::set_content_length(const mime_handler&,
+                                                   const char_t* value_string,
+                                                   size_t value_length)
 {
     const int64_t length =
         parse_unsigned_integer<int64_t>(value_string, value_length);
@@ -462,20 +474,22 @@ void request::set_content_length(const mime_handler&,
     }
 }
 
-void request::set_content_type(const mime_handler& handler,
-                               const char_t* value_string, size_t value_length)
+void memory_allocating_request::set_content_type(const mime_handler& handler,
+                                                 const char_t* value_string,
+                                                 size_t value_length)
 {
     content_type_ = handler.parse(value_string, value_length);
 }
 
-void request::set_date(const mime_handler&, const char_t* value_string,
-                       size_t value_length)
+void memory_allocating_request::set_date(const mime_handler&,
+                                         const char_t* value_string,
+                                         size_t value_length)
 {
     date_ = parse_timestamp(value_string, value_length);
 }
 
-void request::set_expect(const mime_handler&, const char_t* value_string,
-                         size_t)
+void memory_allocating_request::set_expect(const mime_handler&,
+                                           const char_t* value_string, size_t)
 {
     static const char_t continue_str[] = "100-continue";
     static const size_t continue_size = sizeof(continue_str);
@@ -486,24 +500,26 @@ void request::set_expect(const mime_handler&, const char_t* value_string,
     }
 }
 
-void request::set_from(const mime_handler&, const char_t* value_string, size_t)
+void memory_allocating_request::set_from(const mime_handler&,
+                                         const char_t* value_string, size_t)
 {
     from_ = value_string;
 }
 
-void request::set_referer(const mime_handler&, const char_t* value_string,
-                          size_t)
+void memory_allocating_request::set_referer(const mime_handler&,
+                                            const char_t* value_string, size_t)
 {
     referer_ = value_string;
 }
 
-void request::set_user_agent(const mime_handler&, const char_t* value_string,
-                             size_t)
+void memory_allocating_request::set_user_agent(const mime_handler&,
+                                               const char_t* value_string,
+                                               size_t)
 {
     user_agent_ = value_string;
 }
 
-bool request::is_whitespace(const int32_t ch)
+bool memory_allocating_request::is_whitespace(const int32_t ch)
 {
     // The character has to get converted into the more common data type.
     // Otherwise the comparison may offer some ambiguities (e.g. 1024 get to 0).
@@ -512,7 +528,7 @@ bool request::is_whitespace(const int32_t ch)
            (static_cast<int32_t>('\t') == ch);
 }
 
-bool request::is_newline(const int32_t ch)
+bool memory_allocating_request::is_newline(const int32_t ch)
 {
     // The character has to get converted into the more common data type.
     // Otherwise the comparison may offer some ambiguities (e.g. 1024 get to 0).
@@ -520,7 +536,7 @@ bool request::is_newline(const int32_t ch)
     return static_cast<int32_t>('\n') == ch;
 }
 
-bool request::is_key_value_separator(const int32_t ch)
+bool memory_allocating_request::is_key_value_separator(const int32_t ch)
 {
     // The character has to get converted into the more common data type.
     // Otherwise the comparison may offer some ambiguities (e.g. 1024 get to 0).
@@ -528,7 +544,7 @@ bool request::is_key_value_separator(const int32_t ch)
     return static_cast<int32_t>(':') == ch;
 }
 
-bool request::enforced_null_terminated_less::operator()(
+bool memory_allocating_request::enforced_null_terminated_less::operator()(
     const char_t* const lhs, const char_t* const rhs) const
 {
     bool result;

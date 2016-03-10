@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_REQUEST_REQUEST_HPP
-#define LIBHUTZNOHMD_REQUEST_REQUEST_HPP
+#ifndef LIBHUTZNOHMD_REQUEST_MEMORY_ALLOCATING_REQUEST_HPP
+#define LIBHUTZNOHMD_REQUEST_MEMORY_ALLOCATING_REQUEST_HPP
 
 #include <map>
 
@@ -63,16 +63,18 @@ enum class header_key : int8_t {
 };
 
 //! @copydoc request_interface
-class request : public request_interface
+class memory_allocating_request : public request_interface
 {
 public:
     //! @brief Constructs a request by a connection.
     //!
     //! @param[in] connection Connection to use when more data is needed.
-    explicit request(const connection_ptr& connection);
+    explicit memory_allocating_request(const connection_ptr& connection);
 
-    explicit request(const request& rhs) = delete;
-    request& operator=(const request& rhs) = delete;
+    explicit memory_allocating_request(const memory_allocating_request& rhs) =
+        delete;
+    memory_allocating_request& operator=(const memory_allocating_request& rhs) =
+        delete;
 
     //! @brief Parses a request.
     //!
@@ -211,4 +213,4 @@ private:
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_REQUEST_REQUEST_HPP
+#endif // LIBHUTZNOHMD_REQUEST_MEMORY_ALLOCATING_REQUEST_HPP

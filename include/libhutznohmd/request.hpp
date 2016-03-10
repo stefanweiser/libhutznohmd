@@ -142,7 +142,7 @@ namespace hutzn {
     +set_content(content: buffer)
   }
 
-  class request
+  class memory_allocating_request
   class response
 
   http_version -- request_interface: < uses
@@ -150,7 +150,7 @@ namespace hutzn {
   http_expectation -- request_interface: < uses
   http_version -- response_interface: < uses
   http_status_code -- response_interface: < uses
-  request_interface <|-- request: implements
+  request_interface <|-- memory_allocating_request: implements
   response_interface <|-- response: implements
 }
 @enduml
