@@ -37,7 +37,7 @@ callback_holder::~callback_holder(void) noexcept(true)
 {
 }
 
-request_processor_interface::~request_processor_interface(void) noexcept(true)
+request_processor::~request_processor(void) noexcept(true)
 {
 }
 

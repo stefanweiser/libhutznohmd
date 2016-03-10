@@ -474,10 +474,10 @@ way to enforce this gurantee without loosing the ability to test with
 to define a member function with the noexcept specifier and mock it).
 
 There is also one exception from this rule. The member function
-@ref hutzn::request_processor_interface::handle_one_request() may indirectly
-throw an exception, because it calls a request handler or an error handler which
-is not part of the library's code. The library will not enforce those handler
-functions to fulfill this no-throw policy.
+@ref hutzn::request_processor::handle_one_request() may indirectly throw an
+exception, because it calls a request handler or an error handler which is not
+part of the library's code. The library will not enforce those handler functions
+to fulfill this no-throw policy.
 
 @section sec_thread_safety Thread safety
 

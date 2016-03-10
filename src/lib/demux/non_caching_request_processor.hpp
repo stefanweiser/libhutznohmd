@@ -32,7 +32,7 @@ namespace hutzn
 {
 
 //! Provides helper logic to process requests.
-class non_caching_request_processor : public request_processor_interface,
+class non_caching_request_processor : public request_processor,
                                       public error_handler_manager
 {
 public:
@@ -41,10 +41,10 @@ public:
         const demux_query_ptr& query_interface,
         const uint64_t& connection_timeout_in_sec);
 
-    //! @copydoc request_processor_interface::handle_one_request()
+    //! @copydoc request_processor::handle_one_request()
     bool handle_one_request(block_device& device) const override;
 
-    //! @copydoc request_processor_interface::set_error_handler()
+    //! @copydoc request_processor::set_error_handler()
     handler_ptr set_error_handler(const http_status_code& code,
                                   const error_handler_callback& fn) override;
 

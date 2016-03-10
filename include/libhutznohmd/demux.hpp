@@ -63,7 +63,7 @@ namespace hutzn {
     +is_enabled(): bool;
   }
 
-  interface request_processor_interface {
+  interface request_processor {
     +handle_one_request(device: block_device): bool
     +set_error_handler(reason: http_status_code, fn): handler
   }
@@ -88,16 +88,16 @@ namespace hutzn {
   class non_caching_request_processor
   class demultiplexer
 
-  block_device -- request_processor_interface: < uses
-  request -- request_processor_interface: < uses
-  response -- request_processor_interface: < uses
-  handler -- request_processor_interface: < returns
+  block_device -- request_processor: < uses
+  request -- request_processor: < uses
+  response -- request_processor: < uses
+  handler -- request_processor: < returns
   request_handler_id -- demux: < uses
   handler -- demux: < returns
   request_handler_holder_interface -- demux: < returns
 
   handler <|-- error_handler: implements
-  request_processor_interface <|-- non_caching_request_processor: implements
+  request_processor <|-- non_caching_request_processor: implements
   demux_query "1" o-- "1" non_caching_request_processor
   demux_query <|-- demultiplexer: implements
   demux <|-- demultiplexer: implements
@@ -144,7 +144,7 @@ public:
 };
 
 void register_handlers(C* const c,
-                       request_processor_interface& r,
+                       request_processor& r,
                        demux& m)
 {
     request_handler_id i{
@@ -355,12 +355,12 @@ using error_handler_callback = std::function<void(const request&, response&)>;
 //!
 //! Calls to the request and error handlers. Queries the correct request handler
 //! from a given demultiplexer.
-class request_processor_interface
+class request_processor
 {
 public:
     //! It is necessary, that no request is getting processed while destroying
     //! it.
-    virtual ~request_processor_interface(void) noexcept(true);
+    virtual ~request_processor(void) noexcept(true);
 
     //! @brief Takes a block device to answer one request.
     //!
@@ -379,12 +379,12 @@ public:
 };
 
 //! The request processor should always be a reference counted pointer
-using request_processor_ptr = std::shared_ptr<request_processor_interface>;
+using request_processor_ptr = std::shared_ptr<request_processor>;
 
-//! Creates a new request processor. Needs a query pointer and a connection
-//! timeout in seconds. The timeout determines how long to wait till the
-//! connection gets closed in order to inactivity.
-request_processor_ptr make_request_processor(
+//! Creates a new non-caching request processor. Needs a query pointer and a
+//! connection timeout in seconds. The timeout determines how long to wait till
+//! the connection gets closed in order to inactivity.
+request_processor_ptr make_non_caching_request_processor(
     const demux_query_ptr& query_interface,
     const uint64_t& connection_timeout_in_sec = 30);
 

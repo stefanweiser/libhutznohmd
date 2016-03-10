@@ -41,7 +41,7 @@ public:
 
 using demux_mock_ptr = std::shared_ptr<demux_mock>;
 
-class request_processor_interface_mock : public request_processor_interface
+class request_processor_mock : public request_processor
 {
 public:
     MOCK_CONST_METHOD1(handle_one_request, bool(block_device&));
@@ -49,8 +49,7 @@ public:
                                                 const error_handler_callback&));
 };
 
-using request_processor_mock_pointer =
-    std::shared_ptr<request_processor_interface_mock>;
+using request_processor_mock_ptr = std::shared_ptr<request_processor_mock>;
 
 } // namespace hutzn
 

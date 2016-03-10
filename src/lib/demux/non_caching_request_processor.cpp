@@ -25,7 +25,7 @@
 namespace hutzn
 {
 
-request_processor_ptr make_request_processor(
+request_processor_ptr make_non_caching_request_processor(
     const demux_query_ptr& query_interface,
     const uint64_t& connection_timeout_in_sec)
 {
