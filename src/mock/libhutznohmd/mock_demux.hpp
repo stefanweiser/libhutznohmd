@@ -26,7 +26,7 @@
 namespace hutzn
 {
 
-class demux_interface_mock : public demux_interface
+class demux_mock : public demux
 {
 public:
     MOCK_METHOD1(determine_request_handler,
@@ -39,7 +39,7 @@ public:
     MOCK_METHOD1(unregister_mime_subtype, bool(const mime_subtype&));
 };
 
-using demux_mock_ptr = std::shared_ptr<demux_interface_mock>;
+using demux_mock_ptr = std::shared_ptr<demux_mock>;
 
 class request_processor_interface_mock : public request_processor_interface
 {

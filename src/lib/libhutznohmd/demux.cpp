@@ -25,7 +25,7 @@ demux_query::~demux_query(void) noexcept(true)
 {
 }
 
-demux_interface::~demux_interface(void) noexcept(true)
+demux::~demux(void) noexcept(true)
 {
 }
 

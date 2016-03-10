@@ -40,7 +40,7 @@ namespace hutzn
 //! management and the request handler determination algorithm. This class is
 //! designed to be thread safe. It does not call any callbacks into the user's
 //! domain.
-class demultiplexer : public demux_interface,
+class demultiplexer : public demux,
                       public disconnect_interface,
                       public usage_interface
 {
@@ -52,7 +52,7 @@ public:
     callback_holder_ptr determine_request_handler(
         const request_interface& request) override;
 
-    //! @copydoc demux_interface::connect()
+    //! @copydoc demux::connect()
     handler_ptr connect(const request_handler_id& id,
                         const request_handler_callback& fn) override;
 
@@ -68,16 +68,16 @@ public:
     //! @copydoc disconnect_interface::is_enabled()
     bool is_enabled(const request_handler_id& id) const override;
 
-    //! @copydoc demux_interface::register_mime_type()
+    //! @copydoc demux::register_mime_type()
     mime_type register_mime_type(const std::string& type) override;
 
-    //! @copydoc demux_interface::register_mime_subtype()
+    //! @copydoc demux::register_mime_subtype()
     mime_subtype register_mime_subtype(const std::string& subtype) override;
 
-    //! @copydoc demux_interface::unregister_mime_type()
+    //! @copydoc demux::unregister_mime_type()
     bool unregister_mime_type(const mime_type& type) override;
 
-    //! @copydoc demux_interface::unregister_mime_subtype()
+    //! @copydoc demux::unregister_mime_subtype()
     bool unregister_mime_subtype(const mime_subtype& subtype) override;
 
     //! @copydoc usage_interface::increase_usage_counter()

@@ -76,7 +76,7 @@ namespace hutzn {
     +determine_request_handler(type: mime): request_handler_holder
   }
 
-  interface demux_interface {
+  interface demux {
     +connect(id: request_handler_id, fn): handler
     +register_mime_type(type: string, result: mime_type): bool
     +unregister_mime_type(type: mime_type): bool
@@ -92,16 +92,16 @@ namespace hutzn {
   request_interface -- request_processor_interface: < uses
   response_interface -- request_processor_interface: < uses
   handler -- request_processor_interface: < returns
-  request_handler_id -- demux_interface: < uses
-  handler -- demux_interface: < returns
-  request_handler_holder_interface -- demux_interface: < returns
+  request_handler_id -- demux: < uses
+  handler -- demux: < returns
+  request_handler_holder_interface -- demux: < returns
 
   handler <|-- error_handler: implements
   request_processor_interface <|-- request_processor: implements
   demux_query "1" o-- "1" request_processor
   demux_query <|-- demultiplexer: implements
-  demux_interface <|-- demultiplexer: implements
-  demux_query <|-- demux_interface: "derives from"
+  demux <|-- demultiplexer: implements
+  demux_query <|-- demux: "derives from"
 }
 @enduml
 
@@ -145,7 +145,7 @@ public:
 
 void register_handlers(C* const c,
                        request_processor_interface& r,
-                       demux_interface& m)
+                       demux& m)
 {
     request_handler_id i{
         "/",
@@ -298,11 +298,11 @@ using demux_query_ptr = std::shared_ptr<demux_query>;
 //! It is necessary, that no call to this component blocks its users longer as
 //! needed. Any query that currently could not get answered has to result in an
 //! error instead of waiting.
-class demux_interface : public demux_query
+class demux : public demux_query
 {
 public:
     //! Do not destroy the demultiplexer while performing any operation on it.
-    virtual ~demux_interface(void) noexcept(true);
+    virtual ~demux(void) noexcept(true);
 
     //! @brief Connects a request handler to a resource.
     //!
@@ -344,7 +344,7 @@ public:
 };
 
 //! Demultiplexers should always be used with reference counted pointers.
-using demux_ptr = std::shared_ptr<demux_interface>;
+using demux_ptr = std::shared_ptr<demux>;
 
 //! Creates a new empty demultiplexer.
 demux_ptr make_demultiplexer(void);
