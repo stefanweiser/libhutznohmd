@@ -25,7 +25,7 @@
 
 #include "demux/demultiplexer_ordered_mime_map.hpp"
 #include "demux/handler_manager.hpp"
-#include "demux/usage_interface.hpp"
+#include "demux/usage.hpp"
 #include "libhutznohmd/demux.hpp"
 #include "request/mime_handler.hpp"
 
@@ -40,9 +40,7 @@ namespace hutzn
 //! management and the request handler determination algorithm. This class is
 //! designed to be thread safe. It does not call any callbacks into the user's
 //! domain.
-class demultiplexer : public demux,
-                      public handler_manager,
-                      public usage_interface
+class demultiplexer : public demux, public handler_manager, public usage
 {
 public:
     //! @brief Constructs a demultiplexer.
@@ -80,10 +78,10 @@ public:
     //! @copydoc demux::unregister_mime_subtype()
     bool unregister_mime_subtype(const mime_subtype& subtype) override;
 
-    //! @copydoc usage_interface::increase_usage_counter()
+    //! @copydoc usage::increase_usage_counter()
     void increase_usage_counter(const request_handler_id& id) override;
 
-    //! @copydoc usage_interface::decrease_usage_counter()
+    //! @copydoc usage::decrease_usage_counter()
     void decrease_usage_counter(const request_handler_id& id) override;
 
 private:

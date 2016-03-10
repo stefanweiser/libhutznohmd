@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_DEMUX_USAGE_INTERFACE_HPP
-#define LIBHUTZNOHMD_DEMUX_USAGE_INTERFACE_HPP
+#ifndef LIBHUTZNOHMD_DEMUX_USAGE_HPP
+#define LIBHUTZNOHMD_DEMUX_USAGE_HPP
 
 #include "libhutznohmd/demux.hpp"
 
@@ -30,11 +30,11 @@ namespace hutzn
 //! request handler has to be set used to signalize, that erasing the handler
 //! is currently prohibited. When the call to handler is finished it gets
 //! unused.
-class usage_interface
+class usage
 {
 public:
     //! Does nothing.
-    virtual ~usage_interface(void) noexcept(true);
+    virtual ~usage(void) noexcept(true);
 
     //! Sets the handler with the given id as used. Note, that this method is
     //! not thread-safe, because it has to be solely called during determining
@@ -47,4 +47,4 @@ public:
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_DEMUX_USAGE_INTERFACE_HPP
+#endif // LIBHUTZNOHMD_DEMUX_USAGE_HPP

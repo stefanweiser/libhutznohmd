@@ -22,7 +22,7 @@ namespace hutzn
 {
 
 request_handler_holder::request_handler_holder(
-    usage_interface& demuxer, const request_handler_id& id,
+    usage& demuxer, const request_handler_id& id,
     const request_handler_callback& callback)
     : demuxer_(demuxer)
     , id_(id)

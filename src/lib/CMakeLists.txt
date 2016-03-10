@@ -43,8 +43,8 @@ SET(FILES   "${PROJECT_SOURCE_DIR}/include/hutzn.hpp"
             demux/request_processor.hpp
             demux/reset_error_handler_interface.cpp
             demux/reset_error_handler_interface.hpp
-            demux/usage_interface.cpp
-            demux/usage_interface.hpp
+            demux/usage.cpp
+            demux/usage.hpp
             libhutznohmd/demux.cpp
             libhutznohmd/request.cpp
             libhutznohmd/sockets.cpp

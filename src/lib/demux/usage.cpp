@@ -16,12 +16,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "usage_interface.hpp"
+#include "usage.hpp"
 
 namespace hutzn
 {
 
-usage_interface::~usage_interface(void) noexcept(true)
+usage::~usage(void) noexcept(true)
 {
 }
 

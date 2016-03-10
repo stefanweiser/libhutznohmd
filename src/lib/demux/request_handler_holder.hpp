@@ -21,7 +21,7 @@
 
 #include <memory>
 
-#include "demux/usage_interface.hpp"
+#include "demux/usage.hpp"
 #include "libhutznohmd/demux.hpp"
 
 namespace hutzn
@@ -32,7 +32,7 @@ class request_handler_holder : public callback_holder
 {
 public:
     //! Constructs a request handler holder.
-    explicit request_handler_holder(usage_interface& demuxer,
+    explicit request_handler_holder(usage& demuxer,
                                     const request_handler_id& id,
                                     const request_handler_callback& callback);
 
@@ -44,7 +44,7 @@ public:
     http_status_code call(request& request, response& response) override;
 
 private:
-    usage_interface& demuxer_;
+    usage& demuxer_;
     request_handler_id id_;
     request_handler_callback callback_;
 };
