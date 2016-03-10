@@ -38,7 +38,7 @@ class non_caching_request_processor : public request_processor,
 public:
     //! Constructs a request processor.
     explicit non_caching_request_processor(
-        const demux_query_ptr& query_interface,
+        const demux_query_ptr& query,
         const uint64_t& connection_timeout_in_sec);
 
     //! @copydoc request_processor::handle_one_request()
@@ -64,7 +64,7 @@ private:
     using error_handler_map =
         std::map<http_status_code, std::tuple<error_handler_callback, bool>>;
 
-    demux_query_ptr demultiplexer_;
+    demux_query_ptr query_;
 
     mutable std::mutex error_handler_mutex_;
     error_handler_map error_handlers_;

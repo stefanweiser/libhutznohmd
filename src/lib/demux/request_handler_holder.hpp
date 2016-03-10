@@ -36,11 +36,10 @@ public:
                                     const request_handler_id& id,
                                     const request_handler_callback& callback);
 
-    //! @copydoc
-    //! request_handler_holder_interface::~request_handler_holder_interface()
+    //! @copydoc callback_holder::~callback_holder()
     ~request_handler_holder(void) noexcept(true);
 
-    //! @copydoc request_handler_holder_interface::call()
+    //! @copydoc callback_holder::call()
     http_status_code call(request& request, response& response) override;
 
 private:

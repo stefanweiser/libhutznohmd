@@ -414,9 +414,9 @@ connect this by own code:
 left to right direction
 skinparam packageStyle rect
 
-interface " " as li
-interface " " as rpi
-interface " " as di
+interface listener
+interface request_processor
+interface demultiplexer
 
 package "libhutznohmd" {
     [listener] as listener
@@ -430,16 +430,12 @@ package "server" {
     [resource\nmanager] as resource_manager
 }
 
-li - listener
-rpi - request_processor
-di - demultiplexer
-
 listener -[hidden]right- request_processor
-control_code ..> li : listens and accepts
-control_code ..> rpi : provides connections
+control_code ..> listener : listens and accepts
+control_code ..> request_processor : provides connections
 request_processor ..> resource_function : process\nrequests
 request_processor .right.> demultiplexer : determines\nrequest\nhandler
-resource_manager ..> di : manages resources
+resource_manager ..> demultiplexer : manages resources
 @enduml
 
 Therefore the library does not enforce its users to process the requests in a
@@ -520,20 +516,20 @@ Note, that a request processor is getting constructed always after the
 demultiplexer, because the demultiplexer's query functionality is necessary for
 the request processor's construction (the destruction order is indifferent). To
 construct such objects simply call the global functions @ref
-make_demultiplexer(), @ref make_request_processor() and @ref listen(). They all
-will return reference-counted objects, that will get automatically destroyed,
-when their scope is left.
+make_demultiplexer(), @ref make_non_caching_request_processor() and @ref
+listen(). They all will return reference-counted objects, that will get
+automatically destroyed, when their scope is left.
 
 The following code is an example construction order of those components:
 @code{.cpp}
 int main()
 {
-    demux_pointer demultiplexer = make_demultiplexer();
-    request_processor_pointer req_processor =
-        make_request_processor(*demultiplexer);
-    listener_pointer listener = listen("0.0.0.0", 8080);
+    demux_ptr demultiplexer = make_demultiplexer();
+    request_processor_ptr req_processor =
+        make_non_caching_request_processor(*demultiplexer);
+    listener_ptr listener = listen("0.0.0.0", 8080);
 
-    // do whatever needed...
+    // do whatever you want...
 
     // before exiting the function the objects are getting destroyed in the
     // reverse order:

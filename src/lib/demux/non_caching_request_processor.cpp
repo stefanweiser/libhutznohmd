@@ -26,17 +26,15 @@ namespace hutzn
 {
 
 request_processor_ptr make_non_caching_request_processor(
-    const demux_query_ptr& query_interface,
-    const uint64_t& connection_timeout_in_sec)
+    const demux_query_ptr& query, const uint64_t& connection_timeout_in_sec)
 {
     return std::make_shared<non_caching_request_processor>(
-        query_interface, connection_timeout_in_sec);
+        query, connection_timeout_in_sec);
 }
 
 non_caching_request_processor::non_caching_request_processor(
-    const demux_query_ptr& query_interface,
-    const uint64_t& /*connection_timeout_in_sec*/)
-    : demultiplexer_(query_interface)
+    const demux_query_ptr& query, const uint64_t& /*connection_timeout_in_sec*/)
+    : query_(query)
     // , connection_timeout_in_sec_(connection_timeout_in_sec)
     , error_handler_mutex_()
     , error_handlers_()

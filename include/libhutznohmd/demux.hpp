@@ -68,7 +68,7 @@ namespace hutzn {
     +set_error_handler(reason: http_status_code, fn): handler
   }
 
-  interface request_handler_holder_interface {
+  interface request_handler_holder {
     +call(request, response): http_status_code
   }
 
@@ -94,7 +94,7 @@ namespace hutzn {
   handler -- request_processor: < returns
   request_handler_id -- demux: < uses
   handler -- demux: < returns
-  request_handler_holder_interface -- demux: < returns
+  request_handler_holder -- demux: < returns
 
   handler <|-- error_handler: implements
   request_processor <|-- non_caching_request_processor: implements
@@ -176,7 +176,7 @@ requesting client.
 @code{.cpp}
 int main()
 {
-    demux_pointer d = make_demultiplexer();
+    demux_ptr d = make_demultiplexer();
     mime_type x_type;
     d->register_mime_type("example", x_type);
 
@@ -385,7 +385,7 @@ using request_processor_ptr = std::shared_ptr<request_processor>;
 //! connection timeout in seconds. The timeout determines how long to wait till
 //! the connection gets closed in order to inactivity.
 request_processor_ptr make_non_caching_request_processor(
-    const demux_query_ptr& query_interface,
+    const demux_query_ptr& query,
     const uint64_t& connection_timeout_in_sec = 30);
 
 } // namespace hutzn
