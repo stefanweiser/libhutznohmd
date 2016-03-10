@@ -135,7 +135,7 @@ namespace hutzn {
     +user_agent(): string
   }
 
-  interface response_interface {
+  interface response {
     +set_status_code(status_code: http_status_code)
     +set_version(version: http_version)
     +set_header(key: string, value: string)
@@ -143,15 +143,15 @@ namespace hutzn {
   }
 
   class memory_allocating_request
-  class response
+  class memory_allocating_response
 
   http_version -- request: < uses
   http_verb -- request: < uses
   http_expectation -- request: < uses
-  http_version -- response_interface: < uses
-  http_status_code -- response_interface: < uses
+  http_version -- response: < uses
+  http_status_code -- response: < uses
   request <|-- memory_allocating_request: implements
-  response_interface <|-- response: implements
+  response <|-- memory_allocating_response: implements
 }
 @enduml
 
@@ -174,8 +174,7 @@ bytes. Thus it must be an unsigned integer. The size is limited to
 rejected.
 
 The content length could be retrieved by @ref request::content_length and is set
-on a response automatically when a content is set by @ref
-response_interface::set_content.
+on a response automatically when a content is set by @ref response::set_content.
 
 @subsubsection subsub_content_length_example Example:
 
@@ -198,8 +197,7 @@ unimplemented
 This header field is optional and carries a MD5 hash sum. This hash sum is
 automatically used to check the content for transmission errors. If the header
 field is missing, the content is not verified with MD5. To enable this header
-on the response, set the second parameter of @ref
-response_interface::set_content to true.
+on the response, set the second parameter of @ref response::set_content to true.
 
 @note For two reasons this is no security feature:
 -# An attacker that is able to modify the header field or the content is
@@ -454,9 +452,8 @@ unimplemented
 @subsection sub_content_location Content-Location
 
 Points to the original URI path of the requested resource. Should be set by
-calling @ref response_interface::set_content_location, when a
-resource is available under different URIs and the requested URI path is not the
-primary URI.
+calling @ref response::set_content_location, when a resource is available under
+different URIs and the requested URI path is not the primary URI.
 
 @subsubsection subsub_content_location_example Example:
 
@@ -475,8 +472,8 @@ unimplemented
 @subsection sub_location Location
 
 Contains the location the client should be guided to. Is set, when @ref
-response_interface::set_location is called and could contain the
-URI of a created resource or the URI of a moved one.
+response::set_location is called and could contain the URI of a created resource
+or the URI of a moved one.
 
 @subsubsection subsub_location_example Example:
 
@@ -495,8 +492,8 @@ unimplemented
 @subsection sub_retry_after Retry-After
 
 Tells the client, that it should repeat the request later to get a proper
-result. Is set, when @ref response_interface::set_retry_after
-is getting called with a time greater 0 and cleared if called with 0.
+result. Is set, when @ref response::set_retry_after is getting called with a
+time greater 0 and cleared if called with 0.
 
 @subsubsection subsub_retry_after_example Example:
 
@@ -516,8 +513,8 @@ unimplemented
 @subsection sub_server Server
 
 Set to the server/version fingerprint. This is deactivated per default for
-security reasons and can be activated by calling @ref
-response_interface::set_server on the response.
+security reasons and can be activated by calling @ref response::set_server on
+the response.
 
 @subsubsection subsub_server_example Example:
 
@@ -876,11 +873,11 @@ public:
 };
 
 //! The request handler uses this interface to assemble the response.
-class response_interface
+class response
 {
 public:
     //! Virtual destructor.
-    virtual ~response_interface(void) noexcept(true);
+    virtual ~response(void) noexcept(true);
 
     //! Sets or overwrites a custom header. Every header field name, which is
     //! explicitly predefined by @ref page_requests gets rejected. Returns true,

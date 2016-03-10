@@ -24,8 +24,8 @@
 namespace hutzn
 {
 
-//! @copydoc response_interface
-class memory_allocating_response : public response_interface
+//! @copydoc response
+class memory_allocating_response : public response
 {
 public:
     //! @brief Constructs the response by a connection to write to.
@@ -33,23 +33,23 @@ public:
     //! @param[in] connection Connection to use for communication.
     explicit memory_allocating_response(const connection_ptr& connection);
 
-    //! @copydoc response_interface::set_header()
+    //! @copydoc response::set_header()
     bool set_header(const char_t* const name,
                     const char_t* const value) override;
 
-    //! @copydoc response_interface::set_content()
+    //! @copydoc response::set_content()
     void set_content(const buffer& content, const bool set_md5) override;
 
-    //! @copydoc response_interface::set_content_location()
+    //! @copydoc response::set_content_location()
     void set_content_location(const char_t* const content_location) override;
 
-    //! @copydoc response_interface::set_location()
+    //! @copydoc response::set_location()
     void set_location(const char_t* const location) override;
 
-    //! @copydoc response_interface::set_retry_after()
+    //! @copydoc response::set_retry_after()
     bool set_retry_after(const time_t retry_time) override;
 
-    //! @copydoc response_interface::set_server()
+    //! @copydoc response::set_server()
     void set_server(const char_t* const fingerprint) override;
 
 private:

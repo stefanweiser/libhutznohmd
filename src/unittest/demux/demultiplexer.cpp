@@ -64,7 +64,7 @@ protected:
     mime_subtype ms_plain_;
 };
 
-http_status_code handler_fn(const request&, response_interface&)
+http_status_code handler_fn(const request&, response&)
 {
     return http_status_code::OK;
 }

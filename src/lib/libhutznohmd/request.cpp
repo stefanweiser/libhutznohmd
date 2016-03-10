@@ -192,7 +192,7 @@ request::~request(void) noexcept(true)
 {
 }
 
-response_interface::~response_interface(void) noexcept(true)
+response::~response(void) noexcept(true)
 {
 }
 

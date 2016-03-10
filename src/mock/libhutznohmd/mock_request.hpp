@@ -51,7 +51,7 @@ public:
 
 using request_mock_ptr = std::shared_ptr<request_mock>;
 
-class response_interface_mock : public response_interface
+class response_mock : public response
 {
 public:
     MOCK_METHOD2(set_header, bool(const char_t* const, const char_t* const));
@@ -62,7 +62,7 @@ public:
     MOCK_METHOD1(set_server, void(const char_t* const));
 };
 
-using response_mock_ptr = std::shared_ptr<response_interface_mock>;
+using response_mock_ptr = std::shared_ptr<response_mock>;
 
 } // namespace hutzn
 

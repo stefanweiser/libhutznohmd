@@ -37,7 +37,7 @@ request_handler_holder::~request_handler_holder(void) noexcept(true)
 }
 
 http_status_code request_handler_holder::call(request& request,
-                                              response_interface& response)
+                                              response& response)
 {
     const http_status_code result = callback_(request, response);
     return result;

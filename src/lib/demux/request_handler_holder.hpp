@@ -41,8 +41,7 @@ public:
     ~request_handler_holder(void) noexcept(true);
 
     //! @copydoc request_handler_holder_interface::call()
-    http_status_code call(request& request,
-                          response_interface& response) override;
+    http_status_code call(request& request, response& response) override;
 
 private:
     usage_interface& demuxer_;
