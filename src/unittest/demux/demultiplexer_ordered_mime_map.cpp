@@ -41,9 +41,7 @@ protected:
     static request_handler_callback make_request_handler(
         const http_status_code& code)
     {
-        return [code](const request_interface&, response_interface&) {
-            return code;
-        };
+        return [code](const request&, response_interface&) { return code; };
     }
 
     const mime none_{mime_type::NONE, mime_subtype::NONE};
@@ -167,7 +165,7 @@ TEST_F(demultiplexer_ordered_mime_map_test, find_in_empty_vector)
 TEST_F(demultiplexer_ordered_mime_map_test, find_none_in_vector)
 {
     demultiplexer_ordered_mime_map map;
-    request_interface_mock request;
+    request_mock request;
     response_interface_mock response;
     map.insert(none_, make_request_handler(http_status_code::OK));
 
@@ -182,7 +180,7 @@ TEST_F(demultiplexer_ordered_mime_map_test, find_none_in_vector)
 TEST_F(demultiplexer_ordered_mime_map_test, find_none_in_vector_second_time)
 {
     demultiplexer_ordered_mime_map map;
-    request_interface_mock request;
+    request_mock request;
     response_interface_mock response;
     map.insert(another_, make_request_handler(http_status_code::FOUND));
     map.insert(none_, make_request_handler(http_status_code::OK));
@@ -198,7 +196,7 @@ TEST_F(demultiplexer_ordered_mime_map_test, find_none_in_vector_second_time)
 TEST_F(demultiplexer_ordered_mime_map_test, find_wildcard_type_in_vector)
 {
     demultiplexer_ordered_mime_map map;
-    request_interface_mock request;
+    request_mock request;
     response_interface_mock response;
     map.insert(none_, make_request_handler(http_status_code::OK));
 
@@ -213,7 +211,7 @@ TEST_F(demultiplexer_ordered_mime_map_test, find_wildcard_type_in_vector)
 TEST_F(demultiplexer_ordered_mime_map_test, find_wildcard_subtype_in_vector)
 {
     demultiplexer_ordered_mime_map map;
-    request_interface_mock request;
+    request_mock request;
     response_interface_mock response;
     map.insert(none_, make_request_handler(http_status_code::OK));
 
@@ -228,7 +226,7 @@ TEST_F(demultiplexer_ordered_mime_map_test, find_wildcard_subtype_in_vector)
 TEST_F(demultiplexer_ordered_mime_map_test, find_wildcard_in_vector)
 {
     demultiplexer_ordered_mime_map map;
-    request_interface_mock request;
+    request_mock request;
     response_interface_mock response;
     map.insert(none_, make_request_handler(http_status_code::OK));
 

@@ -40,7 +40,7 @@ demultiplexer::demultiplexer(void)
 }
 
 callback_holder_ptr demultiplexer::determine_request_handler(
-    const request_interface& request)
+    const request& request)
 {
     callback_holder_ptr result;
 
@@ -239,7 +239,7 @@ bool demultiplexer::resource_key::operator<(const resource_key& rhs) const
 }
 
 std::tuple<mime, request_handler_callback> demultiplexer::lookup_in_accept_map(
-    const request_interface& request,
+    const request& request,
     const demultiplexer_ordered_mime_map& accept_map) const
 {
     std::tuple<mime, request_handler_callback> result;

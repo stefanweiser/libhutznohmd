@@ -26,7 +26,7 @@
 namespace hutzn
 {
 
-class request_interface_mock : public request_interface
+class request_mock : public request
 {
 public:
     MOCK_METHOD0(fetch_content, void(void));
@@ -49,7 +49,7 @@ public:
     MOCK_CONST_METHOD0(user_agent, const char_t*(void));
 };
 
-using request_mock_ptr = std::shared_ptr<request_interface_mock>;
+using request_mock_ptr = std::shared_ptr<request_mock>;
 
 class response_interface_mock : public response_interface
 {

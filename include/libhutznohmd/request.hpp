@@ -119,7 +119,7 @@ namespace hutzn {
     CONTINUE
   }
 
-  interface request_interface {
+  interface request {
     +method(): http_verb
     +path(): string
     +version(): http_version
@@ -145,12 +145,12 @@ namespace hutzn {
   class memory_allocating_request
   class response
 
-  http_version -- request_interface: < uses
-  http_verb -- request_interface: < uses
-  http_expectation -- request_interface: < uses
+  http_version -- request: < uses
+  http_verb -- request: < uses
+  http_expectation -- request: < uses
   http_version -- response_interface: < uses
   http_status_code -- response_interface: < uses
-  request_interface <|-- memory_allocating_request: implements
+  request <|-- memory_allocating_request: implements
   response_interface <|-- response: implements
 }
 @enduml
@@ -173,9 +173,8 @@ bytes. Thus it must be an unsigned integer. The size is limited to
 \f$2^{31}-1\f$. In case of an overflow the request is getting invalid and
 rejected.
 
-The content length could be retrieved by @ref
-request_interface::content_length and is set on a response
-automatically when a content is set by @ref
+The content length could be retrieved by @ref request::content_length and is set
+on a response automatically when a content is set by @ref
 response_interface::set_content.
 
 @subsubsection subsub_content_length_example Example:
@@ -778,14 +777,14 @@ enum class http_expectation : uint8_t {
 //! to the lifetime of the request object itself. This means, that after
 //! releasing the request object, all such strings are getting invalid! Ideally
 //! these pointers are not getting stored inside of other objects.
-class request_interface
+class request
 {
 public:
     //! Virtual destructor.
-    virtual ~request_interface(void) noexcept(true);
+    virtual ~request(void) noexcept(true);
 
     //! Fetches the content, which is not fetched by the request processor. Call
-    //! it at least one time before calling @ref request_interface::content.
+    //! it at least one time before calling @ref request::content.
     virtual void fetch_content(void) = 0;
 
     //! Returns the HTTP verb used by the request (GET, PUT, DELETE or POST are
@@ -829,12 +828,12 @@ public:
     //! Returns a pointer to the begin of the content in the buffer. This data
     //! buffer is @b not null-terminated and has the length of the
     //! content-length header field. If there is no content it returns NULL.
-    //! Returns also NULL, when @ref request_interface::fetch_content was not
-    //! called before.
+    //! Returns also NULL, when @ref request::fetch_content was not called
+    //! before.
     virtual const void* content(void) const = 0;
 
-    //! Returns the length of the buffer returned by
-    //! @ref request_interface::content(). If there is no content it returns 0.
+    //! Returns the length of the buffer returned by @ref request::content(). If
+    //! there is no content it returns 0.
     virtual size_t content_length(void) const = 0;
 
     //! Returns the MIME type and subtype of the content if existing. Returns

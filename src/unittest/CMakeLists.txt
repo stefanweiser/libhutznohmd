@@ -24,8 +24,8 @@ SET(FILES   demux/demultiplex_handler.cpp
             request/base64.cpp
             request/lexer.cpp
             request/md5.cpp
+            request/memory_allocating_request.cpp
             request/mime_data.cpp
-            request/request.cpp
             request/response.cpp
             request/timestamp.cpp
             request/uri.cpp

@@ -30,7 +30,7 @@ class demux_mock : public demux
 {
 public:
     MOCK_METHOD1(determine_request_handler,
-                 callback_holder_ptr(const request_interface&));
+                 callback_holder_ptr(const request&));
     MOCK_METHOD2(connect, handler_ptr(const request_handler_id&,
                                       const request_handler_callback&));
     MOCK_METHOD1(register_mime_type, mime_type(const std::string&));

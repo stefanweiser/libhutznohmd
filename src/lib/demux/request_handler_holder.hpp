@@ -41,7 +41,7 @@ public:
     ~request_handler_holder(void) noexcept(true);
 
     //! @copydoc request_handler_holder_interface::call()
-    http_status_code call(request_interface& request,
+    http_status_code call(request& request,
                           response_interface& response) override;
 
 private:

@@ -188,7 +188,7 @@ NOTE: This definitions are getting used in later versions.
 
 */
 
-request_interface::~request_interface(void) noexcept(true)
+request::~request(void) noexcept(true)
 {
 }
 

@@ -62,8 +62,8 @@ enum class header_key : int8_t {
     SIZE
 };
 
-//! @copydoc request_interface
-class memory_allocating_request : public request_interface
+//! @copydoc request
+class memory_allocating_request : public request
 {
 public:
     //! @brief Constructs a request by a connection.
@@ -85,58 +85,58 @@ public:
     //! @return            True then parsing was successful and false when not.
     bool parse(const mime_handler& handler);
 
-    //! @copydoc request_interface::fetch_content()
+    //! @copydoc request::fetch_content()
     void fetch_content(void) override;
 
-    //! @copydoc request_interface::method()
+    //! @copydoc request::method()
     http_verb method(void) const override;
 
-    //! @copydoc request_interface::path()
+    //! @copydoc request::path()
     const char_t* path(void) const override;
 
-    //! @copydoc request_interface::host()
+    //! @copydoc request::host()
     const char_t* host(void) const override;
 
-    //! @copydoc request_interface::query()
+    //! @copydoc request::query()
     const char_t* query(const char_t* const key) const override;
 
-    //! @copydoc request_interface::fragment()
+    //! @copydoc request::fragment()
     const char_t* fragment(void) const override;
 
-    //! @copydoc request_interface::version()
+    //! @copydoc request::version()
     http_version version(void) const override;
 
-    //! @copydoc request_interface::header_value()
+    //! @copydoc request::header_value()
     const char_t* header_value(const char_t* const name) const override;
 
-    //! @copydoc request_interface::keeps_connection()
+    //! @copydoc request::keeps_connection()
     bool keeps_connection(void) const override;
 
-    //! @copydoc request_interface::date()
+    //! @copydoc request::date()
     time_t date(void) const override;
 
-    //! @copydoc request_interface::content()
+    //! @copydoc request::content()
     const void* content(void) const override;
 
-    //! @copydoc request_interface::content_length()
+    //! @copydoc request::content_length()
     size_t content_length(void) const override;
 
-    //! @copydoc request_interface::content_type()
+    //! @copydoc request::content_type()
     mime content_type(void) const override;
 
-    //! @copydoc request_interface::accept()
+    //! @copydoc request::accept()
     bool accept(void*& handle, mime& type) const override;
 
-    //! @copydoc request_interface::expect()
+    //! @copydoc request::expect()
     http_expectation expect(void) const override;
 
-    //! @copydoc request_interface::from()
+    //! @copydoc request::from()
     const char_t* from(void) const override;
 
-    //! @copydoc request_interface::referer()
+    //! @copydoc request::referer()
     const char_t* referer(void) const override;
 
-    //! @copydoc request_interface::user_agent()
+    //! @copydoc request::user_agent()
     const char_t* user_agent(void) const override;
 
 private:

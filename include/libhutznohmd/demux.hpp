@@ -47,7 +47,7 @@ functor could be found, the request processor will respond an error document.
 namespace hutzn {
   interface block_device
 
-  interface request_interface
+  interface request
   interface response_interface
 
   class request_handler_id {
@@ -89,7 +89,7 @@ namespace hutzn {
   class demultiplexer
 
   block_device -- request_processor_interface: < uses
-  request_interface -- request_processor_interface: < uses
+  request -- request_processor_interface: < uses
   response_interface -- request_processor_interface: < uses
   handler -- request_processor_interface: < returns
   request_handler_id -- demux: < uses
@@ -111,7 +111,7 @@ resource handler requires the definition of a callback function that must have
 the signature:
 
 @code{.cpp}
-http_status_code foo(const request_interface&, const response_interface&);
+http_status_code foo(const request&, const response_interface&);
 @endcode
 
 Because the registration takes a @c std::function the user has the choice to
@@ -131,13 +131,13 @@ class C
 // ...
 
 public:
-    http_status_code foo(const request_interface&, const response_interface&)
+    http_status_code foo(const request&, const response_interface&)
     {
         // Do something.
         return http_status_code::OK;
     }
 
-    void error_handler(const request_interface&, const response_interface&)
+    void error_handler(const request&, const response_interface&)
     {
         // Do something.
     }
@@ -258,7 +258,7 @@ public:
     //! This may increase the usage counter of the callback before calling the
     //! handler and decreasing it afterwards. It may throw exceptions, which are
     //! thrown from the request handler.
-    virtual http_status_code call(request_interface& request,
+    virtual http_status_code call(request& request,
                                   response_interface& response) = 0;
 };
 
@@ -268,7 +268,7 @@ using callback_holder_ptr = std::shared_ptr<callback_holder>;
 //! Is used when the demultiplexer calls a request handler in order to get a
 //! response on a request.
 using request_handler_callback =
-    std::function<http_status_code(request_interface&, response_interface&)>;
+    std::function<http_status_code(request&, response_interface&)>;
 
 //! @brief Demultiplexes the requests.
 //!
@@ -287,7 +287,7 @@ public:
     //! Wildcard accept types are resolved by a first-come-first-served concept.
     //! The first matching request handler is returned.
     virtual callback_holder_ptr determine_request_handler(
-        const request_interface& request) = 0;
+        const request& request) = 0;
 };
 
 //! Demultiplexers should always be used with reference counted pointers.
@@ -351,7 +351,7 @@ demux_ptr make_demultiplexer(void);
 
 //! Is used by the demultiplexer in case of an error to get a useful response.
 using error_handler_callback =
-    std::function<void(const request_interface&, response_interface&)>;
+    std::function<void(const request&, response_interface&)>;
 
 //! @brief Waits for, parses and handles the requests.
 //!

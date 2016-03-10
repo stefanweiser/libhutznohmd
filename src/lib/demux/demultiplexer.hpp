@@ -50,7 +50,7 @@ public:
 
     //! @copydoc demux_query::determine_request_handler()
     callback_holder_ptr determine_request_handler(
-        const request_interface& request) override;
+        const request& request) override;
 
     //! @copydoc demux::connect()
     handler_ptr connect(const request_handler_id& id,
@@ -96,7 +96,7 @@ private:
     };
 
     std::tuple<mime, request_handler_callback> lookup_in_accept_map(
-        const request_interface& request,
+        const request& request,
         const demultiplexer_ordered_mime_map& accept_map) const;
 
     using resource_map = std::map<resource_key, demultiplexer_ordered_mime_map>;
