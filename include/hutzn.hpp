@@ -570,7 +570,7 @@ de --> rp: "waits for\nusage lock"
 
 Therefore it is not allowed for a request handler to unregister itself. To
 control the ability of getting called, there are the methods @ref
-hutzn::handler_interface::enable() and @ref hutzn::handler_interface::disable().
+hutzn::handler::enable() and @ref hutzn::handler::disable().
 
 Note, that the same deadlock problem affects error handlers. Also note, that in
 case of the user is exposing its own @c this pointer the handler object must get

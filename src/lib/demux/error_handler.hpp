@@ -28,23 +28,23 @@ namespace hutzn
 {
 
 //! Acts as a handle for error handlers.
-class error_handler : public handler_interface
+class error_handler : public handler
 {
 public:
     //! Constructs a error handler.
     explicit error_handler(reset_error_handler_interface& request_processor,
                            const http_status_code& code);
 
-    //! @copydoc handler_interface::~handler_interface()
+    //! @copydoc handler::~handler()
     ~error_handler(void) noexcept(true) override;
 
-    //! @copydoc handler_interface::disable()
+    //! @copydoc handler::disable()
     void disable(void) override;
 
-    //! @copydoc handler_interface::enable()
+    //! @copydoc handler::enable()
     void enable(void) override;
 
-    //! @copydoc handler_interface::is_enabled()
+    //! @copydoc handler::is_enabled()
     bool is_enabled(void) const override;
 
 private:

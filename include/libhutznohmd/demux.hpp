@@ -57,7 +57,7 @@ namespace hutzn {
     +return_type: mime
   }
 
-  interface handler_interface {
+  interface handler {
     +disable()
     +enable()
     +is_enabled(): bool;
@@ -91,12 +91,12 @@ namespace hutzn {
   block_device -- request_processor_interface: < uses
   request_interface -- request_processor_interface: < uses
   response_interface -- request_processor_interface: < uses
-  handler_interface -- request_processor_interface: < returns
+  handler -- request_processor_interface: < returns
   request_handler_id -- demux_interface: < uses
-  handler_interface -- demux_interface: < returns
+  handler -- demux_interface: < returns
   request_handler_holder_interface -- demux_interface: < returns
 
-  handler_interface <|-- handler: implements
+  handler <|-- error_handler: implements
   request_processor_interface <|-- request_processor: implements
   demux_query_interface "1" o-- "1" request_processor
   demux_query_interface <|-- demultiplexer: implements
@@ -222,11 +222,11 @@ struct request_handler_id {
 //! unregistered, when the handler object instance is getting destroyed (see
 //! also @ref sec_lifetime_callbacks). The handler is per default enabled after
 //! its construction.
-class handler_interface
+class handler
 {
 public:
     //! Unregisters the handler.
-    virtual ~handler_interface(void) noexcept(true);
+    virtual ~handler(void) noexcept(true);
 
     //! Temporarily disables the handler. It will not be called afterwards. The
     //! handler callback should stay available to get enabled again. This
@@ -244,7 +244,7 @@ public:
 };
 
 //! Handlers are always reference counted.
-using handler_ptr = std::shared_ptr<handler_interface>;
+using handler_ptr = std::shared_ptr<handler>;
 
 //! Wraps a call to the request handler. This is usually handled by the request
 //! processor.

@@ -32,7 +32,7 @@ namespace hutzn
 //! It is created when a request handler gets registered and unregisters it
 //! on destruction. It is required to release all demultiplex handlers before
 //! destroying the demultiplexer.
-class demultiplex_handler : public handler_interface
+class demultiplex_handler : public handler
 {
 public:
     //! @brief Connects the request handler with the demultiplexer's disconnect
