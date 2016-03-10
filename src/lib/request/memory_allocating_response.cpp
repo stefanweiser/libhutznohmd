@@ -16,40 +16,43 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "response.hpp"
+#include "memory_allocating_response.hpp"
 
 namespace hutzn
 {
 
-response::response(const connection_ptr& connection)
+memory_allocating_response::memory_allocating_response(
+    const connection_ptr& connection)
     : connection_(connection)
 {
 }
 
-bool response::set_header(const char_t* const /*name*/,
-                          const char_t* const /*value*/)
+bool memory_allocating_response::set_header(const char_t* const /*name*/,
+                                            const char_t* const /*value*/)
 {
     return false;
 }
 
-void response::set_content(const buffer& /*content*/, const bool /*set_md5*/)
+void memory_allocating_response::set_content(const buffer& /*content*/,
+                                             const bool /*set_md5*/)
 {
 }
 
-void response::set_content_location(const char_t* const /*content_location*/)
+void memory_allocating_response::set_content_location(
+    const char_t* const /*content_location*/)
 {
 }
 
-void response::set_location(const char_t* const /*location*/)
+void memory_allocating_response::set_location(const char_t* const /*location*/)
 {
 }
 
-bool response::set_retry_after(const time_t /*retry_time*/)
+bool memory_allocating_response::set_retry_after(const time_t /*retry_time*/)
 {
     return false;
 }
 
-void response::set_server(const char_t* const /*fingerprint*/)
+void memory_allocating_response::set_server(const char_t* const /*fingerprint*/)
 {
 }
 

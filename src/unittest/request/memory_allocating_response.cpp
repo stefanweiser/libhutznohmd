@@ -20,14 +20,14 @@
 #include <gmock/gmock.h>
 
 #include "libhutznohmd/mock_sockets.hpp"
-#include "request/response.hpp"
+#include "request/memory_allocating_response.hpp"
 
 using namespace testing;
 
 namespace hutzn
 {
 
-class response_test : public Test
+class memory_allocating_response_test : public Test
 {
 public:
     void SetUp(void) override
@@ -44,9 +44,9 @@ protected:
     connection_mock_ptr connection_;
 };
 
-TEST_F(response_test, construction)
+TEST_F(memory_allocating_response_test, construction)
 {
-    response r{connection_};
+    memory_allocating_response r{connection_};
     r.set_content(buffer(), false);
     r.set_content_location(NULL);
     EXPECT_FALSE(r.set_header(NULL, NULL));

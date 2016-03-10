@@ -56,11 +56,11 @@ SET(FILES   "${PROJECT_SOURCE_DIR}/include/hutzn.hpp"
             request/md5.hpp
             request/memory_allocating_request.cpp
             request/memory_allocating_request.hpp
+            request/memory_allocating_response.cpp
+            request/memory_allocating_response.hpp
             request/mime_data.hpp
             request/mime_handler.cpp
             request/mime_handler.hpp
-            request/response.cpp
-            request/response.hpp
             request/timestamp.cpp
             request/timestamp.hpp
             request/uri.cpp

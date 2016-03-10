@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_REQUEST_RESPONSE_HPP
-#define LIBHUTZNOHMD_REQUEST_RESPONSE_HPP
+#ifndef LIBHUTZNOHMD_REQUEST_MEMORY_ALLOCATING_RESPONSE_HPP
+#define LIBHUTZNOHMD_REQUEST_MEMORY_ALLOCATING_RESPONSE_HPP
 
 #include "libhutznohmd/request.hpp"
 
@@ -25,13 +25,13 @@ namespace hutzn
 {
 
 //! @copydoc response_interface
-class response : public response_interface
+class memory_allocating_response : public response_interface
 {
 public:
     //! @brief Constructs the response by a connection to write to.
     //!
     //! @param[in] connection Connection to use for communication.
-    explicit response(const connection_ptr& connection);
+    explicit memory_allocating_response(const connection_ptr& connection);
 
     //! @copydoc response_interface::set_header()
     bool set_header(const char_t* const name,
@@ -58,4 +58,4 @@ private:
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_REQUEST_RESPONSE_HPP
+#endif // LIBHUTZNOHMD_REQUEST_MEMORY_ALLOCATING_RESPONSE_HPP
