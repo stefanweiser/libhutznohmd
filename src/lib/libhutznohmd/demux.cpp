@@ -21,7 +21,7 @@
 namespace hutzn
 {
 
-demux_query_interface::~demux_query_interface(void) noexcept(true)
+demux_query::~demux_query(void) noexcept(true)
 {
 }
 

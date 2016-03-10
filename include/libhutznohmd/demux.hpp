@@ -72,7 +72,7 @@ namespace hutzn {
     +call(request, response): http_status_code
   }
 
-  interface demux_query_interface {
+  interface demux_query {
     +determine_request_handler(type: mime): request_handler_holder
   }
 
@@ -98,10 +98,10 @@ namespace hutzn {
 
   handler <|-- error_handler: implements
   request_processor_interface <|-- request_processor: implements
-  demux_query_interface "1" o-- "1" request_processor
-  demux_query_interface <|-- demultiplexer: implements
+  demux_query "1" o-- "1" request_processor
+  demux_query <|-- demultiplexer: implements
   demux_interface <|-- demultiplexer: implements
-  demux_query_interface <|-- demux_interface: "derives from"
+  demux_query <|-- demux_interface: "derives from"
 }
 @enduml
 
@@ -275,11 +275,11 @@ using request_handler_callback =
 //! It is necessary, that no call to this component blocks its users longer as
 //! needed. Any query that currently could not get answered has to result in an
 //! error instead of waiting.
-class demux_query_interface
+class demux_query
 {
 public:
     //! Do not destroy the demultiplexer while performing any operation on it.
-    virtual ~demux_query_interface(void) noexcept(true);
+    virtual ~demux_query(void) noexcept(true);
 
     //! @brief Determines and returns the best-fitting request handler callback,
     //! that is registered at this demultiplexer.
@@ -291,14 +291,14 @@ public:
 };
 
 //! Demultiplexers should always be used with reference counted pointers.
-using demux_query_ptr = std::shared_ptr<demux_query_interface>;
+using demux_query_ptr = std::shared_ptr<demux_query>;
 
 //! @brief Stores request handlers and custom mime types.
 //!
 //! It is necessary, that no call to this component blocks its users longer as
 //! needed. Any query that currently could not get answered has to result in an
 //! error instead of waiting.
-class demux_interface : public demux_query_interface
+class demux_interface : public demux_query
 {
 public:
     //! Do not destroy the demultiplexer while performing any operation on it.

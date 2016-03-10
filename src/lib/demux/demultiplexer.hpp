@@ -48,7 +48,7 @@ public:
     //! @brief Constructs a demultiplexer.
     explicit demultiplexer(void);
 
-    //! @copydoc demux_query_interface::determine_request_handler()
+    //! @copydoc demux_query::determine_request_handler()
     callback_holder_ptr determine_request_handler(
         const request_interface& request) override;
 
