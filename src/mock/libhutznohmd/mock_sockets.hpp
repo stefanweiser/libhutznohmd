@@ -39,7 +39,7 @@ public:
 
 using connection_mock_ptr = std::shared_ptr<connection_mock>;
 
-class listener_interface_mock : public listener_interface
+class listener_mock : public listener
 {
 public:
     MOCK_CONST_METHOD0(accept, connection_ptr(void));
@@ -48,7 +48,7 @@ public:
     MOCK_METHOD1(set_lingering_timeout, bool(const int32_t&));
 };
 
-using listener_mock_pointer = std::shared_ptr<listener_interface_mock>;
+using listener_mock_ptr = std::shared_ptr<listener_mock>;
 
 } // namespace hutzn
 

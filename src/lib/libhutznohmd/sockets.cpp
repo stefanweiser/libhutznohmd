@@ -29,7 +29,7 @@ connection::~connection(void) noexcept(true)
 {
 }
 
-listener_interface::~listener_interface(void) noexcept(true)
+listener::~listener(void) noexcept(true)
 {
 }
 

@@ -27,8 +27,8 @@
 namespace hutzn
 {
 
-//! @copydoc listener_interface
-class socket_listener : public listener_interface
+//! @copydoc listener
+class socket_listener : public listener
 {
 public:
     //! @brief Creates a new socket listener.
@@ -46,19 +46,19 @@ public:
     //! @param[in] socket A socket file descriptor.
     explicit socket_listener(const int32_t& socket);
 
-    //! @copydoc listener_interface::~listener_interface()
+    //! @copydoc listener::~listener()
     ~socket_listener(void) noexcept(true) override;
 
-    //! @copydoc listener_interface::accept()
+    //! @copydoc listener::accept()
     connection_ptr accept(void) const override;
 
-    //! @copydoc listener_interface::listening()
+    //! @copydoc listener::listening()
     bool listening(void) const override;
 
-    //! @copydoc listener_interface::stop()
+    //! @copydoc listener::stop()
     void stop(void) override;
 
-    //! @copydoc listener_interface::set_lingering_timeout()
+    //! @copydoc listener::set_lingering_timeout()
     bool set_lingering_timeout(const int32_t& timeout) override;
 
 private:

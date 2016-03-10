@@ -33,9 +33,9 @@ namespace hutzn
 @page page_data_source_and_sink Data source and sink
 
 Each restful application has to communicate with its users. To fulfill this
-necessity this library defines @ref connection "connections" and @ref
-listener_interface "listeners", which are the two types of sockets, that are
-typically used by network communication protocols.
+necessity this library defines @ref connection "connections" and @ref listener
+"listeners", which are the two types of sockets, that are typically used by
+network communication protocols.
 
 A listener is defined as an endpoint, to which connection endpoints can connect
 to. Once a connection has been established, it connects two processes. This
@@ -57,7 +57,7 @@ namespace hutzn {
     +socket(): file_descriptor
   }
 
-  interface listener_interface {
+  interface listener {
     +accept(): connection
     +listening(): boolean
     +stop()
@@ -71,7 +71,7 @@ namespace hutzn {
 
   block_device <|-- socket_connection
   connection <|-- socket_connection: <<implements>>
-  listener_interface <|-- socket_listener: <<implements>>
+  listener <|-- socket_listener: <<implements>>
 }
 @enduml
 
@@ -182,12 +182,12 @@ using connection_ptr = std::shared_ptr<connection>;
 //! A listener is someone, that opens a socket and waits for clients to connect
 //! to it. Listeners are not used for communication, but to establish the
 //! connection.
-class listener_interface
+class listener
 {
 public:
     //! Shuts down the listening. Releases all resources of the listener socket
     //! afterwards.
-    virtual ~listener_interface(void) noexcept(true);
+    virtual ~listener(void) noexcept(true);
 
     //! Blocks until someone wants to connect to the listener or the listener
     //! gets closed. In the first case the connection gets established and
@@ -209,13 +209,13 @@ public:
 };
 
 //! A listener is always handled via reference counted pointers.
-using listener_pointer = std::shared_ptr<listener_interface>;
+using listener_ptr = std::shared_ptr<listener>;
 
 //! Creates a listener by host and port, defining the ip address and port number
 //! the listener should listen on. It returns a listener object, that already
 //! listens on the given host/port combination. The incoming connections could
 //! get accepted as a next step afterwards.
-listener_pointer listen(const std::string& host, const uint16_t& port);
+listener_ptr listen(const std::string& host, const uint16_t& port);
 
 } // namespace hutzn
 

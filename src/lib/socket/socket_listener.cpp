@@ -32,7 +32,7 @@
 namespace hutzn
 {
 
-listener_pointer listen(const std::string& host, const uint16_t& port)
+listener_ptr listen(const std::string& host, const uint16_t& port)
 {
     return socket_listener::create(host, port);
 }

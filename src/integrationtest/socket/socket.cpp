@@ -29,20 +29,20 @@ TEST(socket, listener_construction)
 {
     auto listnr = listen("127.0.0.1", 10000);
     EXPECT_TRUE(listnr->set_lingering_timeout(0));
-    EXPECT_NE(listener_pointer(), listnr);
+    EXPECT_NE(listener_ptr(), listnr);
     EXPECT_TRUE(listnr->listening());
 }
 
 TEST(socket, wrong_construction_arguments)
 {
-    EXPECT_EQ(listener_pointer(), listen("127.0.0:1", 10000));
+    EXPECT_EQ(listener_ptr(), listen("127.0.0:1", 10000));
 }
 
 TEST(socket, reuse_host_and_port)
 {
     auto listnr = listen("127.0.0.1", 10000);
     EXPECT_TRUE(listnr->set_lingering_timeout(0));
-    EXPECT_EQ(listener_pointer(), listen("127.0.0.1", 10000));
+    EXPECT_EQ(listener_ptr(), listen("127.0.0.1", 10000));
     EXPECT_TRUE(listnr->listening());
 }
 
@@ -105,7 +105,7 @@ TEST(socket, receive_send_closed_socket)
 
 TEST(socket, double_connect)
 {
-    listener_pointer listnr = listen("127.0.0.1", 10000);
+    listener_ptr listnr = listen("127.0.0.1", 10000);
     EXPECT_TRUE(listnr->set_lingering_timeout(0));
     EXPECT_TRUE(listnr->listening());
 
@@ -143,7 +143,7 @@ TEST(socket, terminate_try_to_connect)
 
 TEST(socket, terminate_try_to_accept)
 {
-    listener_pointer listnr = listen("127.0.0.1", 10000);
+    listener_ptr listnr = listen("127.0.0.1", 10000);
     EXPECT_TRUE(listnr->set_lingering_timeout(0));
     EXPECT_TRUE(listnr->listening());
 
@@ -161,7 +161,7 @@ TEST(socket, terminate_try_to_accept)
 
 TEST(socket, normal_use_case)
 {
-    listener_pointer listnr = listen("127.0.0.1", 10000);
+    listener_ptr listnr = listen("127.0.0.1", 10000);
     EXPECT_TRUE(listnr->set_lingering_timeout(0));
     EXPECT_TRUE(listnr->listening());
 
