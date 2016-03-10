@@ -85,7 +85,7 @@ namespace hutzn {
   }
 
   class handler
-  class request_processor
+  class non_caching_request_processor
   class demultiplexer
 
   block_device -- request_processor_interface: < uses
@@ -97,8 +97,8 @@ namespace hutzn {
   request_handler_holder_interface -- demux: < returns
 
   handler <|-- error_handler: implements
-  request_processor_interface <|-- request_processor: implements
-  demux_query "1" o-- "1" request_processor
+  request_processor_interface <|-- non_caching_request_processor: implements
+  demux_query "1" o-- "1" non_caching_request_processor
   demux_query <|-- demultiplexer: implements
   demux <|-- demultiplexer: implements
   demux_query <|-- demux: "derives from"

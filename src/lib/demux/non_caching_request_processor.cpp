@@ -16,7 +16,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "request_processor.hpp"
+#include "non_caching_request_processor.hpp"
 
 #include <cassert>
 
@@ -29,11 +29,11 @@ request_processor_ptr make_request_processor(
     const demux_query_ptr& query_interface,
     const uint64_t& connection_timeout_in_sec)
 {
-    return std::make_shared<request_processor>(query_interface,
-                                               connection_timeout_in_sec);
+    return std::make_shared<non_caching_request_processor>(
+        query_interface, connection_timeout_in_sec);
 }
 
-request_processor::request_processor(
+non_caching_request_processor::non_caching_request_processor(
     const demux_query_ptr& query_interface,
     const uint64_t& /*connection_timeout_in_sec*/)
     : demultiplexer_(query_interface)
@@ -43,12 +43,13 @@ request_processor::request_processor(
 {
 }
 
-bool request_processor::handle_one_request(block_device& /*device*/) const
+bool non_caching_request_processor::handle_one_request(
+    block_device& /*device*/) const
 {
     return false;
 }
 
-handler_ptr request_processor::set_error_handler(
+handler_ptr non_caching_request_processor::set_error_handler(
     const http_status_code& code, const error_handler_callback& fn)
 {
     std::lock_guard<std::mutex> lock(error_handler_mutex_);
@@ -64,7 +65,8 @@ handler_ptr request_processor::set_error_handler(
     return result;
 }
 
-void request_processor::reset_error_handler(const http_status_code& code)
+void non_caching_request_processor::reset_error_handler(
+    const http_status_code& code)
 {
     std::lock_guard<std::mutex> lock(error_handler_mutex_);
     const bool erase_result = (error_handlers_.erase(code) > 0);
@@ -72,7 +74,7 @@ void request_processor::reset_error_handler(const http_status_code& code)
     UNUSED(erase_result);
 }
 
-void request_processor::disable(const http_status_code& code)
+void non_caching_request_processor::disable(const http_status_code& code)
 {
     std::lock_guard<std::mutex> lock(error_handler_mutex_);
     auto found = error_handlers_.find(code);
@@ -81,7 +83,7 @@ void request_processor::disable(const http_status_code& code)
     }
 }
 
-void request_processor::enable(const http_status_code& code)
+void non_caching_request_processor::enable(const http_status_code& code)
 {
     std::lock_guard<std::mutex> lock(error_handler_mutex_);
     auto found = error_handlers_.find(code);
@@ -90,7 +92,8 @@ void request_processor::enable(const http_status_code& code)
     }
 }
 
-bool request_processor::is_enabled(const http_status_code& code) const
+bool non_caching_request_processor::is_enabled(
+    const http_status_code& code) const
 {
     std::lock_guard<std::mutex> lock(error_handler_mutex_);
     bool result = false;

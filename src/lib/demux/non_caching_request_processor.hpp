@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_DEMUX_REQUEST_PROCESSOR_HPP
-#define LIBHUTZNOHMD_DEMUX_REQUEST_PROCESSOR_HPP
+#ifndef LIBHUTZNOHMD_DEMUX_NON_CACHING_REQUEST_PROCESSOR_HPP
+#define LIBHUTZNOHMD_DEMUX_NON_CACHING_REQUEST_PROCESSOR_HPP
 
 #include <map>
 #include <memory>
@@ -32,13 +32,14 @@ namespace hutzn
 {
 
 //! Provides helper logic to process requests.
-class request_processor : public request_processor_interface,
-                          public error_handler_manager
+class non_caching_request_processor : public request_processor_interface,
+                                      public error_handler_manager
 {
 public:
     //! Constructs a request processor.
-    explicit request_processor(const demux_query_ptr& query_interface,
-                               const uint64_t& connection_timeout_in_sec);
+    explicit non_caching_request_processor(
+        const demux_query_ptr& query_interface,
+        const uint64_t& connection_timeout_in_sec);
 
     //! @copydoc request_processor_interface::handle_one_request()
     bool handle_one_request(block_device& device) const override;
@@ -71,4 +72,4 @@ private:
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_DEMUX_REQUEST_PROCESSOR_HPP
+#endif // LIBHUTZNOHMD_DEMUX_NON_CACHING_REQUEST_PROCESSOR_HPP

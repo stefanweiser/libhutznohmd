@@ -529,7 +529,7 @@ The following code is an example construction order of those components:
 int main()
 {
     demux_pointer demultiplexer = make_demultiplexer();
-    request_processor_pointer request_processor =
+    request_processor_pointer req_processor =
         make_request_processor(*demultiplexer);
     listener_pointer listener = listen("0.0.0.0", 8080);
 

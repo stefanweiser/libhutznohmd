@@ -41,8 +41,8 @@ SET(FILES   "${PROJECT_SOURCE_DIR}/include/hutzn.hpp"
             demux/handler_manager.hpp
             demux/request_handler_holder.cpp
             demux/request_handler_holder.hpp
-            demux/request_processor.cpp
-            demux/request_processor.hpp
+            demux/non_caching_request_processor.cpp
+            demux/non_caching_request_processor.hpp
             demux/usage.cpp
             demux/usage.hpp
             libhutznohmd/demux.cpp
