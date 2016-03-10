@@ -23,7 +23,7 @@
 #include <memory>
 #include <mutex>
 
-#include "demux/reset_error_handler_interface.hpp"
+#include "demux/error_handler_manager.hpp"
 #include "libhutznohmd/demux.hpp"
 #include "libhutznohmd/request.hpp"
 #include "libhutznohmd/sockets.hpp"
@@ -33,7 +33,7 @@ namespace hutzn
 
 //! Provides helper logic to process requests.
 class request_processor : public request_processor_interface,
-                          public reset_error_handler_interface
+                          public error_handler_manager
 {
 public:
     //! Constructs a request processor.
@@ -47,16 +47,16 @@ public:
     handler_ptr set_error_handler(const http_status_code& code,
                                   const error_handler_callback& fn) override;
 
-    //! @copydoc reset_error_handler_interface::reset_error_handler()
+    //! @copydoc error_handler_manager::reset_error_handler()
     void reset_error_handler(const http_status_code& code) override;
 
-    //! @copydoc reset_error_handler_interface::disable()
+    //! @copydoc error_handler_manager::disable()
     void disable(const http_status_code& code) override;
 
-    //! @copydoc reset_error_handler_interface::enable()
+    //! @copydoc error_handler_manager::enable()
     void enable(const http_status_code& code) override;
 
-    //! @copydoc reset_error_handler_interface::is_enabled()
+    //! @copydoc error_handler_manager::is_enabled()
     bool is_enabled(const http_status_code& code) const override;
 
 private:

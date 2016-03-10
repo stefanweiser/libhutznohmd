@@ -21,7 +21,7 @@
 namespace hutzn
 {
 
-error_handler::error_handler(reset_error_handler_interface& request_processor,
+error_handler::error_handler(error_handler_manager& request_processor,
                              const http_status_code& code)
     : request_processor_(request_processor)
     , code_(code)

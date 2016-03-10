@@ -35,14 +35,14 @@ SET(FILES   "${PROJECT_SOURCE_DIR}/include/hutzn.hpp"
             demux/demultiplexer_ordered_mime_map.hpp
             demux/error_handler.cpp
             demux/error_handler.hpp
+            demux/error_handler_manager.cpp
+            demux/error_handler_manager.hpp
             demux/handler_manager.cpp
             demux/handler_manager.hpp
             demux/request_handler_holder.cpp
             demux/request_handler_holder.hpp
             demux/request_processor.cpp
             demux/request_processor.hpp
-            demux/reset_error_handler_interface.cpp
-            demux/reset_error_handler_interface.hpp
             demux/usage.cpp
             demux/usage.hpp
             libhutznohmd/demux.cpp

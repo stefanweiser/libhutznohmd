@@ -16,23 +16,23 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_DEMUX_RESET_ERROR_HANDLER_INTERFACE_HPP
-#define LIBHUTZNOHMD_DEMUX_RESET_ERROR_HANDLER_INTERFACE_HPP
+#ifndef LIBHUTZNOHMD_DEMUX_ERROR_HANDLER_MANAGER_HPP
+#define LIBHUTZNOHMD_DEMUX_ERROR_HANDLER_MANAGER_HPP
 
 #include "libhutznohmd/demux.hpp"
 
 namespace hutzn
 {
 
-//! @brief Provides methods to reset an error handler.
+//! @brief Provides methods to manage an error handler.
 //!
-//! Contains methods for a control an error handler, which means enabling,
+//! Contains methods to control an error handler, which means enabling,
 //! disabling and reseting an error handler.
-class reset_error_handler_interface
+class error_handler_manager
 {
 public:
     //! Does nothing.
-    virtual ~reset_error_handler_interface(void) noexcept(true);
+    virtual ~error_handler_manager(void) noexcept(true);
 
     //! Resets an error handler.
     virtual void reset_error_handler(const http_status_code& code) = 0;
@@ -49,4 +49,4 @@ public:
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_DEMUX_RESET_ERROR_HANDLER_INTERFACE_HPP
+#endif // LIBHUTZNOHMD_DEMUX_ERROR_HANDLER_MANAGER_HPP

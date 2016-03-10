@@ -16,13 +16,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "reset_error_handler_interface.hpp"
+#include "error_handler_manager.hpp"
 
 namespace hutzn
 {
 
-reset_error_handler_interface::~reset_error_handler_interface(void) noexcept(
-    true)
+error_handler_manager::~error_handler_manager(void) noexcept(true)
 {
 }
 

@@ -21,7 +21,7 @@
 
 #include <memory>
 
-#include "demux/reset_error_handler_interface.hpp"
+#include "demux/error_handler_manager.hpp"
 #include "libhutznohmd/demux.hpp"
 
 namespace hutzn
@@ -32,7 +32,7 @@ class error_handler : public handler
 {
 public:
     //! Constructs a error handler.
-    explicit error_handler(reset_error_handler_interface& request_processor,
+    explicit error_handler(error_handler_manager& request_processor,
                            const http_status_code& code);
 
     //! @copydoc handler::~handler()
@@ -48,7 +48,7 @@ public:
     bool is_enabled(void) const override;
 
 private:
-    reset_error_handler_interface& request_processor_;
+    error_handler_manager& request_processor_;
 
     http_status_code code_;
 };
