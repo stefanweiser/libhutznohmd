@@ -24,7 +24,7 @@
 #include <condition_variable>
 
 #include "demux/demultiplexer_ordered_mime_map.hpp"
-#include "demux/disconnect_interface.hpp"
+#include "demux/handler_manager.hpp"
 #include "demux/usage_interface.hpp"
 #include "libhutznohmd/demux.hpp"
 #include "request/mime_handler.hpp"
@@ -41,7 +41,7 @@ namespace hutzn
 //! designed to be thread safe. It does not call any callbacks into the user's
 //! domain.
 class demultiplexer : public demux,
-                      public disconnect_interface,
+                      public handler_manager,
                       public usage_interface
 {
 public:
@@ -56,16 +56,16 @@ public:
     handler_ptr connect(const request_handler_id& id,
                         const request_handler_callback& fn) override;
 
-    //! @copydoc disconnect_interface::disconnect()
+    //! @copydoc handler_manager::disconnect()
     void disconnect(const request_handler_id& id) override;
 
-    //! @copydoc disconnect_interface::disable()
+    //! @copydoc handler_manager::disable()
     void disable(const request_handler_id& id) override;
 
-    //! @copydoc disconnect_interface::enable()
+    //! @copydoc handler_manager::enable()
     void enable(const request_handler_id& id) override;
 
-    //! @copydoc disconnect_interface::is_enabled()
+    //! @copydoc handler_manager::is_enabled()
     bool is_enabled(const request_handler_id& id) const override;
 
     //! @copydoc demux::register_mime_type()

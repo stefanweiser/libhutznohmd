@@ -21,7 +21,7 @@
 
 #include <memory>
 
-#include "demux/disconnect_interface.hpp"
+#include "demux/handler_manager.hpp"
 #include "libhutznohmd/demux.hpp"
 
 namespace hutzn
@@ -37,7 +37,7 @@ class demultiplex_handler : public handler
 public:
     //! @brief Connects the request handler with the demultiplexer's disconnect
     //! interface.
-    explicit demultiplex_handler(disconnect_interface& demuxer,
+    explicit demultiplex_handler(handler_manager& demuxer,
                                  const request_handler_id& id);
 
     //! @brief Disconnects the request handler from the demultiplexer.
@@ -61,7 +61,7 @@ public:
 private:
     //! References the demultiplexer where the request handler was registered
     //! at.
-    disconnect_interface& demuxer_;
+    handler_manager& demuxer_;
 
     //! This id is needed as key to disconnect the request handler.
     request_handler_id id_;

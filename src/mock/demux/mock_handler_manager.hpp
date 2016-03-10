@@ -21,12 +21,12 @@
 
 #include <gmock/gmock.h>
 
-#include "demux/disconnect_interface.hpp"
+#include "demux/handler_manager.hpp"
 
 namespace hutzn
 {
 
-class disconnect_interface_mock : public disconnect_interface
+class handler_manager_mock : public handler_manager
 {
 public:
     MOCK_METHOD1(disconnect, void(const request_handler_id&));
@@ -35,7 +35,7 @@ public:
     MOCK_CONST_METHOD1(is_enabled, bool(const request_handler_id&));
 };
 
-using disconnect_mock_ptr = std::shared_ptr<disconnect_interface_mock>;
+using handler_manager_mock_ptr = std::shared_ptr<handler_manager_mock>;
 
 } // namespace hutzn
 

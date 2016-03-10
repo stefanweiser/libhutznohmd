@@ -16,12 +16,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "disconnect_interface.hpp"
+#include "handler_manager.hpp"
 
 namespace hutzn
 {
 
-disconnect_interface::~disconnect_interface(void) noexcept(true)
+handler_manager::~handler_manager(void) noexcept(true)
 {
 }
 

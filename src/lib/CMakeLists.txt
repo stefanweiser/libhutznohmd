@@ -23,7 +23,7 @@ SET(FILES   "${PROJECT_SOURCE_DIR}/include/hutzn.hpp"
             "${PROJECT_SOURCE_DIR}/include/libhutznohmd/request.hpp"
             "${PROJECT_SOURCE_DIR}/include/libhutznohmd/sockets.hpp"
             "${PROJECT_SOURCE_DIR}/include/libhutznohmd/types.hpp"
-            ../mock/demux/mock_disconnect_interface.hpp
+            ../mock/demux/mock_handler_manager.hpp
             ../mock/libhutznohmd/mock_request.hpp
             ../mock/libhutznohmd/mock_demux.hpp
             ../mock/libhutznohmd/mock_sockets.hpp
@@ -33,10 +33,10 @@ SET(FILES   "${PROJECT_SOURCE_DIR}/include/hutzn.hpp"
             demux/demultiplexer.hpp
             demux/demultiplexer_ordered_mime_map.cpp
             demux/demultiplexer_ordered_mime_map.hpp
-            demux/disconnect_interface.cpp
-            demux/disconnect_interface.hpp
             demux/error_handler.cpp
             demux/error_handler.hpp
+            demux/handler_manager.cpp
+            demux/handler_manager.hpp
             demux/request_handler_holder.cpp
             demux/request_handler_holder.hpp
             demux/request_processor.cpp
