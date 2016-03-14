@@ -397,18 +397,18 @@ rectangle libhutznohmd {
 }
 @enduml
 
-Structually the library user needs three things at an abstracted level:
+Structually the library's user needs three things at an abstracted level:
 
 -# An abstraction of the @subpage page_data_source_and_sink
-"data source and sink" (e.g. sockets).
+"data source and sink" (e.g. internet or unix domain sockets).
 -# A @subpage page_demultiplexer "demultiplexing component", that helps to
 generate the right response on any request.
 -# An access to the @subpage page_requests "request data".
 
-This library solves these needs in separated components. There are interfaces
-for socket communication and demultiplexing requests (splitted into two
-component groups), but no code to connect those components. The user has to
-connect this by own code:
+This library solves these needs in segregated components. There are interfaces
+for communication and demultiplexing requests (splitted into two component
+groups), but no code to connect those components. The user has to connect this
+by own code:
 
 @startuml{components.svg} "Component diagram"
 left to right direction
@@ -480,7 +480,7 @@ to fulfill this no-throw policy.
 Although the library will not start and stop a thread itself, it is nevertheless
 designed to gurantee thread safety everywhere. All functionality could be
 accessed simultaneously by multiple threads. This gurantee may introduce
-deadlock situations.
+deadlock situations with external components.
 
 As an example there is a deadlock, that happens, if the system is getting
 destroyed from within a request handler:
@@ -514,8 +514,9 @@ up. Therefore those objects shall always outlive all other objects.
 
 Note, that a request processor is getting constructed always after the
 demultiplexer, because the demultiplexer's query functionality is necessary for
-the request processor's construction (the destruction order is indifferent). To
-construct such objects simply call the global functions @ref
+the request processor's construction. The releasing order is indifferent,
+because the request processor holds a reference counted pointer to the
+demultiplexer. To construct such objects simply call the global functions @ref
 make_demultiplexer(), @ref make_non_caching_request_processor() and @ref
 listen(). They all will return reference-counted objects, that will get
 automatically destroyed, when their scope is left.
@@ -543,13 +544,14 @@ int main()
 @section sec_lifetime_callbacks Callbacks
 
 The user code will interact with the library components mainly by connecting
-request handlers and answering requests. When registering a request handler,
-an automatically reference counted handler object is returned, which acts as the
-registration's scope. When the scope of the handler is left and the object is
-getting destroyed, the request handler gets unregistered.
+request handlers, forwarding connections to the request processor and answering
+requests. When registering a request handler, an automatically reference counted
+handler object is returned, which acts as the registration's scope. When the
+scope of the handler is left and the object is getting destroyed, the request
+handler gets unregistered.
 
 The unregistration procedure is handled senquentially with the calls to the
-handler. This is necessary to make real RAII objects out of the handlers, but
+handler. This is necessary to make real RAII objects out of simple handlers, but
 introduces another deadlock situation:
 
 @startuml{self_unregistration_deadlock.svg} "Self unregistration deadlock"
@@ -570,8 +572,9 @@ hutzn::handler::enable() and @ref hutzn::handler::disable().
 
 Note, that the same deadlock problem affects error handlers. Also note, that in
 case of the user is exposing its own @c this pointer the handler object must get
-destroyed before the object behind the @c this pointer or it will result in
-undefined behaviour!
+destroyed before the object behind the @c this pointer or the result  will be
+undefined behaviour! (You may get called after object connected to the request
+handler is destroyed)
 
 @section sec_lifetime_connection Connection lifetime
 
@@ -579,15 +582,19 @@ When starting a web service by creating a listener, the user of the library has
 to call accept. This will wait till a connection is requested and will return
 the newly created connection, which is an automatically reference counted
 object. The connection will stay open till @ref hutzn::connection::close() is
-called or the connection object is released by leaving its scope. This will also
-close the connection. As defined for TCP/IP connections, the connection's ports
-will then stay open for a "lingering time" to catch stray packets. These states
-are called @c TIME_WAIT and @c CLOSE_WAIT.
+called or the connection object is released by leaving its scope, which will
+also close the connection. In case of an internet socket the connection's ports
+will stay open for a "lingering time" to catch stray packets afterwards. These
+states are called @c TIME_WAIT and @c CLOSE_WAIT. The "lingering time" can be
+configured by @ref hutzn::connection::set_lingering_timeout() and  @ref
+hutzn::listener::set_lingering_timeout().
 
 
 @page page_roadmap Roadmap
 
 @todo [DOC] define roadmap
+
+Some buzzwords which may get implemented in the context of a REST interface.
 
 HTTP:
 - Basic HTTP-Support (protocol, document negotiation)
