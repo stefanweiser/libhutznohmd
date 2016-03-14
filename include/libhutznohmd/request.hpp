@@ -19,7 +19,7 @@
 #ifndef LIBHUTZNOHMD_LIBHUTZNOHMD_REQUEST_HPP
 #define LIBHUTZNOHMD_LIBHUTZNOHMD_REQUEST_HPP
 
-#include <libhutznohmd/sockets.hpp>
+#include <libhutznohmd/communication.hpp>
 #include <libhutznohmd/types.hpp>
 
 namespace hutzn

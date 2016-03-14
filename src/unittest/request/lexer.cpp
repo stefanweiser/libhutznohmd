@@ -19,7 +19,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "libhutznohmd/mock_sockets.hpp"
+#include "libhutznohmd/mock_communication.hpp"
 #include "request/lexer.hpp"
 
 using namespace testing;

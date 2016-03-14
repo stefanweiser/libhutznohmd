@@ -19,14 +19,14 @@ SETUP_COMPILER_FLAGS()
 
 SET(GENERATED_FILES "${CMAKE_BINARY_DIR}/version.cpp")
 SET(FILES   "${PROJECT_SOURCE_DIR}/include/hutzn.hpp"
+            "${PROJECT_SOURCE_DIR}/include/libhutznohmd/communication.hpp"
             "${PROJECT_SOURCE_DIR}/include/libhutznohmd/demux.hpp"
             "${PROJECT_SOURCE_DIR}/include/libhutznohmd/request.hpp"
-            "${PROJECT_SOURCE_DIR}/include/libhutznohmd/sockets.hpp"
             "${PROJECT_SOURCE_DIR}/include/libhutznohmd/types.hpp"
             ../mock/demux/mock_handler_manager.hpp
             ../mock/libhutznohmd/mock_request.hpp
             ../mock/libhutznohmd/mock_demux.hpp
-            ../mock/libhutznohmd/mock_sockets.hpp
+            ../mock/libhutznohmd/mock_communication.hpp
             demux/demultiplex_handler.cpp
             demux/demultiplex_handler.hpp
             demux/demultiplexer.cpp

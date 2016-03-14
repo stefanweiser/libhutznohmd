@@ -22,7 +22,7 @@
 #include <memory>
 #include <string>
 
-#include "libhutznohmd/sockets.hpp"
+#include "libhutznohmd/communication.hpp"
 
 namespace hutzn
 {

@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_LIBHUTZNOHMD_SOCKETS_HPP
-#define LIBHUTZNOHMD_LIBHUTZNOHMD_SOCKETS_HPP
+#ifndef LIBHUTZNOHMD_LIBHUTZNOHMD_COMMUNICATION_HPP
+#define LIBHUTZNOHMD_LIBHUTZNOHMD_COMMUNICATION_HPP
 
 #include <memory>
 #include <string>
@@ -54,7 +54,6 @@ namespace hutzn {
   interface connection {
     +close()
     +set_lingering_timeout(timeout: seconds)
-    +socket(): file_descriptor
   }
 
   interface listener {
@@ -62,7 +61,6 @@ namespace hutzn {
     +listening(): boolean
     +stop()
     +set_lingering_timeout(timeout: seconds)
-    +socket(): file_descriptor
   }
 
   class socket_connection
@@ -181,7 +179,7 @@ public:
     //!
     //! As a part of most internet network stacks the operating system is
     //! keeping connections in a waiting state for some time after closing the
-    //! socket (even if the process, that was associated with that socket,
+    //! connection (even if the process, that was associated with it,
     //! terminates). Usually keeping this timeout at the default value is a good
     //! idea, because these waiting states will eat up all stray packets of the
     //! old connection. However sometimes it is necessary to overwrite this
@@ -203,7 +201,7 @@ class listener
 public:
     //! @brief Shuts down the listening.
     //!
-    //! Releases all resources of the listener socket afterwards.
+    //! Releases all resources of the listener afterwards.
     virtual ~listener(void) noexcept(true);
 
     //! @brief Blocks until someone wants to connect to the listener or the
@@ -250,4 +248,4 @@ listener_ptr listen(const std::string& host, const uint16_t& port);
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_LIBHUTZNOHMD_SOCKETS_HPP
+#endif // LIBHUTZNOHMD_LIBHUTZNOHMD_COMMUNICATION_HPP

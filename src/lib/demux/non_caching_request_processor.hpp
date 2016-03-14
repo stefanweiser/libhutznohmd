@@ -26,7 +26,7 @@
 #include "demux/error_handler_manager.hpp"
 #include "libhutznohmd/demux.hpp"
 #include "libhutznohmd/request.hpp"
-#include "libhutznohmd/sockets.hpp"
+#include "libhutznohmd/communication.hpp"
 
 namespace hutzn
 {

@@ -16,12 +16,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_LIBHUTZNOHMD_MOCK_SOCKETS_HPP
-#define LIBHUTZNOHMD_LIBHUTZNOHMD_MOCK_SOCKETS_HPP
+#ifndef LIBHUTZNOHMD_LIBHUTZNOHMD_MOCK_COMMUNICATION_HPP
+#define LIBHUTZNOHMD_LIBHUTZNOHMD_MOCK_COMMUNICATION_HPP
 
 #include <gmock/gmock.h>
 
-#include "libhutznohmd/sockets.hpp"
+#include "libhutznohmd/communication.hpp"
 
 namespace hutzn
 {
@@ -52,4 +52,4 @@ using listener_mock_ptr = std::shared_ptr<listener_mock>;
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_LIBHUTZNOHMD_MOCK_SOCKETS_HPP
+#endif // LIBHUTZNOHMD_LIBHUTZNOHMD_MOCK_COMMUNICATION_HPP

@@ -16,7 +16,7 @@
 # <http://www.gnu.org/licenses/>.
 
 INSTALL(FILES hutzn.hpp DESTINATION include)
+INSTALL(FILES libhutznohmd/communication.hpp DESTINATION include/libhutznohmd)
 INSTALL(FILES libhutznohmd/demux.hpp DESTINATION include/libhutznohmd)
 INSTALL(FILES libhutznohmd/request.hpp DESTINATION include/libhutznohmd)
-INSTALL(FILES libhutznohmd/sockets.hpp DESTINATION include/libhutznohmd)
 INSTALL(FILES libhutznohmd/types.hpp DESTINATION include/libhutznohmd)

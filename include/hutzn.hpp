@@ -615,7 +615,7 @@ REST:
 
 #include <libhutznohmd/demux.hpp>
 #include <libhutznohmd/request.hpp>
-#include <libhutznohmd/sockets.hpp>
+#include <libhutznohmd/communication.hpp>
 #include <libhutznohmd/types.hpp>
 
 namespace hutzn

@@ -20,7 +20,7 @@
 #define LIBHUTZNOHMD_LIBHUTZNOHMD_DEMUX_HPP
 
 #include <libhutznohmd/request.hpp>
-#include <libhutznohmd/sockets.hpp>
+#include <libhutznohmd/communication.hpp>
 #include <libhutznohmd/types.hpp>
 
 namespace hutzn

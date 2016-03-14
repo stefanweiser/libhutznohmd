@@ -16,7 +16,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "libhutznohmd/sockets.hpp"
+#include "libhutznohmd/communication.hpp"
 
 namespace hutzn
 {
