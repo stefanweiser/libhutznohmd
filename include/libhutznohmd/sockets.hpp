@@ -34,8 +34,8 @@ namespace hutzn
 
 Each restful application has to communicate with its users. To fulfill this
 necessity this library defines @ref connection "connections" and @ref listener
-"listeners", which are the two types of sockets, that are typically used by
-network communication protocols.
+"listeners", which are the two types of communication entities, that are
+typically used by any interprocess or network communication protocols.
 
 A listener is defined as an endpoint, to which connection endpoints can connect
 to. Once a connection has been established, it connects two processes. This
@@ -85,10 +85,10 @@ detached from the process.
 -# The listener is getting shut down and the listener resources are getting
 detached from the process.
 -# The process returns with an exit code of 0.
--# Then on most systems the ports, that are used by the connection stay in
-the state @c TIME_WAIT to catch stray packets before reusing those ports. After
-a while those ports are getting unused (note that it could also wait in @c
-CLOSE_WAIT when the opposite connection is closed first).
+-# On most systems the ports, that were used by the connection stay in the state
+@c TIME_WAIT to catch stray packets before reusing those ports. After a while
+those ports are getting unused (note that it could also wait in @c CLOSE_WAIT
+when the opposite connection is closed first).
 
 @code{.cpp}
 int main()
@@ -123,98 +123,129 @@ important decisions:
 //! data.
 using buffer = std::vector<char_t>;
 
-//! A block device is an object, which could be used to send and receive data
-//! blockwise. These blocks could be of custom size.
+//! @brief An object where data can be received from and send to.
+//!
+//! The data is always sent blockwise. These blocks could be of custom size.
 class block_device
 {
 public:
-    //! Releases the resources allocated by the block device.
+    //! @brief Releases the resources allocated by the block device.
     virtual ~block_device(void) noexcept(true);
 
-    //! Invokes a blocking receive operation until something but at most
-    //! @c max_size is read from the connection. The buffer will retain its
-    //! content and gets extended by the new data. Returning true indicates,
-    //! that something has been read. False means, that the connection were
-    //! closed. This makes the connection useless.
+    //! @brief Invokes a blocking receive operation.
+    //!
+    //! When something but at most @c max_size is read from the connection, the
+    //! call will return. The buffer will retain its content and gets extended
+    //! by the new data.
+    //! @param[in,out] data     Data buffer to which the data is copied to.
+    //! @param[in]     max_size Maximum number of bytes the data buffer gets
+    //!                         extended.
+    //! @return                 Returning true indicates, that something has
+    //!                         been read. False means, that the connection were
+    //!                         closed. This makes the connection useless.
     virtual bool receive(buffer& data, const size_t& max_size) = 0;
 
-    //! Invokes a blocking send operation. Returns true when all data were
-    //! successfully sent. In case of a closed connection or a connection
-    //! shut down during the send it will return false.
+    //! @brief Invokes a blocking send operation.
+    //!
+    //! @param[in] data Buffer to send.
+    //! @return         Returns true when all data were successfully sent. In
+    //!                 case of a closed connection or a connection shut down
+    //!                 during the send it will return false.
     virtual bool send(const buffer& data) = 0;
 
-    //! @see connection::send(const buffer&) This function behaves equally, but
-    //! takes a string instead of a binary buffer.
+    //! @copydoc connection::send(const buffer&)
     virtual bool send(const std::string& data) = 0;
 };
 
+//! @brief Connects to endpoints to receive and send data.
+//!
 //! The term connection is used here as one side of a connected communication
 //! channel. This marks the difference to a listener, that defines only a single
 //! endpoint and cannot be used for communication directly.
 class connection : public block_device
 {
 public:
-    //! Shuts the connection down if not already done and releases the allocated
-    //! resources.
+    //! @brief Shuts the connection down.
+    //!
+    //! Shuts down if not already done and releases the allocated resources.
     virtual ~connection(void) noexcept(true);
 
-    //! Shuts down the connection, but remain holding the resources. This will
-    //! immediately stop any call on that connection. The connection object
-    //! could be released afterwards, because no operation will work on such a
-    //! connection.
+    //! @brief Shuts down the connection, but remain holding the resources.
+    //!
+    //! This will immediately stop any call on that connection. The connection
+    //! object could be released afterwards, because no operation will work on
+    //! such a connection.
     virtual void close(void) = 0;
 
-    //! Overwrites the lingering timeout of the connection in seconds. As a part
-    //! of most network stacks the operating system is keeping connections in
-    //! the state @c TIME_WAIT or @c CLOSE_WAIT for some time after closing
-    //! the socket (even if the process, that was associated with that socket,
+    //! @brief Overwrites the lingering timeout of the connection in seconds.
+    //!
+    //! As a part of most internet network stacks the operating system is
+    //! keeping connections in a waiting state for some time after closing the
+    //! socket (even if the process, that was associated with that socket,
     //! terminates). Usually keeping this timeout at the default value is a good
-    //! idea, because @c TIME_WAIT or @c CLOSE_WAIT will eat up stray packets of
-    //! the old connection. However sometimes it is necessary to overwrite this
-    //! timeout (e.g. when integration testing sockets or this socket
-    //! implementation).
+    //! idea, because these waiting states will eat up all stray packets of the
+    //! old connection. However sometimes it is necessary to overwrite this
+    //! timeout (e.g. when writing integration tests).
+    //! @param[in] timeout Number of seconds to wait until the port gets ready
+    //!                    again.
+    //! @return            True, when setting was successful and false on error.
     virtual bool set_lingering_timeout(const int32_t& timeout) = 0;
 };
 
 //! A connection is always handled via reference counted pointers.
 using connection_ptr = std::shared_ptr<connection>;
 
-//! A listener is someone, that opens a socket and waits for clients to connect
-//! to it. Listeners are not used for communication, but to establish the
-//! connection.
+//! @brief Occupies an endpoint to wait for clients to connect to it.
+//!
+//! Listeners are not used for communication, but to establish the connection.
 class listener
 {
 public:
-    //! Shuts down the listening. Releases all resources of the listener socket
-    //! afterwards.
+    //! @brief Shuts down the listening.
+    //!
+    //! Releases all resources of the listener socket afterwards.
     virtual ~listener(void) noexcept(true);
 
-    //! Blocks until someone wants to connect to the listener or the listener
-    //! gets closed. In the first case the connection gets established and
-    //! returned. In case of closing the listener an empty pointer is getting
-    //! returned and the listener can be released.
+    //! @brief Blocks until someone wants to connect to the listener or the
+    //! listener gets closed.
+    //!
+    //! @return When something not equal to nullptr is returned, someone
+    //!         successfully connected to the listener. When the result is equal
+    //!         to nullptr, the listener was closed and and therefore can be
+    //!         released.
     virtual connection_ptr accept(void) const = 0;
 
-    //! Returns whether the listener is currently listening or not. Naturally
-    //! this value is a volatile information.
+    //! @brief Returns whether the listener is currently listening or not.
+    //!
+    //! Naturally this value is a volatile information.
+    //! @return Returns false, when the listener was closed and true if it still
+    //!         listens.
     virtual bool listening(void) const = 0;
 
-    //! Shuts down the listener. This means, that any operation gets immediately
-    //! stopped and the listener is useless afterwards, because no operation
-    //! will succeed if it is shut.
+    //! @brief Shuts down the listener.
+    //!
+    //! This means, that any operation gets immediately stopped and the listener
+    //! is useless afterwards, because no operation will longer succeed.
     virtual void stop(void) = 0;
 
-    //! @see connection::set_lingering_timeout(const int32_t&)
+    //! @copydoc connection::set_lingering_timeout()
     virtual bool set_lingering_timeout(const int32_t& timeout) = 0;
 };
 
 //! A listener is always handled via reference counted pointers.
 using listener_ptr = std::shared_ptr<listener>;
 
-//! Creates a listener by host and port, defining the ip address and port number
-//! the listener should listen on. It returns a listener object, that already
-//! listens on the given host/port combination. The incoming connections could
-//! get accepted as a next step afterwards.
+//! @brief Creates a listener on an internet socket.
+//!
+//! It returns a listener object, that already listens on the given internet
+//! socket. The incoming connections could get accepted as a next step
+//! afterwards.
+//! @param[in] host An ip address to listen on. Resolving a dns name is not
+//!                 implemented.
+//! @param[in] port Port number to use. Note, that often ports below 1024 are
+//!                 available to privileged users only.
+//! @return         Listener object, that already listens on the given internet
+//!                 socket or an empty pointer in any case of error.
 listener_ptr listen(const std::string& host, const uint16_t& port);
 
 } // namespace hutzn
