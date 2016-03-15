@@ -18,8 +18,8 @@
 SETUP_COMPILER_FLAGS()
 DISABLE_GMOCK_DEPENDENT_WARNINGS()
 
-SET(FILES   socket/socket.cpp
-            socket/utility.cpp)
+SET(FILES   communication/internet_socket.cpp
+            communication/utility.cpp)
 
 ADD_EXECUTABLE(integrationtest_hutznohmd ${FILES} ${GMOCK_FILES})
 STYLE_FILES(integrationtest_hutznohmd ${FILES})

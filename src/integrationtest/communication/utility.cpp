@@ -25,13 +25,13 @@
 namespace hutzn
 {
 
-TEST(socket_utility, close_illegal_socket)
+TEST(communication_utility, close_illegal_socket)
 {
     EXPECT_EQ(close_signal_safe(42), -1);
     EXPECT_EQ(errno, EBADF);
 }
 
-TEST(socket_utility, accept_illegal_socket)
+TEST(communication_utility, accept_illegal_socket)
 {
     sockaddr addr;
     socklen_t size = sizeof(addr);
@@ -39,26 +39,26 @@ TEST(socket_utility, accept_illegal_socket)
     EXPECT_EQ(errno, EBADF);
 }
 
-TEST(socket_utility, connect_illegal_socket)
+TEST(communication_utility, connect_illegal_socket)
 {
     sockaddr addr;
     EXPECT_EQ(connect_signal_safe(42, &addr, sizeof(addr)), -1);
     EXPECT_EQ(errno, EBADF);
 }
 
-TEST(socket_utility, send_illegal_socket)
+TEST(communication_utility, send_illegal_socket)
 {
     EXPECT_EQ(send_signal_safe(42, nullptr, 0, 0), -1);
     EXPECT_EQ(errno, EBADF);
 }
 
-TEST(socket_utility, receive_illegal_socket)
+TEST(communication_utility, receive_illegal_socket)
 {
     EXPECT_EQ(receive_signal_safe(42, nullptr, 0, 0), -1);
     EXPECT_EQ(errno, EBADF);
 }
 
-TEST(socket_utility, fill_address_ok)
+TEST(communication_utility, fill_address_ok)
 {
     sockaddr_in address = fill_address("127.0.0.1", 0x8000);
     const uint16_t port_result = ntohs(0x8000);
@@ -68,13 +68,13 @@ TEST(socket_utility, fill_address_ok)
     EXPECT_EQ(address_result, address.sin_addr.s_addr);
 }
 
-TEST(socket_utility, fill_address_error)
+TEST(communication_utility, fill_address_error)
 {
     sockaddr_in address = fill_address("127:0:0:1", 0x8000);
     EXPECT_EQ(AF_UNSPEC, address.sin_family);
 }
 
-TEST(socket_utility, fill_address_no_dns)
+TEST(communication_utility, fill_address_no_dns)
 {
     sockaddr_in address = fill_address("example.com", 0x8000);
     EXPECT_EQ(AF_UNSPEC, address.sin_family);

@@ -25,7 +25,7 @@
 namespace hutzn
 {
 
-TEST(socket, listener_construction)
+TEST(internet_socket, listener_construction)
 {
     auto listnr = listen("127.0.0.1", 10000);
     EXPECT_TRUE(listnr->set_lingering_timeout(0));
@@ -33,12 +33,12 @@ TEST(socket, listener_construction)
     EXPECT_TRUE(listnr->listening());
 }
 
-TEST(socket, wrong_construction_arguments)
+TEST(internet_socket, wrong_construction_arguments)
 {
     EXPECT_EQ(listener_ptr(), listen("127.0.0:1", 10000));
 }
 
-TEST(socket, reuse_host_and_port)
+TEST(internet_socket, reuse_host_and_port)
 {
     auto listnr = listen("127.0.0.1", 10000);
     EXPECT_TRUE(listnr->set_lingering_timeout(0));
@@ -46,7 +46,7 @@ TEST(socket, reuse_host_and_port)
     EXPECT_TRUE(listnr->listening());
 }
 
-TEST(socket, accepting_closed_socket)
+TEST(internet_socket, accepting_closed_socket)
 {
     auto listnr = listen("127.0.0.1", 10000);
     EXPECT_TRUE(listnr->set_lingering_timeout(0));
@@ -54,20 +54,20 @@ TEST(socket, accepting_closed_socket)
     EXPECT_EQ(connection_ptr(), listnr->accept());
 }
 
-TEST(socket, connecting_closed_socket)
+TEST(internet_socket, connecting_closed_socket)
 {
     auto conn = socket_connection::create("127.0.0.1", 10000);
     conn->close();
     EXPECT_FALSE(conn->connect());
 }
 
-TEST(socket, connection_refused)
+TEST(internet_socket, connection_refused)
 {
     auto conn = socket_connection::create("127.0.0.1", 10000);
     EXPECT_FALSE(conn->connect());
 }
 
-TEST(socket, receive_send_closed_socket)
+TEST(internet_socket, receive_send_closed_socket)
 {
     auto listnr = listen("127.0.0.1", 10000);
     EXPECT_TRUE(listnr->set_lingering_timeout(0));
@@ -103,7 +103,7 @@ TEST(socket, receive_send_closed_socket)
     EXPECT_TRUE(listnr->listening());
 }
 
-TEST(socket, double_connect)
+TEST(internet_socket, double_connect)
 {
     listener_ptr listnr = listen("127.0.0.1", 10000);
     EXPECT_TRUE(listnr->set_lingering_timeout(0));
@@ -122,7 +122,7 @@ TEST(socket, double_connect)
     EXPECT_TRUE(listnr->listening());
 }
 
-TEST(socket, unconnected_send_receive)
+TEST(internet_socket, unconnected_send_receive)
 {
     auto conn = socket_connection::create("127.0.0.1", 10000);
     buffer data;
@@ -130,7 +130,7 @@ TEST(socket, unconnected_send_receive)
     EXPECT_FALSE(conn->receive(data, 0));
 }
 
-TEST(socket, terminate_try_to_connect)
+TEST(internet_socket, terminate_try_to_connect)
 {
     auto conn = socket_connection::create("240.0.0.1", 65535);
 
@@ -141,7 +141,7 @@ TEST(socket, terminate_try_to_connect)
     thread.join();
 }
 
-TEST(socket, terminate_try_to_accept)
+TEST(internet_socket, terminate_try_to_accept)
 {
     listener_ptr listnr = listen("127.0.0.1", 10000);
     EXPECT_TRUE(listnr->set_lingering_timeout(0));
@@ -159,7 +159,7 @@ TEST(socket, terminate_try_to_accept)
     EXPECT_FALSE(listnr->listening());
 }
 
-TEST(socket, normal_use_case)
+TEST(internet_socket, normal_use_case)
 {
     listener_ptr listnr = listen("127.0.0.1", 10000);
     EXPECT_TRUE(listnr->set_lingering_timeout(0));
