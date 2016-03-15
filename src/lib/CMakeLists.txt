@@ -23,10 +23,10 @@ SET(FILES   "${PROJECT_SOURCE_DIR}/include/hutzn.hpp"
             "${PROJECT_SOURCE_DIR}/include/libhutznohmd/demux.hpp"
             "${PROJECT_SOURCE_DIR}/include/libhutznohmd/request.hpp"
             "${PROJECT_SOURCE_DIR}/include/libhutznohmd/types.hpp"
-            communication/socket_connection.cpp
-            communication/socket_connection.hpp
-            communication/socket_listener.cpp
-            communication/socket_listener.hpp
+            communication/internet_socket_connection.cpp
+            communication/internet_socket_connection.hpp
+            communication/internet_socket_listener.cpp
+            communication/internet_socket_listener.hpp
             communication/utility.cpp
             communication/utility.hpp
             demux/demultiplex_handler.cpp

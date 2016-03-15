@@ -20,7 +20,7 @@
 
 #include <gtest/gtest.h>
 
-#include "communication/socket_connection.hpp"
+#include "communication/internet_socket_connection.hpp"
 
 namespace hutzn
 {
@@ -56,14 +56,14 @@ TEST(internet_socket, accepting_closed_socket)
 
 TEST(internet_socket, connecting_closed_socket)
 {
-    auto conn = socket_connection::create("127.0.0.1", 10000);
+    auto conn = internet_socket_connection::create("127.0.0.1", 10000);
     conn->close();
     EXPECT_FALSE(conn->connect());
 }
 
 TEST(internet_socket, connection_refused)
 {
-    auto conn = socket_connection::create("127.0.0.1", 10000);
+    auto conn = internet_socket_connection::create("127.0.0.1", 10000);
     EXPECT_FALSE(conn->connect());
 }
 
@@ -76,7 +76,7 @@ TEST(internet_socket, receive_send_closed_socket)
     bool connected = false;
     bool disconnected = false;
     std::thread thread([&disconnected, &connected] {
-        auto conn = socket_connection::create("127.0.0.1", 10000);
+        auto conn = internet_socket_connection::create("127.0.0.1", 10000);
         EXPECT_TRUE(conn->connect());
         EXPECT_TRUE(conn->set_lingering_timeout(0));
         connected = true;
@@ -110,7 +110,7 @@ TEST(internet_socket, double_connect)
     EXPECT_TRUE(listnr->listening());
 
     std::thread thread([] {
-        auto conn = socket_connection::create("127.0.0.1", 10000);
+        auto conn = internet_socket_connection::create("127.0.0.1", 10000);
         EXPECT_TRUE(conn->connect());
         EXPECT_FALSE(conn->connect());
         EXPECT_TRUE(conn->set_lingering_timeout(0));
@@ -124,7 +124,7 @@ TEST(internet_socket, double_connect)
 
 TEST(internet_socket, unconnected_send_receive)
 {
-    auto conn = socket_connection::create("127.0.0.1", 10000);
+    auto conn = internet_socket_connection::create("127.0.0.1", 10000);
     buffer data;
     EXPECT_FALSE(conn->send(""));
     EXPECT_FALSE(conn->receive(data, 0));
@@ -132,7 +132,7 @@ TEST(internet_socket, unconnected_send_receive)
 
 TEST(internet_socket, terminate_try_to_connect)
 {
-    auto conn = socket_connection::create("240.0.0.1", 65535);
+    auto conn = internet_socket_connection::create("240.0.0.1", 65535);
 
     std::thread thread([&conn] { EXPECT_FALSE(conn->connect()); });
 
@@ -166,7 +166,7 @@ TEST(internet_socket, normal_use_case)
     EXPECT_TRUE(listnr->listening());
 
     std::thread thread([] {
-        auto conn = socket_connection::create("127.0.0.1", 10000);
+        auto conn = internet_socket_connection::create("127.0.0.1", 10000);
         EXPECT_TRUE(conn->connect());
         EXPECT_NE(connection_ptr(), conn);
         EXPECT_TRUE(conn->set_lingering_timeout(0));

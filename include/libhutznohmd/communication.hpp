@@ -63,13 +63,13 @@ namespace hutzn {
     +set_lingering_timeout(timeout: seconds)
   }
 
-  class socket_connection
+  class internet_socket_connection
 
-  class socket_listener
+  class internet_socket_listener
 
-  block_device <|-- socket_connection
-  connection <|-- socket_connection: <<implements>>
-  listener <|-- socket_listener: <<implements>>
+  block_device <|-- internet_socket_connection
+  connection <|-- internet_socket_connection: <<implements>>
+  listener <|-- internet_socket_listener: <<implements>>
 }
 @enduml
 

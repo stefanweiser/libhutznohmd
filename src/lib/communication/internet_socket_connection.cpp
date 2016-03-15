@@ -16,7 +16,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "socket_connection.hpp"
+#include "internet_socket_connection.hpp"
 
 #include <algorithm>
 #include <cassert>
@@ -27,10 +27,10 @@
 namespace hutzn
 {
 
-std::shared_ptr<socket_connection> socket_connection::create(
+internet_socket_connection_ptr internet_socket_connection::create(
     const std::string& host, const uint16_t& port)
 {
-    std::shared_ptr<socket_connection> result;
+    internet_socket_connection_ptr result;
     const int32_t socket_fd = socket(PF_INET, SOCK_STREAM, 0);
 
     // only connect if a valid socket file descriptor was created
@@ -39,28 +39,29 @@ std::shared_ptr<socket_connection> socket_connection::create(
         // only return a connection if the host and port could be resolved
         // successfully
         if (address.sin_family != AF_UNSPEC) {
-            result = std::make_shared<socket_connection>(socket_fd, address);
+            result = std::make_shared<internet_socket_connection>(socket_fd,
+                                                                  address);
         }
     }
     return result;
 }
 
-socket_connection::socket_connection(const int32_t& socket)
+internet_socket_connection::internet_socket_connection(const int32_t& socket)
     : is_connected_(true)
     , socket_(socket)
     , address_()
 {
 }
 
-socket_connection::socket_connection(const int32_t& socket,
-                                     const sockaddr_in& address)
+internet_socket_connection::internet_socket_connection(
+    const int32_t& socket, const sockaddr_in& address)
     : is_connected_(false)
     , socket_(socket)
     , address_(address)
 {
 }
 
-socket_connection::~socket_connection(void) noexcept(true)
+internet_socket_connection::~internet_socket_connection(void) noexcept(true)
 {
     // first shutdown and then close the connection before destructing the
     // object
@@ -70,13 +71,13 @@ socket_connection::~socket_connection(void) noexcept(true)
     UNUSED(close_result);
 }
 
-void socket_connection::close(void)
+void internet_socket_connection::close(void)
 {
     is_connected_ = false;
     shutdown(socket_, SHUT_RDWR);
 }
 
-bool socket_connection::receive(buffer& data, const size_t& max_size)
+bool internet_socket_connection::receive(buffer& data, const size_t& max_size)
 {
     bool result = false;
     // receive will only succeed when the socket is connected
@@ -95,19 +96,19 @@ bool socket_connection::receive(buffer& data, const size_t& max_size)
     return result;
 }
 
-bool socket_connection::send(const buffer& data)
+bool internet_socket_connection::send(const buffer& data)
 {
     // convert the buffer and use a single send method
     return send(data.data(), data.size());
 }
 
-bool socket_connection::send(const std::string& data)
+bool internet_socket_connection::send(const std::string& data)
 {
     // convert the buffer and use a single send method
     return send(data.data(), data.size());
 }
 
-bool socket_connection::send(const char_t* data, const size_t& size)
+bool internet_socket_connection::send(const char_t* data, const size_t& size)
 {
     bool result = false;
     // send will only succeed when the socket is connected
@@ -143,13 +144,13 @@ bool socket_connection::send(const char_t* data, const size_t& size)
     return result;
 }
 
-bool socket_connection::set_lingering_timeout(const int32_t& timeout)
+bool internet_socket_connection::set_lingering_timeout(const int32_t& timeout)
 {
     linger lex{1, timeout};
     return setsockopt(socket_, SOL_SOCKET, SO_LINGER, &lex, sizeof(lex)) == 0;
 }
 
-bool socket_connection::connect(void)
+bool internet_socket_connection::connect(void)
 {
     bool result = false;
     // connecting makes only sense if the socket is not connected

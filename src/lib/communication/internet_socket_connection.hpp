@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_COMMUNICATION_SOCKET_CONNECTION_HPP
-#define LIBHUTZNOHMD_COMMUNICATION_SOCKET_CONNECTION_HPP
+#ifndef LIBHUTZNOHMD_COMMUNICATION_INTERNET_SOCKET_CONNECTION_HPP
+#define LIBHUTZNOHMD_COMMUNICATION_INTERNET_SOCKET_CONNECTION_HPP
 
 #include <netinet/in.h>
 
@@ -26,11 +26,15 @@
 namespace hutzn
 {
 
-//! @copydoc connection
-class socket_connection : public connection
+class internet_socket_connection;
+using internet_socket_connection_ptr =
+    std::shared_ptr<internet_socket_connection>;
+
+//! @brief Implements a connection for internet sockets.
+class internet_socket_connection : public connection
 {
 public:
-    //! @brief Creates a new socket based connection.
+    //! @brief Creates a new internet socket based connection.
     //!
     //! Uses host and port to create the connection. Returns the connection
     //! after resolving the host and port.
@@ -38,23 +42,24 @@ public:
     //! @param[in] port Port on the host to connect to.
     //! @return         The newly created socket connection, which is not yet
     //!                 connected.
-    static std::shared_ptr<socket_connection> create(const std::string& host,
-                                                     const uint16_t& port);
+    static internet_socket_connection_ptr create(const std::string& host,
+                                                 const uint16_t& port);
 
-    //! @brief Constructs a socket based connection. Used to accept a connection
-    //! as a server.
+    //! @brief Constructs a internet socket based connection.
+    //!
+    //! Used to accept a connection as a server.
     //! @param[in] socket A socket file descriptor.
-    explicit socket_connection(const int32_t& socket);
+    explicit internet_socket_connection(const int32_t& socket);
 
-    //! @brief Constructs a socket based connection. Used to connect as a client
-    //! to a server.
+    //! @brief Constructs a internet socket based connection. Used to connect as
+    //! a client to a server.
     //! @param[in] socket  A socket file descriptor.
     //! @param[in] address Address of the host.
-    explicit socket_connection(const int32_t& socket,
-                               const sockaddr_in& address);
+    explicit internet_socket_connection(const int32_t& socket,
+                                        const sockaddr_in& address);
 
     //! @copydoc connection::~connection()
-    ~socket_connection(void) noexcept(true) override;
+    ~internet_socket_connection(void) noexcept(true) override;
 
     //! @copydoc connection::close()
     void close(void) override;
@@ -99,4 +104,4 @@ private:
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_COMMUNICATION_SOCKET_CONNECTION_HPP
+#endif // LIBHUTZNOHMD_COMMUNICATION_INTERNET_SOCKET_CONNECTION_HPP

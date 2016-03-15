@@ -20,14 +20,14 @@
 #include <thread>
 #include <vector>
 
-#include "communication/socket_connection.hpp"
+#include "communication/internet_socket_connection.hpp"
 
 void client(void)
 {
     const hutzn::buffer data = {0, 1, 2, 3};
 
     std::cout << "  connecting" << std::endl;
-    auto conn = hutzn::socket_connection::create("127.0.0.1", 30000);
+    auto conn = hutzn::internet_socket_connection::create("127.0.0.1", 30000);
     if (!conn->connect()) {
         std::cout << "  client not connected" << std::endl;
         abort();

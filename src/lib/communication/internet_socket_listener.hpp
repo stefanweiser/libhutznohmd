@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_COMMUNICATION_SOCKET_LISTENER_HPP
-#define LIBHUTZNOHMD_COMMUNICATION_SOCKET_LISTENER_HPP
+#ifndef LIBHUTZNOHMD_COMMUNICATION_INTERNET_SOCKET_LISTENER_HPP
+#define LIBHUTZNOHMD_COMMUNICATION_INTERNET_SOCKET_LISTENER_HPP
 
 #include <memory>
 #include <string>
@@ -27,11 +27,14 @@
 namespace hutzn
 {
 
-//! @copydoc listener
-class socket_listener : public listener
+class internet_socket_listener;
+using internet_socket_listener_ptr = std::shared_ptr<internet_socket_listener>;
+
+//! @brief Implements a listener for internet sockets.
+class internet_socket_listener : public listener
 {
 public:
-    //! @brief Creates a new socket listener.
+    //! @brief Creates a new internet socket listener.
     //!
     //! Uses host and port to create the listener. Returns the listener after
     //! resolving and binding to the IP and port.
@@ -39,15 +42,20 @@ public:
     //! @param[in] port Port to listen on.
     //! @return         The newly created listener, which has bound to the
     //!                 address and is ready to accept connections.
-    static std::shared_ptr<socket_listener> create(const std::string& host,
-                                                   const uint16_t& port);
+    static internet_socket_listener_ptr create(const std::string& host,
+                                               const uint16_t& port);
 
-    //! @brief Constructs a socket listener. Used to bind to a socket.
+    //! @brief Constructs a internet socket listener.
+    //!
+    //! Used to bind to a socket.
     //! @param[in] socket A socket file descriptor.
-    explicit socket_listener(const int32_t& socket);
+    explicit internet_socket_listener(const int32_t& socket);
 
-    //! @copydoc listener::~listener()
-    ~socket_listener(void) noexcept(true) override;
+    //! @brief Safely shuts down the socket.
+    //!
+    //! First shuts down the socket (if not already done) and closes it
+    //! afterwards.
+    ~internet_socket_listener(void) noexcept(true) override;
 
     //! @copydoc listener::accept()
     connection_ptr accept(void) const override;
@@ -71,4 +79,4 @@ private:
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_COMMUNICATION_SOCKET_LISTENER_HPP
+#endif // LIBHUTZNOHMD_COMMUNICATION_INTERNET_SOCKET_LISTENER_HPP

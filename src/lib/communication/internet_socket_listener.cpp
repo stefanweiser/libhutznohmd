@@ -16,7 +16,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include "socket_listener.hpp"
+#include "internet_socket_listener.hpp"
 
 #include <arpa/inet.h>
 #include <netdb.h>
@@ -26,7 +26,7 @@
 
 #include <cassert>
 
-#include "communication/socket_connection.hpp"
+#include "communication/internet_socket_connection.hpp"
 #include "communication/utility.hpp"
 
 namespace hutzn
@@ -34,13 +34,13 @@ namespace hutzn
 
 listener_ptr listen(const std::string& host, const uint16_t& port)
 {
-    return socket_listener::create(host, port);
+    return internet_socket_listener::create(host, port);
 }
 
-std::shared_ptr<socket_listener> socket_listener::create(
+internet_socket_listener_ptr internet_socket_listener::create(
     const std::string& host, const uint16_t& port)
 {
-    std::shared_ptr<socket_listener> result;
+    internet_socket_listener_ptr result;
     const int32_t socket_fd = socket(PF_INET, SOCK_STREAM, 0);
     // only listen if a valid socket file descriptor was created
     if (socket_fd >= 0) {
@@ -61,7 +61,7 @@ std::shared_ptr<socket_listener> socket_listener::create(
             // return a valid object only if bind and listen does not return an
             // error
             if ((result1 != -1) && (result2 != -1)) {
-                result = std::make_shared<socket_listener>(socket_fd);
+                result = std::make_shared<internet_socket_listener>(socket_fd);
             }
         }
     }
@@ -69,13 +69,13 @@ std::shared_ptr<socket_listener> socket_listener::create(
     return result;
 }
 
-socket_listener::socket_listener(const int32_t& socket)
+internet_socket_listener::internet_socket_listener(const int32_t& socket)
     : is_listening_(true)
     , socket_(socket)
 {
 }
 
-socket_listener::~socket_listener(void) noexcept(true)
+internet_socket_listener::~internet_socket_listener(void) noexcept(true)
 {
     // stop listening and close the socket before destructing the object
     stop();
@@ -84,7 +84,7 @@ socket_listener::~socket_listener(void) noexcept(true)
     UNUSED(close_result);
 }
 
-connection_ptr socket_listener::accept(void) const
+connection_ptr internet_socket_listener::accept(void) const
 {
     connection_ptr result;
 
@@ -103,24 +103,24 @@ connection_ptr socket_listener::accept(void) const
         const int32_t client = accept_signal_safe(socket_, &addr.base, &size);
         // return an empty object when accept signalises an error
         if (client >= 0) {
-            result = std::make_shared<socket_connection>(client);
+            result = std::make_shared<internet_socket_connection>(client);
         }
     }
     return result;
 }
 
-bool socket_listener::listening(void) const
+bool internet_socket_listener::listening(void) const
 {
     return is_listening_;
 }
 
-void socket_listener::stop(void)
+void internet_socket_listener::stop(void)
 {
     is_listening_ = false;
     shutdown(socket_, SHUT_RDWR);
 }
 
-bool socket_listener::set_lingering_timeout(const int32_t& timeout)
+bool internet_socket_listener::set_lingering_timeout(const int32_t& timeout)
 {
     const linger lex{1, timeout};
     return setsockopt(socket_, SOL_SOCKET, SO_LINGER, &lex, sizeof(lex)) == 0;
