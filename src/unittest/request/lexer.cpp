@@ -242,22 +242,22 @@ TEST_F(lexer_test, content)
 
     lexer lex(conn);
 
-    // Initially the content is empty..
+    // initially the content is empty
     EXPECT_EQ(0, lex.content_length());
     EXPECT_EQ(NULL, lex.content());
 
-    // Fetching the header will not effect the content.
+    // fetching the header will not effect the content
     EXPECT_TRUE(lex.fetch_header());
     EXPECT_EQ(0, lex.content_length());
     EXPECT_EQ(NULL, lex.content());
 
-    // Content is available after calling fetch_content.
+    // content is available after calling fetch_content
     EXPECT_TRUE(lex.fetch_content(2));
     EXPECT_EQ(2, lex.content_length());
     EXPECT_EQ('a', lex.content()[0]);
     EXPECT_EQ('b', lex.content()[1]);
 
-    // Fetching too much will invalidate the content.
+    // fetching too much will invalidate the content
     EXPECT_FALSE(lex.fetch_content(3));
     EXPECT_EQ(0, lex.content_length());
     EXPECT_EQ(NULL, lex.content());

@@ -133,13 +133,13 @@ class C
 public:
     http_status_code foo(const request&, const response&)
     {
-        // Do something.
+        // do something
         return http_status_code::OK;
     }
 
     void error_handler(const request&, const response&)
     {
-        // Do something.
+        // do something
     }
 };
 
@@ -180,7 +180,7 @@ int main()
     mime_type x_type;
     d->register_mime_type("example", x_type);
 
-    // Do something.
+    // do something
 
     d->unregister_mime_type(x_type);
     return 0;

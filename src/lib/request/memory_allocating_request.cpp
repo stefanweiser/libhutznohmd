@@ -39,7 +39,7 @@ static trie<http_verb> get_method_trie(size_t& max_size)
 {
     trie<http_verb> result{true};
 
-    // Filling methods and automatically calculate the maximum length.
+    // filling methods and automatically calculate the maximum length
     max_size = 0;
     const std::vector<std::pair<const char_t* const, http_verb>> verbs = {
         std::make_pair("GET", http_verb::GET),
@@ -59,7 +59,7 @@ static trie<http_version> get_version_trie(size_t& max_size)
 {
     trie<http_version> result{true};
 
-    // Filling versions and automatically calculate the maximum length.
+    // filling versions and automatically calculate the maximum length
     max_size = 0;
     const std::vector<std::pair<const char_t* const, http_version>> methods = {
         std::make_pair("HTTP/1.0", http_version::HTTP_1_0),
@@ -78,7 +78,7 @@ static trie<header_key> get_header_key_trie(size_t& max_size)
 {
     trie<header_key> result{true};
 
-    // Filling versions and automatically calculate the maximum length.
+    // filling versions and automatically calculate the maximum length
     max_size = 0;
     const std::vector<std::pair<const char_t* const, header_key>> header_keys =
         {std::make_pair("connection", header_key::CONNECTION),
@@ -104,8 +104,8 @@ bool parse_specific_value(const trie<T>& t, const size_t& max_length,
 {
     bool result = false;
 
-    // Parsing the value will succeed, when the token is not too long and the
-    // found value length is exactly the token length.
+    // parsing the value will succeed, when the token is not too long and the
+    // found value length is exactly the token length
     if (length <= max_length) {
         auto r = t.find(string, length);
         if (r.used_size() == length) {
@@ -378,8 +378,7 @@ bool memory_allocating_request::parse_header(const mime_handler& handler,
     const char_t* key = lexer_.header_data(key_begin);
     while (ch >= 0) {
         if (is_key_value_separator(ch)) {
-            // Overwrite the separator with null. The key is getting null
-            // terminated by this.
+            // overwrite the separator with null will null terminate the key
             const size_t key_end = lexer_.prev_index();
             lexer_.header_data(key_end)[0] = '\0';
             key_size = key_end - key_begin;
@@ -399,12 +398,11 @@ bool memory_allocating_request::parse_header(const mime_handler& handler,
     const size_t value_begin = lexer_.prev_index();
     const char_t* value = lexer_.header_data(value_begin);
 
-    // The value of -1 signalizes end of file.
+    // the value of -1 signalizes end of file
     while (ch >= 0) {
-        // Searching a newline character. This is the end of the header field.
+        // finding a newline character marks the end of the header field
         if (is_newline(ch)) {
-            // Overwrite the newline with null. The value is getting null
-            // terminated by this.
+            // overwrite the newline with null will null terminate the value
             const size_t value_end = lexer_.prev_index();
             lexer_.header_data(value_end)[0] = '\0';
             const size_t value_size = value_end - value_begin;
@@ -521,26 +519,26 @@ void memory_allocating_request::set_user_agent(const mime_handler&,
 
 bool memory_allocating_request::is_whitespace(const int32_t ch)
 {
-    // The character has to get converted into the more common data type.
-    // Otherwise the comparison may offer some ambiguities (e.g. 1024 get to 0).
-    // Doing this explicitly is more clear.
+    // the character has to get converted into the more common data type
+    // otherwise the comparison may offer some ambiguities (e.g. 1024 get to 0)
+    // doing this explicitly is more clear
     return (static_cast<int32_t>(' ') == ch) ||
            (static_cast<int32_t>('\t') == ch);
 }
 
 bool memory_allocating_request::is_newline(const int32_t ch)
 {
-    // The character has to get converted into the more common data type.
-    // Otherwise the comparison may offer some ambiguities (e.g. 1024 get to 0).
-    // Doing this explicitly is more clear.
+    // the character has to get converted into the more common data type
+    // otherwise the comparison may offer some ambiguities (e.g. 1024 get to 0)
+    // doing this explicitly is more clear
     return static_cast<int32_t>('\n') == ch;
 }
 
 bool memory_allocating_request::is_key_value_separator(const int32_t ch)
 {
-    // The character has to get converted into the more common data type.
-    // Otherwise the comparison may offer some ambiguities (e.g. 1024 get to 0).
-    // Doing this explicitly is more clear.
+    // the character has to get converted into the more common data type
+    // otherwise the comparison may offer some ambiguities (e.g. 1024 get to 0)
+    // doing this explicitly is more clear
     return static_cast<int32_t>(':') == ch;
 }
 

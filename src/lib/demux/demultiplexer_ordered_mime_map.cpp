@@ -86,7 +86,7 @@ request_handler_callback demultiplexer_ordered_mime_map::find(mime& type) const
         const auto accept_it = map_.find(type);
         if ((accept_it != map_.end()) && (accept_it->second.is_available)) {
             result = accept_it->second.handler;
-            // The type contains already the mime type of the result.
+            // the type contains already the mime type of the result
         }
     }
     return result;

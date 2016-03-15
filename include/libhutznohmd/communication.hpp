@@ -96,7 +96,7 @@ int main()
     buffer request;
     if (conn->read(request, 1024)) {
         buffer response;
-        // Parse the HTTP request and build a response.
+        // parse the http request and build a response
         conn->send(response);
     }
     return 0;

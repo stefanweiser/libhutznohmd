@@ -27,8 +27,8 @@
 
 void test_date_parser(const std::string& date_string)
 {
-    // This initializes all static variables, that else would sophisticate
-    // the results.
+    // this initializes all static variables, that else would sophisticate the
+    // results
     hutzn::parse_timestamp(date_string.c_str(), date_string.size());
 
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
@@ -45,8 +45,8 @@ void test_date_parser(const std::string& date_string)
 void test_uri_parser(std::string uri)
 {
     {
-        // This initializes all static variables, that else would sophisticate
-        // the results.
+        // this initializes all static variables, that else would sophisticate
+        // the results
         hutzn::uri u;
         std::string tmp = uri;
         size_t src_len = tmp.size();

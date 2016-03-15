@@ -850,7 +850,7 @@ public:
     //! void* handle = NULL;
     //! mime type;
     //! while (request->accept(handle, type)) {
-    //!     // Do some fancy stuff.
+    //!     // do some fancy stuff
     //! }
     //! @endcode
     virtual bool accept(void*& handle, mime& type) const = 0;
