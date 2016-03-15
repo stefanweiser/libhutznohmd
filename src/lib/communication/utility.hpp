@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBHUTZNOHMD_SOCKET_UTILITY_HPP
-#define LIBHUTZNOHMD_SOCKET_UTILITY_HPP
+#ifndef LIBHUTZNOHMD_COMMUNICATION_UTILITY_HPP
+#define LIBHUTZNOHMD_COMMUNICATION_UTILITY_HPP
 
 #include <arpa/inet.h>
 
@@ -99,4 +99,4 @@ sockaddr_in fill_address(const std::string& host,
 
 } // namespace hutzn
 
-#endif // LIBHUTZNOHMD_SOCKET_UTILITY_HPP
+#endif // LIBHUTZNOHMD_COMMUNICATION_UTILITY_HPP

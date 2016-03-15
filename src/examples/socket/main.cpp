@@ -20,7 +20,7 @@
 #include <thread>
 #include <vector>
 
-#include "socket/socket_connection.hpp"
+#include "communication/socket_connection.hpp"
 
 void client(void)
 {

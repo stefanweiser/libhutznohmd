@@ -26,8 +26,8 @@
 
 #include <cassert>
 
-#include "socket/socket_connection.hpp"
-#include "socket/utility.hpp"
+#include "communication/socket_connection.hpp"
+#include "communication/utility.hpp"
 
 namespace hutzn
 {

@@ -27,6 +27,12 @@ SET(FILES   "${PROJECT_SOURCE_DIR}/include/hutzn.hpp"
             ../mock/libhutznohmd/mock_request.hpp
             ../mock/libhutznohmd/mock_demux.hpp
             ../mock/libhutznohmd/mock_communication.hpp
+            communication/socket_connection.cpp
+            communication/socket_connection.hpp
+            communication/socket_listener.cpp
+            communication/socket_listener.hpp
+            communication/utility.cpp
+            communication/utility.hpp
             demux/demultiplex_handler.cpp
             demux/demultiplex_handler.hpp
             demux/demultiplexer.cpp
@@ -45,9 +51,9 @@ SET(FILES   "${PROJECT_SOURCE_DIR}/include/hutzn.hpp"
             demux/non_caching_request_processor.hpp
             demux/usage.cpp
             demux/usage.hpp
+            libhutznohmd/communication.cpp
             libhutznohmd/demux.cpp
             libhutznohmd/request.cpp
-            libhutznohmd/sockets.cpp
             request/base64.cpp
             request/base64.hpp
             request/lexer.cpp
@@ -65,12 +71,6 @@ SET(FILES   "${PROJECT_SOURCE_DIR}/include/hutzn.hpp"
             request/timestamp.hpp
             request/uri.cpp
             request/uri.hpp
-            socket/socket_connection.cpp
-            socket/socket_connection.hpp
-            socket/socket_listener.cpp
-            socket/socket_listener.hpp
-            socket/utility.cpp
-            socket/utility.hpp
             utility/character_validation.hpp
             utility/common.cpp
             utility/common.hpp

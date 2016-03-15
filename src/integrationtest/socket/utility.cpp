@@ -20,7 +20,7 @@
 
 #include <gtest/gtest.h>
 
-#include "socket/utility.hpp"
+#include "communication/utility.hpp"
 
 namespace hutzn
 {

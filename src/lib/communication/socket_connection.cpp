@@ -22,7 +22,7 @@
 #include <cassert>
 #include <string>
 
-#include "socket/utility.hpp"
+#include "communication/utility.hpp"
 
 namespace hutzn
 {
