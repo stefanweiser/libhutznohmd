@@ -18,7 +18,11 @@
 SETUP_COMPILER_FLAGS()
 DISABLE_GMOCK_DEPENDENT_WARNINGS()
 
-SET(FILES   communication/internet_socket.cpp
+SET(FILES   ../mock/demux/mock_handler_manager.hpp
+            ../mock/libhutznohmd/mock_request.hpp
+            ../mock/libhutznohmd/mock_demux.hpp
+            ../mock/libhutznohmd/mock_communication.hpp
+            communication/internet_socket.cpp
             communication/utility.cpp)
 
 ADD_EXECUTABLE(integrationtest_hutznohmd ${FILES} ${GMOCK_FILES})

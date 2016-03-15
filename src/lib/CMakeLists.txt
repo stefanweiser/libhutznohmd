@@ -23,10 +23,6 @@ SET(FILES   "${PROJECT_SOURCE_DIR}/include/hutzn.hpp"
             "${PROJECT_SOURCE_DIR}/include/libhutznohmd/demux.hpp"
             "${PROJECT_SOURCE_DIR}/include/libhutznohmd/request.hpp"
             "${PROJECT_SOURCE_DIR}/include/libhutznohmd/types.hpp"
-            ../mock/demux/mock_handler_manager.hpp
-            ../mock/libhutznohmd/mock_request.hpp
-            ../mock/libhutznohmd/mock_demux.hpp
-            ../mock/libhutznohmd/mock_communication.hpp
             communication/socket_connection.cpp
             communication/socket_connection.hpp
             communication/socket_listener.cpp
