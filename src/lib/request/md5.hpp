@@ -36,10 +36,11 @@ using md5_array = std::array<uint8_t, md5_size>;
 
 //! @brief Calculates the MD5 sum of a given vector of bytes.
 //!
-//! @param[in] data Vector of data to parse.
+//! @param[in] data Pointer to the data to calculate.
+//! @param[in] size Size of the data.
 //! @return         Array of 16 bytes, that contains the digest.
 //! @warning        This currently works only on little endian architectures.
-md5_array calculate_md5(const std::vector<char_t>& data);
+md5_array calculate_md5(const char_t* const data, const size_t size);
 
 } // namespace hutzn
 

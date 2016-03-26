@@ -272,7 +272,7 @@ bool is_little_endian()
 
 } // namespace
 
-md5_array calculate_md5(const std::vector<char_t>& data)
+md5_array calculate_md5(const char_t* const data, const size_t size)
 {
     assert(is_little_endian());
 
@@ -280,8 +280,8 @@ md5_array calculate_md5(const std::vector<char_t>& data)
     static const size_t max_size_minus_size = block_size - size_of_size;
 
     digest_type digest{{0x67452301U, 0xEFCDAB89U, 0x98BADCFEU, 0x10325476U}};
-    const char_t* pointer = data.data();
-    size_t remaining = data.size();
+    const char_t* pointer = data;
+    size_t remaining = size;
 
     // process
     while (remaining >= block_size) {
@@ -294,7 +294,7 @@ md5_array calculate_md5(const std::vector<char_t>& data)
     static const uint8_t invalid_last_bit = 0x80U;
     std::array<char_t, block_size> data_buffer;
     uint8_t last_bit = invalid_last_bit;
-    std::copy(data.end() - static_cast<ssize_t>(remaining), data.end(),
+    std::copy(data + size - static_cast<ssize_t>(remaining), data + size,
               data_buffer.begin());
 
     // if there is not enough space to append the size, we have to fill it into
@@ -313,7 +313,7 @@ md5_array calculate_md5(const std::vector<char_t>& data)
     data_buffer[remaining] = static_cast<char_t>(last_bit);
 
     // fill up the number of bits
-    const uint64_t processed_bits = data.size() * bits_per_byte;
+    const uint64_t processed_bits = size * bits_per_byte;
     for (size_t i = 0; i < size_of_size; ++i) {
         const size_t index = max_size_minus_size + i;
         data_buffer[index] =
