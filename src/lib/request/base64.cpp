@@ -130,7 +130,8 @@ std::string encode_base64(const std::vector<uint8_t>& data)
     return result;
 }
 
-std::vector<uint8_t> decode_base64(const std::string& encoded_string)
+std::vector<uint8_t> decode_base64(const char_t* const encoded_string,
+                                   const size_t encoded_string_size)
 {
     static const std::array<int8_t, 1 << bits_per_byte> base64_decoder_map = {
         {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -159,8 +160,8 @@ std::vector<uint8_t> decode_base64(const std::string& encoded_string)
     uint8_t sextets_in_backlog = 0;
 
     // loop over every byte in the base64 string
-    for (const int8_t& b : encoded_string) {
-        const uint8_t& ub = static_cast<const uint8_t&>(b);
+    for (size_t i = 0; i < encoded_string_size; ++i) {
+        const uint8_t& ub = static_cast<const uint8_t&>(encoded_string[i]);
 
         // every byte has a token represensation
         const int8_t token = base64_decoder_map[ub];

@@ -57,48 +57,49 @@ TEST(base64, encode_pangram)
 
 TEST(base64, decode_empty)
 {
-    const std::vector<uint8_t> decoded_data = decode_base64("");
+    const std::vector<uint8_t> decoded_data = decode_base64("", 0);
     EXPECT_EQ(std::vector<uint8_t>(), decoded_data);
 }
 
 TEST(base64, decode_space)
 {
-    const std::vector<uint8_t> decoded_data = decode_base64("IA==");
+    const std::vector<uint8_t> decoded_data = decode_base64("IA==", 4);
     const std::vector<uint8_t> data{' '};
     EXPECT_EQ(data, decoded_data);
 }
 
 TEST(base64, decode_double_space)
 {
-    const std::vector<uint8_t> decoded_data = decode_base64("ICA=");
+    const std::vector<uint8_t> decoded_data = decode_base64("ICA=", 4);
     const std::vector<uint8_t> data{' ', ' '};
     EXPECT_EQ(data, decoded_data);
 }
 
 TEST(base64, decode_space_without_pad)
 {
-    const std::vector<uint8_t> decoded_data = decode_base64("IA");
+    const std::vector<uint8_t> decoded_data = decode_base64("IA", 2);
     const std::vector<uint8_t> data{' '};
     EXPECT_EQ(data, decoded_data);
 }
 
 TEST(base64, decode_char62_char63)
 {
-    const std::vector<uint8_t> decoded_data = decode_base64("+/+/");
+    const std::vector<uint8_t> decoded_data = decode_base64("+/+/", 4);
     const std::vector<uint8_t> data{251, 255, 191};
     EXPECT_EQ(data, decoded_data);
 }
 
 TEST(base64, decode_alternative_char62_char63)
 {
-    const std::vector<uint8_t> decoded_data = decode_base64("-_-_");
+    const std::vector<uint8_t> decoded_data = decode_base64("-_-_", 4);
     const std::vector<uint8_t> data{251, 255, 191};
     EXPECT_EQ(data, decoded_data);
 }
 
 TEST(base64, decode_hello_world)
 {
-    const std::vector<uint8_t> decoded_data = decode_base64("SGVsbG8gV29ybGQh");
+    const std::vector<uint8_t> decoded_data =
+        decode_base64("SGVsbG8gV29ybGQh", 16);
     const std::vector<uint8_t> data{'H', 'e', 'l', 'l', 'o', ' ',
                                     'W', 'o', 'r', 'l', 'd', '!'};
     EXPECT_EQ(data, decoded_data);
@@ -106,7 +107,7 @@ TEST(base64, decode_hello_world)
 
 TEST(base64, decode_errornous)
 {
-    const std::vector<uint8_t> decoded_data = decode_base64("I");
+    const std::vector<uint8_t> decoded_data = decode_base64("I", 1);
     EXPECT_EQ(std::vector<uint8_t>(), decoded_data);
 }
 

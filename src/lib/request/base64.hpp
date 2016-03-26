@@ -23,6 +23,8 @@
 #include <string>
 #include <vector>
 
+#include "libhutznohmd/types.hpp"
+
 namespace hutzn
 {
 
@@ -44,9 +46,11 @@ std::string encode_base64(const std::vector<uint8_t>& data);
 //! accept '+' and '-' as character 62 and therefore accepts also '/' and '_'
 //! for character 63. It will skip any characters, that are not part of the
 //! encoding.
-//! @param[in] encoded_string Base64 encoded string.
-//! @return                   Binary data buffer.
-std::vector<uint8_t> decode_base64(const std::string& encoded_string);
+//! @param[in] encoded_string      Base64 encoded string.
+//! @param[in] encoded_string_size Size of the encoded string.
+//! @return                        Binary data buffer.
+std::vector<uint8_t> decode_base64(const char_t* const encoded_string,
+                                   const size_t encoded_string_size);
 
 } // namespace hutzn
 
