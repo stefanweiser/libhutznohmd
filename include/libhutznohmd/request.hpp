@@ -156,7 +156,7 @@ namespace hutzn {
 @enduml
 
 A part of all headers defined by the current HTTP standard are listed. Every
-header field documentation is splitted into three parts:
+header field documentation is splitted into four parts:
 - @a Description: What and how does it influence the system? What could be
 expected? Information on the content.
 - @a Example: A common example on how to use it.
@@ -244,8 +244,8 @@ unimplemented
 @subsection sub_date Date
 
 Contains the timestamp, when the message was generated. The request processor
-will also automatically add a timestamp to the response, pointing to the time
-when the response was generated.
+will also automatically add a RFC 1123 timestamp to the response, pointing to
+the time when the response was generated.
 
 @subsubsection subsub_date_example Example:
 

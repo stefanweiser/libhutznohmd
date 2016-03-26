@@ -279,7 +279,7 @@ These links may help you to get started developing the library:
 @section sec_principles Development Principles
 
 To reach a homogenous code base, it is indispensable to have some principles
-about working with the code. Here are some principles, that are essential for
+about working with the code. Here are some principles, that are essential to
 this library:
 
 - @b KISS: The code has to be as simple as possible. Any non-intuitive solution
@@ -371,8 +371,8 @@ its users to fulfill the ideas of REST during development.
 
 Using this library requires some control code and a resource manager to connect
 its request handlers to the library. This will make the REST application
-available to the clients, who want to request resource representations. The
-control code has to listen for and accept the connections, which then are
+available to the clients, which want to request resource representations. The
+control code has to listen for and accept the connections, that then are
 provided to the library again, that tries to call the correct request handler.
 
 @startuml{use_case.svg} "Use case diagram"
@@ -457,7 +457,8 @@ of the library as long as they fulfill the interface's expectations.
 
 @page page_gurantees Gurantees of the implementation
 
-The implementation gurantees some properties, that get discussed here.
+The implementation gurantees some properties, that get discussed here. If you
+find deviations, please report them as bug!
 
 @section sec_exception_safety Exception safety
 
@@ -510,7 +511,7 @@ Demultiplexer, request processor and the listener are the main objects used to
 build a RESTful web service. These objects are usually constructed once per
 program instance, which has to be the first to construct before interacting with
 the library and the last to destroy after all interaction objects are cleaned
-up. Therefore those objects shall always outlive all other objects.
+up. Therefore those objects shall always outlive all other related objects.
 
 Note, that a request processor is getting constructed always after the
 demultiplexer, because the demultiplexer's query functionality is necessary for
@@ -519,7 +520,7 @@ because the request processor holds a reference counted pointer to the
 demultiplexer. To construct such objects simply call the global functions @ref
 make_demultiplexer(), @ref make_default_request_processor() and @ref
 listen(). They all will return reference-counted objects, that will get
-automatically destroyed, when their scope is left.
+destroyed automatically, when their scope is left.
 
 The following code is an example construction order of those components:
 @code{.cpp}
@@ -532,7 +533,7 @@ int main()
 
     // do whatever you want...
 
-    // before exiting the function the objects are getting destroyed in the
+    // before exiting the function those objects are getting destroyed in the
     // reverse order:
     // destroying listener will stop listening for new requests.
     // destroying request processor disables processing of requests.
@@ -570,9 +571,9 @@ Therefore it is not allowed for a request handler to unregister itself. To
 control the ability of getting called, there are the methods @ref
 hutzn::handler::enable() and @ref hutzn::handler::disable().
 
-Note, that the same deadlock problem affects error handlers. Also note, that in
-case of the user is exposing its own @c this pointer the handler object must get
-destroyed before the object behind the @c this pointer or the result  will be
+Note, that the same deadlock problem affects error handlers. Also note, that
+when a user exposes its own @c this pointer, the handler object must get
+destroyed before the object behind the @c this pointer or the result will be
 undefined behaviour! (You may get called after object connected to the request
 handler is destroyed)
 
@@ -583,10 +584,11 @@ to call accept. This will wait till a connection is requested and will return
 the newly created connection, which is an automatically reference counted
 object. The connection will stay open till @ref hutzn::connection::close() is
 called or the connection object is released by leaving its scope, which will
-also close the connection. In case of an internet socket the connection's ports
+also close the connection. In case of an internet socket the connection's port
 will stay open for a "lingering time" to catch stray packets afterwards. These
-states are called @c TIME_WAIT and @c CLOSE_WAIT. The "lingering time" can be
-configured by @ref hutzn::connection::set_lingering_timeout() and  @ref
+states are called @c TIME_WAIT and @c CLOSE_WAIT (if the other side closes the
+connection first). The "lingering time" can be configured by @ref
+hutzn::connection::set_lingering_timeout() and  @ref
 hutzn::listener::set_lingering_timeout().
 
 
@@ -594,7 +596,8 @@ hutzn::listener::set_lingering_timeout().
 
 @todo [DOC] define roadmap
 
-Some buzzwords which may get implemented in the context of a REST interface.
+Here are some buzzwords which may get implemented in the context of a REST
+interface.
 
 HTTP:
 - Basic HTTP-Support (protocol, document negotiation)
