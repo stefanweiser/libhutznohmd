@@ -28,6 +28,9 @@ namespace hutzn
 {
 
 class internet_socket_listener;
+
+//! @brief Shortcut type to use an @ref internet_socket_listener as reference-
+//! counted type.
 using internet_socket_listener_ptr = std::shared_ptr<internet_socket_listener>;
 
 //! @brief Implements a listener for internet sockets.

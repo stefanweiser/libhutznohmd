@@ -517,7 +517,7 @@ demultiplexer, because the demultiplexer's query functionality is necessary for
 the request processor's construction. The releasing order is indifferent,
 because the request processor holds a reference counted pointer to the
 demultiplexer. To construct such objects simply call the global functions @ref
-make_demultiplexer(), @ref make_non_caching_request_processor() and @ref
+make_demultiplexer(), @ref make_default_request_processor() and @ref
 listen(). They all will return reference-counted objects, that will get
 automatically destroyed, when their scope is left.
 
@@ -527,7 +527,7 @@ int main()
 {
     demux_ptr demultiplexer = make_demultiplexer();
     request_processor_ptr req_processor =
-        make_non_caching_request_processor(*demultiplexer);
+        make_default_request_processor(*demultiplexer);
     listener_ptr listener = listen("0.0.0.0", 8080);
 
     // do whatever you want...

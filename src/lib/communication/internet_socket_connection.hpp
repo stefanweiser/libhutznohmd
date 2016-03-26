@@ -27,6 +27,9 @@ namespace hutzn
 {
 
 class internet_socket_connection;
+
+//! @brief Shortcut type to use an @ref internet_socket_connection as reference-
+//! counted type.
 using internet_socket_connection_ptr =
     std::shared_ptr<internet_socket_connection>;
 

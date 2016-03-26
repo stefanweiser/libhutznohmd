@@ -66,7 +66,7 @@ void consume_one_character(const char_t*& data, size_t& remaining)
 //! @warning There is no over- or underflow checking.
 //! @param[in,out] data      Points to a buffer.
 //! @param[in,out] remaining Remaining size of the buffer.
-void revert_one_character_consumation(char_t*& data, size_t& remaining)
+void unconsume_one_character(char_t*& data, size_t& remaining)
 {
     data--;
     remaining++;
@@ -340,7 +340,7 @@ bool uri::parse_1st_pass(const char_t* source, size_t source_length,
             skip_optional_slashes(source, source_length);
             authority_data = destination;
         } else {
-            revert_one_character_consumation(destination, destination_length);
+            unconsume_one_character(destination, destination_length);
             authority_data = scheme_or_authority_data;
         }
 

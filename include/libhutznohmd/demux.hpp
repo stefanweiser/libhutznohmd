@@ -384,7 +384,7 @@ using request_processor_ptr = std::shared_ptr<request_processor>;
 //! Creates a new non-caching request processor. Needs a query pointer and a
 //! connection timeout in seconds. The timeout determines how long to wait till
 //! the connection gets closed in order to inactivity.
-request_processor_ptr make_non_caching_request_processor(
+request_processor_ptr make_default_request_processor(
     const demux_query_ptr& query,
     const uint64_t& connection_timeout_in_sec = 30);
 

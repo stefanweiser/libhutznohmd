@@ -35,7 +35,7 @@ namespace hutzn
 Each restful application has to communicate with its users. To fulfill this
 necessity this library defines @ref connection "connections" and @ref listener
 "listeners", which are the two types of communication entities, that are
-typically used by any interprocess or network communication protocols.
+typically used by any interprocess or network communication protocol.
 
 A listener is defined as an endpoint, to which connection endpoints can connect
 to. Once a connection has been established, it connects two processes. This
@@ -86,18 +86,18 @@ detached from the process.
 -# On most systems the ports, that were used by the connection stay in the state
 @c TIME_WAIT to catch stray packets before reusing those ports. After a while
 those ports are getting unused (note that it could also wait in @c CLOSE_WAIT
-when the opposite connection is closed first).
+when the opposite connection gets closed first).
 
 @code{.cpp}
 int main()
 {
-    auto listnr = listen("0.0.0.0", 80);
-    auto conn = listnr->accept();
+    auto inet_listner = listen("0.0.0.0", 80);
+    auto inet_connection = inet_listner->accept();
     buffer request;
-    if (conn->read(request, 1024)) {
+    if (inet_connection->read(request, 1024)) {
         buffer response;
-        // parse the http request and build a response
-        conn->send(response);
+        // parse the http request and build a response...
+        inet_connection->send(response);
     }
     return 0;
 }
@@ -114,6 +114,9 @@ important decisions:
 -# How many connections to accept
 -# Which connection to accept and which to close immediately
 -# Control over the communicated data
+
+Note, that neither connection nor listener is internally thread safe, but it is
+of course possible to utilize on connection or listener per thread.
 
 */
 
