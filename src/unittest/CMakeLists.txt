@@ -19,9 +19,9 @@ SETUP_COMPILER_FLAGS()
 DISABLE_GMOCK_DEPENDENT_WARNINGS()
 
 SET(FILES   ../mock/demux/mock_handler_manager.hpp
-            ../mock/libhutznohmd/mock_request.hpp
-            ../mock/libhutznohmd/mock_demux.hpp
             ../mock/libhutznohmd/mock_communication.hpp
+            ../mock/libhutznohmd/mock_demux.hpp
+            ../mock/libhutznohmd/mock_request.hpp
             demux/demultiplex_handler.cpp
             demux/demultiplexer.cpp
             demux/demultiplexer_ordered_mime_map.cpp

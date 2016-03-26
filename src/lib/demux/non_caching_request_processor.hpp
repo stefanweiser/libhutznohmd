@@ -24,9 +24,9 @@
 #include <mutex>
 
 #include "demux/error_handler_manager.hpp"
+#include "libhutznohmd/communication.hpp"
 #include "libhutznohmd/demux.hpp"
 #include "libhutznohmd/request.hpp"
-#include "libhutznohmd/communication.hpp"
 
 namespace hutzn
 {

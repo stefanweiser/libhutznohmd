@@ -613,9 +613,9 @@ REST:
 
 */
 
+#include <libhutznohmd/communication.hpp>
 #include <libhutznohmd/demux.hpp>
 #include <libhutznohmd/request.hpp>
-#include <libhutznohmd/communication.hpp>
 #include <libhutznohmd/types.hpp>
 
 namespace hutzn

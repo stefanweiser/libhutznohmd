@@ -19,8 +19,8 @@
 #ifndef LIBHUTZNOHMD_LIBHUTZNOHMD_DEMUX_HPP
 #define LIBHUTZNOHMD_LIBHUTZNOHMD_DEMUX_HPP
 
-#include <libhutznohmd/request.hpp>
 #include <libhutznohmd/communication.hpp>
+#include <libhutznohmd/request.hpp>
 #include <libhutznohmd/types.hpp>
 
 namespace hutzn
