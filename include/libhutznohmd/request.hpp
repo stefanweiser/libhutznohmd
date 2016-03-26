@@ -190,7 +190,7 @@ Content-Length: 0
 
 @subsubsection subsub_content_length_implemented Implementation Status:
 
-unimplemented
+since 0.9.0
 
 @subsection sub_content_md5 Content-MD5
 
@@ -239,7 +239,7 @@ Content-Type: text/plain
 
 @subsubsection subsub_content_type_implemented Implementation Status:
 
-unimplemented
+since 0.9.0
 
 @subsection sub_date Date
 
@@ -261,7 +261,7 @@ Date: Thu, 01 Jan 1970 00:00:00 GMT
 
 @subsubsection subsub_date_implemented Implementation Status:
 
-unimplemented
+since 0.9.0
 
 @section sec_basic_request Request-Specific
 
@@ -325,7 +325,7 @@ not present, keeps the connection open till client closes or timeout
 
 @subsubsection subsub_connection_implemented Implementation Status:
 
-unimplemented
+since 0.9.0
 
 @subsection sub_expect Expect
 
@@ -349,7 +349,7 @@ not present
 
 @subsubsection subsub_expect_implemented Implementation Status:
 
-unimplemented
+since 0.9.0
 
 @subsection sub_from From
 
@@ -367,7 +367,7 @@ not present
 
 @subsubsection subsub_from_implemented Implementation Status:
 
-unimplemented
+since 0.9.0
 
 @subsection sub_host Host
 
@@ -405,7 +405,7 @@ not present
 
 @subsubsection subsub_referer_implemented Implementation Status:
 
-unimplemented
+since 0.9.0
 
 @subsection sub_user_agent User-Agent
 
@@ -425,7 +425,7 @@ User-Agent:
 
 @subsubsection subsub_user_agent_implemented Implementation Status:
 
-unimplemented
+since 0.9.0
 
 @section sec_basic_response Response-Specific
 
