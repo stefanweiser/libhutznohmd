@@ -40,14 +40,15 @@ public:
 
     //! @brief Registers a string as mime type.
     //!
-    //! Returns the resulting mime type.
+    //! The type string must not be empty. Returns the resulting mime type.
     //! @param[in] type Type to register.
     //! @return         Registered mime type or mime_type::INVALID.
     mime_type register_mime_type(const std::string& type);
 
     //! @brief Registers a string as mime subtype.
     //!
-    //! Returns the resulting mime subtype.
+    //! The subtype string must not be empty. Returns the resulting mime
+    //! subtype.
     //! @param[in] subtype Subtype to register.
     //! @return            Registered mime subtype or mime_subtype::INVALID.
     mime_subtype register_mime_subtype(const std::string& subtype);

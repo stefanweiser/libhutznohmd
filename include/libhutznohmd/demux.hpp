@@ -316,15 +316,17 @@ public:
     //! @brief Registers a custom MIME type and returns a new mime_type value if
     //! that type was not already registered.
     //!
-    //! The custom MIME type can be used afterwards. If the MIME type already
-    //! exists, it returns mime_type::INVALID.
+    //! The MIME type string must not be empty. The custom MIME type can be used
+    //! afterwards. If the MIME type already exists, it returns
+    //! mime_type::INVALID.
     virtual mime_type register_mime_type(const std::string& type) = 0;
 
     //! @brief Registers a custom MIME subtype and returns a new mime_subtype
     //! value if that type was not already registered.
     //!
-    //! The custom MIME subtype can be used afterwards. If the MIME subtype
-    //! already exists, it returns mime_subtype::INVALID.
+    //! The MIME subtype string must not be empty. The custom MIME subtype can
+    //! be used afterwards. If the MIME subtype already exists, it returns
+    //! mime_subtype::INVALID.
     virtual mime_subtype register_mime_subtype(const std::string& subtype) = 0;
 
     //! @brief Unregisters a MIME type.

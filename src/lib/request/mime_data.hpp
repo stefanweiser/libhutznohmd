@@ -52,13 +52,13 @@ public:
 
     //! @brief Registers a type.
     //!
-    //! Returns the registration value.
+    //! The type string must not be empty. Returns the registration value.
     //! @param[in] type String to register.
     //! @return         Registration value.
     value_type register_type(const std::string& type)
     {
         value_type result = value_type::INVALID;
-        if (next_value_ != 0) {
+        if ((type.size() > 0) && (next_value_ != 0)) {
             value_type value = static_cast<value_type>(next_value_);
             if (types_.insert(type.c_str(), value)) {
                 next_value_++;

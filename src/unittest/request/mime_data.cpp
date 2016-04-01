@@ -89,6 +89,15 @@ TEST(mime_data, parse_type_successful_case_sensitive)
     EXPECT_TRUE(t.unregister_type(type));
 }
 
+TEST(mime_data, register_empty_string)
+{
+    mime_data<mime_type> t;
+    const mime_type type = t.register_type("");
+    EXPECT_EQ(mime_type::INVALID, type);
+    EXPECT_FALSE(t.is_registered(type));
+    EXPECT_FALSE(t.unregister_type(type));
+}
+
 TEST(mime_data, is_registered)
 {
     mime_data<mime_type> t;
