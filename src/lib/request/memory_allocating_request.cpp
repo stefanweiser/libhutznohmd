@@ -397,7 +397,7 @@ bool memory_allocating_request::parse_header(const mime_handler& handler,
 
     const size_t key_begin = lexer_.prev_index();
     size_t key_size = 0;
-    const char_t* key = lexer_.header_data(key_begin);
+    char_t* key = lexer_.header_data(key_begin);
     while (ch >= 0) {
         if (is_key_value_separator(ch)) {
             // overwrite the separator with null will null terminate the key
@@ -439,15 +439,15 @@ bool memory_allocating_request::parse_header(const mime_handler& handler,
     return result;
 }
 
-void memory_allocating_request::set_header(const mime_handler& handler,
+bool memory_allocating_request::set_header(const mime_handler& handler,
                                            header_key key,
-                                           const char_t* const key_string,
+                                           char_t* const key_string,
                                            const char_t* value_string,
                                            size_t value_length)
 {
     using set_header_functor =
-        void (memory_allocating_request::*)(const mime_handler&, const char_t*,
-                                            size_t);
+        bool (memory_allocating_request::*)(const mime_handler&, char_t*,
+                                            const char_t*, size_t);
     using header_fn_array =
         std::array<set_header_functor, static_cast<size_t>(header_key::SIZE)>;
     static const header_fn_array set_header_fns = {
@@ -462,15 +462,18 @@ void memory_allocating_request::set_header(const mime_handler& handler,
          &memory_allocating_request::set_user_agent}};
     skip_whitespace(value_string, value_length);
 
+    bool result;
     if ((key > header_key::CUSTOM) && (key < header_key::SIZE)) {
         const set_header_functor fn = set_header_fns[static_cast<size_t>(key)];
-        (this->*fn)(handler, value_string, value_length);
+        result = (this->*fn)(handler, key_string, value_string, value_length);
     } else {
         header_fields_[key_string] = value_string;
+        result = true;
     }
+    return result;
 }
 
-void memory_allocating_request::set_connection(const mime_handler&,
+bool memory_allocating_request::set_connection(const mime_handler&, char_t*,
                                                const char_t* value_string,
                                                size_t value_length)
 {
@@ -482,42 +485,54 @@ void memory_allocating_request::set_connection(const mime_handler&,
         (0 == ::strncasecmp(value_string, keep_alive_str, keep_alive_size))) {
         is_keep_alive_set_ = true;
     }
+    return true;
 }
 
-void memory_allocating_request::set_content_length(const mime_handler&,
+bool memory_allocating_request::set_content_length(const mime_handler&, char_t*,
                                                    const char_t* value_string,
                                                    size_t value_length)
 {
+    bool result = false;
     const int64_t length =
         parse_unsigned_integer<int64_t>(value_string, value_length);
     if (length >= 0) {
         content_length_ = static_cast<size_t>(length);
+        result = true;
     }
+    return result;
 }
 
-void memory_allocating_request::set_content_md5(const mime_handler&,
+bool memory_allocating_request::set_content_md5(const mime_handler&, char_t*,
                                                 const char_t* value_string,
                                                 size_t value_length)
 {
     content_md5_ = value_string;
     content_md5_length_ = value_length;
+    return true;
 }
 
-void memory_allocating_request::set_content_type(const mime_handler& handler,
+bool memory_allocating_request::set_content_type(const mime_handler& handler,
+                                                 char_t*,
                                                  const char_t* value_string,
                                                  size_t value_length)
 {
     content_type_ = handler.parse(value_string, value_length);
+    return ((content_type_.first != mime_type::INVALID) &&
+            (content_type_.second != mime_subtype::INVALID));
 }
 
-void memory_allocating_request::set_date(const mime_handler&,
+bool memory_allocating_request::set_date(const mime_handler&, char_t*,
                                          const char_t* value_string,
                                          size_t value_length)
 {
-    date_ = parse_timestamp(value_string, value_length);
+    epoch_time_t parsed_date = parse_timestamp(value_string, value_length);
+    if (parsed_date >= 0) {
+        date_ = parsed_date;
+    }
+    return (parsed_date >= 0);
 }
 
-void memory_allocating_request::set_expect(const mime_handler&,
+bool memory_allocating_request::set_expect(const mime_handler&, char_t*,
                                            const char_t* value_string, size_t)
 {
     static const char_t continue_str[] = "100-continue";
@@ -527,25 +542,29 @@ void memory_allocating_request::set_expect(const mime_handler&,
     if (0 == ::strncasecmp(value_string, continue_str, continue_size)) {
         expect_ = http_expectation::CONTINUE;
     }
+    return true;
 }
 
-void memory_allocating_request::set_from(const mime_handler&,
+bool memory_allocating_request::set_from(const mime_handler&, char_t*,
                                          const char_t* value_string, size_t)
 {
     from_ = value_string;
+    return true;
 }
 
-void memory_allocating_request::set_referer(const mime_handler&,
+bool memory_allocating_request::set_referer(const mime_handler&, char_t*,
                                             const char_t* value_string, size_t)
 {
     referer_ = value_string;
+    return true;
 }
 
-void memory_allocating_request::set_user_agent(const mime_handler&,
+bool memory_allocating_request::set_user_agent(const mime_handler&, char_t*,
                                                const char_t* value_string,
                                                size_t)
 {
     user_agent_ = value_string;
+    return true;
 }
 
 bool memory_allocating_request::is_whitespace(const int32_t ch)

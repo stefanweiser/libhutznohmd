@@ -55,6 +55,9 @@ enum class header_key : int8_t {
     //! From kind.
     FROM,
 
+    //! Host kind.
+    HOST,
+
     //! Referer kind.
     REFERER,
 
@@ -149,39 +152,40 @@ private:
 
     //! Parses a header utilizing the lexer member. Returns true, if a header
     //! could successfully get parsed. Returning false means, that the lexer has
-    //! reached the end of the file. The in/out parameter c is -1 in this case.
+    //! reached the end of the file. The in/out parameter ch is -1 in this case.
     bool parse_header(const mime_handler& handler, int32_t& ch);
 
-    void set_header(const mime_handler& handler, header_key key,
-                    const char_t* const key_string, const char_t* value_string,
+    bool set_header(const mime_handler& handler, header_key key,
+                    char_t* const key_string, const char_t* value_string,
                     size_t value_length);
 
-    void set_connection(const mime_handler& handler, const char_t* value_string,
-                        size_t value_length);
+    bool set_connection(const mime_handler& handler, char_t* key_string,
+                        const char_t* value_string, size_t value_length);
 
-    void set_content_length(const mime_handler& handler,
+    bool set_content_length(const mime_handler& handler, char_t* key_string,
                             const char_t* value_string, size_t value_length);
 
-    void set_content_md5(const mime_handler& handler,
+    bool set_content_md5(const mime_handler& handler, char_t* key_string,
                          const char_t* value_string, size_t value_length);
 
-    void set_content_type(const mime_handler& handler,
+    bool set_content_type(const mime_handler& handler, char_t* key_string,
                           const char_t* value_string, size_t value_length);
 
-    void set_date(const mime_handler& handler, const char_t* value_string,
-                  size_t value_length);
+    bool set_date(const mime_handler& handler, char_t* key_string,
+                  const char_t* value_string, size_t value_length);
 
-    void set_expect(const mime_handler& handler, const char_t* value_string,
-                    size_t value_length);
+    bool set_expect(const mime_handler& handler, char_t* key_string,
+                    const char_t* value_string, size_t value_length);
 
-    void set_from(const mime_handler& handler, const char_t* value_string,
-                  size_t value_length);
+    bool set_from(const mime_handler& handler, char_t* key_string,
+                  const char_t* value_string, size_t value_length);
 
-    void set_referer(const mime_handler& handler, const char_t* value_string,
-                     size_t value_length);
 
-    void set_user_agent(const mime_handler& handler, const char_t* value_string,
-                        size_t value_length);
+    bool set_referer(const mime_handler& handler, char_t* key_string,
+                     const char_t* value_string, size_t value_length);
+
+    bool set_user_agent(const mime_handler& handler, char_t* key_string,
+                        const char_t* value_string, size_t value_length);
 
     static bool is_whitespace(const int32_t ch);
     static bool is_newline(const int32_t ch);
@@ -199,7 +203,7 @@ private:
     mime content_type_;
     const void* content_;
     bool is_keep_alive_set_;
-    time_t date_;
+    epoch_time_t date_;
     http_expectation expect_;
     const char_t* from_;
     const char_t* referer_;
