@@ -22,6 +22,7 @@
 #include <map>
 
 #include "libhutznohmd/request.hpp"
+#include "request/accept_parser.hpp"
 #include "request/lexer.hpp"
 #include "request/mime_handler.hpp"
 #include "request/uri.hpp"
@@ -33,6 +34,9 @@ namespace hutzn
 enum class header_key : int8_t {
     //! Defines a customized kind that must contain the concrete string.
     CUSTOM = -1,
+
+    //! Accept kind.
+    ACCEPT,
 
     //! Connection kind.
     CONNECTION,
@@ -159,35 +163,39 @@ private:
                     char_t* const key_string, const char_t* value_string,
                     size_t value_length);
 
-    bool set_connection(const mime_handler& handler, char_t* key_string,
-                        const char_t* value_string, size_t value_length);
+    bool set_accept(const mime_handler& handler, char_t* const key_string,
+                    char_t* const value_string, size_t value_length);
 
-    bool set_content_length(const mime_handler& handler, char_t* key_string,
-                            const char_t* value_string, size_t value_length);
+    bool set_connection(const mime_handler& handler, char_t* const key_string,
+                        char_t* const value_string, size_t value_length);
 
-    bool set_content_md5(const mime_handler& handler, char_t* key_string,
-                         const char_t* value_string, size_t value_length);
+    bool set_content_length(const mime_handler& handler,
+                            char_t* const key_string,
+                            char_t* const value_string, size_t value_length);
 
-    bool set_content_type(const mime_handler& handler, char_t* key_string,
-                          const char_t* value_string, size_t value_length);
+    bool set_content_md5(const mime_handler& handler, char_t* const key_string,
+                         char_t* const value_string, size_t value_length);
 
-    bool set_date(const mime_handler& handler, char_t* key_string,
-                  const char_t* value_string, size_t value_length);
+    bool set_content_type(const mime_handler& handler, char_t* const key_string,
+                          char_t* const value_string, size_t value_length);
 
-    bool set_expect(const mime_handler& handler, char_t* key_string,
-                    const char_t* value_string, size_t value_length);
+    bool set_date(const mime_handler& handler, char_t* const key_string,
+                  char_t* const value_string, size_t value_length);
 
-    bool set_from(const mime_handler& handler, char_t* key_string,
-                  const char_t* value_string, size_t value_length);
+    bool set_expect(const mime_handler& handler, char_t* const key_string,
+                    char_t* const value_string, size_t value_length);
 
-    bool set_host(const mime_handler& handler, char_t* key_string,
-                  const char_t* value_string, size_t value_length);
+    bool set_from(const mime_handler& handler, char_t* const key_string,
+                  char_t* const value_string, size_t value_length);
 
-    bool set_referer(const mime_handler& handler, char_t* key_string,
-                     const char_t* value_string, size_t value_length);
+    bool set_host(const mime_handler& handler, char_t* const key_string,
+                  char_t* const value_string, size_t value_length);
 
-    bool set_user_agent(const mime_handler& handler, char_t* key_string,
-                        const char_t* value_string, size_t value_length);
+    bool set_referer(const mime_handler& handler, char_t* const key_string,
+                     char_t* const value_string, size_t value_length);
+
+    bool set_user_agent(const mime_handler& handler, char_t* const key_string,
+                        char_t* const value_string, size_t value_length);
 
     static bool is_whitespace(const int32_t ch);
     static bool is_newline(const int32_t ch);
@@ -199,6 +207,7 @@ private:
     uri path_uri_;
     http_version version_;
 
+    accept_parser accept_;
     size_t content_length_;
     const char_t* content_md5_;
     size_t content_md5_length_;

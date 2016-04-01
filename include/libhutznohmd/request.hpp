@@ -842,12 +842,12 @@ public:
 
     //! Gives its user access to a list of MIME types and subtype in the accept
     //! header. To get the first item, the user has to initialize the handle
-    //! with a NULL. The handle will point to the current item after each
-    //! call. To get the next item just recall it. The function returns false,
-    //! if the end of the list is reached and true in any other case. Till the
-    //! end of the function is reached, the parameters are getting modified by
-    //! the call. This functionality is mainly used by the demultiplexer, that
-    //! tries to find the best request handler for the request.
+    //! with NULL. The handle will point to the current item after each call.
+    //! To get the next item just recall it. The function returns false, if the
+    //! end of the list is reached and true in any other case. Till the end of
+    //! the function is reached, the parameters are getting modified by the
+    //! call. This functionality is mainly used by the demultiplexer, that tries
+    //! to find the best request handler for the request.
     //!
     //! @code{.cpp}
     //! void* handle = NULL;

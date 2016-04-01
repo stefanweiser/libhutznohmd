@@ -50,6 +50,8 @@ SET(FILES   "${PROJECT_SOURCE_DIR}/include/hutzn.hpp"
             libhutznohmd/communication.cpp
             libhutznohmd/demux.cpp
             libhutznohmd/request.cpp
+            request/accept_parser.cpp
+            request/accept_parser.hpp
             request/base64.cpp
             request/base64.hpp
             request/lexer.cpp

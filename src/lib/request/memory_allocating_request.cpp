@@ -83,7 +83,8 @@ static trie<header_key> get_header_key_trie(size_t& max_size)
     // filling versions and automatically calculate the maximum length
     max_size = 0;
     const std::vector<std::pair<const char_t* const, header_key>> header_keys =
-        {std::make_pair("connection", header_key::CONNECTION),
+        {std::make_pair("accept", header_key::ACCEPT),
+         std::make_pair("connection", header_key::CONNECTION),
          std::make_pair("content-length", header_key::CONTENT_LENGTH),
          std::make_pair("content-md5", header_key::CONTENT_MD5),
          std::make_pair("content-type", header_key::CONTENT_TYPE),
@@ -129,6 +130,7 @@ memory_allocating_request::memory_allocating_request(
     , method_(http_verb::GET)
     , path_uri_()
     , version_(http_version::HTTP_UNKNOWN)
+    , accept_()
     , content_length_(0)
     , content_md5_(NULL)
     , content_md5_length_(0)
@@ -278,9 +280,9 @@ mime memory_allocating_request::content_type(void) const
     return content_type_;
 }
 
-bool memory_allocating_request::accept(void*& /*handle*/, mime& /*type*/) const
+bool memory_allocating_request::accept(void*& handle, mime& type) const
 {
-    return false;
+    return accept_.next_value(handle, type);
 }
 
 http_expectation memory_allocating_request::expect(void) const
@@ -432,7 +434,7 @@ bool memory_allocating_request::parse_header(const mime_handler& handler,
 
     ch = lexer_.get();
     const size_t value_begin = lexer_.prev_index();
-    const char_t* value = lexer_.header_data(value_begin);
+    char_t* value = lexer_.header_data(value_begin);
 
     // the value of -1 signalizes end of file
     while (ch >= 0) {
@@ -460,12 +462,13 @@ bool memory_allocating_request::set_header(const mime_handler& handler,
                                            size_t value_length)
 {
     using set_header_functor =
-        bool (memory_allocating_request::*)(const mime_handler&, char_t*,
-                                            const char_t*, size_t);
+        bool (memory_allocating_request::*)(const mime_handler&, char_t* const,
+                                            char_t* const, size_t);
     using header_fn_array =
         std::array<set_header_functor, static_cast<size_t>(header_key::SIZE)>;
     static const header_fn_array set_header_fns = {
-        {&memory_allocating_request::set_connection,
+        {&memory_allocating_request::set_accept,
+         &memory_allocating_request::set_connection,
          &memory_allocating_request::set_content_length,
          &memory_allocating_request::set_content_md5,
          &memory_allocating_request::set_content_type,
@@ -480,7 +483,8 @@ bool memory_allocating_request::set_header(const mime_handler& handler,
     bool result;
     if ((key > header_key::CUSTOM) && (key < header_key::SIZE)) {
         const set_header_functor fn = set_header_fns[static_cast<size_t>(key)];
-        result = (this->*fn)(handler, key_string, value_string, value_length);
+        result = (this->*fn)(handler, key_string,
+                             const_cast<char_t*>(value_string), value_length);
     } else {
         header_fields_[key_string] = value_string;
         result = true;
@@ -488,8 +492,16 @@ bool memory_allocating_request::set_header(const mime_handler& handler,
     return result;
 }
 
-bool memory_allocating_request::set_connection(const mime_handler&, char_t*,
-                                               const char_t* value_string,
+bool memory_allocating_request::set_accept(const mime_handler&, char_t* const,
+                                           char_t* const value_string,
+                                           size_t value_length)
+{
+    return accept_.parse(value_string, value_length);
+}
+
+bool memory_allocating_request::set_connection(const mime_handler&,
+                                               char_t* const,
+                                               char_t* const value_string,
                                                size_t value_length)
 {
     static const char_t keep_alive_str[] = "keep-alive";
@@ -503,13 +515,15 @@ bool memory_allocating_request::set_connection(const mime_handler&, char_t*,
     return true;
 }
 
-bool memory_allocating_request::set_content_length(const mime_handler&, char_t*,
-                                                   const char_t* value_string,
+bool memory_allocating_request::set_content_length(const mime_handler&,
+                                                   char_t* const,
+                                                   char_t* const value_string,
                                                    size_t value_length)
 {
     bool result = false;
+    const char_t* value_pointer_copy = value_string;
     const int64_t length =
-        parse_unsigned_integer<int64_t>(value_string, value_length);
+        parse_unsigned_integer<int64_t>(value_pointer_copy, value_length);
     if (length >= 0) {
         content_length_ = static_cast<size_t>(length);
         result = true;
@@ -517,8 +531,9 @@ bool memory_allocating_request::set_content_length(const mime_handler&, char_t*,
     return result;
 }
 
-bool memory_allocating_request::set_content_md5(const mime_handler&, char_t*,
-                                                const char_t* value_string,
+bool memory_allocating_request::set_content_md5(const mime_handler&,
+                                                char_t* const,
+                                                char_t* const value_string,
                                                 size_t value_length)
 {
     content_md5_ = value_string;
@@ -527,8 +542,8 @@ bool memory_allocating_request::set_content_md5(const mime_handler&, char_t*,
 }
 
 bool memory_allocating_request::set_content_type(const mime_handler& handler,
-                                                 char_t*,
-                                                 const char_t* value_string,
+                                                 char_t* const,
+                                                 char_t* const value_string,
                                                  size_t value_length)
 {
     content_type_ = handler.parse(value_string, value_length);
@@ -536,8 +551,8 @@ bool memory_allocating_request::set_content_type(const mime_handler& handler,
             (content_type_.second != mime_subtype::INVALID));
 }
 
-bool memory_allocating_request::set_date(const mime_handler&, char_t*,
-                                         const char_t* value_string,
+bool memory_allocating_request::set_date(const mime_handler&, char_t* const,
+                                         char_t* const value_string,
                                          size_t value_length)
 {
     epoch_time_t parsed_date = parse_timestamp(value_string, value_length);
@@ -547,8 +562,8 @@ bool memory_allocating_request::set_date(const mime_handler&, char_t*,
     return (parsed_date >= 0);
 }
 
-bool memory_allocating_request::set_expect(const mime_handler&, char_t*,
-                                           const char_t* value_string, size_t)
+bool memory_allocating_request::set_expect(const mime_handler&, char_t* const,
+                                           char_t* const value_string, size_t)
 {
     static const char_t continue_str[] = "100-continue";
     static const size_t continue_size = sizeof(continue_str);
@@ -560,31 +575,32 @@ bool memory_allocating_request::set_expect(const mime_handler&, char_t*,
     return true;
 }
 
-bool memory_allocating_request::set_from(const mime_handler&, char_t*,
-                                         const char_t* value_string, size_t)
+bool memory_allocating_request::set_from(const mime_handler&, char_t* const,
+                                         char_t* const value_string, size_t)
 {
     from_ = value_string;
     return true;
 }
 
 bool memory_allocating_request::set_host(const mime_handler&,
-                                         char_t* key_string,
-                                         const char_t* value_string,
+                                         char_t* const key_string,
+                                         char_t* const value_string,
                                          size_t value_length)
 {
     return host_uri_.parse(value_string, value_length, key_string,
                            value_length + 5, true);
 }
 
-bool memory_allocating_request::set_referer(const mime_handler&, char_t*,
-                                            const char_t* value_string, size_t)
+bool memory_allocating_request::set_referer(const mime_handler&, char_t* const,
+                                            char_t* const value_string, size_t)
 {
     referer_ = value_string;
     return true;
 }
 
-bool memory_allocating_request::set_user_agent(const mime_handler&, char_t*,
-                                               const char_t* value_string,
+bool memory_allocating_request::set_user_agent(const mime_handler&,
+                                               char_t* const,
+                                               char_t* const value_string,
                                                size_t)
 {
     user_agent_ = value_string;
