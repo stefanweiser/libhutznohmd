@@ -425,6 +425,186 @@ TEST_F(memory_allocating_request_test, request_with_from)
     EXPECT_STREQ(NULL, r.user_agent());
 }
 
+TEST_F(memory_allocating_request_test, request_with_host)
+{
+    memory_allocating_request r{connection_};
+    setup_receive("GET / HTTP/1.1\r\nHost: example.com\r\n\r\n");
+    ASSERT_TRUE(r.parse(handler_));
+
+    EXPECT_EQ(http_verb::GET, r.method());
+    EXPECT_STREQ("/", r.path());
+    EXPECT_STREQ("example.com", r.host());
+    EXPECT_STREQ(NULL, r.query(NULL));
+    EXPECT_STREQ(NULL, r.fragment());
+    EXPECT_EQ(http_version::HTTP_1_1, r.version());
+    EXPECT_STREQ(NULL, r.header_value(NULL));
+    EXPECT_EQ(true, r.keeps_connection());
+    EXPECT_EQ(0, r.date());
+    EXPECT_EQ(NULL, r.content());
+    EXPECT_EQ(0, r.content_length());
+    EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
+              r.content_type());
+
+    void* handle = NULL;
+    mime m{mime_type::INVALID, mime_subtype::INVALID};
+    EXPECT_EQ(false, r.accept(handle, m));
+
+    EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
+    EXPECT_STREQ(NULL, r.from());
+    EXPECT_STREQ(NULL, r.referer());
+    EXPECT_STREQ(NULL, r.user_agent());
+}
+
+TEST_F(memory_allocating_request_test, request_with_path)
+{
+    memory_allocating_request r{connection_};
+    setup_receive("GET example.com HTTP/1.1\r\nHost: /\r\n\r\n");
+    ASSERT_TRUE(r.parse(handler_));
+
+    EXPECT_EQ(http_verb::GET, r.method());
+    EXPECT_STREQ("/", r.path());
+    EXPECT_STREQ("example.com", r.host());
+    EXPECT_STREQ(NULL, r.query(NULL));
+    EXPECT_STREQ(NULL, r.fragment());
+    EXPECT_EQ(http_version::HTTP_1_1, r.version());
+    EXPECT_STREQ(NULL, r.header_value(NULL));
+    EXPECT_EQ(true, r.keeps_connection());
+    EXPECT_EQ(0, r.date());
+    EXPECT_EQ(NULL, r.content());
+    EXPECT_EQ(0, r.content_length());
+    EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
+              r.content_type());
+
+    void* handle = NULL;
+    mime m{mime_type::INVALID, mime_subtype::INVALID};
+    EXPECT_EQ(false, r.accept(handle, m));
+
+    EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
+    EXPECT_STREQ(NULL, r.from());
+    EXPECT_STREQ(NULL, r.referer());
+    EXPECT_STREQ(NULL, r.user_agent());
+}
+
+TEST_F(memory_allocating_request_test, request_with_fragment)
+{
+    memory_allocating_request r{connection_};
+    setup_receive("GET / HTTP/1.1\r\nHost: #head\r\n\r\n");
+    ASSERT_TRUE(r.parse(handler_));
+
+    EXPECT_EQ(http_verb::GET, r.method());
+    EXPECT_STREQ("/", r.path());
+    EXPECT_STREQ(NULL, r.host());
+    EXPECT_STREQ(NULL, r.query(NULL));
+    EXPECT_STREQ("head", r.fragment());
+    EXPECT_EQ(http_version::HTTP_1_1, r.version());
+    EXPECT_STREQ(NULL, r.header_value(NULL));
+    EXPECT_EQ(true, r.keeps_connection());
+    EXPECT_EQ(0, r.date());
+    EXPECT_EQ(NULL, r.content());
+    EXPECT_EQ(0, r.content_length());
+    EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
+              r.content_type());
+
+    void* handle = NULL;
+    mime m{mime_type::INVALID, mime_subtype::INVALID};
+    EXPECT_EQ(false, r.accept(handle, m));
+
+    EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
+    EXPECT_STREQ(NULL, r.from());
+    EXPECT_STREQ(NULL, r.referer());
+    EXPECT_STREQ(NULL, r.user_agent());
+}
+
+TEST_F(memory_allocating_request_test, request_with_hidden_host)
+{
+    memory_allocating_request r{connection_};
+    setup_receive("GET example.com HTTP/1.1\r\nHost: example2.com\r\n\r\n");
+    ASSERT_TRUE(r.parse(handler_));
+
+    EXPECT_EQ(http_verb::GET, r.method());
+    EXPECT_STREQ(NULL, r.path());
+    EXPECT_STREQ("example.com", r.host());
+    EXPECT_STREQ(NULL, r.query(NULL));
+    EXPECT_STREQ(NULL, r.fragment());
+    EXPECT_EQ(http_version::HTTP_1_1, r.version());
+    EXPECT_STREQ(NULL, r.header_value(NULL));
+    EXPECT_EQ(true, r.keeps_connection());
+    EXPECT_EQ(0, r.date());
+    EXPECT_EQ(NULL, r.content());
+    EXPECT_EQ(0, r.content_length());
+    EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
+              r.content_type());
+
+    void* handle = NULL;
+    mime m{mime_type::INVALID, mime_subtype::INVALID};
+    EXPECT_EQ(false, r.accept(handle, m));
+
+    EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
+    EXPECT_STREQ(NULL, r.from());
+    EXPECT_STREQ(NULL, r.referer());
+    EXPECT_STREQ(NULL, r.user_agent());
+}
+
+TEST_F(memory_allocating_request_test, request_with_hidden_host_path)
+{
+    memory_allocating_request r{connection_};
+    setup_receive("GET / HTTP/1.1\r\nHost: example.com/test\r\n\r\n");
+    ASSERT_TRUE(r.parse(handler_));
+
+    EXPECT_EQ(http_verb::GET, r.method());
+    EXPECT_STREQ("/", r.path());
+    EXPECT_STREQ("example.com", r.host());
+    EXPECT_STREQ(NULL, r.query(NULL));
+    EXPECT_STREQ(NULL, r.fragment());
+    EXPECT_EQ(http_version::HTTP_1_1, r.version());
+    EXPECT_STREQ(NULL, r.header_value(NULL));
+    EXPECT_EQ(true, r.keeps_connection());
+    EXPECT_EQ(0, r.date());
+    EXPECT_EQ(NULL, r.content());
+    EXPECT_EQ(0, r.content_length());
+    EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
+              r.content_type());
+
+    void* handle = NULL;
+    mime m{mime_type::INVALID, mime_subtype::INVALID};
+    EXPECT_EQ(false, r.accept(handle, m));
+
+    EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
+    EXPECT_STREQ(NULL, r.from());
+    EXPECT_STREQ(NULL, r.referer());
+    EXPECT_STREQ(NULL, r.user_agent());
+}
+
+TEST_F(memory_allocating_request_test, request_with_hidden_host_fragment)
+{
+    memory_allocating_request r{connection_};
+    setup_receive("GET /#head HTTP/1.1\r\nHost: example.com/#tail\r\n\r\n");
+    ASSERT_TRUE(r.parse(handler_));
+
+    EXPECT_EQ(http_verb::GET, r.method());
+    EXPECT_STREQ("/", r.path());
+    EXPECT_STREQ("example.com", r.host());
+    EXPECT_STREQ(NULL, r.query(NULL));
+    EXPECT_STREQ("head", r.fragment());
+    EXPECT_EQ(http_version::HTTP_1_1, r.version());
+    EXPECT_STREQ(NULL, r.header_value(NULL));
+    EXPECT_EQ(true, r.keeps_connection());
+    EXPECT_EQ(0, r.date());
+    EXPECT_EQ(NULL, r.content());
+    EXPECT_EQ(0, r.content_length());
+    EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
+              r.content_type());
+
+    void* handle = NULL;
+    mime m{mime_type::INVALID, mime_subtype::INVALID};
+    EXPECT_EQ(false, r.accept(handle, m));
+
+    EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
+    EXPECT_STREQ(NULL, r.from());
+    EXPECT_STREQ(NULL, r.referer());
+    EXPECT_STREQ(NULL, r.user_agent());
+}
+
 TEST_F(memory_allocating_request_test, request_with_referer)
 {
     memory_allocating_request r{connection_};
