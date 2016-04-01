@@ -340,7 +340,10 @@ bool uri::parse_1st_pass(const char_t* source, size_t source_length,
             skip_optional_slashes(source, source_length);
             authority_data = destination;
         } else {
-            unconsume_one_character(destination, destination_length);
+            // unconsume one character when a user:password phrase was found
+            if (':' == (*source)) {
+                unconsume_one_character(destination, destination_length);
+            }
             authority_data = scheme_or_authority_data;
         }
 
@@ -349,11 +352,11 @@ bool uri::parse_1st_pass(const char_t* source, size_t source_length,
             length += parse_uri_word(source, source_length, destination,
                                      destination_length, '/', '?', '#', ' ',
                                      '\t', '\r', '\n', '\0');
+        }
 
-            if (length > 0) {
-                data.authority = authority_data;
-                data.authority_size = length;
-            }
+        if (length > 0) {
+            data.authority = authority_data;
+            data.authority_size = length;
         }
     }
 

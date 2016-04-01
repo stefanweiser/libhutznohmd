@@ -457,6 +457,20 @@ TEST_F(uri_test, erroneous_port_2)
     EXPECT_STREQ(NULL, u->fragment());
 }
 
+TEST_F(uri_test, localhost_with_path)
+{
+    std::string source = "localhost/x";
+    std::string destination(source.size() + maximum_uri_enlargement, ' ');
+    const std::unique_ptr<uri> u = check_parse(source, destination, true, true);
+    EXPECT_EQ(uri_scheme::UNKNOWN, u->scheme());
+    EXPECT_STREQ(NULL, u->userinfo());
+    EXPECT_STREQ("localhost", u->host());
+    EXPECT_EQ(0, u->port());
+    EXPECT_STREQ("/x", u->path());
+    EXPECT_STREQ(NULL, u->query());
+    EXPECT_STREQ(NULL, u->fragment());
+}
+
 TEST_F(uri_test, userinfo_at_localhost)
 {
     std::string source = "user:pass@localhost/x";
