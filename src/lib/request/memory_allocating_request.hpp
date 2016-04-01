@@ -40,6 +40,9 @@ enum class header_key : int8_t {
     //! Content-Length kind.
     CONTENT_LENGTH,
 
+    //! Conent-MD5 kind.
+    CONTENT_MD5,
+
     //! Connection-Type kind.
     CONTENT_TYPE,
 
@@ -86,7 +89,7 @@ public:
     bool parse(const mime_handler& handler);
 
     //! @copydoc request::fetch_content()
-    void fetch_content(void) override;
+    bool fetch_content(void) override;
 
     //! @copydoc request::method()
     http_verb method(void) const override;
@@ -159,6 +162,9 @@ private:
     void set_content_length(const mime_handler& handler,
                             const char_t* value_string, size_t value_length);
 
+    void set_content_md5(const mime_handler& handler,
+                         const char_t* value_string, size_t value_length);
+
     void set_content_type(const mime_handler& handler,
                           const char_t* value_string, size_t value_length);
 
@@ -188,6 +194,8 @@ private:
     http_version version_;
 
     size_t content_length_;
+    const char_t* content_md5_;
+    size_t content_md5_length_;
     mime content_type_;
     const void* content_;
     bool is_keep_alive_set_;

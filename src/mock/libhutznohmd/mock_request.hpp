@@ -29,7 +29,7 @@ namespace hutzn
 class request_mock : public request
 {
 public:
-    MOCK_METHOD0(fetch_content, void(void));
+    MOCK_METHOD0(fetch_content, bool(void));
     MOCK_CONST_METHOD0(method, http_verb(void));
     MOCK_CONST_METHOD0(path, const char_t*(void));
     MOCK_CONST_METHOD0(host, const char_t*(void));

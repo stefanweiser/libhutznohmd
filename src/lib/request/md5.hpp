@@ -21,7 +21,6 @@
 
 #include <array>
 #include <cstdint>
-#include <vector>
 
 #include "libhutznohmd/types.hpp"
 

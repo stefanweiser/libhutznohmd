@@ -22,6 +22,8 @@
 #include <cstring>
 #include <limits>
 
+#include "request/base64.hpp"
+#include "request/md5.hpp"
 #include "request/mime_handler.hpp"
 #include "request/timestamp.hpp"
 #include "utility/parsing.hpp"
@@ -83,6 +85,7 @@ static trie<header_key> get_header_key_trie(size_t& max_size)
     const std::vector<std::pair<const char_t* const, header_key>> header_keys =
         {std::make_pair("connection", header_key::CONNECTION),
          std::make_pair("content-length", header_key::CONTENT_LENGTH),
+         std::make_pair("content-md5", header_key::CONTENT_MD5),
          std::make_pair("content-type", header_key::CONTENT_TYPE),
          std::make_pair("date", header_key::DATE),
          std::make_pair("from", header_key::FROM),
@@ -126,6 +129,8 @@ memory_allocating_request::memory_allocating_request(
     , path_uri_()
     , version_(http_version::HTTP_UNKNOWN)
     , content_length_(0)
+    , content_md5_(NULL)
+    , content_md5_length_(0)
     , content_type_(mime_type::INVALID, mime_subtype::INVALID)
     , content_(NULL)
     , is_keep_alive_set_(false)
@@ -163,12 +168,29 @@ bool memory_allocating_request::parse(const mime_handler& handler)
     return result;
 }
 
-void memory_allocating_request::fetch_content(void)
+bool memory_allocating_request::fetch_content(void)
 {
+    bool result = true;
+
     const size_t length = content_length();
     if ((length > 0) && (lexer_.fetch_content(length))) {
         content_ = lexer_.content();
     }
+
+    if (NULL != content_md5_) {
+        md5_array md5_sum = calculate_md5(static_cast<const char_t*>(content_),
+                                          content_length_);
+        std::vector<uint8_t> expected_md5_sum =
+            decode_base64(content_md5_, content_md5_length_);
+        const bool md5_sum_valid = std::equal(md5_sum.begin(), md5_sum.end(),
+                                              expected_md5_sum.begin());
+        if (!md5_sum_valid) {
+            content_ = NULL;
+            result = false;
+        }
+    }
+
+    return result;
 }
 
 http_verb memory_allocating_request::method(void) const
@@ -431,6 +453,7 @@ void memory_allocating_request::set_header(const mime_handler& handler,
     static const header_fn_array set_header_fns = {
         {&memory_allocating_request::set_connection,
          &memory_allocating_request::set_content_length,
+         &memory_allocating_request::set_content_md5,
          &memory_allocating_request::set_content_type,
          &memory_allocating_request::set_date,
          &memory_allocating_request::set_expect,
@@ -470,6 +493,14 @@ void memory_allocating_request::set_content_length(const mime_handler&,
     if (length >= 0) {
         content_length_ = static_cast<size_t>(length);
     }
+}
+
+void memory_allocating_request::set_content_md5(const mime_handler&,
+                                                const char_t* value_string,
+                                                size_t value_length)
+{
+    content_md5_ = value_string;
+    content_md5_length_ = value_length;
 }
 
 void memory_allocating_request::set_content_type(const mime_handler& handler,

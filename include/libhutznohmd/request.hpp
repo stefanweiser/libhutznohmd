@@ -780,9 +780,12 @@ public:
     //! Virtual destructor.
     virtual ~request(void) noexcept(true);
 
-    //! Fetches the content, which is not fetched by the request processor. Call
-    //! it at least one time before calling @ref request::content.
-    virtual void fetch_content(void) = 0;
+    //! Fetches the content, which is not already fetched by the request
+    //! processor. Call it at least one time before calling @ref
+    //! request::content.
+    //! @return Returns false, when an optional md5 fails to suuceed content
+    //!         validation and true in any other case.
+    virtual bool fetch_content(void) = 0;
 
     //! Returns the HTTP verb used by the request (GET, PUT, DELETE or POST are
     //! allowed).
