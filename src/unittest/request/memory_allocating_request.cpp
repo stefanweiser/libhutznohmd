@@ -144,9 +144,85 @@ TEST_F(memory_allocating_request_test, request_with_content)
     // fetch_content() will set the content's result.
     EXPECT_EQ(12, r.content_length());
     EXPECT_EQ(NULL, r.content());
-    r.fetch_content();
+    EXPECT_TRUE(r.fetch_content());
     EXPECT_EQ(12, r.content_length());
     EXPECT_EQ(0, memcmp("Hello World!", r.content(), r.content_length()));
+
+    EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
+              r.content_type());
+
+    void* handle = NULL;
+    mime m{mime_type::INVALID, mime_subtype::INVALID};
+    EXPECT_EQ(false, r.accept(handle, m));
+
+    EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
+    EXPECT_STREQ(NULL, r.from());
+    EXPECT_STREQ(NULL, r.referer());
+    EXPECT_STREQ(NULL, r.user_agent());
+}
+
+TEST_F(memory_allocating_request_test, request_with_content_and_checksum)
+{
+    memory_allocating_request r{connection_};
+    setup_receive(
+        "GET / HTTP/1.1\r\nContent-Length: 12\r\nContent-MD5: "
+        "7Qdih1MuhjZehB6Sv8UNjA==\r\n\r\nHello World!");
+    ASSERT_TRUE(r.parse(handler_));
+
+    EXPECT_EQ(http_verb::GET, r.method());
+    EXPECT_STREQ("/", r.path());
+    EXPECT_STREQ(NULL, r.host());
+    EXPECT_STREQ(NULL, r.query(NULL));
+    EXPECT_STREQ(NULL, r.fragment());
+    EXPECT_EQ(http_version::HTTP_1_1, r.version());
+    EXPECT_STREQ(NULL, r.header_value(NULL));
+    EXPECT_EQ(true, r.keeps_connection());
+    EXPECT_EQ(0, r.date());
+
+    // fetch_content() will set the content's result.
+    EXPECT_EQ(12, r.content_length());
+    EXPECT_EQ(NULL, r.content());
+    EXPECT_TRUE(r.fetch_content());
+    EXPECT_EQ(12, r.content_length());
+    EXPECT_EQ(0, memcmp("Hello World!", r.content(), r.content_length()));
+
+    EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
+              r.content_type());
+
+    void* handle = NULL;
+    mime m{mime_type::INVALID, mime_subtype::INVALID};
+    EXPECT_EQ(false, r.accept(handle, m));
+
+    EXPECT_EQ(http_expectation::UNKNOWN, r.expect());
+    EXPECT_STREQ(NULL, r.from());
+    EXPECT_STREQ(NULL, r.referer());
+    EXPECT_STREQ(NULL, r.user_agent());
+}
+
+TEST_F(memory_allocating_request_test, request_with_content_and_wrong_checksum)
+{
+    memory_allocating_request r{connection_};
+    setup_receive(
+        "GET / HTTP/1.1\r\nContent-Length: 12\r\nContent-MD5: "
+        "7Qeih1MuhjZehB6Sv8UNjA==\r\n\r\nHello World!");
+    ASSERT_TRUE(r.parse(handler_));
+
+    EXPECT_EQ(http_verb::GET, r.method());
+    EXPECT_STREQ("/", r.path());
+    EXPECT_STREQ(NULL, r.host());
+    EXPECT_STREQ(NULL, r.query(NULL));
+    EXPECT_STREQ(NULL, r.fragment());
+    EXPECT_EQ(http_version::HTTP_1_1, r.version());
+    EXPECT_STREQ(NULL, r.header_value(NULL));
+    EXPECT_EQ(true, r.keeps_connection());
+    EXPECT_EQ(0, r.date());
+
+    // fetch_content() will set the content's result.
+    EXPECT_EQ(12, r.content_length());
+    EXPECT_EQ(NULL, r.content());
+    EXPECT_FALSE(r.fetch_content());
+    EXPECT_EQ(12, r.content_length());
+    EXPECT_EQ(NULL, r.content());
 
     EXPECT_EQ(mime(mime_type::INVALID, mime_subtype::INVALID),
               r.content_type());
@@ -183,7 +259,7 @@ TEST_F(memory_allocating_request_test, request_with_content_type)
     EXPECT_EQ(12, r.content_length());
     EXPECT_EQ(mime(text_type_, plain_subtype_), r.content_type());
     EXPECT_EQ(NULL, r.content());
-    r.fetch_content();
+    EXPECT_TRUE(r.fetch_content());
     EXPECT_EQ(12, r.content_length());
     EXPECT_EQ(mime(text_type_, plain_subtype_), r.content_type());
     EXPECT_EQ(0, memcmp("Hello World!", r.content(), r.content_length()));

@@ -216,7 +216,7 @@ not present
 
 @subsubsection subsub_content_md5_implemented Implementation Status:
 
-unimplemented
+since 0.9.0
 
 @subsection sub_content_type Content-Type
 
