@@ -387,7 +387,7 @@ not present
 
 @subsubsection subsub_host_implemented Implementation Status:
 
-unimplemented
+since 0.9.0
 
 @subsection sub_referer Referer
 

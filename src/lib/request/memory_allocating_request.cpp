@@ -89,6 +89,7 @@ static trie<header_key> get_header_key_trie(size_t& max_size)
          std::make_pair("content-type", header_key::CONTENT_TYPE),
          std::make_pair("date", header_key::DATE),
          std::make_pair("from", header_key::FROM),
+         std::make_pair("host", header_key::HOST),
          std::make_pair("referer", header_key::REFERER),
          std::make_pair("user-agent", header_key::USER_AGENT)};
     for (const std::pair<const char_t* const, header_key>& pair : header_keys) {
@@ -133,6 +134,7 @@ memory_allocating_request::memory_allocating_request(
     , content_md5_length_(0)
     , content_type_(mime_type::INVALID, mime_subtype::INVALID)
     , content_(NULL)
+    , host_uri_()
     , is_keep_alive_set_(false)
     , date_(0)
     , expect_(http_expectation::UNKNOWN)
@@ -200,12 +202,20 @@ http_verb memory_allocating_request::method(void) const
 
 const char_t* memory_allocating_request::path(void) const
 {
-    return path_uri_.path();
+    const char_t* result = path_uri_.path();
+    if (NULL == result) {
+        result = host_uri_.path();
+    }
+    return result;
 }
 
 const char_t* memory_allocating_request::host(void) const
 {
-    return path_uri_.host();
+    const char_t* result = path_uri_.host();
+    if (NULL == result) {
+        result = host_uri_.host();
+    }
+    return result;
 }
 
 const char_t* memory_allocating_request::query(const char_t* const key) const
@@ -220,7 +230,11 @@ const char_t* memory_allocating_request::query(const char_t* const key) const
 
 const char_t* memory_allocating_request::fragment(void) const
 {
-    return path_uri_.fragment();
+    const char_t* result = path_uri_.fragment();
+    if (NULL == result) {
+        result = host_uri_.fragment();
+    }
+    return result;
 }
 
 http_version memory_allocating_request::version(void) const
@@ -458,6 +472,7 @@ bool memory_allocating_request::set_header(const mime_handler& handler,
          &memory_allocating_request::set_date,
          &memory_allocating_request::set_expect,
          &memory_allocating_request::set_from,
+         &memory_allocating_request::set_host,
          &memory_allocating_request::set_referer,
          &memory_allocating_request::set_user_agent}};
     skip_whitespace(value_string, value_length);
@@ -550,6 +565,15 @@ bool memory_allocating_request::set_from(const mime_handler&, char_t*,
 {
     from_ = value_string;
     return true;
+}
+
+bool memory_allocating_request::set_host(const mime_handler&,
+                                         char_t* key_string,
+                                         const char_t* value_string,
+                                         size_t value_length)
+{
+    return host_uri_.parse(value_string, value_length, key_string,
+                           value_length + 5, true);
 }
 
 bool memory_allocating_request::set_referer(const mime_handler&, char_t*,

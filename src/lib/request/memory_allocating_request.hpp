@@ -180,6 +180,8 @@ private:
     bool set_from(const mime_handler& handler, char_t* key_string,
                   const char_t* value_string, size_t value_length);
 
+    bool set_host(const mime_handler& handler, char_t* key_string,
+                  const char_t* value_string, size_t value_length);
 
     bool set_referer(const mime_handler& handler, char_t* key_string,
                      const char_t* value_string, size_t value_length);
@@ -202,6 +204,7 @@ private:
     size_t content_md5_length_;
     mime content_type_;
     const void* content_;
+    uri host_uri_;
     bool is_keep_alive_set_;
     epoch_time_t date_;
     http_expectation expect_;
