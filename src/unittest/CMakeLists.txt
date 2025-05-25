@@ -1,5 +1,5 @@
 # This file is part of libhutznohmd.
-# Copyright (C) 2013-2016 Stefan Weiser
+# Copyright (C) 2013-2025 Stefan Weiser
 #
 # The libhutznohmd project is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License as
@@ -39,16 +39,13 @@ SET(FILES   ../mock/demux/mock_handler_manager.hpp
             utility/select_char_map.cpp
             utility/trie.cpp)
 
-ADD_EXECUTABLE(unittest_hutznohmd ${FILES} ${GMOCK_FILES})
+ADD_EXECUTABLE(unittest_hutznohmd ${FILES})
 STYLE_FILES(unittest_hutznohmd ${FILES})
 
-SET_SOURCE_FILES_PROPERTIES(${GMOCK_FILES} PROPERTIES COMPILE_FLAGS -w)
-
-TARGET_LINK_LIBRARIES(unittest_hutznohmd hutznohmd)
+TARGET_LINK_LIBRARIES(unittest_hutznohmd hutznohmd gtest gmock gmock_main)
 INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/include")
 INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/src/lib")
 INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/src/mock")
 INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}")
-INCLUDE_DIRECTORIES(SYSTEM "${PROJECT_SOURCE_DIR}/gmock")
 
 INSTALL(TARGETS unittest_hutznohmd DESTINATION bin)

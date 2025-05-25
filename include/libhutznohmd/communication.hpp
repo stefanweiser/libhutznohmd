@@ -1,5 +1,5 @@
 /* This file is part of libhutznohmd.
- * Copyright (C) 2013-2016 Stefan Weiser
+ * Copyright (C) 2013-2025 Stefan Weiser
 
  * The libhutznohmd project is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -169,7 +169,7 @@ public:
     //! @brief Shuts the connection down.
     //!
     //! Shuts down if not already done and releases the allocated resources.
-    virtual ~connection(void) noexcept(true);
+    ~connection(void) noexcept(true) override;
 
     //! @brief Shuts down the connection, but remain holding the resources.
     //!

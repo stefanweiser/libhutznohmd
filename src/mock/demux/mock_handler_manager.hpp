@@ -1,5 +1,5 @@
 /* This file is part of libhutznohmd.
- * Copyright (C) 2013-2016 Stefan Weiser
+ * Copyright (C) 2013-2025 Stefan Weiser
 
  * The libhutznohmd project is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -29,10 +29,10 @@ namespace hutzn
 class handler_manager_mock : public handler_manager
 {
 public:
-    MOCK_METHOD1(disconnect, void(const request_handler_id&));
-    MOCK_METHOD1(disable, void(const request_handler_id&));
-    MOCK_METHOD1(enable, void(const request_handler_id&));
-    MOCK_CONST_METHOD1(is_enabled, bool(const request_handler_id&));
+    MOCK_METHOD(void, disconnect, (const request_handler_id&));
+    MOCK_METHOD(void, disable, (const request_handler_id&));
+    MOCK_METHOD(void, enable, (const request_handler_id&));
+    MOCK_METHOD(bool, is_enabled, (const request_handler_id&), (const));
 };
 
 using handler_manager_mock_ptr = std::shared_ptr<handler_manager_mock>;

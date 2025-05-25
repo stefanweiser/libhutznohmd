@@ -1,5 +1,5 @@
 /* This file is part of libhutznohmd.
- * Copyright (C) 2013-2016 Stefan Weiser
+ * Copyright (C) 2013-2025 Stefan Weiser
 
  * The libhutznohmd project is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -97,15 +97,16 @@ inline bool is_valid_url_path_character(char_t c)
         {false, false, false, false, false, false, false, false, false, false,
          false, false, false, false, false, false, false, false, false, false,
          false, false, false, false, false, false, false, false, false, false,
-         false, false, false, true, false, false, true, true, true, true, true,
-         true, true, true, true, true, true, true, true, true, true, true, true,
-         true, true, true, true, true, true, true, false, true, false, false,
-         true, true, true, true, true, true, true, true, true, true, true, true,
-         true, true, true, true, true, true, true, true, true, true, true, true,
-         true, true, true, true, false, true, false, true, false, true, true,
-         true, true, true, true, true, true, true, true, true, true, true, true,
-         true, true, true, true, true, true, true, true, true, true, true, true,
-         false, false, false, true, false, false, false, false, false, false,
+         false, false, false, true,  false, false, true,  true,  true,  true,
+         true,  true,  true,  true,  true,  true,  true,  true,  true,  true,
+         true,  true,  true,  true,  true,  true,  true,  true,  true,  true,
+         false, true,  false, false, true,  true,  true,  true,  true,  true,
+         true,  true,  true,  true,  true,  true,  true,  true,  true,  true,
+         true,  true,  true,  true,  true,  true,  true,  true,  true,  true,
+         true,  true,  false, true,  false, true,  false, true,  true,  true,
+         true,  true,  true,  true,  true,  true,  true,  true,  true,  true,
+         true,  true,  true,  true,  true,  true,  true,  true,  true,  true,
+         true,  true,  true,  false, false, false, true,  false, false, false,
          false, false, false, false, false, false, false, false, false, false,
          false, false, false, false, false, false, false, false, false, false,
          false, false, false, false, false, false, false, false, false, false,
@@ -118,7 +119,7 @@ inline bool is_valid_url_path_character(char_t c)
          false, false, false, false, false, false, false, false, false, false,
          false, false, false, false, false, false, false, false, false, false,
          false, false, false, false, false, false, false, false, false, false,
-         false, false, false}};
+         false, false, false, false, false, false}};
 
     static_assert(sizeof(char_t) == sizeof(uint8_t),
                   "sizes of char_t and uint8_t are not equal");

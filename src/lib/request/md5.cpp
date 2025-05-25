@@ -1,5 +1,5 @@
 /* This file is part of libhutznohmd.
- * Copyright (C) 2013-2016 Stefan Weiser
+ * Copyright (C) 2013-2025 Stefan Weiser
 
  * The libhutznohmd project is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -330,7 +330,7 @@ md5_array calculate_md5(const char_t* const data, const size_t size)
         const size_t bits_to_shift = (i % digest.size()) * bits_per_byte;
         result[i] = static_cast<uint8_t>(digest[index] >> bits_to_shift);
     }
-    return std::move(result);
+    return result;
 }
 
 } // namespace hutzn

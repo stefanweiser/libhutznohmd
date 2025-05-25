@@ -1,5 +1,5 @@
 /* This file is part of libhutznohmd.
- * Copyright (C) 2013-2016 Stefan Weiser
+ * Copyright (C) 2013-2025 Stefan Weiser
 
  * The libhutznohmd project is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include "libhutznohmd/mock_communication.hpp"
 #include "request/memory_allocating_request.hpp"

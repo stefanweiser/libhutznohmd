@@ -1,5 +1,5 @@
 /* This file is part of libhutznohmd.
- * Copyright (C) 2013-2016 Stefan Weiser
+ * Copyright (C) 2013-2025 Stefan Weiser
 
  * The libhutznohmd project is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -28,7 +28,7 @@ namespace hutzn
 {
 
 //! Number of bytes in a md5 sum.
-static const size_t md5_size = 16;
+static const std::size_t md5_size = 16;
 
 //! Type that stores a md5 sum.
 using md5_array = std::array<uint8_t, md5_size>;
@@ -39,7 +39,7 @@ using md5_array = std::array<uint8_t, md5_size>;
 //! @param[in] size Size of the data.
 //! @return         Array of 16 bytes, that contains the digest.
 //! @warning        This currently works only on little endian architectures.
-md5_array calculate_md5(const char_t* const data, const size_t size);
+md5_array calculate_md5(const char_t* const data, const std::size_t size);
 
 } // namespace hutzn
 

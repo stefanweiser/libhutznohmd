@@ -1,5 +1,5 @@
 /* This file is part of libhutznohmd.
- * Copyright (C) 2013-2016 Stefan Weiser
+ * Copyright (C) 2013-2025 Stefan Weiser
 
  * The libhutznohmd project is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -461,9 +461,8 @@ bool memory_allocating_request::set_header(const mime_handler& handler,
                                            const char_t* value_string,
                                            size_t value_length)
 {
-    using set_header_functor =
-        bool (memory_allocating_request::*)(const mime_handler&, char_t* const,
-                                            char_t* const, size_t);
+    using set_header_functor = bool (memory_allocating_request::*)(
+        const mime_handler&, char_t* const, char_t* const, size_t);
     using header_fn_array =
         std::array<set_header_functor, static_cast<size_t>(header_key::SIZE)>;
     static const header_fn_array set_header_fns = {

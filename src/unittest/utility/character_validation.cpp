@@ -1,5 +1,5 @@
 /* This file is part of libhutznohmd.
- * Copyright (C) 2013-2016 Stefan Weiser
+ * Copyright (C) 2013-2025 Stefan Weiser
 
  * The libhutznohmd project is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include "utility/character_validation.hpp"
 
@@ -68,8 +68,8 @@ std::vector<to_lower_test_param> get_all_to_lower_test_params()
     return result;
 }
 
-INSTANTIATE_TEST_CASE_P(character_handling, to_lower_test,
-                        ValuesIn(get_all_to_lower_test_params()));
+INSTANTIATE_TEST_SUITE_P(character_handling, to_lower_test,
+                         ValuesIn(get_all_to_lower_test_params()));
 
 TEST_P(to_lower_test, to_lower)
 {
@@ -117,8 +117,8 @@ std::vector<from_hex_test_param> get_all_from_hex_test_params()
     return result;
 }
 
-INSTANTIATE_TEST_CASE_P(character_handling, from_hex_test,
-                        ValuesIn(get_all_from_hex_test_params()));
+INSTANTIATE_TEST_SUITE_P(character_handling, from_hex_test,
+                         ValuesIn(get_all_from_hex_test_params()));
 
 TEST_P(from_hex_test, from_hex)
 {
@@ -152,15 +152,15 @@ std::vector<url_path_test_param> get_all_url_path_test_params()
         result[static_cast<size_t>(c)] = std::make_tuple(c, true);
     }
     for (const char_t c :
-         {'-', '.', '_', '~', '%', '!', '$', '&', '\'', '(', ')', '*', '+', ',',
-          ';', '=', ':', '/', '[', ']', '@'}) {
+         {'-', '.', '_', '~', '%', '!', '$', '&', '\'', '(', ')',
+          '*', '+', ',', ';', '=', ':', '/', '[', ']',  '@'}) {
         result[static_cast<size_t>(c)] = std::make_tuple(c, true);
     }
     return result;
 }
 
-INSTANTIATE_TEST_CASE_P(character_handling, url_path_test,
-                        ValuesIn(get_all_url_path_test_params()));
+INSTANTIATE_TEST_SUITE_P(character_handling, url_path_test,
+                         ValuesIn(get_all_url_path_test_params()));
 
 TEST_P(url_path_test, url_path)
 {

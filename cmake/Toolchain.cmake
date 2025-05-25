@@ -1,5 +1,5 @@
 # This file is part of libhutznohmd.
-# Copyright (C) 2013-2016 Stefan Weiser
+# Copyright (C) 2013-2025 Stefan Weiser
 #
 # The libhutznohmd project is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License as
@@ -21,7 +21,7 @@ IF(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR ("${CMAKE_CXX_COMPILER_ID}" 
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe")
 
     SET(ENABLE_THREADS "-pthread")
-    SET(USE_CXX11_FLAG "-std=c++11")
+    SET(USE_CXX11_FLAG "-std=c++17")
     SET(USE_SIGNED_CHAR_FLAG "-fsigned-char")
     SET(ENABLE_DEBUGGING_SYMBOLS "-g")
     SET(DISABLE_OPTIMIZATIONS "-O0")
@@ -34,7 +34,7 @@ IF(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang") OR ("${CMAKE_CXX_COMPILER_ID}" 
     SET(USE_STRICTEST_RULES_FLAG "-pedantic -pedantic-errors -Werror")
     IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         SET(USE_STRICTEST_RULES_FLAG "${USE_STRICTEST_RULES_FLAG} -Weverything")
-        SET(USE_STRICTEST_RULES_FLAG "${USE_STRICTEST_RULES_FLAG} -Wno-unused-function -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-exit-time-destructors -Wno-missing-prototypes -Wno-covered-switch-default -Wno-documentation-unknown-command")
+        SET(USE_STRICTEST_RULES_FLAG "${USE_STRICTEST_RULES_FLAG} -Wno-unused-function -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-exit-time-destructors -Wno-missing-prototypes -Wno-covered-switch-default -Wno-documentation-unknown-command -Wno-unsafe-buffer-usage -Wno-unused-private-field")
 
         SET(WEAKENING_STRICT_RULES_DUE_TO_GMOCK "-Wno-global-constructors -Wno-weak-vtables -Wno-missing-variable-declarations")
     ELSEIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")

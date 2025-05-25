@@ -1,5 +1,5 @@
 /* This file is part of libhutznohmd.
- * Copyright (C) 2013-2016 Stefan Weiser
+ * Copyright (C) 2013-2025 Stefan Weiser
 
  * The libhutznohmd project is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -33,7 +33,7 @@ TEST(communication_utility, close_illegal_socket)
 
 TEST(communication_utility, accept_illegal_socket)
 {
-    sockaddr addr;
+    sockaddr addr{};
     socklen_t size = sizeof(addr);
     EXPECT_EQ(accept_signal_safe(42, &addr, &size), -1);
     EXPECT_EQ(errno, EBADF);
@@ -41,7 +41,7 @@ TEST(communication_utility, accept_illegal_socket)
 
 TEST(communication_utility, connect_illegal_socket)
 {
-    sockaddr addr;
+    sockaddr addr{};
     EXPECT_EQ(connect_signal_safe(42, &addr, sizeof(addr)), -1);
     EXPECT_EQ(errno, EBADF);
 }

@@ -1,5 +1,5 @@
 # This file is part of libhutznohmd.
-# Copyright (C) 2013-2016 Stefan Weiser
+# Copyright (C) 2013-2025 Stefan Weiser
 #
 # The libhutznohmd project is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License as
@@ -15,18 +15,16 @@
 # along with the libhutznohmd project; if not, see
 # <http://www.gnu.org/licenses/>.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.31)
 PROJECT(libhutznohmd)
 
 IF(NOT UNIX)
     MESSAGE(FATAL_ERROR "This project supports unixoid systems only.")
 ENDIF()
 
+link_libraries(stdc++)
+
 SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-SET(GMOCK_FILES "${PROJECT_SOURCE_DIR}/gmock/gmock/gmock.h"
-                "${PROJECT_SOURCE_DIR}/gmock/gtest/gtest.h"
-                "${PROJECT_SOURCE_DIR}/gmock/gmock-gtest-all.cc"
-                "${PROJECT_SOURCE_DIR}/gmock/gmock_main.cc")
 
 INCLUDE(ClangFormat)
 INCLUDE(Toolchain)

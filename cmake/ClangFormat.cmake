@@ -1,5 +1,5 @@
 # This file is part of libhutznohmd.
-# Copyright (C) 2013-2016 Stefan Weiser
+# Copyright (C) 2013-2025 Stefan Weiser
 #
 # The libhutznohmd project is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License as
@@ -18,7 +18,7 @@
 MACRO(STYLE_FILES TARGET)
     SET(FORMAT_COMMANDS)
     FOREACH(ARG ${ARGN})
-        LIST(APPEND FORMAT_COMMANDS COMMAND ${CLANG_FORMAT} -i ${ARG})
+        LIST(APPEND FORMAT_COMMANDS COMMAND clang-format -i ${ARG})
     ENDFOREACH()
     ADD_CUSTOM_TARGET(format___${TARGET} ${FORMAT_COMMANDS}
                       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}

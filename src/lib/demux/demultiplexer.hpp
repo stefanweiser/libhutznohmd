@@ -1,5 +1,5 @@
 /* This file is part of libhutznohmd.
- * Copyright (C) 2013-2016 Stefan Weiser
+ * Copyright (C) 2013-2025 Stefan Weiser
 
  * The libhutznohmd project is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -19,9 +19,9 @@
 #ifndef LIBHUTZNOHMD_DEMUX_DEMULTIPLEXER_HPP
 #define LIBHUTZNOHMD_DEMUX_DEMULTIPLEXER_HPP
 
+#include <condition_variable>
 #include <memory>
 #include <mutex>
-#include <condition_variable>
 
 #include "demux/demultiplexer_ordered_mime_map.hpp"
 #include "demux/handler_manager.hpp"

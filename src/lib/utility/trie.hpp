@@ -1,5 +1,5 @@
 /* This file is part of libhutznohmd.
- * Copyright (C) 2013-2016 Stefan Weiser
+ * Copyright (C) 2013-2025 Stefan Weiser
 
  * The libhutznohmd project is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -517,10 +517,10 @@ public:
 
 private:
     //! Defines whether searching a token is done case insensitive or not.
-    const bool is_case_insensitive_;
+    bool is_case_insensitive_;
 
     //! Counts the number of references to the trie's root node.
-    size_t* const count_;
+    size_t* count_;
 
     //! Root node of the trie as entry point for every operation.
     detail::trie_node<value_type>* root_node_;

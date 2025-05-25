@@ -1,5 +1,5 @@
 /* This file is part of libhutznohmd.
- * Copyright (C) 2013-2016 Stefan Weiser
+ * Copyright (C) 2013-2025 Stefan Weiser
 
  * The libhutznohmd project is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include "libhutznohmd/types.hpp"
 #include "utility/common.hpp"
@@ -43,8 +43,8 @@ std::vector<check_range_test_param> get_all_check_range_test_params()
     return result;
 }
 
-INSTANTIATE_TEST_CASE_P(common, check_range_test,
-                        ValuesIn(get_all_check_range_test_params()));
+INSTANTIATE_TEST_SUITE_P(common, check_range_test,
+                         ValuesIn(get_all_check_range_test_params()));
 
 TEST_P(check_range_test, bounds)
 {
@@ -78,8 +78,8 @@ std::vector<check_url_test_param> get_all_check_url_test_params()
     return result;
 }
 
-INSTANTIATE_TEST_CASE_P(common, check_url_test,
-                        ValuesIn(get_all_check_url_test_params()));
+INSTANTIATE_TEST_SUITE_P(common, check_url_test,
+                         ValuesIn(get_all_check_url_test_params()));
 
 TEST_P(check_url_test, validity)
 {

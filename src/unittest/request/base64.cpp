@@ -1,5 +1,5 @@
 /* This file is part of libhutznohmd.
- * Copyright (C) 2013-2016 Stefan Weiser
+ * Copyright (C) 2013-2025 Stefan Weiser
 
  * The libhutznohmd project is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -16,8 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include "request/base64.hpp"
 
@@ -48,9 +48,9 @@ TEST(base64, encode_hello_world)
 TEST(base64, encode_pangram)
 {
     const std::string base64 = encode_base64(
-        {'P', 'u', 'b', 'l', 'i', 'c', ' ', 'j', 'u', 'n', 'k', ' ', 'd', 'w',
-         'a', 'r', 'v', 'e', 's', ' ', 'h', 'u', 'g', ' ', 'm', 'y', ' ', 'q',
-         'u', 'a', 'r', 't', 'z', ' ', 'f', 'o', 'x', '.'});
+        {'P', 'u', 'b', 'l', 'i', 'c', ' ', 'j', 'u', 'n', 'k', ' ', 'd',
+         'w', 'a', 'r', 'v', 'e', 's', ' ', 'h', 'u', 'g', ' ', 'm', 'y',
+         ' ', 'q', 'u', 'a', 'r', 't', 'z', ' ', 'f', 'o', 'x', '.'});
     EXPECT_STREQ("UHVibGljIGp1bmsgZHdhcnZlcyBodWcgbXkgcXVhcnR6IGZveC4=",
                  base64.c_str());
 }

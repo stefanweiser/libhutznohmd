@@ -1,5 +1,5 @@
 /* This file is part of libhutznohmd.
- * Copyright (C) 2013-2016 Stefan Weiser
+ * Copyright (C) 2013-2025 Stefan Weiser
 
  * The libhutznohmd project is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -19,22 +19,24 @@
 #ifndef LIBHUTZNOHMD_UTILITY_COMMON_HPP
 #define LIBHUTZNOHMD_UTILITY_COMMON_HPP
 
+#include <cstdint>
 #include <string>
 
 namespace hutzn
 {
 
 //! Base of the decimal system.
-static const uint8_t decimal_base = 10;
+static const std::uint8_t decimal_base = 10;
 
 //! Number of bits per byte.
-static const size_t bits_per_byte = 8;
+static const std::size_t bits_per_byte = 8;
 
 //! Number of bits per nibble.
-static const size_t nibble_size = 4;
+static const std::size_t nibble_size = 4;
 
 //! Contains the number of values, that can be represented by one byte.
-static const size_t byte_state_count = 1 << (bits_per_byte * sizeof(uint8_t));
+static const std::size_t byte_state_count =
+    1 << (bits_per_byte * sizeof(uint8_t));
 
 //! @brief Checking, whether a value is inbetween a range.
 //!
