@@ -7,7 +7,6 @@ RUN dnf -y install \
     awk \
     clang \
     clang-tools-extra \
-    cmake \
     doxygen \
     git \
     gmock-devel \
