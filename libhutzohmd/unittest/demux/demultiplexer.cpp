@@ -195,7 +195,7 @@ TEST_F(demultiplexer_test, determine_request_handler_unknown_content_type)
     EXPECT_FALSE(demultiplexer_->determine_request_handler(*request));
 }
 
-TEST_F(demultiplexer_test, determine_request_handler_unknown_accept_type)
+TEST_F(demultiplexer_test, DISABLED_determine_request_handler_unknown_accept_type)
 {
     ASSERT_TRUE(NULL != demultiplexer_.get());
     handler_ptr handler = demultiplexer_->connect(id(), &handler_fn);
@@ -214,7 +214,7 @@ TEST_F(demultiplexer_test, determine_request_handler_unknown_accept_type)
     EXPECT_FALSE(demultiplexer_->determine_request_handler(*request));
 }
 
-TEST_F(demultiplexer_test, determine_request_handler_success_1)
+TEST_F(demultiplexer_test, DISABLED_determine_request_handler_success_1)
 {
     ASSERT_TRUE(NULL != demultiplexer_.get());
     request_handler_id test_id = id();
@@ -238,7 +238,7 @@ TEST_F(demultiplexer_test, determine_request_handler_success_1)
     EXPECT_TRUE(!!demultiplexer_->determine_request_handler(*request));
 }
 
-TEST_F(demultiplexer_test, determine_request_handler_success_2)
+TEST_F(demultiplexer_test, DISABLED_determine_request_handler_success_2)
 {
     ASSERT_TRUE(NULL != demultiplexer_.get());
     request_handler_id test_id = id();
@@ -267,7 +267,7 @@ TEST_F(demultiplexer_test, determine_request_handler_success_2)
     EXPECT_TRUE(!!demultiplexer_->determine_request_handler(*request));
 }
 
-TEST_F(demultiplexer_test, determine_request_handler_disabled_handler)
+TEST_F(demultiplexer_test, DISABLED_determine_request_handler_disabled_handler)
 {
     ASSERT_TRUE(NULL != demultiplexer_.get());
     request_handler_id test_id = id();

@@ -15,16 +15,11 @@
 # along with the libhutznohmd project; if not, see
 # <http://www.gnu.org/licenses/>.
 
-SETUP_COMPILER_FLAGS()
+module(
+    name = "libhutznohmd",
+    version = "0.0.1",
+)
 
-SET(FILES main.cpp)
+bazel_dep(name = "rules_cc", version = "0.1.1")
 
-ADD_EXECUTABLE(example_performance ${FILES})
-STYLE_FILES(example_performance ${FILES})
-
-TARGET_LINK_LIBRARIES(example_performance hutznohmd)
-INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/include")
-INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/src/lib")
-INCLUDE_DIRECTORIES("${CMAKE_CURRENT_SOURCE_DIR}")
-
-INSTALL(TARGETS example_performance DESTINATION bin)
+bazel_dep(name = "googletest", version = "1.17.0")

@@ -1,0 +1,3 @@
+common --enable_bzlmod
+
+build --verbose_failures

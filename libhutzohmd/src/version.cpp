@@ -20,12 +20,15 @@
 
 #include <string>
 
+#define STRINGIZE2(x) #x
+#define STRINGIZE(x) STRINGIZE2(x)
+
 namespace hutzn
 {
 
 std::string version(void)
 {
-    return "@LIBRARY_VERSION@";
+    return STRINGIZE(LIBRARY_VERSION);
 }
 
 } // namespace hutzn

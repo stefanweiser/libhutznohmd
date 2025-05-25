@@ -12,7 +12,12 @@ RUN dnf -y install \
     git \
     gmock-devel \
     gtest-devel \
-    ninja-build
+    ninja-build \
+    wget
+
+RUN wget https://github.com/bazelbuild/bazelisk/releases/download/v1.26.0/bazelisk-linux-amd64
+RUN chmod +x bazelisk-linux-amd64
+RUN mv bazelisk-linux-amd64 /usr/local/bin/bazel
 
 # add user and make it root without password
 RUN useradd -G wheel -u 1000 dockeruser
