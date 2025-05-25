@@ -7,6 +7,7 @@
   },
   "mounts": [
     "source=${localEnv:HOME}/.gitconfig,target=/home/dockeruser/.gitconfig,type=bind,consistency=cached",
-    "source=${localEnv:HOME}/.ssh/id_ed25519,target=/home/dockeruser/.ssh/id_ed25519,type=bind,consistency=cached"
-]
+    "source=${localEnv:HOME}/.ssh/id_ed25519,target=/home/dockeruser/.ssh/id_ed25519,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.ssh/known_hosts,target=/home/dockeruser/.ssh/known_hosts,type=bind,consistency=cached"
+  ]
 }
