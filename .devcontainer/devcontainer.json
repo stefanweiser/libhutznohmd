@@ -1,8 +1,13 @@
 {
   "build": { "dockerfile": "Dockerfile" },
   "customizations": {
-    "vscodium": {
-      "extensions": []
+    "vscode": {
+      "extensions": [
+        "bazelbuild.vscode-bazel",
+        "eamodio.gitlens",
+        "llvm-vs-code-extensions.vscode-clangd",
+        "ms-python.python",
+      ]
     }
   },
   "mounts": [
